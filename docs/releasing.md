@@ -9,7 +9,7 @@ recording metadata read it. Transmitter firmware has its independent firmware ve
    fresh environment and check `esp32-sdr --help` and campaign module imports.
 4. Review artifact contents for device identifiers, backups, raw RF and private paths.
 5. Obtain the owner's explicit publication approval before creating/pushing a release
-   tag or publishing a GitHub release. This task creates no tag or public release.
+   tag or publishing a GitHub release. Pushing reviewed source does not itself create a tag or public release.
 
 A successful compilation is not a device validation. List hardware checks separately
 and attach exact source revision, compiler and firmware identity to measured results.

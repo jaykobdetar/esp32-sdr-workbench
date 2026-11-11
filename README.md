@@ -5,6 +5,8 @@
 compile tests only; it has not been flashed or validated on the board. Published numerical
 RF results apply to the historical optimized-v2 installed image, not this new source.
 Single-candidate retention remains the default pending board checks.
+The [remaining-validation guide](docs/remaining-validation-guide.md) covers the
+three bench workstreams, required equipment, safe recovery and release readiness.
 
 **A native RF viewer and optimized, burst-aware energy detector for the original ESP32.**
 

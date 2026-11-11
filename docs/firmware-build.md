@@ -1,4 +1,8 @@
-# Build the original-ESP32 optimized firmware
+# Build the original-ESP32 firmware
+
+Current source is the **unflashed `esp32-pipeline-adaptive-q16-v3` variant**.
+Historical optimized-v2 measurements do not validate this new detector. See the
+[remaining-validation guide](remaining-validation-guide.md) before board trials.
 
 ## Scope and pins
 
@@ -25,7 +29,7 @@ From the public repository root, with that environment still active:
 ```sh
 python firmware/tools/build_firmware.py \
   --profile esp32 \
-  --version esp32-pipeline-optimized-v2 \
+  --version "$(git rev-parse HEAD)" \
   --jobs 4 \
   --build-root /tmp/esp-sdr-build \
   --output /tmp/esp-sdr-artifacts
@@ -33,7 +37,7 @@ python firmware/tools/build_firmware.py \
 
 Use a fresh output directory for each build: the exporter refuses to overwrite an existing profile. Build outputs and export manifests are deliberately outside the repository. `firmware/sdkconfig.defaults.esp32` is the authoritative source configuration; generated sdkconfig is local output. No credentials, device calibration/NVS or complete flash images are needed to compile. Do not publish your device flash/NVS backups.
 
-`VERSION?` embeds the actual source revision (or `unknown` without Git), UTC build time, target and `firmware_variant: esp32-pipeline-optimized-v2`. The variant is a truthful source-family identifier, not a replacement for the Git revision. Rebuilding changes timestamps and may change layout; do not equate an arbitrary rebuild with an already measured binary.
+`VERSION?` embeds the actual source revision (or `unknown` without Git), UTC build time, target and `firmware_variant` read from `firmware/FIRMWARE_VARIANT` (currently `esp32-pipeline-adaptive-q16-v3`). The variant is a truthful source-family identifier, not a replacement for the Git revision. Rebuilding changes timestamps and may change layout; do not equate an arbitrary rebuild with an already measured binary.
 
 ## Manual flashing: backup first, then choose the correct path
 
@@ -114,8 +118,8 @@ Firmware derivative: GPL-3.0-or-later. ESP-DSP and the retained ESP-IDF-derived 
 ## Current adaptive source versus historical measurements
 
 The current `firmware/FIRMWARE_VARIANT` is `esp32-pipeline-adaptive-q16-v3`.
-Use that value for a new build's `--version`; the optimized-v2 examples above
-describe the historical baseline and are not a performance claim for this source.
+The build example labels the artifact with the source commit; `VERSION?` separately
+embeds this variant. Neither is a performance claim for this source.
 The Q16 adaptation and optional three-crop retention are compile/host tested,
 **not flashed or board-soak validated**. Historical retention CI builds its pinned
 base with the archived patch, not this changed source. Read

@@ -2,8 +2,10 @@
 
 Work started by fast-forwarding a clean checkout from `f94a761` to the updated
 remote main `d979748`. The separate private research/recovery workspace was not
-replaced. Work is local on `improve/workbench-19-items`; no push, public tag or
-release is part of this pass.
+replaced. Implementation was prepared on `improve/workbench-19-items` as commit `a07083e`.
+The owner subsequently authorized publishing these changes and a
+[remaining-validation guide](remaining-validation-guide.md). No public tag or
+release is created by this publication.
 
 ## Implementation status
 
@@ -44,8 +46,9 @@ guaranteed.
 
 The existing transmitter was stopped and its initial configuration restored after
 the gain trial. Receiver gain was restored. No firmware/recovery data, OS security
-or network settings were changed. The new workflow files and software changes
-have not been pushed, so no remote CI or scheduled run is claimed.
+or network settings were changed. CI workflow files are included with publication;
+check the runs for the exact published commit before claiming remote CI success.
+The local verification below is separate from remote CI.
 
 ## Verification completed locally
 

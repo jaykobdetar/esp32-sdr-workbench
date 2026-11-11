@@ -1,6 +1,6 @@
 # Documentation index
 
-Current work: [19-item improvement checklist](improvement-checklist.md).
+Current work: [19-item improvement checklist](improvement-checklist.md) · [Full remaining-validation guide](remaining-validation-guide.md).
 
 ## Using the project
 

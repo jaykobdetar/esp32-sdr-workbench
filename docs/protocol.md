@@ -2,6 +2,11 @@
 
 This documents the published `firmware/` original-ESP32 command path, not every historical upstream backend. Source authority: `firmware/main/common/burst_commands.h`, `burst_capture.h`, `burst_serial.c`, and `firmware/main/targets/esp32/receiver.c`. Unsupported lab commands are described separately in [diagnostic provenance](diagnostic-provenance.md).
 
+The common wire framing is shared with historical optimized-v2. The current
+`adaptive-q16-v3` source changes the background policy and adds metadata/crop
+commands; those changes are [described below](#unflashed-adaptive-q16-v3-extension)
+and have not been validated on a board.
+
 ## Transport and discovery
 
 Commands are newline-terminated ASCII over UART, 8N1, no flow control. Query `TRANSPORT?` for the actual baud; do not assume a generic upstream baud matches this build. Drain boot text and synchronize with `SYNC <decimal nonce>` (reply `SYNC <nonce>`). Read the entire response, including any binary payload, before the next command. Errors start with `ERR`. Finite runs can emit several lines: the protocol is not universally one reply per command.
@@ -14,7 +19,7 @@ Commands are newline-terminated ASCII over UART, 8N1, no flow control. Query `TR
 - `LIMITS?` → JSON gain-index range, bandwidth range, sample rates and component bit depths.
 - `FREQ <MHz>` → `OK` for accepted tuning. Acceptance does not establish PLL lock or calibrated RF sensitivity.
 - `GAIN HARDWARE`, `GAIN MANUAL <index>` → `OK`. Indices are not dB.
-- `GAIN?` → `GAIN <HARDWARE|MANUAL> <index> 0 <max-index> <forced>`: the index is `-1` under hardware AGC, and `<forced>` is the live force bit read back from the gain register. This format is taken from `receiver.c`; no measured reply was archived. The firmware has no command that reports the gain hardware AGC chose during a capture.
+- `GAIN?` → `GAIN <HARDWARE|MANUAL> <index> 0 <max-index> <forced>`: the index is `-1` under hardware AGC, and `<forced>` is the live force bit read back from the gain register. The matched-gain evidence archives these mode readbacks. They do not report the gain hardware AGC chose during every capture; current-source raw start/end register snapshots are separate telemetry.
 - `BANDWIDTH <MHz>` → `OK`; zero selects the widest setting. `LPF AUTO`, `LPF <0..127>` and `LPF?` expose experimental filter controls.
 - `RELEASE` → `OK`, releasing the transport lease. `ERR busy` can indicate another active transport owner.
 
@@ -40,9 +45,11 @@ CRC32 is over the transmitted bytes, compatible with zlib CRC32. CAP20 concatena
 
 `DET1 <ms> <samples> <rate-code> <ratio-milli> <retain>` and `DETPIPE1` with the same arguments accept 1–5000 ms, 256–16380 samples, supported rates, ratio 1000–1000000 and retention 0/1. They emit `<command> BEGIN` with the request fields plus frequency MHz, then `<command> END {json}` after finite acquisition. Errors may occur between BEGIN and END. Verify summary types, status, counts and requested settings, not just presence of END. `sdr_research/detector.py` and `sdr_research/pipeline.py` implement the host checks.
 
-### Decision rule
+### Historical optimized-v2 decision rule (policy 1)
 
-Both detectors apply the same rule to each capture, in signed 10-bit ADC units:
+The measured historical image applies this rule to each capture, in signed
+10-bit ADC units. **Current adaptive-q16-v3 uses policy 2 below**, not this
+positive-latching integer rule:
 
 1. Split the capture into complete 64-sample blocks and compute each block's variance (mean-removed I and Q power). The capture's `mean` is the average block variance and its `peak` is the largest.
 2. For the first 16 captures of a run, only accumulate: `background` is the running average of `mean`.
@@ -53,7 +60,8 @@ Both detectors apply the same rule to each capture, in signed 10-bit ADC units:
 
 ### END summary fields
 
-`DETPIPE1 END` carries one JSON object. All values are non-negative integers.
+`DETPIPE1 END` carries one JSON object. The common numeric fields listed here
+are non-negative integers; current-source candidate descriptors are a list.
 
 | Field | Meaning |
 |---|---|
@@ -72,7 +80,7 @@ Both detectors apply the same rule to each capture, in signed 10-bit ADC units:
 | `frequency_mhz`, `sample_rate_hz` | Echo of the tuned frequency and nominal rate. |
 | `acquisition_option`, `clear_option`, `copy_option`, `fused_active`, `pack_failed` | Selector readback and whether the fused path actually ran. |
 
-`DET1 END` has the same shape without the kernel, copy and overlap fields; it reports `trigger_to_done_us`, `acquire_call_us` and `processing_us` instead. The summary carries no gain or saturation information: the viewer adds the requested gain settings and the retained capture's ADC-endpoint counts on the host side.
+`DET1 END` has the same shape without the kernel, copy and overlap fields; it reports `trigger_to_done_us`, `acquire_call_us` and `processing_us` instead. Historical summaries carry no gain or saturation information: the viewer adds requested gain settings and retained ADC-endpoint counts. Current-source gain/trigger fields are described below.
 
 `DETGET` / `DETPIPEGET` retrieve retained CAP20 with the same DATA framing; missing retention is an error. `DETPIPECLEAR` releases retained pipeline data. `DETPIPEMEM?` reports allocation headroom. `DETPIPEALLOCTEST` is a bounded allocation diagnostic, not RF capture.
 
@@ -87,7 +95,10 @@ Read back selectors. Acquisition timing includes overlapped prior-buffer work, s
 ## Unflashed adaptive-q16-v3 extension
 
 Current source adds `background_policy: 2` and `background_q16` to DET1/DETPIPE1
-END summaries while preserving their version-1 framing. This is a new detector
+END summaries while preserving their version-1 framing. Policy 2 keeps 16 warmup
+captures, then compares peak energy with the previous Q16 background and adapts
+on every capture: weight 1/256 for positives and 1/64 for negatives, with a
+1/65536 ADC² floor. Integer energy processing itself is unchanged. This is a new detector
 policy, not the measured optimized-v2 binary. Raw gain-register start/end
 snapshots and device-monotonic trigger metadata are additive. See
 [adaptive detector semantics and limits](adaptive-detector.md).
