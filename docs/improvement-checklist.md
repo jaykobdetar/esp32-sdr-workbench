@@ -52,7 +52,7 @@ The local verification below is separate from remote CI.
 
 ## Verification completed locally
 
-- Full suite: **382 tests plus 5 subtests passed on Python 3.10 and 3.14**.
+- Full suite: **383 tests plus 5 subtests passed on Python 3.10 and 3.14**.
 - Ruff 0.16.9 lint and formatting, `git diff --check`, both offline evidence
   verifiers, and the new matched-gain evidence recomputation passed.
 - Integrated current-pipeline C mock passed under UBSan at `-O0` and `-O2`,
@@ -64,5 +64,8 @@ The local verification below is separate from remote CI.
   nRF ARM compilation/application-only UF2 validation passed locally.
 - Screenshot verification used the actual launcher in explicit demo mode. All
   subsequent UI tests were offscreen; the screenshot is not a hardware test.
+- Publication follow-up: explicitly install Newlib headers on clean ARM CI
+  runners, and test the recorder lifecycle with both discovered and fallback
+  serial-port choices rather than assuming a host-specific device name.
 
 These results are local checks, not remote CI results. No new firmware was flashed.

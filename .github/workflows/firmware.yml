@@ -63,7 +63,11 @@ jobs:
       - name: Install ARM compiler and host dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi binutils-arm-none-eabi
+          # GCC only recommends newlib on Ubuntu; --no-install-recommends omits
+          # the C headers used by TinyUSB/nrfx even though our app links -nostdlib.
+          sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi binutils-arm-none-eabi libnewlib-arm-none-eabi
+          arm-none-eabi-gcc --version
+          printf '#include <stdio.h>\n#include <string.h>\n#include <stdlib.h>\n' | arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -x c -fsyntax-only -
           python -m pip install pyserial
       - name: Fetch pinned transmitter sources
         working-directory: nrf52840-transmitter

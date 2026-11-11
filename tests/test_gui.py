@@ -294,11 +294,31 @@ def test_det1_no_event_records_summaries_and_updates_duty_scan(app, detector_fak
         cleanup(app, w)
 
 
-def test_det1_retained_record_render_stop_restart(app, detector_fake, tmp_path):
+@pytest.mark.parametrize('available_port', ['/dev/test-detector', None])
+def test_det1_retained_record_render_stop_restart(
+    app, detector_fake, tmp_path, monkeypatch, available_port
+):
+    from types import SimpleNamespace
+
+    import sdr_research.gui as gui
+
+    # Device discovery varies across machines, including hosted CI runners.
+    # Exercise both selection paths without depending on attached serial devices.
+    monkeypatch.setattr(
+        gui.list_ports,
+        'comports',
+        lambda: (
+            [SimpleNamespace(device=available_port, description='Test receiver')]
+            if available_port
+            else []
+        ),
+    )
 
     state, calls = detector_fake
     state['retain'] = True
     w = MainWindow()
+    port = w.port.text()
+    assert port == (available_port or '/dev/ttyUSB0')
     w.output_dir = tmp_path
     w.mode.setCurrentIndex(1)
     w.autosave.setChecked(True)
@@ -325,13 +345,13 @@ def test_det1_retained_record_render_stop_restart(app, detector_fake, tmp_path):
         assert capture.metadata['endpoint_counts'] == paired[0]['retained_endpoint_counts']
         lo, hi = w.spectrum_plot.viewRange()[0]
         assert lo < capture.frequency_hz / 1e6 < hi
-        assert w.stats['/dev/ttyUSB0']['candidates'] == w.stats['/dev/ttyUSB0']['retained'] * 2
+        assert w.stats[port]['candidates'] == w.stats[port]['retained'] * 2
         w.stop_acquisition()
         assert 'DET1 run' in w.status_label.text()
         spin(app, lambda: not any(x.isRunning() for x in w.workers.values()))
         state['retain'] = False
         w.start_acquisition()
-        spin(app, lambda: bool(w.stats) and w.stats['/dev/ttyUSB0']['runs'] >= 1)
+        spin(app, lambda: bool(w.stats) and w.stats[port]['runs'] >= 1)
         assert not w.latest
         assert 'no IQ retained' in w.status_label.text()
     finally:

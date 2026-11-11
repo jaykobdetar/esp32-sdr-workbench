@@ -4,7 +4,7 @@ Application source **0.2.2** for the Makerdiary nRF52840 MDK USB Dongle. The ori
 
 ## Build from a clean checkout (Linux)
 
-Install Python 3, Git, GNU Make, a host C compiler, and the official Arm GNU Toolchain for `arm-none-eabi` (or your distribution's `gcc-arm-none-eabi` and `binutils-arm-none-eabi`). Put its `bin` directory on PATH. From this directory:
+Install Python 3, Git, GNU Make, a host C compiler, and the official Arm GNU Toolchain for `arm-none-eabi` (or on Ubuntu/Debian, `gcc-arm-none-eabi`, `binutils-arm-none-eabi` and `libnewlib-arm-none-eabi`). Newlib supplies C headers used by TinyUSB/nrfx even though this firmware links with `-nostdlib`; install it explicitly when using `--no-install-recommends` (its dependency supplies `libnewlib-dev`). Put the compiler's `bin` directory on PATH. From this directory:
 
 ```sh
 python3 -m venv .venv
