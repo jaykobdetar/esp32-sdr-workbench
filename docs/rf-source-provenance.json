@@ -1,0 +1,118 @@
+{
+  "scope": "Source/host-tool export only; no new RF measurement. Archive labels are private provenance, not download URLs.",
+  "changes": "Hardware campaign ports and receiver application-artifact paths are now explicit CLI arguments. The parameter screen takes an explicit new output directory and geometry. Fake-device tests create synthetic application artifacts instead of relying on private binaries. Offline analysis algorithms and multi-receiver implementation are unchanged.",
+  "sources": [
+    {
+      "path": "scripts/nrf_rf_campaign.py",
+      "archived_source_relative_path": "scripts/nrf_rf_campaign.py",
+      "archived_source_sha256": "9497d453ca185f30cf80a14d61112d441beecd44ce81dba79e2e97210e2a726e",
+      "public_sha256": "fa25c4b264567db14763e5cd10552dace4be78613cde86e3a1157a879c2ffd57",
+      "byte_identical": false
+    },
+    {
+      "path": "scripts/nrf_receiver_compare.py",
+      "archived_source_relative_path": "scripts/nrf_receiver_compare.py",
+      "archived_source_sha256": "a06963bd1729c242c3437f69af35e8c6cc3e3111077281fdda8e2382197f5465",
+      "public_sha256": "4a7b8468d0e9e34a2e838559686d452a3d4203cb614fabcf8ecb5bcf02a4e0fb",
+      "byte_identical": false
+    },
+    {
+      "path": "scripts/nrf_retention_campaign.py",
+      "archived_source_relative_path": "scripts/nrf_retention_campaign.py",
+      "archived_source_sha256": "9c785ba076792f9ea697b075701838e34552033ea71e6e48d113910031e5c92e",
+      "public_sha256": "c5b2cd619d268a85d6f3addf97bdaa4c74f2131f87feebab4b9b4a6944a49cbc",
+      "byte_identical": false
+    },
+    {
+      "path": "scripts/nrf_parameter_screen.py",
+      "archived_source_relative_path": "scripts/nrf_parameter_screen.py",
+      "archived_source_sha256": "8f009db3a5f4c9c0ce044bc3f2c0dd2b604b141dcc321583812b40cf7cc8eb92",
+      "public_sha256": "2dcc050beadc5251fbcb44376200d4d4a053da1618c02d9e5d85bfcc6f8c07d5",
+      "byte_identical": false
+    },
+    {
+      "path": "scripts/nrf_raw_scope.py",
+      "archived_source_relative_path": "scripts/nrf_raw_scope.py",
+      "archived_source_sha256": "600071faaf00c0265ca194f98e17cf2892173b8f85019f69ea726105076d4194",
+      "public_sha256": "bd16656e967cd35daa84e1f4c79a993796dd84dbe12a52d651c049db00269a4b",
+      "byte_identical": false
+    },
+    {
+      "path": "scripts/analyze_nrf_iq.py",
+      "archived_source_relative_path": "scripts/analyze_nrf_iq.py",
+      "archived_source_sha256": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e",
+      "public_sha256": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e",
+      "byte_identical": true
+    },
+    {
+      "path": "scripts/compare_nrf_abab.py",
+      "archived_source_relative_path": "scripts/compare_nrf_abab.py",
+      "archived_source_sha256": "35d76598776636feff1a2b9ad46640e0b1421108a4bbe80e64315589717ea6ea",
+      "public_sha256": "35d76598776636feff1a2b9ad46640e0b1421108a4bbe80e64315589717ea6ea",
+      "byte_identical": true
+    },
+    {
+      "path": "scripts/summarize_nrf_retention.py",
+      "archived_source_relative_path": "scripts/summarize_nrf_retention.py",
+      "archived_source_sha256": "1a1de0a10fb8dcc624a66c9b482d2ec477f1757a5df8eedeebcdd1da838954af",
+      "public_sha256": "1a1de0a10fb8dcc624a66c9b482d2ec477f1757a5df8eedeebcdd1da838954af",
+      "byte_identical": true
+    },
+    {
+      "path": "scripts/summarize_nrf_screen.py",
+      "archived_source_relative_path": "scripts/summarize_nrf_screen.py",
+      "archived_source_sha256": "b00dd93548f2d99e67a4d40ec56b783945afc8c104293e194ee96a5b6ea20278",
+      "public_sha256": "b00dd93548f2d99e67a4d40ec56b783945afc8c104293e194ee96a5b6ea20278",
+      "byte_identical": true
+    },
+    {
+      "path": "scripts/evaluate_nrf_retention.py",
+      "archived_source_relative_path": "scripts/evaluate_nrf_retention.py",
+      "archived_source_sha256": "dafa452a80594ad2422b0afd87d04d5c0bea0b14d397cd5d02b99fe231b90199",
+      "public_sha256": "dafa452a80594ad2422b0afd87d04d5c0bea0b14d397cd5d02b99fe231b90199",
+      "byte_identical": true
+    },
+    {
+      "path": "scripts/multi_receiver_capture.py",
+      "archived_source_relative_path": "scripts/multi_receiver_capture.py",
+      "archived_source_sha256": "08971e9ee3296ada1d5045e6c592eb3b1df884a04ead979eb3ddea1ed95d615d",
+      "public_sha256": "08971e9ee3296ada1d5045e6c592eb3b1df884a04ead979eb3ddea1ed95d615d",
+      "byte_identical": true
+    },
+    {
+      "path": "sdr_research/multireceiver.py",
+      "archived_source_relative_path": "sdr_research/multireceiver.py",
+      "archived_source_sha256": "b4db140266950dfc64facf72b4fb2e305abfe1b5c9aef30846d8f59da7addfe2",
+      "public_sha256": "b4db140266950dfc64facf72b4fb2e305abfe1b5c9aef30846d8f59da7addfe2",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/test_nrf_rf_campaign.py",
+      "archived_source_relative_path": "tests/test_nrf_rf_campaign.py",
+      "archived_source_sha256": "1dfb32fb8e43365ab072e13139577ff805bc67c67c610db117710690aada45c2",
+      "public_sha256": "cca44e9b24a57e2068cc5a7540119aa9f0566b5ee3d5325eb824e83b4ef2fcb6",
+      "byte_identical": false
+    },
+    {
+      "path": "tests/test_nrf_receiver_compare.py",
+      "archived_source_relative_path": "tests/test_nrf_receiver_compare.py",
+      "archived_source_sha256": "f6a0aaeae915440e12fcd8cdcad28e8cc21cd971820a37ebc154f5807349d48e",
+      "public_sha256": "3348f87eca6d9358c08b38555c2ac389d4ab282f8190ae911faecfeaeb52ed87",
+      "byte_identical": false
+    },
+    {
+      "path": "tests/test_multireceiver.py",
+      "archived_source_relative_path": "tests/test_multireceiver.py",
+      "archived_source_sha256": "31e72c4a47754ac18f611c28215a79cde9ada5eb4c440cf1e0069999cab0a05e",
+      "public_sha256": "31e72c4a47754ac18f611c28215a79cde9ada5eb4c440cf1e0069999cab0a05e",
+      "byte_identical": true
+    }
+  ],
+  "retention_patch": {
+    "path": "experiments/retention/retention-experiment.patch",
+    "sha256": "52fc8b5842f62520ce627b9e916c44d1f50071116c05f2b283e7b75c740502a2",
+    "base": "Public optimized firmware at commit 3e382d94ce914e1b89fcc04c688f7d8a2a7f6b89",
+    "measured_variant": "esp32-pipeline-retention-experiment",
+    "note": "Opt-in source patch, not applied to release; original retained build binary is not distributed."
+  }
+}

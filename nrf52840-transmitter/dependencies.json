@@ -1,0 +1,5 @@
+[
+  {"path":"vendor/uf2-bootloader","url":"https://github.com/makerdiary/uf2-bootloader.git","commit":"4d08cbb6150a833f146531fa787c3c28fa3ffabb"},
+  {"path":"vendor/uf2-bootloader/lib/nrfx","url":"https://github.com/NordicSemiconductor/nrfx.git","commit":"7a4c9d946cf1801771fc180acdbf7b878f270093"},
+  {"path":"vendor/uf2-bootloader/lib/tinyusb","url":"https://github.com/hathach/tinyusb.git","commit":"23df777b301af128d3543e286cd865212214b44d"}
+]

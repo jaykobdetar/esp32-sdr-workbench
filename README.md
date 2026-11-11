@@ -4,7 +4,7 @@
 
 Explore the ESP32 receiver's raw I/Q, inspect spectra and recorded events, and compare honest acquisition duty with end-to-end host coverage. This project builds on [ESPARGOS/esp-sdr](https://github.com/ESPARGOS/esp-sdr), adding a Python/Qt workbench and an experimental guarded acquisition/processing pipeline.
 
-> **Not continuous SDR.** Reception has gaps. Detections are unclassified candidate-positive captures, not decoded packets. Power is relative dBFS, not calibrated dBm.
+> **Not continuous SDR.** Reception has gaps. Detector counts are unclassified candidate-positive captures, not decoded packets. A separate offline decoder validates only the controlled known Nordic test frames. Power is relative dBFS, not calibrated dBm.
 
 ![Native viewer operating with the optimized firmware on a real ESP32](docs/viewer-hardware.png)
 
@@ -35,6 +35,23 @@ An earlier separately archived DET1 v2 build measured about **32.1%**, so the op
 A 24 × 5-second retained-event soak processed **73,745 captures**, with stable heap, no reported errors and valid retained/post-run raw CRC checks in every run. Host-run RF duty was **57.687–57.871%**, including command and retained-I/Q transfer time but excluding the separate raw health checks between runs. Shorter GUI runs have more overhead: five 1-second runs ended around **62.42% local RF duty versus 42.93% host-session RF duty** under the GUI's hardware-gain defaults. The 62.42% is the last run's local value; 42.93% is cumulative session duty.
 
 See [validation and limitations](docs/validation.md) for test coverage, negative results and what these numbers do **not** establish. The [published evidence](docs/evidence/README.md) includes all 12 A/B summaries, 24 soak runs with heap replies, five GUI summaries, historical baseline trials, build identity and microbenchmarks. Recalculate the headline numbers offline with `python3 scripts/verify_evidence.py`.
+
+## Controlled-source validation: 11 November 2026
+
+The new [nRF52840 transmitter and guarded application updater](nrf52840-transmitter/README.md) support reproducible known-packet tests. [Full results and limits](docs/nrf-validation-summary.md) distinguish energy detection, transport integrity and over-air packet validation.
+
+- **550 controlled I/Q recordings** passed recorded UART transport CRC checks. **25 files** contained at least one complete known address/payload/RF-CRC frame. These are artifact counts, not packet recall.
+- Actual-image ABAB trials measured **32.11% historical vs 62.33% optimized nominal local RF duty**, and approximately **102 additional source-dependent candidate windows/s** for optimized firmware after OFF subtraction. Candidate windows are not distinct packets.
+- Retaining only one strongest candidate remains a bottleneck. The separate reservoir trial (**3/12 vs 2/12 ON buffers**) did not demonstrate superiority, so it is an [optional source patch](experiments/retention/README.md), not the default.
+- Only one receiver was available. No calibrated sensitivity, continuous reception, synchronized multi-receiver coverage or Quest protocol decoding is established.
+
+[Scrubbed campaign data, source hashes and verified known-packet bytes](docs/evidence/nrf-validation/README.md) are public. Raw RF recordings, recovery flash and device identifiers are excluded. Recompute campaign totals, duty/rate comparisons and known-packet CRCs without hardware:
+
+```sh
+python3 scripts/verify_nrf_evidence.py
+```
+
+The [campaign guide](docs/nrf-controlled-source-campaign.md) covers new measurements using explicit device ports and your own verified receiver binary. The [offline analyzer](scripts/analyze_nrf_iq.py) works on privately held originals; the public summary alone cannot replay RF demodulation. The [multi-receiver coordinator](docs/multi-receiver-preparation.md) has fake-device tests and a historical one-receiver health check, not a two-receiver experiment.
 
 ## Quick start: viewer
 
@@ -83,7 +100,7 @@ Full aperture bounds/sentinels, receiver restoration and immutable-copy ownershi
 
 - Duty is `successful samples / configured sample rate / complete run wall time`, a **nominal aperture estimate**, not externally measured RF arrival coverage.
 - Only one board was benchmarked. Independent multi-port viewing is not synchronized multi-board coverage.
-- No packet decoder, packet recovery rate, calibrated sensitivity, false-positive guarantee or exact RF event timestamps are provided.
+- The offline decoder is limited to the controlled unwhitened Nordic test framing. No general protocol/Quest decoder, packet recall estimate, calibrated sensitivity, false-positive guarantee or exact RF event timestamps are provided.
 - A candidate count can include multiple positive captures of the same transmission. Only the strongest qualifying I/Q capture per detector run is retained.
 - The waterfall advances per displayed capture, not uniform RF time. UART transfer adds substantial gaps.
 - BLE OFF/ON validation was inconclusive in ambient RF; no ground-truth transmitted packet count/timing was available.
@@ -95,8 +112,10 @@ Full aperture bounds/sentinels, receiver restoration and immutable-copy ownershi
 ```text
 firmware/       Complete optimized firmware source and build configuration
 sdr_research/   Native viewer, protocol, processing and recording code
-scripts/        Portable viewer launcher
-tests/         Small selected regression suite (not the entire research archive)
+scripts/        Viewer launcher, finite campaigns, offline analysis and evidence checks
+nrf52840-transmitter/  Controlled transmitter source and guarded updater
+experiments/    Optional unadopted retention patch
+tests/         Offline regression tests (not the entire research archive)
 docs/           Build guide, genuine screenshot and validation summary
 ```
 
@@ -117,4 +136,4 @@ python -m pip install -e ".[test]"
 QT_QPA_PLATFORM=offscreen python -m pytest -q
 ```
 
-The selected viewer regression suite passed **156 tests** against this public source copy. These software tests require no connected board and are not a replacement for hardware validation. Firmware checks are documented in the build guide.
+The initial selected viewer suite passed 156 tests; this update adds campaign, coordinator, evidence, decoder and retention regressions. See the [publication verification](docs/rf-publication-verification.md) for the final check counts and scope. These software tests require no connected board and are not a replacement for hardware validation. Firmware checks are documented in the build guide.

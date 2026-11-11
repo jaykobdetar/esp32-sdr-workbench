@@ -1,0 +1,9 @@
+.venv/
+vendor/
+firmware/build/
+artifacts/
+recovery/
+logs/
+__pycache__/
+.pytest_cache/
+.firmware-build.lock

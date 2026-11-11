@@ -1,0 +1,2752 @@
+[
+  {
+    "analyzer_sha256": null,
+    "source": "nrf-first/analysis-20261111T205046330540Z/analysis.json",
+    "source_sha256": "ff66dc0e1017a0f0380af4b5ed0fc8d89cff71b9fdf54d759722f93e9727439b",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "mode": "baseline",
+        "off": {
+          "detections": [
+            85,
+            79,
+            83,
+            66
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -26.730140256755078,
+          "median_rms": 0.04718049801886082,
+          "n": 4
+        },
+        "on": {
+          "detections": [
+            114,
+            86,
+            91,
+            81
+          ],
+          "energy_window_count": 5,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -28.78778922466575,
+          "median_rms": 0.03546189144253731,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": -2.057648967910673
+      },
+      {
+        "frequency_mhz": 2440,
+        "mode": "optimized",
+        "off": {
+          "detections": [
+            255,
+            90,
+            111,
+            181
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -28.316907337977323,
+          "median_rms": 0.0333179859444499,
+          "n": 4
+        },
+        "on": {
+          "detections": [
+            198,
+            175,
+            74,
+            185
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -28.968432953356704,
+          "median_rms": 0.027606886811554432,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": -0.6515256153793807
+      },
+      {
+        "frequency_mhz": 2440,
+        "mode": "raw",
+        "off": {
+          "detections": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -39.62913876717331,
+          "median_rms": 0.008168438449501991,
+          "n": 4
+        },
+        "on": {
+          "detections": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -44.330993212312386,
+          "median_rms": 0.006040283245965838,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": -4.701854445139077
+      },
+      {
+        "frequency_mhz": 2470,
+        "mode": "baseline",
+        "off": {
+          "detections": [
+            66,
+            76,
+            55,
+            68
+          ],
+          "energy_window_count": 3,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -10.275702622436519,
+          "median_rms": 0.30687592923641205,
+          "n": 4
+        },
+        "on": {
+          "detections": [
+            63,
+            134,
+            156,
+            61
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.72991301408813,
+          "median_rms": 0.307575523853302,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": 0.5457896083483895
+      },
+      {
+        "frequency_mhz": 2470,
+        "mode": "optimized",
+        "off": {
+          "detections": [
+            150,
+            163,
+            128,
+            182
+          ],
+          "energy_window_count": 2,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.586484438997612,
+          "median_rms": 0.33608585596084595,
+          "n": 4
+        },
+        "on": {
+          "detections": [
+            198,
+            260,
+            119,
+            194
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.925599964172342,
+          "median_rms": 0.3320518434047699,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": -0.33911552517473
+      },
+      {
+        "frequency_mhz": 2470,
+        "mode": "raw",
+        "off": {
+          "detections": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -48.40875605141248,
+          "median_rms": 0.003807598724961281,
+          "n": 4
+        },
+        "on": {
+          "detections": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 2,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -36.75272997638626,
+          "median_rms": 0.013698709663003683,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": 11.656026075026219
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": null,
+    "source": "nrf-strong/analysis-20261111T205303057265Z/analysis.json",
+    "source_sha256": "3a7646e214deea64cdf0967357392bdb2923a77687522736bd852cacbad424d6",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "mode": "baseline",
+        "off": {
+          "detections": [
+            32,
+            36,
+            60,
+            92
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -27.461544513940865,
+          "median_rms": 0.0385263254866004,
+          "n": 4
+        },
+        "on": {
+          "detections": [
+            446,
+            404,
+            445,
+            433
+          ],
+          "energy_window_count": 6,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -26.29948516924362,
+          "median_rms": 0.04998556151986122,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": 1.1620593446972443
+      },
+      {
+        "frequency_mhz": 2440,
+        "mode": "optimized",
+        "off": {
+          "detections": [
+            106,
+            183,
+            184,
+            195
+          ],
+          "energy_window_count": 8,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -26.744795833908594,
+          "median_rms": 0.0489752572029829,
+          "n": 4
+        },
+        "on": {
+          "detections": [
+            932,
+            945,
+            945,
+            960
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -25.428657515522325,
+          "median_rms": 0.05287221074104309,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": 1.316138318386269
+      },
+      {
+        "frequency_mhz": 2440,
+        "mode": "raw",
+        "off": {
+          "detections": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -44.4658043660486,
+          "median_rms": 0.0059473542496562,
+          "n": 6
+        },
+        "on": {
+          "detections": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -39.95508700664456,
+          "median_rms": 0.006294183433055878,
+          "n": 6
+        },
+        "on_minus_off_mean_power_db": 4.51071735940404
+      },
+      {
+        "frequency_mhz": 2470,
+        "mode": "baseline",
+        "off": {
+          "detections": [
+            55,
+            78,
+            53,
+            65
+          ],
+          "energy_window_count": 3,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -13.648685630264312,
+          "median_rms": 0.2159167304635048,
+          "n": 4
+        },
+        "on": {
+          "detections": [
+            77,
+            61,
+            57,
+            74
+          ],
+          "energy_window_count": 3,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -13.767392270450491,
+          "median_rms": 0.17738429084420204,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": -0.11870664018617916
+      },
+      {
+        "frequency_mhz": 2470,
+        "mode": "optimized",
+        "off": {
+          "detections": [
+            146,
+            172,
+            168,
+            165
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -12.669875495611645,
+          "median_rms": 0.19668569043278694,
+          "n": 4
+        },
+        "on": {
+          "detections": [
+            131,
+            176,
+            212,
+            178
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -14.42781992331632,
+          "median_rms": 0.1608802229166031,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": -1.7579444277046754
+      },
+      {
+        "frequency_mhz": 2470,
+        "mode": "raw",
+        "off": {
+          "detections": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -45.47573371620233,
+          "median_rms": 0.005221504485234618,
+          "n": 6
+        },
+        "on": {
+          "detections": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -44.94880239339938,
+          "median_rms": 0.00558729562908411,
+          "n": 6
+        },
+        "on_minus_off_mean_power_db": 0.5269313228029446
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "2bf65888a31a1367647f85b5b0da57832cb1eb586945398c02d0fb41cbf43377",
+    "source": "nrf-gain-scope/analysis-20261111T205650264285Z/analysis.json",
+    "source_sha256": "003fd2edde6d4f78ac4b0cfcc7f95ea58706a642e857278af01e7a0492cb4481",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 20,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -44.876097447678006,
+          "median_rms": 0.005668331868946552,
+          "n": 6
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -44.30882578308632,
+          "median_rms": 0.006282879272475839,
+          "n": 6
+        },
+        "on_minus_off_mean_power_db": 0.5672716645916864
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 40,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -41.86190855444334,
+          "median_rms": 0.00736594432964921,
+          "n": 6
+        },
+        "on": {
+          "address_and_crc_verified_packets": 3,
+          "detections": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 10,
+          "full_payload_match_hypotheses": 3,
+          "mean_power_db": -33.49844476673469,
+          "median_rms": 0.021114887669682503,
+          "n": 6
+        },
+        "on_minus_off_mean_power_db": 8.363463787708646
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 6,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -27.584373341699227,
+          "median_rms": 0.012501863297075033,
+          "n": 6
+        },
+        "on": {
+          "address_and_crc_verified_packets": 4,
+          "detections": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 9,
+          "full_payload_match_hypotheses": 4,
+          "mean_power_db": -16.144948349586382,
+          "median_rms": 0.15212330967187881,
+          "n": 6
+        },
+        "on_minus_off_mean_power_db": 11.439424992112844
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 80,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -15.49328993791895,
+          "median_rms": 0.09806232526898384,
+          "n": 6
+        },
+        "on": {
+          "address_and_crc_verified_packets": 1,
+          "detections": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 8,
+          "full_payload_match_hypotheses": 1,
+          "mean_power_db": -2.4037288640967525,
+          "median_rms": 0.7077922821044922,
+          "n": 6
+        },
+        "on_minus_off_mean_power_db": 13.089561073822198
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c6448e7b8545ff805f49a5a0741fdc621843c61641104c5ed55d04191752dc7d",
+    "source": "nrf-controlled-g60/analysis-20261111T205711389919Z/analysis.json",
+    "source_sha256": "e7959abcb617837850c2b24a104809cd476d2a2d0aacd483f4d59299ccbc66a1",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            143,
+            144,
+            156,
+            117,
+            174,
+            158,
+            127,
+            159
+          ],
+          "energy_window_count": 6,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -4.8752089157053655,
+          "median_rms": 0.4872182756662369,
+          "n": 8
+        },
+        "on": {
+          "address_and_crc_verified_packets": 1,
+          "detections": [
+            400,
+            392,
+            385,
+            396,
+            403,
+            389,
+            384,
+            401
+          ],
+          "energy_window_count": 15,
+          "full_payload_match_hypotheses": 1,
+          "mean_power_db": -8.073938813328237,
+          "median_rms": 0.3686368316411972,
+          "n": 8
+        },
+        "on_minus_off_mean_power_db": -3.1987298976228713
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            397,
+            314,
+            298,
+            323,
+            339,
+            356,
+            312,
+            367
+          ],
+          "energy_window_count": 7,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -3.875970640478627,
+          "median_rms": 0.5772663056850433,
+          "n": 8
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            867,
+            871,
+            851,
+            882,
+            899,
+            869,
+            884,
+            886
+          ],
+          "energy_window_count": 12,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -6.470941844937007,
+          "median_rms": 0.37889549136161804,
+          "n": 8
+        },
+        "on_minus_off_mean_power_db": -2.59497120445838
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -39.19941602984063,
+          "median_rms": 0.010795918758958578,
+          "n": 4
+        },
+        "on": {
+          "address_and_crc_verified_packets": 4,
+          "detections": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 5,
+          "full_payload_match_hypotheses": 4,
+          "mean_power_db": -16.63627063248834,
+          "median_rms": 0.1476176753640175,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": 22.563145397352287
+      },
+      {
+        "frequency_mhz": 2470,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            87,
+            134,
+            120,
+            133,
+            93,
+            71,
+            91,
+            77
+          ],
+          "energy_window_count": 8,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -1.0984920709507053,
+          "median_rms": 0.953013151884079,
+          "n": 8
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            81,
+            79,
+            79,
+            84,
+            125,
+            71,
+            95,
+            210
+          ],
+          "energy_window_count": 2,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -0.49817481950367254,
+          "median_rms": 1.0466505885124207,
+          "n": 8
+        },
+        "on_minus_off_mean_power_db": 0.6003172514470327
+      },
+      {
+        "frequency_mhz": 2470,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            335,
+            503,
+            300,
+            416,
+            295,
+            189,
+            261,
+            516
+          ],
+          "energy_window_count": 6,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -2.3230593787255156,
+          "median_rms": 0.8041189908981323,
+          "n": 8
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            208,
+            283,
+            221,
+            270,
+            389,
+            382,
+            289,
+            264
+          ],
+          "energy_window_count": 15,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -2.4382033154442704,
+          "median_rms": 0.7627250850200653,
+          "n": 8
+        },
+        "on_minus_off_mean_power_db": -0.11514393671875478
+      },
+      {
+        "frequency_mhz": 2470,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -22.89832419997363,
+          "median_rms": 0.04909048229455948,
+          "n": 4
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null,
+            null,
+            null,
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -32.97065907489034,
+          "median_rms": 0.014093142002820969,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": -10.072334874916713
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c6448e7b8545ff805f49a5a0741fdc621843c61641104c5ed55d04191752dc7d",
+    "source": "nrf-abab/historical-1/analysis-20261111T205823463319Z/analysis.json",
+    "source_sha256": "9df110143ea4f703658dbc5be1ebc4e311290980c9ac49ad47bc7132bb434dca",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "historical",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            230,
+            168,
+            140,
+            124
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.500959872035773,
+          "median_rms": 0.32418131828308105,
+          "n": 4
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            441,
+            438,
+            438,
+            423
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.694759135145187,
+          "median_rms": 0.2790522575378418,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": -0.19379926310941364
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c6448e7b8545ff805f49a5a0741fdc621843c61641104c5ed55d04191752dc7d",
+    "source": "nrf-abab/historical-2/analysis-20261111T210010120945Z/analysis.json",
+    "source_sha256": "d9359399f1220085280a4d6ad1f1e8e8b9fc6eb83a5a797ebefaeeeb7a6cddc8",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "historical",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            172,
+            99,
+            183,
+            182
+          ],
+          "energy_window_count": 9,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -8.631218437958353,
+          "median_rms": 0.3575470298528671,
+          "n": 4
+        },
+        "on": {
+          "address_and_crc_verified_packets": 1,
+          "detections": [
+            420,
+            424,
+            418,
+            425
+          ],
+          "energy_window_count": 9,
+          "full_payload_match_hypotheses": 1,
+          "mean_power_db": -7.6213304353559685,
+          "median_rms": 0.3952844738960266,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": 1.0098880026023842
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-abab/optimized-1/analysis-20261111T210038136836Z/analysis.json",
+    "source_sha256": "e95039bf0e49c2dfccdcf66cc4f5f53cd82c9b2e5049d68d1fb0dbc4c18dc2bf",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            375,
+            432,
+            385,
+            425
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -5.933359990315319,
+          "median_rms": 0.503274455666542,
+          "n": 4
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            883,
+            876,
+            879,
+            871
+          ],
+          "energy_window_count": 8,
+          "full_payload_match_hypotheses": 1,
+          "mean_power_db": -9.09123842430064,
+          "median_rms": 0.30209337174892426,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": -3.1578784339853208
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-abab/optimized-2/analysis-20261111T210038619855Z/analysis.json",
+    "source_sha256": "a0d590f34e74803ad0ea0312b9bfc004cd5ea3288083f93248e2d1c426b4e99a",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            372,
+            417,
+            353,
+            403
+          ],
+          "energy_window_count": 5,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.926425483942968,
+          "median_rms": 0.36827731877565384,
+          "n": 4
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            879,
+            864,
+            842,
+            834
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 1,
+          "mean_power_db": -6.868253342116407,
+          "median_rms": 0.46744367480278015,
+          "n": 4
+        },
+        "on_minus_off_mean_power_db": 1.058172141826561
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/bandwidth24/analysis-20261111T210743129315Z/analysis.json",
+    "source_sha256": "fc612cc995c3b2a3add12c90b15b6a4c79b03b689229f865016b45b99df82c59",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            38,
+            110,
+            68
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -0.5078293886696912,
+          "median_rms": 0.940635621547699,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            196,
+            103,
+            108
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -0.5145447514770295,
+          "median_rms": 0.942267656326294,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -0.00671536280733831
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            190,
+            133,
+            271
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -1.7390432910343394,
+          "median_rms": 0.941724419593811,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            354,
+            385,
+            432
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -0.8708045364949448,
+          "median_rms": 0.9059758186340332,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": 0.8682387545393946
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -27.75525290491275,
+          "median_rms": 0.04094843938946724,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -34.69964267075881,
+          "median_rms": 0.018408477306365967,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": -6.944389765846061
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/buffer8192/analysis-20261111T210743794353Z/analysis.json",
+    "source_sha256": "6df648307332449b4bbb9d6bb734ba8ccaef2fc9ae84f3c1c67cea0e1daebfc6",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            93,
+            90,
+            29
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -0.43921597780639193,
+          "median_rms": 1.0630438327789307,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            179,
+            184,
+            124
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -2.226742679102588,
+          "median_rms": 0.6857737302780151,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -1.7875267012961962
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            209,
+            193,
+            211
+          ],
+          "energy_window_count": 2,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -6.244709774710677,
+          "median_rms": 0.32332655787467957,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            440,
+            476,
+            448
+          ],
+          "energy_window_count": 11,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.624817158719334,
+          "median_rms": 0.37070226669311523,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -1.3801073840086566
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -39.1402988739777,
+          "median_rms": 0.011040406301617622,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 2,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -39.3132454694785,
+          "median_rms": 0.010822752490639687,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": -0.17294659550080382
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/burst5/analysis-20261111T210744290319Z/analysis.json",
+    "source_sha256": "a9e74fdcd19821790178c7d4a92c732f2b4ca164dec9a8de0d698b67c4bd5770",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            95,
+            31,
+            26
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": 0.6433627242859257,
+          "median_rms": 1.1501744985580444,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            66,
+            121,
+            138
+          ],
+          "energy_window_count": 2,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -0.08296443762967552,
+          "median_rms": 0.9471896886825562,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -0.7263271619156012
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            132,
+            157,
+            115
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -0.11369847417261227,
+          "median_rms": 1.1330736875534058,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            183,
+            160,
+            270
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": 1.1553604391652539,
+          "median_rms": 1.1521015167236328,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": 1.2690589133378662
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -37.32372506804663,
+          "median_rms": 0.013608609326183796,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -37.30739360720992,
+          "median_rms": 0.013634220696985722,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": 0.01633146083671022
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/hopping/analysis-20261111T210744971150Z/analysis.json",
+    "source_sha256": "49db831d564eccf11d7e0dd04d5888db0600a4a26ce0128ef1fc4e1609b15eb1",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            61,
+            37,
+            58
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -6.80276218830251,
+          "median_rms": 0.38788387179374695,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            54,
+            91,
+            100
+          ],
+          "energy_window_count": 3,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.504760905553372,
+          "median_rms": 0.4182978868484497,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -0.7019987172508619
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            117,
+            178,
+            139
+          ],
+          "energy_window_count": 3,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -4.8562775452931115,
+          "median_rms": 0.4550195038318634,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            240,
+            232,
+            210
+          ],
+          "energy_window_count": 6,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -8.430723817016888,
+          "median_rms": 0.44586098194122314,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -3.574446271723777
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -37.90902792200791,
+          "median_rms": 0.012721801176667213,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -36.616113938924805,
+          "median_rms": 0.014763669110834599,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": 1.2929139830831033
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/interval10ms/analysis-20261111T210745697494Z/analysis.json",
+    "source_sha256": "8a24494bfa770a3fcc45f58f9ad65a1b55209a64ec32c18b08aad8759e138fee",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            59,
+            48,
+            83
+          ],
+          "energy_window_count": 3,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.09793717940467,
+          "median_rms": 0.2663373351097107,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            88,
+            91,
+            86
+          ],
+          "energy_window_count": 8,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.792984866223316,
+          "median_rms": 0.19715583324432373,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -0.6950476868186453
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            167,
+            163,
+            173
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.048584788923526,
+          "median_rms": 0.34500396251678467,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 1,
+          "detections": [
+            203,
+            259,
+            197
+          ],
+          "energy_window_count": 5,
+          "full_payload_match_hypotheses": 1,
+          "mean_power_db": -9.123736853847586,
+          "median_rms": 0.27109816670417786,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -0.07515206492406001
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -17.67895608824881,
+          "median_rms": 0.13063278794288635,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -37.54201646650282,
+          "median_rms": 0.013270863331854343,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": -19.863060378254012
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e",
+    "source": "nrf-screen/mode1/analysis-20261111T211231310937Z/analysis.json",
+    "source_sha256": "abc572f909da1a6a46af299a61c6db4d181fec08707b882037f670ff41344215",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            52,
+            61,
+            91
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.272254117758147,
+          "median_rms": 0.4289208650588989,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            218,
+            185,
+            226
+          ],
+          "energy_window_count": 6,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.75710554279784,
+          "median_rms": 0.39484918117523193,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -0.48485142503969314
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            181,
+            110,
+            220
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -6.450066218514607,
+          "median_rms": 0.4775107204914093,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            475,
+            492,
+            480
+          ],
+          "energy_window_count": 5,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -6.370157501377091,
+          "median_rms": 0.4815858006477356,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": 0.07990871713751613
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -31.489882286571167,
+          "median_rms": 0.02663826197385788,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -38.60358270287969,
+          "median_rms": 0.011744130402803421,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": -7.113700416308525
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/payload128/analysis-20261111T210747158252Z/analysis.json",
+    "source_sha256": "dda81811d1da17668ef6156d4ba2e4ccdfc345e276bc5dce9e7bf5c15454aff6",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            65,
+            66,
+            98
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -11.059663877266683,
+          "median_rms": 0.18097899854183197,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            217,
+            218,
+            218
+          ],
+          "energy_window_count": 7,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -11.08387621375863,
+          "median_rms": 0.2508065104484558,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -0.02421233649194754
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            186,
+            249,
+            195
+          ],
+          "energy_window_count": 5,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -12.580047326120853,
+          "median_rms": 0.23359377682209015,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            474,
+            475,
+            492
+          ],
+          "energy_window_count": 2,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.499962767184548,
+          "median_rms": 0.4250165820121765,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": 5.0800845589363055
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -36.58373453995995,
+          "median_rms": 0.014818808063864708,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -29.43975561079176,
+          "median_rms": 0.0337296798825264,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": 7.143978929168188
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/payload32/analysis-20261111T210747849280Z/analysis.json",
+    "source_sha256": "df1a04c554e2b773ef5d8a5050df44b6b09c9451bb9b9a3a57d6846e173910ce",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            54,
+            82,
+            94
+          ],
+          "energy_window_count": 7,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -15.291581194142275,
+          "median_rms": 0.1652500331401825,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 1,
+          "detections": [
+            172,
+            172,
+            178
+          ],
+          "energy_window_count": 5,
+          "full_payload_match_hypotheses": 1,
+          "mean_power_db": -11.036062980125314,
+          "median_rms": 0.16340409219264984,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": 4.255518214016961
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            161,
+            156,
+            192
+          ],
+          "energy_window_count": 7,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -14.664609583987458,
+          "median_rms": 0.15138600766658783,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            399,
+            398,
+            407
+          ],
+          "energy_window_count": 11,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -8.646494155579001,
+          "median_rms": 0.3284948170185089,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": 6.018115428408457
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -37.87977904638805,
+          "median_rms": 0.012764712795615196,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -37.53246506473391,
+          "median_rms": 0.013285464607179165,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": 0.34731398165413907
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/payload8/analysis-20261111T210748565106Z/analysis.json",
+    "source_sha256": "4a6ca62839297f1c0de2e76f8132f7daaa2a28490f067627c555e8953d354c47",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            74,
+            66,
+            80
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.579515547626087,
+          "median_rms": 0.282490611076355,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 1,
+          "detections": [
+            162,
+            164,
+            182
+          ],
+          "energy_window_count": 5,
+          "full_payload_match_hypotheses": 1,
+          "mean_power_db": -11.051381853943663,
+          "median_rms": 0.15319719910621643,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -1.471866306317576
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            208,
+            193,
+            198
+          ],
+          "energy_window_count": 3,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -8.831296858164341,
+          "median_rms": 0.372685968875885,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            384,
+            329,
+            368
+          ],
+          "energy_window_count": 6,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -10.514735525651615,
+          "median_rms": 0.1571374386548996,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -1.6834386674872732
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -39.86578508429319,
+          "median_rms": 0.010155720636248589,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -38.79622485910144,
+          "median_rms": 0.011486527509987354,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": 1.0695602251917435
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/power-minus20/analysis-20261111T210749298431Z/analysis.json",
+    "source_sha256": "2b9cb73e2897cc739799885f7a8a48c855feeac25695b993c82b3a1749b96a60",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            73,
+            84,
+            69
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.402662926288412,
+          "median_rms": 0.22642157971858978,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            82,
+            75,
+            51
+          ],
+          "energy_window_count": 6,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -10.255335879006234,
+          "median_rms": 0.3091447055339813,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -0.8526729527178212
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            163,
+            186,
+            161
+          ],
+          "energy_window_count": 7,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.098714957300308,
+          "median_rms": 0.3239279091358185,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            147,
+            194,
+            211
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.120479977678986,
+          "median_rms": 0.2951470911502838,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -0.021765020378678557
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 2,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -36.13759538521824,
+          "median_rms": 0.015599843114614487,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -38.05608004789379,
+          "median_rms": 0.01250823400914669,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": -1.918484662675553
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/power-minus40/analysis-20261111T210750011899Z/analysis.json",
+    "source_sha256": "ad1bbd0764eb865105cfb1317b081bd90e29791f8150f1dc14000299d08dabfb",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            63,
+            47,
+            52
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.76845028382449,
+          "median_rms": 0.1414051651954651,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            56,
+            66,
+            32
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -18.012312115859114,
+          "median_rms": 0.13760174810886383,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -8.243861832034623
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            140,
+            155,
+            170
+          ],
+          "energy_window_count": 2,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -8.763190626040878,
+          "median_rms": 0.40202781558036804,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            150,
+            154,
+            159
+          ],
+          "energy_window_count": 3,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.165922155205635,
+          "median_rms": 0.30532848834991455,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -0.4027315291647575
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -37.14568657102463,
+          "median_rms": 0.013890429399907589,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -27.793414777111995,
+          "median_rms": 0.04076892510056496,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": 9.352271793912639
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/power-minus8/analysis-20261111T210750741191Z/analysis.json",
+    "source_sha256": "694008a3a41c69fc15e553bbf51558dee58528b67237d2d5f6b4731bbf930f9f",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            73,
+            67,
+            86
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -11.077946439829478,
+          "median_rms": 0.14256493747234344,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            189,
+            184,
+            191
+          ],
+          "energy_window_count": 5,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.820842157334753,
+          "median_rms": 0.3848852813243866,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": 3.2571042824947254
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            178,
+            165,
+            180
+          ],
+          "energy_window_count": 3,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -14.350922876887843,
+          "median_rms": 0.17721140384674072,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            446,
+            441,
+            425
+          ],
+          "energy_window_count": 5,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.499284680163237,
+          "median_rms": 0.46853774785995483,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": 6.851638196724606
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -38.9556015614906,
+          "median_rms": 0.011277684010565281,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -30.05289966729391,
+          "median_rms": 0.031430769711732864,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": 8.902701894196692
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/rate40/analysis-20261111T210751491502Z/analysis.json",
+    "source_sha256": "cc23a2f24f18586d9e90e9037d3f1f5fa2b7c2bbd28938bb42036074b62c6a7a",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            47,
+            84,
+            69
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -8.526354395140107,
+          "median_rms": 0.1383482813835144,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            143,
+            138,
+            145
+          ],
+          "energy_window_count": 12,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.7531852877972955,
+          "median_rms": 0.21446143090724945,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": 0.7731691073428113
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            127,
+            134,
+            173
+          ],
+          "energy_window_count": 5,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.083949318738403,
+          "median_rms": 0.3775780200958252,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            294,
+            313,
+            360
+          ],
+          "energy_window_count": 12,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.549246874208166,
+          "median_rms": 0.2265254259109497,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -0.46529755546976315
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -35.97086352478216,
+          "median_rms": 0.015902185812592506,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 2,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -37.520573702621164,
+          "median_rms": 0.013303665444254875,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": -1.5497101778390032
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "ff3a507267e6b2861b20310921b84e2fc12dfe2250b2a69fa3c8733e13af5aec",
+    "source": "nrf-screen/rate80/analysis-20261111T210831534499Z/analysis.json",
+    "source_sha256": "b0132254d2882f677ee6f1af48aa6a1183e6a6a72d51d101beb43a7efe8e3221",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            76,
+            73,
+            42
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -12.259160348828084,
+          "median_rms": 0.1882411688566208,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            134,
+            124,
+            131
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.345987750822496,
+          "median_rms": 0.28345492482185364,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": 4.9131725980055885
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            133,
+            169,
+            155
+          ],
+          "energy_window_count": 5,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.351118834532246,
+          "median_rms": 0.36005762219429016,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            264,
+            258,
+            268
+          ],
+          "energy_window_count": 6,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -10.600737098453038,
+          "median_rms": 0.28408846259117126,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -3.2496182639207927
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -37.97006055530601,
+          "median_rms": 0.012632722966372967,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -39.026725747072284,
+          "median_rms": 0.011185714043676853,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": -1.056665191766271
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/reference/analysis-20261111T210752601775Z/analysis.json",
+    "source_sha256": "a9eee5e034d9df850d2ad5d274e68c332573fd6af01935fba3040239454b5da8",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            56,
+            62,
+            45
+          ],
+          "energy_window_count": 3,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -13.027156396666403,
+          "median_rms": 0.23345252871513367,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            181,
+            189,
+            187
+          ],
+          "energy_window_count": 11,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -11.50419054935221,
+          "median_rms": 0.19176499545574188,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": 1.5229658473141932
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            132,
+            194,
+            147
+          ],
+          "energy_window_count": 3,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -6.698350076312408,
+          "median_rms": 0.45741522312164307,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 1,
+          "detections": [
+            414,
+            406,
+            412
+          ],
+          "energy_window_count": 9,
+          "full_payload_match_hypotheses": 1,
+          "mean_power_db": -11.249810086337412,
+          "median_rms": 0.18912538886070251,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -4.5514600100250036
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -36.88499984826237,
+          "median_rms": 0.014313637278974056,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 1,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 2,
+          "full_payload_match_hypotheses": 1,
+          "mean_power_db": -17.383503717346894,
+          "median_rms": 0.13515272736549377,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": 19.501496130915474
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/threshold2/analysis-20261111T210753324475Z/analysis.json",
+    "source_sha256": "bff4061b8ac9b94b1e98083b3377f39a17437dabff2ce3f1f0366af2caa8a419",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            84,
+            108,
+            77
+          ],
+          "energy_window_count": 5,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -8.39044882364654,
+          "median_rms": 0.42401114106178284,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            183,
+            197,
+            186
+          ],
+          "energy_window_count": 4,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -10.47011862656715,
+          "median_rms": 0.22010217607021332,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -2.079669802920609
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            179,
+            196,
+            177
+          ],
+          "energy_window_count": 6,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -9.270973966050018,
+          "median_rms": 0.2813569903373718,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            429,
+            420,
+            418
+          ],
+          "energy_window_count": 6,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.565710851590442,
+          "median_rms": 0.4913084805011749,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": 1.7052631144595765
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -39.0749033301985,
+          "median_rms": 0.011123842559754848,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -38.80936056265102,
+          "median_rms": 0.011469169519841671,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": 0.26554276754747974
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "c855259596c03daa0f9e8fece523bcca1da922fe862f8d2c1b34056a4d58a3ba",
+    "source": "nrf-screen/threshold8/analysis-20261111T210754014713Z/analysis.json",
+    "source_sha256": "f2bc5d38f136b9603ed21eb0634cb6ffdffe8cc17e2fa49977236db7b6d62d39",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "baseline",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            30,
+            68,
+            37
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -6.283636656669737,
+          "median_rms": 0.5824242830276489,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            182,
+            189,
+            40
+          ],
+          "energy_window_count": 2,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -7.954762753853214,
+          "median_rms": 0.25063344836235046,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -1.6711260971834774
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "optimized",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            174,
+            58,
+            155
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -6.526420431714977,
+          "median_rms": 0.5206324458122253,
+          "n": 3
+        },
+        "on": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            256,
+            383,
+            393
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -6.815523913998583,
+          "median_rms": 0.35535958409309387,
+          "n": 3
+        },
+        "on_minus_off_mean_power_db": -0.28910348228360583
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "raw",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 0,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -25.15453039569996,
+          "median_rms": 0.055242519825696945,
+          "n": 1
+        },
+        "on": {
+          "address_and_crc_verified_packets": 1,
+          "detections": [
+            null
+          ],
+          "energy_window_count": 1,
+          "full_payload_match_hypotheses": 1,
+          "mean_power_db": -17.50854424292238,
+          "median_rms": 0.13322103023529053,
+          "n": 1
+        },
+        "on_minus_off_mean_power_db": 7.645986152777581
+      }
+    ]
+  },
+  {
+    "analyzer_sha256": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e",
+    "source": "nrf-retention/analysis-20261111T211056187993Z/analysis.json",
+    "source_sha256": "84798d24d3657a903f5b9b0ac072445e29beddf55b9774576ea4935af6a6f6e4",
+    "summary": [
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "reservoir",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            269,
+            291,
+            292,
+            363,
+            376,
+            293,
+            293,
+            241,
+            293,
+            303,
+            308,
+            402
+          ],
+          "energy_window_count": 6,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -12.072887840906292,
+          "median_rms": 0.11529366299510002,
+          "n": 12
+        },
+        "on": {
+          "address_and_crc_verified_packets": 3,
+          "detections": [
+            732,
+            706,
+            804,
+            781,
+            850,
+            878,
+            864,
+            804,
+            901,
+            896,
+            859,
+            872
+          ],
+          "energy_window_count": 12,
+          "full_payload_match_hypotheses": 3,
+          "mean_power_db": -17.932168125475574,
+          "median_rms": 0.09903570264577866,
+          "n": 12
+        },
+        "on_minus_off_mean_power_db": -5.859280284569282
+      },
+      {
+        "frequency_mhz": 2440,
+        "gain": 60,
+        "mode": "strongest",
+        "off": {
+          "address_and_crc_verified_packets": 0,
+          "detections": [
+            341,
+            327,
+            253,
+            273,
+            378,
+            326,
+            252,
+            336,
+            363,
+            418,
+            335,
+            336
+          ],
+          "energy_window_count": 14,
+          "full_payload_match_hypotheses": 0,
+          "mean_power_db": -1.9854624405768717,
+          "median_rms": 0.833453893661499,
+          "n": 12
+        },
+        "on": {
+          "address_and_crc_verified_packets": 2,
+          "detections": [
+            766,
+            921,
+            858,
+            875,
+            881,
+            745,
+            878,
+            872,
+            835,
+            720,
+            844,
+            875
+          ],
+          "energy_window_count": 18,
+          "full_payload_match_hypotheses": 2,
+          "mean_power_db": -1.390649767632003,
+          "median_rms": 0.8505607843399048,
+          "n": 12
+        },
+        "on_minus_off_mean_power_db": 0.5948126729448686
+      }
+    ]
+  }
+]

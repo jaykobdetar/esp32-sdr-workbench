@@ -1,0 +1,409 @@
+--- a/firmware/FIRMWARE_VARIANT
++++ b/firmware/FIRMWARE_VARIANT
+@@ -1 +1 @@
+-esp32-pipeline-optimized-v2
++esp32-pipeline-retention-experiment
+--- a/firmware/main/targets/esp32/detector_pipeline.h
++++ b/firmware/main/targets/esp32/detector_pipeline.h
+@@ -1,10 +1,11 @@
+ #pragma once
+ /* Proposal only: finite single-core overlap. Include after detector_experiment.h.
+- * No live reads of RF-owned SRAM. DETPIPEGET retrieves the strongest packed copy.
++ * No live reads of RF-owned SRAM. DETPIPEGET retrieves the selected packed copy.
+  * Requires acquire_iq_with_work() from accompanying receiver patch. */
+ #include "esp_memory_utils.h"
+
+ #include "pipeline_energy3.h"
++#include "pipeline_retention.h"
+ #include "pack20_candidates.h"
+ #include "ascii_frame.h"
+ #include "validate_copy_runtime.h"
+@@ -16,6 +17,8 @@
+ static size_t detpipe_page_sizes[DETPIPE_MAX_PAGES];
+ static unsigned detpipe_page_count;
+ static unsigned detpipe_copy_option; /* 0 separate; 1 fused only at full length */
++static unsigned detpipe_keep_policy; /* 0 strongest (unchanged default), 1 reservoir */
++static uint32_t detpipe_keep_seed = 1; /* reset to this seed at every run */
+ static unsigned detpipe_kernel; /* default 0: unchanged v2 kernel */
+ static unsigned detpipe_retained_n, detpipe_retained_us, detpipe_retained_generation;
+ static void detpipe_clear(void) {
+@@ -53,6 +56,8 @@
+     bool pending, ready, pack_failed;
+     uint64_t compute_us, copy_us, commit_us, retention_us;
+     unsigned background, best_ratio, events;
++    unsigned keep_policy, selected_candidate_index, retention_replacements;
++    uint32_t keep_seed, random_state;
+     uint64_t warm_total;
+ } detpipe_state_t;
+
+@@ -133,13 +138,18 @@
+     } else if ((uint64_t)p->peak * 1000 > (uint64_t)p->background * ratio) {
+         p->events++;
+         unsigned score = (uint64_t)p->peak * 1000 / p->background;
+-        if (score > p->best_ratio) {
+-            p->best_ratio = score;
++        bool strongest = score > p->best_ratio;
++        if (strongest) p->best_ratio = score;
++        bool selected = retain && (p->keep_policy == 1 ?
++            pipeline_keep_reservoir(&p->random_state, p->events) : strongest);
++        if (selected) {
+             if (retain) {
+                 int64_t r = esp_timer_get_time();
+                 bool packed=detpipe_pack(p->copy,p->n);
+                 if(!packed)p->pack_failed=true;
+                 if(packed){
++                if (p->selected_candidate_index) p->retention_replacements++;
++                p->selected_candidate_index = p->events;
+                 detpipe_retained_n = p->n;
+                 detpipe_retained_us = p->observed_us;
+                 detpipe_retained_generation = p->generation;
+@@ -169,6 +179,35 @@
+ }
+
+ static bool detector_pipeline_command(const char *line) {
++    if (!strcmp(line,"PIPEKEEP?")) {
++        reply("PIPEKEEP %u %" PRIu32 "\n",detpipe_keep_policy,detpipe_keep_seed); return true;
++    }
++    if (!strncmp(line,"PIPEKEEP",8)) {
++        unsigned policy; char extra;
++        if (sscanf(line,"PIPEKEEP %u %c",&policy,&extra)==1 && policy<=1) {
++            detpipe_keep_policy=policy;
++            reply("PIPEKEEP %u %" PRIu32 "\n",policy,detpipe_keep_seed);
++        } else reply("ERR pipeline_keep\n");
++        return true;
++    }
++    if (!strcmp(line,"PIPESEED?")) {
++        reply("PIPESEED %" PRIu32 "\n",detpipe_keep_seed); return true;
++    }
++    if (!strncmp(line,"PIPESEED",8)) {
++        /* Parse manually to reject signs, overflow, extra tokens and wraparound. */
++        const char *at=line+8; uint64_t seed=0; bool valid=*at==' ';
++        if(valid) at++;
++        valid=valid && *at>='0' && *at<='9';
++        while(valid && *at>='0' && *at<='9') {
++            seed=seed*10u+(unsigned)(*at++-'0');
++            if(seed>UINT32_MAX)valid=false;
++        }
++        if(valid && !*at) {
++            detpipe_keep_seed=(uint32_t)seed;
++            reply("PIPESEED %" PRIu32 "\n",detpipe_keep_seed);
++        } else reply("ERR pipeline_seed\n");
++        return true;
++    }
+     if (!strcmp(line,"PIPECOPY?")) { reply("PIPECOPY %u\n",detpipe_copy_option); return true; }
+     if (!strncmp(line,"PIPECOPY",8)) {
+         unsigned mode; char extra;
+@@ -224,7 +263,8 @@
+     detpipe_clear();
+     det_retained_n = 0;
+     if (det_retained) { heap_caps_free(det_retained); det_retained = NULL; }
+-    detpipe_state_t p = {.n=n, .background=1, .kernel=detpipe_kernel};
++    detpipe_state_t p = {.n=n, .background=1, .kernel=detpipe_kernel,
++        .keep_policy=detpipe_keep_policy, .keep_seed=detpipe_keep_seed, .random_state=detpipe_keep_seed};
+     size_t bytes = n * sizeof(uint32_t);
+     p.copy = heap_caps_malloc(bytes, DETPIPE_ALLOC_CAPS);
+     size_t retained_bytes = (n * 20u + 7u) / 8u;
+@@ -301,13 +341,14 @@
+         "\"acquire_call_us_includes_overlap\":%" PRIu64 ",\"energy_compute_us\":%" PRIu64 ","
+         "\"copy_us\":%" PRIu64 ",\"decision_us\":%" PRIu64 ",\"retention_copy_us\":%" PRIu64 ","
+         "\"retained_samples\":%u,\"frequency_mhz\":%u,\"total_samples\":%" PRIu64 ","
+-        "\"analyzed_samples\":%" PRIu64 ",\"sample_rate_hz\":%u,\"errors\":%u,\"warmup_captures\":%u,\"acquisition_option\":%u,\"clear_option\":%u,\"copy_option\":%u,\"fused_active\":%u,\"pack_failed\":%u}\n",
++        "\"analyzed_samples\":%" PRIu64 ",\"sample_rate_hz\":%u,\"errors\":%u,\"warmup_captures\":%u,\"acquisition_option\":%u,\"clear_option\":%u,\"copy_option\":%u,\"fused_active\":%u,\"pack_failed\":%u,\"retention_policy\":%u,\"selected_candidate_index\":%u,\"retention_replacements\":%u,\"retention_seed\":%" PRIu32 ",\"retained_generation\":%u}\n",
+         p.kernel, status, captures, p.processed, p.events, p.background, p.best_ratio, elapsed,
+         observed_done_us, acquisition_us, p.compute_us, p.copy_us, p.commit_us - p.retention_us,
+         p.retention_us, detpipe_retained_n, frequency_mhz, (uint64_t)captures*n,
+         (uint64_t)p.processed*(n/64)*64,
+         rate == 0 ? 80000000u : rate == 1 ? 40000000u : 16000000u,
+-        status ? 1u : 0u, p.processed < 16 ? p.processed : 16u,acquisition_option,clear_option,detpipe_copy_option,detpipe_copy_option == 1 && n == MAX_SAMPLES,p.pack_failed);
++        status ? 1u : 0u, p.processed < 16 ? p.processed : 16u,acquisition_option,clear_option,detpipe_copy_option,detpipe_copy_option == 1 && n == MAX_SAMPLES,p.pack_failed,
++        p.keep_policy,p.selected_candidate_index,p.retention_replacements,p.keep_seed,detpipe_retained_generation);
+     if (length > 0 && (size_t)length < sizeof(summary)) {
+         size_t framed=ascii_frame_pad(summary,length,sizeof(summary));
+         if(framed)burst_serial_send(summary,framed);else reply("ERR pipeline_frame\n");
+--- a/firmware/main/targets/esp32/receiver.c
++++ b/firmware/main/targets/esp32/receiver.c
+@@ -257,7 +257,7 @@
+     char extra;
+     if (!strcmp(line, "CAPS"))
+         reply(
+-            "CAPS PIPECOPY ACQOPT CLEAROPT PIPEKERNEL DET1 VERSION GPIO SPEC SPECN SPECCAPS SPECSTAT DCT "
++            "CAPS PIPEKEEP PIPESEED PIPECOPY ACQOPT CLEAROPT PIPEKERNEL DET1 VERSION GPIO SPEC SPECN SPECCAPS SPECSTAT DCT "
+ #if !CONFIG_ESP_SDR_CP2102_VIEWER_COMPAT
+             "UARTBAUD "
+ #endif
+--- /dev/null
++++ b/firmware/main/targets/esp32/pipeline_retention.h
+@@ -0,0 +1,21 @@
++#pragma once
++#include <stdbool.h>
++#include <stdint.h>
++/* Counter-based, reproducible 32-bit generator. Both odd multipliers and XOR
++ * shifts are bijective; zero is a valid seed. Not cryptographic randomness. */
++static inline uint32_t pipeline_keep_random(uint32_t *state) {
++    uint32_t z = (*state += UINT32_C(0x9e3779b9));
++    z = (z ^ (z >> 16)) * UINT32_C(0x21f0aaad);
++    z = (z ^ (z >> 15)) * UINT32_C(0x735a2d97);
++    return z ^ (z >> 15);
++}
++/* Algorithm R: select candidate N with probability 1/N. Rejection removes
++ * modulo bias; no random draw for the first candidate. No extra IQ buffer. */
++static inline bool pipeline_keep_reservoir(uint32_t *state, uint32_t count) {
++    if (!count) return false;
++    if (count == 1) return true;
++    uint32_t threshold = (uint32_t)(0u - count) % count;
++    uint32_t draw;
++    do { draw = pipeline_keep_random(state); } while (draw < threshold);
++    return draw % count == 0;
++}
+--- /dev/null
++++ b/firmware/tests/test_pipeline_state.py
+@@ -0,0 +1,169 @@
++"""Host-only proposed pipeline state/retention/error tests; never opens serial."""
++from pathlib import Path
++import subprocess
++import tempfile
++
++HERE = Path(__file__).resolve().parent
++ROOT = HERE.parent
++SOURCE = r'''
++#include <assert.h>
++#include <stdbool.h>
++#include <stdint.h>
++#include <limits.h>
++#include <stddef.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <stdarg.h>
++#include <inttypes.h>
++#define MAX_SAMPLES 16380
++#define CAPACITY 16384
++#define MALLOC_CAP_DMA 4
++#define MALLOC_CAP_INTERNAL 1
++#define MALLOC_CAP_8BIT 2
++static uint32_t samples[CAPACITY];
++static uint32_t *det_retained;
++static unsigned det_retained_n,frequency_mhz=2440,acquisition_option,clear_option;
++static uint64_t now;
++static unsigned calls,fail_at,allocs,alloc_fail,active_allocations,reject_at;
++static uintptr_t reject_lo,reject_hi;
++static uint8_t wire[131072]; static size_t wire_len;
++static char output[8192];
++static int64_t esp_timer_get_time(void){return now;}
++static void *heap_caps_malloc(size_t n,int caps){assert(caps&MALLOC_CAP_DMA);allocs++;if(allocs==alloc_fail)return NULL;void*p=malloc(n);if(p){active_allocations++;if(allocs==reject_at){reject_lo=(uintptr_t)p;reject_hi=reject_lo+n-1;}}return p;}
++static void heap_caps_free(void*p){if(p){assert(active_allocations);active_allocations--;free(p);}}
++static size_t heap_caps_get_free_size(int caps){(void)caps;return 250000;}
++static size_t heap_caps_get_largest_free_block(int caps){(void)caps;return 72000;}
++static uint32_t esp_rom_crc32_le(uint32_t crc,const uint8_t*p,size_t n){uint32_t c=~crc;for(size_t j=0;j<n;j++){c^=p[j];for(unsigned k=0;k<8;k++)c=(c>>1)^((c&1)?0xedb88320u:0);}return ~c;}
++static void prepare_rx(void){}
++static void vTaskDelay(unsigned n){now+=n*1000;}
++static void reply(const char *fmt,...){va_list ap;va_start(ap,fmt);vsnprintf(output+strlen(output),sizeof(output)-strlen(output),fmt,ap);va_end(ap);}
++static bool burst_serial_send(const void*p,size_t n){
++ assert(wire_len+n<sizeof(wire));memcpy(wire+wire_len,p,n);wire_len+=n;
++ if(n>12 && !memcmp(p,"DETPIPE1 END ",12)){size_t used=strlen(output);assert(used+n<sizeof(output));memcpy(output+used,p,n);output[used+n]=0;}return true;}
++#include "ENERGY_HEADER"
++static bool acquire_iq_with_work(unsigned n,unsigned source,unsigned clock,unsigned *elapsed,
++ void(*work)(void*),void*context){
++ (void)source;(void)clock;calls++;now+=1000;
++ if(work)work(context);
++ /* Simulate invalid current samples on a failure, AFTER prior computation. */
++ if(calls==fail_at){memset(samples,0xee,sizeof(samples));reply("ERR capture_memory 0\n");return false;}
++ unsigned amplitude=calls==17?100:calls==18?20:1;
++ for(unsigned i=0;i<n;i++){int v=(i&1)?(int)amplitude:-(int)amplitude; samples[i]=(v&1023)|((v&1023)<<10);}
++ *elapsed=1050;return true;
++}
++static bool acquire_iq_with_validation(unsigned n,unsigned s,unsigned c,unsigned *us,void(*work)(void*),void*context,unsigned(*validate)(void*,unsigned),void*vcontext){bool ok=acquire_iq_with_work(n,s,c,us,work,context);if(ok&&validate)return validate(vcontext,n)==UINT_MAX;return ok;}
++#include "PIPE_HEADER"
++static void reset(unsigned failure,unsigned allocation_failure){
++ if(det_retained){heap_caps_free(det_retained);det_retained=NULL;}
++ detpipe_clear();assert(active_allocations==0);wire_len=0;det_retained_n=0;now=calls=allocs=0;fail_at=failure;alloc_fail=allocation_failure;output[0]=0;reject_at=0;reject_lo=reject_hi=0;
++}
++int main(void){
++ assert(!detpipe_safe_buffer(NULL,1024));
++ assert(!detpipe_safe_buffer((void*)0x3ffe8000,1024));
++ assert(!detpipe_safe_buffer((void*)0x3ffe7fff,2));
++ assert(!detpipe_safe_buffer((void*)0x3fff7fff,2));
++ assert(!detpipe_safe_buffer((void*)(UINTPTR_MAX-2),8));
++ assert(detpipe_safe_buffer((void*)0x3ffe7000,1024));
++ assert(detpipe_safe_buffer((void*)0x3fff8000,1024));
++ for(unsigned count=1;count<=20;count++){
++  reset(0,0);char cmd[80];snprintf(cmd,sizeof(cmd),"DETPIPE1 %u 256 6 4000 1",count);
++  assert(detector_pipeline_command(cmd));
++  char expected[100];snprintf(expected,sizeof(expected),"\"status\":0,\"captures\":%u,\"processed_captures\":%u",count,count);
++  assert(strstr(output,expected));
++  if(count<=16){assert(detpipe_retained_n==0);assert(strstr(output,"\"detections\":0"));}
++  else{assert(detpipe_retained_n==256);assert((detpipe_pages[0][0]|((detpipe_pages[0][1]&3)<<8))==924);assert(detpipe_retained_us==1050);assert(detpipe_retained_generation==17);}
++ }
++ for(unsigned failure=1;failure<=20;failure++){
++  reset(failure,0);assert(detector_pipeline_command("DETPIPE1 20 256 6 4000 1"));
++  char expected[100];snprintf(expected,sizeof(expected),"\"status\":1,\"captures\":%u,\"processed_captures\":%u",failure-1,failure-1);
++  assert(strstr(output,expected));assert(strstr(output,"ERR capture_memory"));
++  if(failure>17){assert(detpipe_retained_n==256);assert((detpipe_pages[0][0]|((detpipe_pages[0][1]&3)<<8))==924);assert(detpipe_retained_generation==17);}
++ }
++ for(unsigned fail=1;fail<=11;fail++){
++  reset(0,fail);assert(detector_pipeline_command("DETPIPE1 20 16380 6 4000 1"));
++  assert(strstr(output,"ERR pipeline_memory"));assert(!calls);assert(!detpipe_page_count);assert(!detpipe_retained_n);assert(active_allocations==0);
++ }
++ reset(0,0);assert(detector_pipeline_command("DETPIPE1 20 256 6 4000 0"));
++ assert(!detpipe_page_count);assert(!detpipe_retained_n);assert(strstr(output,"\"captures\":20,\"processed_captures\":20"));
++ reset(0,0);assert(detector_pipeline_command("DETPIPE1 20 257 6 4000 1"));
++ assert(strstr(output,"\"total_samples\":5140,\"analyzed_samples\":5120"));
++ reset(0,0);assert(detector_pipeline_command("DETPIPE1 5001 256 6 4000 1"));assert(!calls);
++ /* Exact CAP20 packing, page boundaries, odd tails, incremental CRC and GET. */
++ assert(esp_rom_crc32_le(0,(const uint8_t*)"123456789",9)==0xcbf43926u);
++ const unsigned lengths[]={256,257,1637,1638,1639,3276,3277,3278,4915,4916,8191,8192,16379,16380};
++ for(unsigned k=0;k<sizeof(lengths)/sizeof(lengths[0]);k++){
++  unsigned n=lengths[k];reset(0,0);char cmd[80];snprintf(cmd,sizeof(cmd),"DETPIPE1 1 %u 6 4000 1",n);
++  assert(detector_pipeline_command(cmd));
++  uint32_t words[16380];uint8_t packed[40952];memset(packed,0xa5,sizeof(packed));
++  for(unsigned j=0;j<n;j++)words[j]=(j*7919u)^0xabcdef12u;
++  detpipe_pack(words,n);
++  size_t bytes=(n*20+7)/8,at=0;
++  for(unsigned page=0;page<detpipe_page_count;page++){
++   assert(detpipe_page_sizes[page]<=4096);
++   memcpy(packed+at,detpipe_pages[page],detpipe_page_sizes[page]);at+=detpipe_page_sizes[page];
++  }
++  assert(at==bytes);assert(packed[bytes]==0xa5);
++  for(unsigned j=0;j<n;j++){
++   unsigned bit=j*20,off=bit/8,shift=bit%8;
++   uint32_t word=((uint32_t)packed[off]|((uint32_t)packed[off+1]<<8)|((uint32_t)packed[off+2]<<16))>>shift;
++   assert((word&0xfffff)==(words[j]&0xfffff));
++  }
++  uint32_t expected_crc=esp_rom_crc32_le(0,packed,bytes);assert(detpipe_crc()==expected_crc);
++  detpipe_retained_n=n;detpipe_retained_us=777;wire_len=0;
++  assert(detector_pipeline_command("DETPIPEGET"));
++  uint8_t*nl=memchr(wire,'\n',wire_len);assert(nl);size_t header=nl-wire+1;
++  unsigned got_n,us;uint32_t got_crc;
++  assert(sscanf((const char*)wire,"DATA %u %"SCNx32" %u",&got_n,&got_crc,&us)==3);
++  assert(got_n==n && got_crc==expected_crc && us==777);
++  assert(wire_len==header+bytes);assert(!memcmp(wire+header,packed,bytes));
++ }
++ /* Same pipeline, exact candidate3, strongest final/earlier retention survives. */
++ for(unsigned kernel=0;kernel<=3;kernel+=3){
++  reset(0,0);char cmd[40];snprintf(cmd,sizeof(cmd),"PIPEKERNEL %u",kernel);assert(detector_pipeline_command(cmd));
++  assert(detpipe_kernel==kernel);assert(detector_pipeline_command("DETPIPE1 20 257 6 4000 1"));
++  assert(detpipe_retained_n==257 && detpipe_retained_generation==17);
++  uint32_t state=7,words[16380];
++  for(unsigned trial=0;trial<200;trial++){
++   for(unsigned j=0;j<16380;j++){state=state*1664525u+1013904223u;words[j]=state;}
++   unsigned n=trial%4 ? state%16381:16380;uint32_t m0,p0,m3,p3;
++   detector_energy(words,n,&m0,&p0);pipeline_energy_flash_3(words,n,&m3,&p3);assert(m0==m3&&p0==p3);
++  }
++ }
++ reset(0,0);detector_pipeline_command("PIPEKERNEL 2");assert(strstr(output,"ERR pipeline_kernel"));
++ /* Allocation-only diagnostic must never invoke acquisition and always clean ordinary failures. */
++ for(unsigned failure=0;failure<=11;failure++){
++  reset(0,failure);assert(detector_pipeline_command("DETPIPEALLOCTEST 16380 1"));
++  assert(calls==0 && active_allocations==0);
++  assert(strstr(output,"DETPIPEALLOC BEGIN 16380 1"));
++  assert(strstr(output,failure?"DETPIPEALLOC END status=1":"DETPIPEALLOC END status=0"));
++  assert(strstr(output,"stage=raw") && strstr(output,"internal=") && strstr(output,"dram_hi=") && strstr(output,"aperture="));
++ }
++ /* Simulate an allocated INTERNAL/8BIT region rejected by DRAM membership. */
++ for(unsigned reject=1;reject<=11;reject++){
++  reset(0,0);reject_at=reject;assert(detector_pipeline_command("DETPIPEALLOCTEST 16380 1"));
++  assert(!calls && !active_allocations);assert(strstr(output,"DETPIPEALLOC END status=1"));
++  assert(strstr(output,"internal=1 dram_lo=0 dram_hi=0 byte=1 aperture=1 range=1"));
++  reset(0,0);reject_at=reject;assert(detector_pipeline_command("DETPIPE1 20 16380 6 4000 1"));
++  assert(!calls && !active_allocations);assert(strstr(output,"ERR pipeline_memory stage="));
++  assert(strstr(output,"internal=1 dram_lo=0 dram_hi=0 byte=1 aperture=1 range=1"));
++ }
++ reset(0,0);assert(detector_pipeline_command("DETPIPEALLOCTEST 255 1"));assert(strstr(output,"ERR pipeline_alloc_args"));assert(!calls && !allocs);
++ reset(0,0);puts("pipeline candidate state, drain, retention, range, allocation-failure tests passed");
++}
++'''
++
++def main():
++    source = SOURCE.replace('ENERGY_HEADER', str(ROOT/'main/targets/esp32/detector_energy.h')).replace('PIPE_HEADER', str(ROOT/'main/targets/esp32/detector_pipeline.h'))
++    with tempfile.TemporaryDirectory() as td:
++        p = Path(td)
++        (p/'esp_memory_utils.h').write_text('static bool esp_ptr_internal(const void*p){return p!=NULL;}\nstatic bool esp_ptr_in_dram(const void*p){return p!=NULL&&!((uintptr_t)p>=reject_lo&&(uintptr_t)p<=reject_hi);}\nstatic bool esp_ptr_byte_accessible(const void*p){return p!=NULL;}\n')
++        (p/'test.c').write_text(source)
++        for opt in ('-O0','-O2'):
++            subprocess.run(['cc','-std=c11',opt,'-Wall','-Wextra','-Werror','-fsanitize=undefined','-fno-sanitize-recover=all','-I'+td,str(p/'test.c'),'-o',str(p/'test')],check=True)
++            subprocess.run([str(p/'test')],check=True)
++
++def test_pipeline_state_regressions():
++    main()
++
++if __name__ == '__main__':main()
+--- /dev/null
++++ b/firmware/tests/test_pipeline_retention.py
+@@ -0,0 +1,77 @@
++"""Exercise actual selector and pipeline with mocked RF; never opens hardware."""
++import importlib.util
++from pathlib import Path
++
++HERE = Path(__file__).resolve().parent
++spec = importlib.util.spec_from_file_location('retention_foundation', HERE/'test_pipeline_state.py')
++foundation = importlib.util.module_from_spec(spec)
++spec.loader.exec_module(foundation)
++EXTRA = r'''
++ /* Configuration rejects invalid policy/seed without changing either. */
++ assert(detpipe_keep_policy==0 && detpipe_keep_seed==1);
++ assert(detector_pipeline_command("PIPEKEEP 2"));assert(detpipe_keep_policy==0);
++ assert(detector_pipeline_command("PIPEKEEP 1 junk"));assert(detpipe_keep_policy==0);
++ const char *invalid[]={"PIPESEED", "PIPESEED -1", "PIPESEED +1", "PIPESEED 4294967296", "PIPESEED 99999999999999999999999999", "PIPESEED 1 x"};
++ for(unsigned j=0;j<sizeof(invalid)/sizeof(*invalid);j++){
++  assert(detector_pipeline_command(invalid[j]));assert(detpipe_keep_seed==1);
++ }
++ assert(detector_pipeline_command("PIPESEED 4294967295"));assert(detpipe_keep_seed==UINT32_MAX);
++ assert(detector_pipeline_command("PIPESEED 0"));assert(detpipe_keep_seed==0);
++ uint32_t a=0,b=0;
++ assert(!pipeline_keep_reservoir(&a,0));assert(a==0);
++ assert(pipeline_keep_reservoir(&a,1));assert(a==0);
++ for(unsigned j=0;j<1000;j++)assert(pipeline_keep_random(&a)==pipeline_keep_random(&b));
++ unsigned bins[10]={0};
++ for(uint32_t seed=0;seed<100000;seed++){
++  uint32_t state=seed;unsigned selected=0;
++  for(unsigned n=1;n<=10;n++)if(pipeline_keep_reservoir(&state,n))selected=n;
++  assert(selected>=1 && selected<=10);bins[selected-1]++;
++ }
++ for(unsigned j=0;j<10;j++)assert(bins[j]>9000 && bins[j]<11000);
++ /* Large count rejection and full uint32 bounds must terminate under UBSan. */
++ a=7;for(unsigned j=0;j<1000;j++){
++  (void)pipeline_keep_reservoir(&a,UINT32_MAX);
++  (void)pipeline_keep_reservoir(&a,UINT32_C(2147483649));
++ }
++ unsigned selected18=0;
++ for(unsigned seed=0;seed<32;seed++){
++  char cmd[64];snprintf(cmd,sizeof(cmd),"PIPESEED %u",seed);
++  assert(detector_pipeline_command(cmd));
++  assert(detector_pipeline_command("PIPEKEEP 1"));
++  assert(detector_pipeline_command("PIPEKEEP?"));
++  assert(detector_pipeline_command("PIPESEED?"));
++  uint32_t random=seed;bool replace=pipeline_keep_reservoir(&random,2);
++  unsigned expected=replace?18:17;selected18+=replace;
++  for(unsigned repeat=0;repeat<2;repeat++){
++   reset(0,0);assert(detector_pipeline_command("DETPIPE1 20 256 6 4000 1"));
++   assert(detpipe_retained_generation==expected);
++   assert(strstr(output,"\"retention_policy\":1"));
++   assert(strstr(output,replace?"\"selected_candidate_index\":2":"\"selected_candidate_index\":1"));
++   assert(strstr(output,replace?"\"retention_replacements\":1":"\"retention_replacements\":0"));
++   assert(strstr(output,"\"best_ratio_milli\":10000000"));
++   int v=replace?1004:924;
++   assert((detpipe_pages[0][0]|((detpipe_pages[0][1]&3)<<8))==v);
++  }
++  /* Failed current capture drains previous candidate, no invalid copy. */
++  reset(19,0);assert(detector_pipeline_command("DETPIPE1 20 256 6 4000 1"));
++  assert(detpipe_retained_generation==expected);
++  reset(0,0);assert(detector_pipeline_command("DETPIPE1 16 256 6 4000 1"));assert(!detpipe_retained_n);
++  reset(0,0);assert(detector_pipeline_command("DETPIPE1 20 256 6 4000 0"));assert(!detpipe_retained_n);
++  assert(strstr(output,"\"selected_candidate_index\":0,\"retention_replacements\":0"));
++ }
++ assert(selected18>0 && selected18<32);
++ assert(detector_pipeline_command("PIPEKEEP 0"));
++ reset(0,0);assert(detector_pipeline_command("DETPIPE1 20 256 6 4000 1"));assert(detpipe_retained_generation==17);
++ puts("reservoir reproducibility, weighting, bounds, configuration and pipeline retention passed");
++'''
++
++def test_pipeline_retention():
++    old = foundation.SOURCE
++    try:
++        foundation.SOURCE = old.replace(' reset(0,0);puts("pipeline candidate state', EXTRA+'\n reset(0,0);puts("pipeline candidate state')
++        foundation.main()
++    finally:
++        foundation.SOURCE = old
++
++if __name__ == '__main__':
++    test_pipeline_retention()

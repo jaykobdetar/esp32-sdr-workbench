@@ -1,0 +1,44 @@
+[
+  {
+    "campaign": "nrf-first",
+    "recordings": 48,
+    "rf_crc_valid_recordings": 0,
+    "transport_crc_valid": 48
+  },
+  {
+    "campaign": "nrf-strong",
+    "recordings": 56,
+    "rf_crc_valid_recordings": 0,
+    "transport_crc_valid": 56
+  },
+  {
+    "campaign": "nrf-gain-scope",
+    "recordings": 48,
+    "rf_crc_valid_recordings": 8,
+    "transport_crc_valid": 48
+  },
+  {
+    "campaign": "nrf-controlled-g60",
+    "recordings": 80,
+    "rf_crc_valid_recordings": 5,
+    "transport_crc_valid": 80
+  },
+  {
+    "campaign": "nrf-abab",
+    "recordings": 32,
+    "rf_crc_valid_recordings": 1,
+    "transport_crc_valid": 32
+  },
+  {
+    "campaign": "nrf-screen",
+    "recordings": 238,
+    "rf_crc_valid_recordings": 6,
+    "transport_crc_valid": 238
+  },
+  {
+    "campaign": "nrf-retention",
+    "recordings": 48,
+    "rf_crc_valid_recordings": 5,
+    "transport_crc_valid": 48
+  }
+]
