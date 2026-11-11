@@ -38,9 +38,8 @@ jobs:
         run: |
           ruff check .
           ruff format --check .
-      # Includes the offline evidence recalculation in tests/test_evidence.py.
-      - name: Viewer and evidence tests
+      # Runs tests/, firmware/tests/ and nrf52840-transmitter/tests/ (see pyproject.toml).
+      # Includes the offline evidence recalculations and host C checks under
+      # UndefinedBehaviorSanitizer. No firmware build and no hardware.
+      - name: Host tests
         run: QT_QPA_PLATFORM=offscreen python -m pytest -q
-      # Host C checks run under UndefinedBehaviorSanitizer; no ESP-IDF build or hardware.
-      - name: Firmware host tests
-        run: python -m pytest -q firmware/tests

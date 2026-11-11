@@ -69,3 +69,14 @@ This pass changed host-side code, packaging and documentation only. **No firmwar
 The viewer and evidence suite passed **160 tests** on Python 3.10, 3.11, 3.12 and 3.13, and the firmware host suite **6 tests plus 5 subtests**. The GUI tests were run offscreen. The viewer changes have not been exercised against real hardware.
 
 Analysis of the published summaries adds two detector limitations, now listed in the README: 5–48% of post-warmup captures were candidate-positive depending on the run, and the adaptive background does not update on positive captures. Under manual gain index 40 the recorded background was 2–34 ADC² units; under hardware AGC it was about 14,000–16,750, where the highest possible score is bounded by the converter's full scale. A matched manual-gain/AGC comparison and a terminated-input floor are still missing.
+
+## Integration with the controlled-source publication, 11 November 2026
+
+The maintenance pass above was combined with the [controlled nRF52840 validation](nrf-validation-summary.md) published the same day. Again no firmware source was edited, nothing was built or flashed and no device was opened.
+
+- The fifteen campaign, analysis and test sources whose hashes are recorded in `rf-source-provenance.json` were left byte-for-byte unchanged and excluded from the formatter. A new test checks those hashes, and the hash of the retention patch, on every run. The other new Python files were formatted, with identical syntax trees before and after.
+- Two GUI tests read run summaries while the worker was still rewriting them, which failed intermittently on Python 3.10. They now wait for the final rewrite. One of the two was an assertion added in the maintenance pass; the other predates it.
+- `pytest` now collects all three host suites, and CI runs them together. The combined suite passed **238 tests plus 5 subtests** on Python 3.10 and 3.13, and both offline evidence verifiers passed.
+- Index pages were added for `docs/` and `scripts/`.
+
+The controlled-source data changes two statements made earlier in this record. A known transmitter now shows that part of the candidate rate is source-dependent, although roughly 193–202 candidate windows per second remained with the source off for the optimized image. A manual gain sweep now exists (index 60 usable, up to 10% clipping at index 80), but a matched hardware-AGC comparison and a terminated-input floor are still missing.

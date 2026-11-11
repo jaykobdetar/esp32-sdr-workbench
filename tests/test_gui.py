@@ -26,6 +26,28 @@ def spin(app, predicate, timeout=4):
     assert predicate()
 
 
+def read_summaries(app, folder, pattern, timeout=4):
+    """Return every run summary in `folder` once all of them are final.
+
+    The worker writes a summary before saving the capture and rewrites it afterwards, so a
+    file read in between can be incomplete JSON or still lack the recording outcome. Only the
+    final rewrite carries `host_session_elapsed_through_recording_s`.
+    """
+    import json
+
+    end = time.monotonic() + timeout
+    while True:
+        try:
+            docs = [json.loads(path.read_text()) for path in sorted(folder.glob(pattern))]
+        except (json.JSONDecodeError, FileNotFoundError):
+            docs = []
+        if docs and all('host_session_elapsed_through_recording_s' in doc for doc in docs):
+            return docs
+        assert time.monotonic() < end, f'{len(docs)} summaries read, not all final'
+        app.processEvents()
+        time.sleep(0.01)
+
+
 def cleanup(app, w):
     w.stop_acquisition()
     for worker in w.workers.values():
@@ -238,7 +260,6 @@ def detector_fake(monkeypatch):
 
 
 def test_det1_no_event_records_summaries_and_updates_duty_scan(app, detector_fake, tmp_path):
-    import json
 
     state, calls = detector_fake
     w = MainWindow()
@@ -261,7 +282,11 @@ def test_det1_no_event_records_summaries_and_updates_duty_scan(app, detector_fak
         assert all(x[1:] == (250, 3250) for x in calls)
         paths = list(tmp_path.glob('*.det1.json'))
         assert paths
-        summaries = [json.loads(x.read_text()) for x in paths]
+        # No capture is retained in this scenario, so no saturation counts are recorded.
+        summaries = read_summaries(app, tmp_path, '*.det1.json')
+        # No capture is retained in this scenario, so no saturation counts are recorded.
+        assert all(x['retained_endpoint_counts'] is None for x in summaries)
+        assert all(x['receiver_settings']['gain_mode'] == 'hardware_agc' for x in summaries)
         assert all(x['retained_sigmf'] is None for x in summaries)
         assert all(x['gui_mode'] == 'DET1' for x in summaries)
         assert all('host_session_nominal_decision_duty_percent' in x for x in summaries)
@@ -272,7 +297,6 @@ def test_det1_no_event_records_summaries_and_updates_duty_scan(app, detector_fak
 
 
 def test_det1_retained_record_render_stop_restart(app, detector_fake, tmp_path):
-    import json
 
     state, calls = detector_fake
     state['retain'] = True
@@ -290,16 +314,13 @@ def test_det1_retained_record_render_stop_restart(app, detector_fake, tmp_path):
         assert w.event_table.horizontalHeaderItem(6).text() == 'ADC end %'
         assert float(w.event_table.item(0, 6).text()) >= 0
         assert 'displayed capture ADC endpoints' in w.status_label.text()
-        summaries = [json.loads(p.read_text()) for p in tmp_path.glob('*.det1.json')]
+        summaries = read_summaries(app, tmp_path, '*.det1.json')
         paired = [x for x in summaries if x.get('retained_sigmf')]
         assert paired
         # Every run records the requested gain mode; retained runs record saturation counts.
         assert all(x['receiver_settings']['gain_mode'] == 'hardware_agc' for x in summaries)
         assert all(x['receiver_settings']['gain_index'] is None for x in summaries)
         assert paired[0]['retained_endpoint_counts']['samples'] == w.samples.value()
-        assert all(
-            x['retained_endpoint_counts'] is None for x in summaries if not x['retained_sigmf']
-        )
         assert (tmp_path / paired[0]['retained_sigmf']).exists()
         capture = load_capture(tmp_path / paired[0]['retained_sigmf'])
         assert 'exact event time unavailable' in capture.metadata['timestamp_reference']
@@ -342,7 +363,6 @@ def test_det1_unsupported_firmware_and_demo_do_not_flash(app, detector_fake):
 
 
 def test_det1_firmware_error_keeps_summary_and_stops(app, detector_fake, tmp_path):
-    import json
 
     state, calls = detector_fake
     state['status'] = 1
@@ -355,7 +375,7 @@ def test_det1_firmware_error_keeps_summary_and_stops(app, detector_fake, tmp_pat
         spin(app, lambda: bool(w.worker_errors))
         paths = list(tmp_path.glob('*.det1.json'))
         assert len(paths) == 1
-        assert json.loads(paths[0].read_text())['status'] == 1
+        assert read_summaries(app, tmp_path, '*.det1.json')[0]['status'] == 1
         assert 'ended with status1' in w.status_label.text().replace('status ', 'status')
         assert not any(x.isRunning() for x in w.workers.values())
     finally:
@@ -365,7 +385,6 @@ def test_det1_firmware_error_keeps_summary_and_stops(app, detector_fake, tmp_pat
 def test_det1_recording_failure_preserves_summary_and_closes(
     app, detector_fake, monkeypatch, tmp_path
 ):
-    import json
 
     import sdr_research.gui as gui
 
@@ -383,7 +402,7 @@ def test_det1_recording_failure_preserves_summary_and_closes(
     try:
         w.start_acquisition()
         spin(app, lambda: bool(w.worker_errors))
-        docs = [json.loads(p.read_text()) for p in tmp_path.glob('*.det1.json')]
+        docs = read_summaries(app, tmp_path, '*.det1.json')
         assert len(docs) == 1 and docs[0]['recording_error'] == 'simulated disk full'
         assert docs[0]['retained_sigmf'] is None
         assert 'disk full' in w.status_label.text()
@@ -409,7 +428,6 @@ def test_det1_close_during_bounded_run(app, detector_fake):
 def test_optimized_pipeline_record_render_restart(
     app, detector_fake, monkeypatch, tmp_path, retain, copy_cap
 ):
-    import json
 
     import sdr_research.gui as gui
 
@@ -460,7 +478,7 @@ def test_optimized_pipeline_record_render_restart(
         ) in w.status_label.text()
         assert 'host-session duty' in w.status_label.text()
         assert {c[0] for c in calls} == {2440, 2442}
-        docs = [json.loads(p.read_text()) for p in tmp_path.glob('*.detpipe1.json')]
+        docs = read_summaries(app, tmp_path, '*.detpipe1.json')
         assert docs and all(d['gui_mode'] == 'DETPIPE1' for d in docs)
         assert all(d['copy_policy']['returned'] == (1 if copy_cap else None) for d in docs)
         assert all(bool(d['retained_sigmf']) == retain for d in docs)

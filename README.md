@@ -105,11 +105,11 @@ Full aperture bounds/sentinels, receiver restoration and immutable-copy ownershi
 - A candidate count can include multiple positive captures of the same transmission. Only the strongest qualifying I/Q capture per detector run is retained.
 - The waterfall advances per displayed capture, not uniform RF time. UART transfer adds substantial gaps.
 - BLE OFF/ON validation was inconclusive in ambient RF; no ground-truth transmitted packet count/timing was available.
-- The detector flags a large and variable share of captures. In the [published runs](docs/evidence/README.md), 5–31% of post-warmup captures were candidate-positive in the manual-gain A/B trials, 6–48% in the soak and 38–47% in the hardware-AGC GUI runs. Nothing here separates real band activity from gain steps or threshold artefacts.
+- The detector flags a large and variable share of captures. In the [published runs](docs/evidence/README.md), 5–31% of post-warmup captures were candidate-positive in the manual-gain A/B trials, 6–48% in the soak and 38–47% in the hardware-AGC GUI runs. The [controlled-source trials](docs/controlled-rf-analysis.md) show that part of this responds to a real transmitter: the optimized image flagged about 427–438 candidate windows/s with the known source on, against 193–202/s with it off. The source-off rate is ambient activity plus any false alarms, and no terminated-input run exists to separate the two.
 - The adaptive background only updates on captures that are *not* flagged. A sustained rise in level therefore keeps every later capture positive until the finite run ends and the next run re-warms.
 - Energy is measured in ADC units. Under hardware AGC the firmware does not report the gain in use, so energies are not comparable across gain steps; under manual gain index 40 the recorded background was only 2–34 ADC² units, where integer rounding of the background is coarse.
 - Reported dBFS is relative to one full-scale component, so a complex sample can read up to +3 dBFS. Values near or above 0 dBFS, or a flagged ADC-endpoint share, mean the capture is at the converter's rails.
-- The screenshot-session retained captures have Q-component endpoint occupancy of 0.20–12.76%, consistent with a saturation/clipping concern. [Published counts](docs/evidence/gui/clipping-counts.json) do not establish its cause; no controlled manual-gain/AGC or terminated-input comparison was performed.
+- The screenshot-session retained captures have Q-component endpoint occupancy of 0.20–12.76%, consistent with a saturation/clipping concern. [Published counts](docs/evidence/gui/clipping-counts.json) do not establish its cause. A later manual gain sweep against the controlled source found gain index 60 usable and up to 10% component clipping at index 80; hardware AGC was not compared with it under matched conditions, and no terminated-input run exists.
 - Undocumented receiver/debug behavior is experimental. Use only on hardware and signals you are authorized to investigate; respect applicable radio/privacy laws.
 
 ## Repository layout
@@ -117,11 +117,11 @@ Full aperture bounds/sentinels, receiver restoration and immutable-copy ownershi
 ```text
 firmware/       Complete optimized firmware source and build configuration
 sdr_research/   Native viewer, protocol, processing and recording code
-scripts/        Viewer launcher, finite campaigns, offline analysis and evidence checks
+scripts/        Launcher, campaigns, offline analysis, evidence checks; see scripts/README.md
 nrf52840-transmitter/  Controlled transmitter source and guarded updater
 experiments/    Optional unadopted retention patch
 tests/          Offline regression tests (not the entire research archive)
-docs/           Build guide, serial protocol, screenshot and validation summaries
+docs/           Guides, protocol, validation records; see docs/README.md for an index
 docs/evidence/  Curated benchmark summaries, build identity and diagnostic sources
 .github/        CI: lint, format check and the host test suites
 ```
@@ -144,7 +144,6 @@ GPL-3.0-or-later; see [LICENSE](LICENSE). Upstream notices are retained. Vendore
 python -m pip install -e ".[dev]"
 ruff check . && ruff format --check .
 QT_QPA_PLATFORM=offscreen python -m pytest -q
-python -m pytest -q firmware/tests
 ```
 
-TESTCOUNT_PLACEHOLDER the firmware host suite has 6 tests plus 5 subtests and needs a host C compiler with UndefinedBehaviorSanitizer. [CI](.github/workflows/ci.yml) runs the lint, the format check and both suites on Python 3.10 and 3.13 for every push and pull request. These software tests require no connected board and are not a replacement for hardware validation: CI does not build the firmware, which needs the pinned ESP-IDF described in the build guide. Qt needs the system EGL/XCB libraries even for offscreen runs (`libegl1` on Debian/Ubuntu).
+Plain `pytest` runs the viewer, evidence and campaign tests in `tests/`, the receiver host tests in `firmware/tests/` and the transmitter host tests in `nrf52840-transmitter/tests/`: **238 tests plus 5 subtests** in all. The C checks need a host compiler with UndefinedBehaviorSanitizer, and the retention-patch test also needs `git`. [CI](.github/workflows/ci.yml) runs the lint, the format check and all three suites on Python 3.10 and 3.13 for every push and pull request. These software tests require no connected board and are not a replacement for hardware validation: CI builds neither the ESP32 nor the nRF52840 firmware. Qt needs the system EGL/XCB libraries even for offscreen runs (`libegl1` on Debian/Ubuntu). Some campaign and analysis sources are deliberately left unformatted; the [script index](scripts/README.md) explains why.
