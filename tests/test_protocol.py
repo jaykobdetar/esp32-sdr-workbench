@@ -1,7 +1,8 @@
 """Offline protocol framing tests. No serial devices are opened."""
-from collections import deque
+
 import struct
 import zlib
+from collections import deque
 
 import numpy as np
 import pytest
@@ -21,8 +22,9 @@ class Clock:
 
 class FakeSerial:
     """Serial byte stream which preserves boundaries and can return short reads."""
+
     def __init__(self, data=b'', chunk_size=7, clock=None):
-        self.pending = deque(data[i:i + chunk_size] for i in range(0, len(data), chunk_size))
+        self.pending = deque(data[i : i + chunk_size] for i in range(0, len(data), chunk_size))
         self.writes = []
         self.closed = False
         self.clock = clock
@@ -58,15 +60,27 @@ def make_radio(monkeypatch):
         transport = FakeSerial(data, chunk_size, clock)
         radio = Radio('FAKE-NO-HARDWARE', transport=transport)
         radio.info = {
-            'family': 'ESP32SDR', 'protocol': 6, 'max_samples': 16380,
+            'family': 'ESP32SDR',
+            'protocol': 6,
+            'max_samples': 16380,
             'caps': ['SPEC', 'SPECSTAT'],
-            'limits': {'rates': [16000000, 40000000, 80000000], 'bits': [8, 10],
-                       'gain': [0, 79, 1], 'bandwidth': [12, 67, 1, 0]},
+            'limits': {
+                'rates': [16000000, 40000000, 80000000],
+                'bits': [8, 10],
+                'gain': [0, 79, 1],
+                'bandwidth': [12, 67, 1, 0],
+            },
             'spectrum': {'profiles': [[16000000, 6, 256, 1, 1, 0]]},
         }
-        radio.settings = {'frequency_mhz': 2440, 'rate_hz': 16000000,
-                          'bandwidth_mhz': 0, 'gain': None, 'bits': bits}
+        radio.settings = {
+            'frequency_mhz': 2440,
+            'rate_hz': 16000000,
+            'bandwidth_mhz': 0,
+            'gain': None,
+            'bits': bits,
+        }
         return radio, transport
+
     return make
 
 
@@ -77,8 +91,9 @@ def capture_bytes(payload, samples, crc=None):
 
 
 def spectrum_frame(*, seq=3, bins=256, multiplier=2, corrupt_crc=False):
-    body = b'SPC1' + struct.pack('<IQIHBBHBB', seq, 123456, bins * 2,
-                                2, 9, 40, 0, bins.bit_length() - 1, multiplier)
+    body = b'SPC1' + struct.pack(
+        '<IQIHBBHBB', seq, 123456, bins * 2, 2, 9, 40, 0, bins.bit_length() - 1, multiplier
+    )
     body += bytes(range(256)) * (bins // 256)
     crc = zlib.crc32(body) ^ int(corrupt_crc)
     return body + struct.pack('<I', crc)
@@ -119,8 +134,9 @@ def test_capture_formats_sign_and_metadata(make_radio, bits, n):
     if bits == 8:
         payload = bytes(component & 255 for pair in pairs for component in pair)
     else:
-        packed = sum(((i & 1023) | ((q & 1023) << 10)) << (20 * k)
-                     for k, (i, q) in enumerate(pairs))
+        packed = sum(
+            ((i & 1023) | ((q & 1023) << 10)) << (20 * k) for k, (i, q) in enumerate(pairs)
+        )
         payload = packed.to_bytes((n * 20 + 7) // 8, 'little')
     radio, transport = make_radio(capture_bytes(payload, n), bits=bits, chunk_size=3)
     capture = radio.capture(n)
@@ -169,8 +185,9 @@ def test_command_error_is_explicit_and_clean_line_can_continue(make_radio):
 
 @pytest.mark.parametrize('chunk_size', [1, 7, 1024])
 def test_spectrum_frames_stats_and_end(make_radio, chunk_size):
-    radio, transport = make_radio(START + spectrum_frame() + stats_frame() + END,
-                                 chunk_size=chunk_size)
+    radio, transport = make_radio(
+        START + spectrum_frame() + stats_frame() + END, chunk_size=chunk_size
+    )
     result = radio.spectrum_run()
     frame = result['frames'][0]
     assert frame['sequence'] == 3
@@ -188,14 +205,17 @@ def test_spectrum_frames_stats_and_end(make_radio, chunk_size):
     assert not radio.failed
 
 
-@pytest.mark.parametrize('frame,match', [
-    (spectrum_frame(corrupt_crc=True), 'Spectrum CRC mismatch'),
-    (stats_frame(corrupt_crc=True), 'Statistics CRC mismatch'),
-    (b'BAD!', 'Unknown spectrum frame'),
-    (b'SPECjunk\n', 'Invalid spectrum end'),
-    (b'SPECEND 0 0\n', 'Failed spectrum run'),
-    (b'SPECEND 7 0 2 512 1000000 0 0 1 0 0 2 0\n', 'Failed spectrum run'),
-])
+@pytest.mark.parametrize(
+    'frame,match',
+    [
+        (spectrum_frame(corrupt_crc=True), 'Spectrum CRC mismatch'),
+        (stats_frame(corrupt_crc=True), 'Statistics CRC mismatch'),
+        (b'BAD!', 'Unknown spectrum frame'),
+        (b'SPECjunk\n', 'Invalid spectrum end'),
+        (b'SPECEND 0 0\n', 'Failed spectrum run'),
+        (b'SPECEND 7 0 2 512 1000000 0 0 1 0 0 2 0\n', 'Failed spectrum run'),
+    ],
+)
 def test_malformed_spectrum_requires_reconnect(make_radio, frame, match):
     radio, transport = make_radio(START + frame)
     with pytest.raises(ProtocolError, match=match):
@@ -238,10 +258,13 @@ def test_clean_close_releases_lease(make_radio):
     assert transport.closed
 
 
-@pytest.mark.parametrize('reply,exception,match', [
-    (b'', TimeoutError, 'timed out'),
-    (b'\xff\n', ProtocolError, 'Non-ASCII'),
-])
+@pytest.mark.parametrize(
+    'reply,exception,match',
+    [
+        (b'', TimeoutError, 'timed out'),
+        (b'\xff\n', ProtocolError, 'Non-ASCII'),
+    ],
+)
 def test_command_framing_failures_require_reconnect(make_radio, reply, exception, match):
     radio, transport = make_radio(reply)
     with pytest.raises(exception, match=match):
@@ -271,15 +294,18 @@ def test_command_transport_failure_requires_reconnect(make_radio, operation, mon
     assert_poisoned(radio, transport)
 
 
-@pytest.mark.parametrize('start', [
-    b'OK\n',
-    b'SPEC \n',
-    b'SPEC 512 16000000 256 2440\n',
-    b'SPEC 256 40000000 256 2440\n',
-    b'SPEC 256 16000000 512 2440\n',
-    b'SPEC 256 16000000 256 2412\n',
-    b'SPEC 256 16000000 256 2440 unexpected\n',
-])
+@pytest.mark.parametrize(
+    'start',
+    [
+        b'OK\n',
+        b'SPEC \n',
+        b'SPEC 512 16000000 256 2440\n',
+        b'SPEC 256 40000000 256 2440\n',
+        b'SPEC 256 16000000 512 2440\n',
+        b'SPEC 256 16000000 256 2412\n',
+        b'SPEC 256 16000000 256 2440 unexpected\n',
+    ],
+)
 def test_spectrum_start_must_match_requested_settings(make_radio, start):
     radio, transport = make_radio(start + spectrum_frame() + END)
     with pytest.raises(ProtocolError, match='Invalid spectrum start'):
@@ -300,20 +326,31 @@ def test_spectrum_retains_power_multiplier(make_radio):
     assert radio.spectrum_run()['frames'][0]['multiplier'] == 2
 
 
-@pytest.mark.parametrize('name,expected_stem', [
-    ('capture', 'capture'),
-    ('capture.v1', 'capture.v1'),
-    ('2026.11.10.sample.v2', '2026.11.10.sample.v2'),
-    ('capture.v1.sigmf-meta', 'capture.v1'),
-    ('capture.v1.sigmf-data', 'capture.v1'),
-])
+@pytest.mark.parametrize(
+    'name,expected_stem',
+    [
+        ('capture', 'capture'),
+        ('capture.v1', 'capture.v1'),
+        ('2026.11.10.sample.v2', '2026.11.10.sample.v2'),
+        ('capture.v1.sigmf-meta', 'capture.v1'),
+        ('capture.v1.sigmf-data', 'capture.v1'),
+    ],
+)
 def test_sigmf_dotted_filename_and_known_suffix_roundtrip(tmp_path, name, expected_stem):
     from sdr_research.protocol import Capture
     from sdr_research.recording import load_capture, save_capture
 
-    capture = Capture(np.array([.125 + .25j, -.5 - .75j], dtype=np.complex64),
-                      16000000, 2440000000, '2026-11-10T21:00:00+00:00',
-                      100, 200, 7, bits=10, metadata={'test': 'dotted path'})
+    capture = Capture(
+        np.array([0.125 + 0.25j, -0.5 - 0.75j], dtype=np.complex64),
+        16000000,
+        2440000000,
+        '2026-11-10T21:00:00+00:00',
+        100,
+        200,
+        7,
+        bits=10,
+        metadata={'test': 'dotted path'},
+    )
     meta = save_capture(capture, tmp_path / name)
     assert meta.name == expected_stem + '.sigmf-meta'
     assert (tmp_path / (expected_stem + '.sigmf-data')).is_file()
@@ -330,6 +367,7 @@ def test_sigmf_dotted_filename_and_known_suffix_roundtrip(tmp_path, name, expect
 @pytest.mark.parametrize('datatype', ['ci16_le', 'cf64_le', 'cf32_be', 'rf32_le', 'not-a-datatype'])
 def test_sigmf_rejects_unsupported_datatype_before_reading_payload(tmp_path, datatype):
     import json
+
     from sdr_research.recording import load_capture
 
     path = tmp_path / 'capture.v1.sigmf-meta'

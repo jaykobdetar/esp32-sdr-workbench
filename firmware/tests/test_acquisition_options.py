@@ -1,10 +1,16 @@
+import shutil
+import subprocess
+import tempfile
+import unittest
 from pathlib import Path
-import shutil,subprocess,tempfile,unittest
-ROOT=Path(__file__).resolve().parents[1]
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
 class AcquisitionOptions(unittest.TestCase):
- @unittest.skipUnless(shutil.which('cc'),'C compiler unavailable')
- def test_every_word_fault_and_full_clear(self):
-  src=r'''
+    @unittest.skipUnless(shutil.which('cc'), 'C compiler unavailable')
+    def test_every_word_fault_and_full_clear(self):
+        src = r"""
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,9 +42,27 @@ int main(void){
  }
  printf("%u all-word and earliest-fault equivalence cases passed\n",cases);return 0;
 }
-'''
-  with tempfile.TemporaryDirectory() as t:
-   p=Path(t);(p/'test.c').write_text(src)
-   subprocess.run(['cc','-O2','-Wall','-Wextra','-Werror','-fsanitize=undefined','-fno-sanitize-recover=all','-I'+str(ROOT),str(p/'test.c'),'-o',str(p/'test')],check=True)
-   r=subprocess.run([str(p/'test')],check=True,text=True,capture_output=True,timeout=120)
-   self.assertIn('passed',r.stdout)
+"""
+        with tempfile.TemporaryDirectory() as t:
+            p = Path(t)
+            (p / 'test.c').write_text(src)
+            subprocess.run(
+                [
+                    'cc',
+                    '-O2',
+                    '-Wall',
+                    '-Wextra',
+                    '-Werror',
+                    '-fsanitize=undefined',
+                    '-fno-sanitize-recover=all',
+                    '-I' + str(ROOT),
+                    str(p / 'test.c'),
+                    '-o',
+                    str(p / 'test'),
+                ],
+                check=True,
+            )
+            r = subprocess.run(
+                [str(p / 'test')], check=True, text=True, capture_output=True, timeout=120
+            )
+            self.assertIn('passed', r.stdout)

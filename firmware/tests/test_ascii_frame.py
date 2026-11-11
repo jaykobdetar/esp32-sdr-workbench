@@ -1,8 +1,12 @@
+import subprocess
+import tempfile
 from pathlib import Path
-import subprocess,tempfile
-ROOT=Path(__file__).resolve().parents[1]
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
 def test_padding_all_lengths_and_bounds():
- source=r'''
+    source = r"""
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -20,8 +24,23 @@ int main(void){
  assert(!ascii_frame_pad(tiny,0,65));assert(!ascii_frame_pad(tiny,65,65));
  return 0;
 }
-'''
- with tempfile.TemporaryDirectory() as td:
-  p=Path(td);(p/'test.c').write_text(source)
-  subprocess.run(['cc','-O2','-Wall','-Wextra','-Werror','-fsanitize=undefined','-I'+str(ROOT/'main/targets/esp32'),str(p/'test.c'),'-o',str(p/'test')],check=True)
-  subprocess.run([str(p/'test')],check=True)
+"""
+    with tempfile.TemporaryDirectory() as td:
+        p = Path(td)
+        (p / 'test.c').write_text(source)
+        subprocess.run(
+            [
+                'cc',
+                '-O2',
+                '-Wall',
+                '-Wextra',
+                '-Werror',
+                '-fsanitize=undefined',
+                '-I' + str(ROOT / 'main/targets/esp32'),
+                str(p / 'test.c'),
+                '-o',
+                str(p / 'test'),
+            ],
+            check=True,
+        )
+        subprocess.run([str(p / 'test')], check=True)
