@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from sdr_research.analysis import detect_event, spectrum
+from sdr_research.analysis import detect_event, endpoint_counts, spectrum
 from sdr_research.protocol import Capture, ProtocolError, decode_iq
 from sdr_research.recording import load_capture, save_capture
 
@@ -76,3 +76,26 @@ def test_sigmf_reject_partial_sample(tmp_path):
         f.write(b'x')
     with pytest.raises(ValueError, match='Truncated'):
         load_capture(p)
+
+
+@pytest.mark.parametrize('bits', [8, 10])
+def test_endpoint_counts_match_offline_script_convention(bits):
+    scale = 1 << (bits - 1)
+    # (I, wire Q) codes; the stored complex value negates wire Q.
+    codes = [(-scale, 0), (0, scale - 1), (scale - 1, -scale), (2, -3), (0, -(scale - 1))]
+    iq = np.array([(i - 1j * q) / scale for i, q in codes], np.complex64)
+    assert endpoint_counts(iq, bits) == dict(
+        samples=5,
+        i_endpoint_samples=2,
+        wire_q_endpoint_samples=2,
+        either_component_endpoint_samples=3,
+        either_component_endpoint_percent=60.0,
+    )
+
+
+def test_endpoint_counts_edge_cases():
+    assert endpoint_counts(np.zeros(0, np.complex64), 10)['either_component_endpoint_percent'] == 0
+    # Replay data beyond full scale counts as saturated rather than being ignored.
+    assert endpoint_counts(np.array([1.5 + 0j, 0.1j]), 10)['i_endpoint_samples'] == 1
+    with pytest.raises(ValueError):
+        endpoint_counts(np.zeros(4, np.complex64), 12)

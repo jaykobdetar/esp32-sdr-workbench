@@ -45,6 +45,7 @@ def test_demo_restart_inspect_calibration_and_scan(app, tmp_path):
         w.start_acquisition()
         spin(app, lambda: 'SIMULATED' in w.latest and w.event_table.rowCount() > 0)
         assert 'SIMULATED' in w.status_label.text()
+        assert 'ADC endpoints' in w.status_label.text()
         assert w.workers['SIMULATED'].frames.maxlen == 2
         w.calibrate_noise()
         w.redraw_selected()
@@ -286,12 +287,23 @@ def test_det1_retained_record_render_stop_restart(app, detector_fake, tmp_path):
         assert 'candidate-positive captures' in w.status_label.text()
         assert 'NOT unique packets' in w.status_label.text()
         assert 'run start, NOT event time' in w.event_table.item(0, 0).text()
+        assert w.event_table.horizontalHeaderItem(6).text() == 'ADC end %'
+        assert float(w.event_table.item(0, 6).text()) >= 0
+        assert 'displayed capture ADC endpoints' in w.status_label.text()
         summaries = [json.loads(p.read_text()) for p in tmp_path.glob('*.det1.json')]
         paired = [x for x in summaries if x.get('retained_sigmf')]
         assert paired
+        # Every run records the requested gain mode; retained runs record saturation counts.
+        assert all(x['receiver_settings']['gain_mode'] == 'hardware_agc' for x in summaries)
+        assert all(x['receiver_settings']['gain_index'] is None for x in summaries)
+        assert paired[0]['retained_endpoint_counts']['samples'] == w.samples.value()
+        assert all(
+            x['retained_endpoint_counts'] is None for x in summaries if not x['retained_sigmf']
+        )
         assert (tmp_path / paired[0]['retained_sigmf']).exists()
         capture = load_capture(tmp_path / paired[0]['retained_sigmf'])
         assert 'exact event time unavailable' in capture.metadata['timestamp_reference']
+        assert capture.metadata['endpoint_counts'] == paired[0]['retained_endpoint_counts']
         lo, hi = w.spectrum_plot.viewRange()[0]
         assert lo < capture.frequency_hz / 1e6 < hi
         assert w.stats['/dev/ttyUSB0']['candidates'] == w.stats['/dev/ttyUSB0']['retained'] * 2
@@ -468,3 +480,29 @@ def test_optimized_pipeline_record_render_restart(
         spin(app, lambda: bool(w.stats))
     finally:
         cleanup(app, w)
+
+
+def test_endpoint_text_flags_only_saturated_captures():
+    import numpy as np
+
+    from sdr_research.gui import CLIP_WARN_PERCENT, endpoint_text, receiver_settings
+    from sdr_research.protocol import Capture
+
+    def capture(iq):
+        return Capture(np.asarray(iq, np.complex64), 16_000_000, 2_440_000_000, 't', 0, 0, 0, 10)
+
+    quiet = np.full(1000, (3 - 4j) / 512)
+    assert endpoint_text(capture(quiet)) == 'ADC endpoints 0.00%'
+    count = int(1000 * CLIP_WARN_PERCENT / 100)
+    near = quiet.copy()
+    near[:count] = 511j / 512  # wire Q = -511, one code inside the negative endpoint
+    assert 'CLIPPING' not in endpoint_text(capture(near))
+    clipped = quiet.copy()
+    clipped[:count] = 512j / 512  # wire Q = -512, the negative endpoint
+    assert endpoint_text(capture(clipped)) == 'ADC endpoints 1.00% · LIKELY CLIPPING'
+    manual = receiver_settings({'gain': 40, 'bandwidth_mhz': 12, 'rate_hz': 16_000_000}, 2440)
+    assert (manual['gain_mode'], manual['gain_index'], manual['frequency_mhz']) == (
+        'manual',
+        40,
+        2440,
+    )

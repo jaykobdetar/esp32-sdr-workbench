@@ -16,13 +16,38 @@ import numpy as np
 import pyqtgraph as pg
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from .analysis import NoiseCalibration, detect_event, spectrum
+from .analysis import NoiseCalibration, detect_event, endpoint_counts, spectrum
 from .detector import run_detection
 from .pipeline import run_pipeline, select_acquisition_policy
 from .protocol import Capture, Radio
 from .recording import load_capture, save_capture
 
 DETECTOR_MODES = ('DET1', 'DETPIPE1')
+# Share of samples on an ADC endpoint code above which the viewer flags likely clipping.
+CLIP_WARN_PERCENT = 1.0
+
+
+def endpoint_text(capture):
+    """Status fragment giving one capture's ADC endpoint share; flags likely clipping."""
+    percent = endpoint_counts(capture.iq, capture.bits)['either_component_endpoint_percent']
+    warning = ' · LIKELY CLIPPING' if percent >= CLIP_WARN_PERCENT else ''
+    return f'ADC endpoints {percent:.2f}%{warning}'
+
+
+def receiver_settings(settings, frequency_mhz):
+    """Host-requested receiver configuration, recorded with every detector-run summary."""
+    gain = settings.get('gain')
+    return {
+        'frequency_mhz': frequency_mhz,
+        'rate_hz': settings.get('rate_hz'),
+        'bandwidth_mhz': settings.get('bandwidth_mhz'),
+        'gain_mode': 'hardware_agc' if gain is None else 'manual',
+        'gain_index': gain,
+        'bits': settings.get('bits'),
+        'samples': settings.get('samples'),
+        'note': 'Host-requested settings. The firmware does not report the gain that '
+        'hardware AGC selected during a run.',
+    }
 
 
 class AcquisitionWorker(QtCore.QThread):
@@ -132,8 +157,14 @@ class AcquisitionWorker(QtCore.QThread):
                 'detector run host start; exact event time unavailable'
             )
             capture.metadata['settings'] = dict(s)
+            capture.metadata['endpoint_counts'] = endpoint_counts(capture.iq, capture.bits)
         elapsed = max((time.monotonic_ns() - self.started_ns) / 1e9, 1e-9)
         summary = dict(summary)
+        summary['receiver_settings'] = receiver_settings(s, frequency)
+        # Saturation indicator for the retained capture only; other captures are not kept.
+        summary['retained_endpoint_counts'] = (
+            capture.metadata['endpoint_counts'] if capture is not None else None
+        )
         summary['gui_mode'] = mode
         summary['candidate_count_semantics'] = 'candidate-positive captures, not unique packets'
         summary['retained_semantics'] = 'at most one strongest candidate capture per finite run'
@@ -208,6 +239,7 @@ class AcquisitionWorker(QtCore.QThread):
             result.update(
                 detector=f'{mode} strongest candidate/run',
                 detected=True,
+                endpoint_counts=capture.metadata['endpoint_counts'],
                 timestamp_reference='host run start; exact event time unavailable',
             )
             self.notice('event', (capture, result, meta_path))
@@ -269,6 +301,8 @@ class AcquisitionWorker(QtCore.QThread):
                 result = detect_event(
                     capture.iq, capture.sample_rate_hz, threshold_db=s['threshold_db']
                 )
+                result['endpoint_counts'] = endpoint_counts(capture.iq, capture.bits)
+                capture.metadata['endpoint_counts'] = result['endpoint_counts']
                 hits, observations = self.occupancy_counts.get(frequency, (0, 0))
                 self.occupancy_counts[frequency] = (
                     hits + int(result.get('detected', False)),
@@ -321,7 +355,8 @@ class InspectionWindow(QtWidgets.QDialog):
         layout = QtWidgets.QVBoxLayout(self)
         label = QtWidgets.QLabel(
             f'{capture.timestamp} · {capture.frequency_hz / 1e6:.3f} MHz · '
-            f'{capture.sample_rate_hz / 1e6:g} MS/s · {len(capture.iq):,} samples'
+            f'{capture.sample_rate_hz / 1e6:g} MS/s · {len(capture.iq):,} samples · '
+            f'{endpoint_text(capture)}'
         )
         layout.addWidget(label)
         if capture.metadata.get('detector_summary'):
@@ -604,7 +639,7 @@ class MainWindow(QtWidgets.QMainWindow):
             axis.enableAutoSIPrefix(False)
         tabs = QtWidgets.QTabWidget()
         splitter.addWidget(tabs)
-        self.event_table = QtWidgets.QTableWidget(0, 7)
+        self.event_table = QtWidgets.QTableWidget(0, 8)
         self.event_table.setHorizontalHeaderLabels(
             [
                 'Host UTC reference¹',
@@ -613,8 +648,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 'Peak dBFS',
                 'Ratio dB²',
                 'BW kHz',
+                'ADC end %',
                 'Saved capture',
             ]
+        )
+        self.event_table.horizontalHeaderItem(3).setToolTip(
+            'Strongest 64-sample block power, relative to ONE full-scale component. A complex sample can reach +3 dBFS; values near or above 0 dBFS mean the converter is close to its rails.'
+        )
+        self.event_table.horizontalHeaderItem(6).setToolTip(
+            f'Share of samples with I or Q on a signed ADC endpoint code. {CLIP_WARN_PERCENT:g}% or more is flagged as likely clipping; the cause is not identified.'
         )
         self.event_table.horizontalHeaderItem(0).setToolTip(
             'Raw: host capture request time. Detector: host finite-run start, not exact event arrival.'
@@ -840,6 +882,11 @@ class MainWindow(QtWidgets.QMainWindow):
             f'host-session duty {stats["nominal_duty"] * 100:.2f}% / {stats["analyzed_duty"] * 100:.2f}% / {stats["decision_duty"] * 100:.2f}% (includes transfer/recording/gaps) · '
             f'{stats["candidates"]} candidate-positive captures, {stats["retained"]} retained strongest/run; NOT unique packets · '
             f'last run: {summary.get("detections", 0)} candidates, {"IQ retained" if has_capture else "no IQ retained"} · exact event time unknown'
+            + (
+                f' · displayed capture {endpoint_text(self.latest[port])}'
+                if port in self.latest
+                else ''
+            )
         )
 
     def spectrum_key(self, port, capture, nfft):
@@ -920,11 +967,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 f'nominal RF window {nominal_us:.1f} µs · firmware trigger-to-done {capture.firmware_capture_us:,} µs · '
                 f'host transaction {transaction_ms:.1f} ms · nominal RF duty {stats["nominal_duty"] * 100:.3f}% · '
                 f'cycle dead-time estimate {max(0, stats["elapsed"] * 1000 / stats["count"] - nominal_us / 1000):.1f} ms · '
-                f'{stats["render_drops"]} render skips (not RF loss count) · CRC {"OK" if capture.crc_ok else "NOT VERIFIED"}'
+                f'{stats["render_drops"]} render skips (not RF loss count) · CRC {"OK" if capture.crc_ok else "NOT VERIFIED"} · '
+                f'{endpoint_text(capture)}'
             )
         else:
             self.status_label.setText(
-                f'{"SIMULATED · " if synthetic else ""}Offline replay · {capture.timestamp} · {capture.frequency_hz / 1e6:g} MHz · No continuous timing inferred'
+                f'{"SIMULATED · " if synthetic else ""}Offline replay · {capture.timestamp} · {capture.frequency_hz / 1e6:g} MHz · No continuous timing inferred · '
+                f'{endpoint_text(capture)}'
             )
 
     def render_occupancy(self, stats, port):
@@ -951,6 +1000,7 @@ class MainWindow(QtWidgets.QMainWindow):
         reference = capture.timestamp + (
             ' [detector run start, NOT event time]' if result.get('timestamp_reference') else ''
         )
+        counts = result.get('endpoint_counts') or endpoint_counts(capture.iq, capture.bits)
         values = [
             reference,
             port,
@@ -958,6 +1008,7 @@ class MainWindow(QtWidgets.QMainWindow):
             f'{result.get("peak_dbfs", float("nan")):.1f}',
             f'{result.get("snr_db", float("nan")):.1f}',
             f'{result.get("bandwidth_hz", float("nan")) / 1000:.1f}',
+            f'{counts["either_component_endpoint_percent"]:.2f}',
             meta_path or 'Memory only',
         ]
         for col, value in enumerate(values):

@@ -49,6 +49,34 @@ def detect_event(iq, rate_hz, threshold_db=10):
     )
 
 
+def endpoint_counts(iq, bits):
+    """Count samples whose I or wire-Q component sits on a signed ADC endpoint code.
+
+    Endpoints are the lowest and highest codes of a signed ``bits``-wide component
+    (-512/511 for 10-bit, -128/127 for 8-bit). Captures are stored as
+    ``(I - 1j*wire_Q) / 2**(bits-1)``, so wire-Q is the negated imaginary part.
+    Values beyond full scale (possible only for non-ADC replay data) count as endpoints.
+    A high share indicates likely converter saturation; it does not identify the cause,
+    and a zero count does not prove the analog chain was linear.
+    """
+    if bits not in (8, 10):
+        raise ValueError('bits must be 8 or 10')
+    x = np.asarray(iq, dtype=np.complex64)
+    scale = 1 << (bits - 1)
+    i = np.rint(x.real * scale)
+    q = np.rint(-x.imag * scale)
+    i_end = (i <= -scale) | (i >= scale - 1)
+    q_end = (q <= -scale) | (q >= scale - 1)
+    either = int(np.count_nonzero(i_end | q_end))
+    return dict(
+        samples=len(x),
+        i_endpoint_samples=int(np.count_nonzero(i_end)),
+        wire_q_endpoint_samples=int(np.count_nonzero(q_end)),
+        either_component_endpoint_samples=either,
+        either_component_endpoint_percent=100 * either / len(x) if len(x) else 0.0,
+    )
+
+
 class NoiseCalibration:
     """Per-setting PSD reference. User must collect idle data; resets on setting changes."""
 
