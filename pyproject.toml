@@ -1,21 +1,33 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
+
 [project]
 name = "esp32-sdr-research"
 version = "0.1.0"
 description = "Native burst-aware ESP32 RF research workbench"
+readme = "README.md"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
-dependencies = ["numpy>=1.24", "scipy>=1.10", "pyserial>=3.5", "PySide6>=6.5", "pyqtgraph>=0.13"]
+dependencies = ["numpy>=1.24", "pyserial>=3.5", "PySide6>=6.5", "pyqtgraph>=0.13"]
+
 [project.optional-dependencies]
+# esptool is only needed for the manual flashing steps in docs/firmware-build.md.
 flash = ["esptool>=5.0"]
 test = ["pytest>=8"]
-validation = ["pytest>=8", "dbus-next==0.2.3"]
+# The formatter version is pinned so `ruff format --check` is reproducible in CI.
+dev = ["pytest>=8", "ruff==0.16.9"]
+
+[project.urls]
+Repository = "https://github.com/jaykobdetar/esp32-sdr-workbench"
 
 [project.scripts]
 esp32-sdr = "sdr_research.gui:main"
+
 [tool.setuptools]
 packages = ["sdr_research"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 

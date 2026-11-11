@@ -8,13 +8,14 @@ Explore the ESP32 receiver's raw I/Q, inspect spectra and recorded events, and c
 
 ![Native viewer operating with the optimized firmware on a real ESP32](docs/viewer-hardware.png)
 
-*Genuine hardware session, not simulated data: original ESP32 over CP2102 UART, 2440 MHz, 16 MS/s, optimized pipeline. The plotted trace is the strongest retained I/Q capture, not a continuous live stream. The screenshot was captured during the final hardware validation; its status line is an intermediate run, not the final benchmark aggregate.*
+*Genuine hardware session, not simulated data: original ESP32 over CP2102 UART, 2440 MHz, 16 MS/s, optimized pipeline. The plotted trace is the strongest retained I/Q capture, not a continuous live stream. The screenshot was captured during the final hardware validation; its status line is an intermediate run, not the final benchmark aggregate. It was grabbed by the GUI hardware smoke harness, which constructs the window directly and so shows the desktop's light theme and the pre-indicator event table; the documented launcher applies a dark palette and now adds an ADC-endpoint column.*
 
 ## What you get
 
 - **Native desktop viewer:** spectrum, capture-index waterfall, frequency survey, heuristic occupancy, event inspection and SigMF replay.
 - **Three acquisition modes:** raw snapshots, experimental DET1 and the optimized finite pipeline.
-- **Event recording:** structured JSON summaries for every detector run, including no-event runs; CRC-checked SigMF I/Q for the strongest qualifying capture per run.
+- **Event recording:** structured JSON summaries for every detector run, including no-event runs and the requested gain mode, gain index and bandwidth; CRC-checked SigMF I/Q for the strongest qualifying capture per run.
+- **Saturation indicator:** every displayed or recorded capture reports the share of samples sitting on an ADC endpoint code, and 1% or more is flagged as likely clipping.
 - **Truthful duty indicators:** local nominal RF, analyzed and post-warmup decision exposure, plus separate host-session values including transfer and recording gaps.
 - **Complete firmware source:** guarded memory ownership, exact integer energy processing, overlapping acquisition/processing, fused full-size validation/copy and faster exact CAP20 packing.
 - **No automatic flashing:** the viewer does not replace firmware or change operating-system security settings.
@@ -49,7 +50,7 @@ python -m pip install -e .
 ./scripts/launch.sh
 ```
 
-The installed command `esp32-sdr` also launches the viewer. Dependencies are NumPy, SciPy, pyserial, PySide6 and pyqtgraph. `requirements-lock.txt` records the tested host versions; use it when recreating that environment, subject to wheel availability for your Python/platform.
+The installed command `esp32-sdr` also launches the viewer. Dependencies are NumPy, pyserial, PySide6 and pyqtgraph. `requirements-lock.txt` records the tested host versions; use it when recreating that environment, subject to wheel availability for your Python/platform.
 
 1. Connect a compatible original ESP32 with this project's firmware. Close other serial monitors/viewers first.
 2. Select its port, for example `/dev/ttyUSB0`. The tested physical UART runs at **1,000,000 baud**.
@@ -87,6 +88,10 @@ Full aperture bounds/sentinels, receiver restoration and immutable-copy ownershi
 - A candidate count can include multiple positive captures of the same transmission. Only the strongest qualifying I/Q capture per detector run is retained.
 - The waterfall advances per displayed capture, not uniform RF time. UART transfer adds substantial gaps.
 - BLE OFF/ON validation was inconclusive in ambient RF; no ground-truth transmitted packet count/timing was available.
+- The detector flags a large and variable share of captures. In the [published runs](docs/evidence/README.md), 5–31% of post-warmup captures were candidate-positive in the manual-gain A/B trials, 6–48% in the soak and 38–47% in the hardware-AGC GUI runs. Nothing here separates real band activity from gain steps or threshold artefacts.
+- The adaptive background only updates on captures that are *not* flagged. A sustained rise in level therefore keeps every later capture positive until the finite run ends and the next run re-warms.
+- Energy is measured in ADC units. Under hardware AGC the firmware does not report the gain in use, so energies are not comparable across gain steps; under manual gain index 40 the recorded background was only 2–34 ADC² units, where integer rounding of the background is coarse.
+- Reported dBFS is relative to one full-scale component, so a complex sample can read up to +3 dBFS. Values near or above 0 dBFS, or a flagged ADC-endpoint share, mean the capture is at the converter's rails.
 - The screenshot-session retained captures have Q-component endpoint occupancy of 0.20–12.76%, consistent with a saturation/clipping concern. [Published counts](docs/evidence/gui/clipping-counts.json) do not establish its cause; no controlled manual-gain/AGC or terminated-input comparison was performed.
 - Undocumented receiver/debug behavior is experimental. Use only on hardware and signals you are authorized to investigate; respect applicable radio/privacy laws.
 
@@ -95,10 +100,14 @@ Full aperture bounds/sentinels, receiver restoration and immutable-copy ownershi
 ```text
 firmware/       Complete optimized firmware source and build configuration
 sdr_research/   Native viewer, protocol, processing and recording code
-scripts/        Portable viewer launcher
-tests/         Small selected regression suite (not the entire research archive)
-docs/           Build guide, genuine screenshot and validation summary
+scripts/        Viewer launcher, offline evidence verifier and endpoint counter
+tests/          Small selected regression suite (not the entire research archive)
+docs/           Build guide, serial protocol, screenshot and validation summary
+docs/evidence/  Curated benchmark summaries, build identity and diagnostic sources
+.github/        CI: lint, format check and both host test suites
 ```
+
+Historical lab clients (`profiling.py`, `pipeline_profile.py`, `validate_copy.py`), other-chip backends and vendored ESP-DSP are kept deliberately; see [diagnostic provenance](docs/diagnostic-provenance.md). The serial commands the release firmware answers are described in [the protocol document](docs/protocol.md).
 
 This public release intentionally excludes original device flash/NVS, recovery images, personal machine configuration, raw RF recordings, large uncurated campaign logs and complete superseded experimental firmware trees. A curated sanitized evidence supplement and small, explicitly historical diagnostic source selections are included under `docs/evidence/`. The full private research originals are preserved separately.
 
@@ -113,8 +122,10 @@ GPL-3.0-or-later; see [LICENSE](LICENSE). Upstream notices are retained. Vendore
 ## Run selected tests
 
 ```bash
-python -m pip install -e ".[test]"
+python -m pip install -e ".[dev]"
+ruff check . && ruff format --check .
 QT_QPA_PLATFORM=offscreen python -m pytest -q
+python -m pytest -q firmware/tests
 ```
 
-The selected viewer regression suite passed **156 tests** against this public source copy. These software tests require no connected board and are not a replacement for hardware validation. Firmware checks are documented in the build guide.
+The viewer and evidence suite has **160 tests**; the firmware host suite has 6 tests plus 5 subtests and needs a host C compiler with UndefinedBehaviorSanitizer. [CI](.github/workflows/ci.yml) runs the lint, the format check and both suites on Python 3.10 and 3.13 for every push and pull request. These software tests require no connected board and are not a replacement for hardware validation: CI does not build the firmware, which needs the pinned ESP-IDF described in the build guide. Qt needs the system EGL/XCB libraries even for offscreen runs (`libegl1` on Debian/Ubuntu).
