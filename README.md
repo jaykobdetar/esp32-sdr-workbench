@@ -32,9 +32,9 @@ On **one ESP32-D0WD-V3 rev. 3.1 with 4 MB flash**, at 2440 MHz, nominal 16 MS/s,
 
 An earlier separately archived DET1 v2 build measured about **32.1%**, so the optimized result is approximately **1.96× the historical nominal listening time**. The same-image control above is reported separately; compiler layout and firmware composition affect timing.
 
-A 24 × 5-second retained-event soak processed **73,745 captures**, with stable heap, no reported errors and valid retained/post-run raw CRC checks in every run. Host-run RF duty was **57.687–57.871%**, including command and retained-I/Q transfer time but excluding the separate raw health checks between runs. Shorter GUI runs have more overhead: five 1-second runs ended around **62.42% local RF duty versus 42.93% host-session RF duty** under the GUI's hardware-gain defaults.
+A 24 × 5-second retained-event soak processed **73,745 captures**, with stable heap, no reported errors and valid retained/post-run raw CRC checks in every run. Host-run RF duty was **57.687–57.871%**, including command and retained-I/Q transfer time but excluding the separate raw health checks between runs. Shorter GUI runs have more overhead: five 1-second runs ended around **62.42% local RF duty versus 42.93% host-session RF duty** under the GUI's hardware-gain defaults. The 62.42% is the last run's local value; 42.93% is cumulative session duty.
 
-See [validation and limitations](docs/validation.md) for test coverage, negative results and what these numbers do **not** establish.
+See [validation and limitations](docs/validation.md) for test coverage, negative results and what these numbers do **not** establish. The [published evidence](docs/evidence/README.md) includes all 12 A/B summaries, 24 soak runs with heap replies, five GUI summaries, historical baseline trials, build identity and microbenchmarks. Recalculate the headline numbers offline with `python3 scripts/verify_evidence.py`.
 
 ## Quick start: viewer
 
@@ -87,6 +87,7 @@ Full aperture bounds/sentinels, receiver restoration and immutable-copy ownershi
 - A candidate count can include multiple positive captures of the same transmission. Only the strongest qualifying I/Q capture per detector run is retained.
 - The waterfall advances per displayed capture, not uniform RF time. UART transfer adds substantial gaps.
 - BLE OFF/ON validation was inconclusive in ambient RF; no ground-truth transmitted packet count/timing was available.
+- The screenshot-session retained captures have Q-component endpoint occupancy of 0.20–12.76%, consistent with a saturation/clipping concern. [Published counts](docs/evidence/gui/clipping-counts.json) do not establish its cause; no controlled manual-gain/AGC or terminated-input comparison was performed.
 - Undocumented receiver/debug behavior is experimental. Use only on hardware and signals you are authorized to investigate; respect applicable radio/privacy laws.
 
 ## Repository layout
@@ -99,7 +100,7 @@ tests/         Small selected regression suite (not the entire research archive)
 docs/           Build guide, genuine screenshot and validation summary
 ```
 
-This public release intentionally excludes original device flash/NVS, recovery images, personal machine configuration, raw RF recordings, large campaign logs and superseded experimental firmware trees. The full private research originals are preserved separately.
+This public release intentionally excludes original device flash/NVS, recovery images, personal machine configuration, raw RF recordings, large uncurated campaign logs and complete superseded experimental firmware trees. A curated sanitized evidence supplement and small, explicitly historical diagnostic source selections are included under `docs/evidence/`. The full private research originals are preserved separately.
 
 ## Attribution
 
@@ -116,4 +117,4 @@ python -m pip install -e ".[test]"
 QT_QPA_PLATFORM=offscreen python -m pytest -q
 ```
 
-The selected viewer regression suite passed **147 tests** against this public source copy. These software tests require no connected board and are not a replacement for hardware validation. Firmware checks are documented in the build guide.
+The selected viewer regression suite passed **156 tests** against this public source copy. These software tests require no connected board and are not a replacement for hardware validation. Firmware checks are documented in the build guide.

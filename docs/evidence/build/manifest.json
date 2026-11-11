@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "version": "esp32-pipeline-optimized-v2",
+  "variants": {
+    "esp32": {
+      "revision": "esp32",
+      "label": "ESP32 (2 MB or larger, UART)",
+      "target": "esp32",
+      "chip": "ESP32",
+      "version": "esp32-pipeline-optimized-v2",
+      "flash_size": "2MB",
+      "flash_size_policy": "minimum",
+      "flash_settings": {
+        "flash_mode": "dio",
+        "flash_size": "2MB",
+        "flash_freq": "40m"
+      },
+      "esptool_args": {
+        "after": "hard-reset",
+        "before": "default-reset",
+        "stub": true,
+        "chip": "esp32"
+      },
+      "parts": [
+        {
+          "name": "0-bootloader.bin",
+          "offset": 4096,
+          "size": 25792,
+          "sha256": "db5d5f702ac99fc105a6649c40ccd472855105879b84d20bb1c59209a3c18c08",
+          "md5": "4abbce757bde9e862cb86a132c1595c7"
+        },
+        {
+          "name": "1-partition-table.bin",
+          "offset": 32768,
+          "size": 3072,
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+          "md5": "5d61d196adc3dba01928f264eb169be7"
+        },
+        {
+          "name": "2-esp_sdr.bin",
+          "offset": 65536,
+          "size": 682448,
+          "sha256": "8fff02862f5036dc2775fe8e58b1aa3db29181180ae06524c5555aa86d22f1ad",
+          "md5": "6733c8748f3ebdddca86cceea48562a0"
+        }
+      ],
+      "build_date": "2026-11-10",
+      "git_revision": "unknown",
+      "build_timestamp": "2026-11-10T23:21:02Z"
+    }
+  }
+}

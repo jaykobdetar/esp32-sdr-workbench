@@ -1,0 +1,33 @@
+{
+  "status": "built_pending_target_rebenchmark",
+  "metadata": {
+    "revision": "unknown",
+    "build_date": "2026-11-10",
+    "build_timestamp": "2026-11-10T23:21:02Z",
+    "profile": "esp32",
+    "firmware_variant": "esp32-pipeline-optimized-v2"
+  },
+  "tests": "69 passed,70 subtests",
+  "iram_end": "0x4008e5ac",
+  "data_end": "0x3ffb3bae",
+  "bss_end": "0x3ffbe6c0",
+  "aperture_start": "0x3ffe8000",
+  "aperture_end_exclusive": "0x3fff8000",
+  "diagnostic_symbols_absent": [
+    "validate_copy_test_command",
+    "ascii_frame_command",
+    "profile_command",
+    "profile_acquire",
+    "detpipe_pack_option"
+  ],
+  "yield_cadence": 32,
+  "fast_packer": "unconditional exact CAP20 aligned8sample5word",
+  "sha256": {
+    "build-esp32/esp_sdr.bin": "8fff02862f5036dc2775fe8e58b1aa3db29181180ae06524c5555aa86d22f1ad",
+    "build-esp32/esp_sdr.elf": "07286f90417a8983138ef941f83f69862627cd03ce3e523876ccaabe104ebcaf",
+    "build-esp32/sdkconfig": "27716f3f6443bd43030797616cff815987283faab122d7f7f2a1f83fe09bf9ee",
+    "sdkconfig.defaults.esp32": "16efe20553db061b48150e516d8dbf7c4f5112a85960f8d2ccf370136cecbc70",
+    "FIRMWARE_VARIANT": "f0f35ae140f14f1f55dd8413aaddc636c3fcf22e8491ce20037098998fd17d78",
+    "main/targets/esp32/pack20_candidates.h": "892b23d36310f4cfd4341722673a4755c8f587839fb00cb0ba182e89e4ae6c0a"
+  }
+}

@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+"""Explicit hardware A/B trial coordinator; ALWAYS attempts original-app restoration.
+Run only deliberately with --flash-trials after reviewing binaries and backups.
+"""
+import argparse,hashlib,json,subprocess,sys,time
+from pathlib import Path
+p=argparse.ArgumentParser();p.add_argument('--flash-trials',action='store_true',required=True);p.add_argument('--esptool-python',required=True);p.add_argument('--v2-binary',required=True);a=p.parse_args()
+root=Path(__file__).resolve().parents[1]
+original=root/'recovery/esp-sdr-cp2102-compat/esp32/2-esp_sdr.bin'
+v1=root/'firmware-experiment/artifacts-v1/esp32/esp32/2-esp_sdr.bin';v2=Path(a.v2_binary).resolve()
+records=root/'records/optimization';records.mkdir(exist_ok=True)
+subprocess.run(['sha256sum','-c','SHA256SUMS'],cwd=root/'recovery',stdout=subprocess.DEVNULL,check=True)
+report={'status':'running','phases':[],'restored':False}
+def persist(): (records/'trial-state.json').write_text(json.dumps(report,indent=2))
+def flash(path,label):
+ with (records/(label+'-flash.log')).open('w') as f:
+  subprocess.run([a.esptool_python,'-m','esptool','--chip','esp32','--port','SERIAL_PORT_REDACTED','--baud','460800','write-flash','0x10000',str(path)],stdout=f,stderr=subprocess.STDOUT,check=True)
+ persist()
+try:
+ for label,binary in [('v1-A1',v1),('v2-B1',v2),('v1-A2',v1),('v2-B2',v2)]:
+  flash(binary,label)
+  with (records/(label+'-benchmark.log')).open('w') as f:
+   subprocess.run([sys.executable,str(root/'scripts/benchmark_optimization.py'),'--label',label,'--binary',str(binary),'--output',str(records/(label+'.json'))],cwd=root,stdout=f,stderr=subprocess.STDOUT,check=True)
+  report['phases'].append(label);persist()
+ report['status']='passed'
+except Exception as e:report['status']='failed';report['error']=repr(e);raise
+finally:
+ try:
+  flash(original,'restore-original')
+  with (records/'restored-smoke.log').open('w') as f:
+   subprocess.run([sys.executable,str(root/'scripts/benchmark.py'),'--captures','10','--spectrum-ms','1000','--output',str(records/'restored-smoke.json')],cwd=root,stdout=f,stderr=subprocess.STDOUT,check=True)
+  report['restored']=True
+ except Exception as e:
+  report['restore_error']=repr(e);raise
+ finally:persist()
+print(json.dumps(report,indent=2))

@@ -1,0 +1,401 @@
+{
+  "schema_version": 1,
+  "published_utc_date": "2026-11-11",
+  "source_root": "private research archive (local originals preserved)",
+  "sanitization": "Serial paths, device-derived GUI basenames, personal absolute home/project paths, and hostname replaced or made relative. Measurement values, timestamps, hashes, generic firmware capability data and generic SDK espressif default hostname retained. SigMF references in archived reports name unpublished private captures, not broken public download promises.",
+  "files": [
+    {
+      "path": "final/final-release-v2.json",
+      "bytes": 32269,
+      "sha256": "348d31d87d0bc8f0d70c03f494ff49cc4adc7a6346e12259f13be1c3f53c18fc",
+      "method": "byte-identical",
+      "source": "records/campaign/final-release-v2.json",
+      "source_sha256": "348d31d87d0bc8f0d70c03f494ff49cc4adc7a6346e12259f13be1c3f53c18fc",
+      "source_bytes": 32269
+    },
+    {
+      "path": "final/final-release-v2-soak.json",
+      "bytes": 53259,
+      "sha256": "c73b4f77188c4d0569a71bb0e90d3120a7937f3317af19f1b5dc716cb62a084f",
+      "method": "byte-identical",
+      "source": "records/campaign/final-release-v2-soak.json",
+      "source_sha256": "c73b4f77188c4d0569a71bb0e90d3120a7937f3317af19f1b5dc716cb62a084f",
+      "source_bytes": 53259
+    },
+    {
+      "path": "final/final-installed-verification.json",
+      "bytes": 3014,
+      "sha256": "e181f7ce1ab0ffd1e3ae4c2cf6419ddc9932142f745d2cd2154a22f4db836a6e",
+      "method": "byte-identical",
+      "source": "records/campaign/final-installed-verification.json",
+      "source_sha256": "e181f7ce1ab0ffd1e3ae4c2cf6419ddc9932142f745d2cd2154a22f4db836a6e",
+      "source_bytes": 3014
+    },
+    {
+      "path": "historical-det1/v1-A1.json",
+      "bytes": 10639,
+      "sha256": "c82d66ba8a48ea8a9303e6b961f7a873c9d799f4593b34e2275f728b5cd90adf",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "records/optimization/v1-A1.json",
+      "source_sha256": "c4d4c9f8cffea4e984ee59db9dfa2b673b207b9f89c536a53b1ff155716fc633",
+      "source_bytes": 10671
+    },
+    {
+      "path": "historical-det1/v1-A2.json",
+      "bytes": 10646,
+      "sha256": "31f40b85321ffe410c4cce702fd6c8bc6a548fcc5167285771b8bc758775ea0e",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "records/optimization/v1-A2.json",
+      "source_sha256": "64c9a59f4625f3f6a43e4d715243d1aec37f7818e3d67d243b0b37fa7f335d78",
+      "source_bytes": 10678
+    },
+    {
+      "path": "historical-det1/v2-B1.json",
+      "bytes": 10654,
+      "sha256": "91cff8a6fe56312feabbee1cfd3d1228be9e0ef89eb7e4a23f7f43a261d84acf",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "records/optimization/v2-B1.json",
+      "source_sha256": "cd872684d9d4a4eb1e43d14f86dd5a5875982a7da7fc036118bdede34db07aa4",
+      "source_bytes": 10686
+    },
+    {
+      "path": "historical-det1/v2-B2.json",
+      "bytes": 10646,
+      "sha256": "7a39442c1a49b5af4795a8f3dcef70e96772ba8816bcf5c55dee450f42ea97da",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "records/optimization/v2-B2.json",
+      "source_sha256": "d890e6f8c6ae971fc653188e906e76a73eccbaf9a6c7ed5f617f005990753593",
+      "source_bytes": 10678
+    },
+    {
+      "path": "historical-det1/comparison-summary.json",
+      "bytes": 932,
+      "sha256": "d08be49bd4e7c36aca0cd4520a15a787fb293d84f62c3e98c78ec6c9d3e9b505",
+      "method": "byte-identical",
+      "source": "records/optimization/comparison-summary.json",
+      "source_sha256": "d08be49bd4e7c36aca0cd4520a15a787fb293d84f62c3e98c78ec6c9d3e9b505",
+      "source_bytes": 932
+    },
+    {
+      "path": "gui/gui-run-01.detpipe1.json",
+      "bytes": 2337,
+      "sha256": "9ed0f0945c4c7602b48074a70ace842487124fdba6ae52826c5671cbeab833f4",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "records/campaign/gui-final-release-v2/gui-run-01.detpipe1.json",
+      "source_sha256": "417a4d07d485b92afaae8907d44f9f2f4f507c385e73c747e68d5a26dd18342b",
+      "source_bytes": 2380
+    },
+    {
+      "path": "gui/gui-run-02.detpipe1.json",
+      "bytes": 2338,
+      "sha256": "ed8305f3830b2e09c54235c9b8b4e71f019e82556f423a4fed9e6460c518b70b",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "records/campaign/gui-final-release-v2/gui-run-02.detpipe1.json",
+      "source_sha256": "8927ce3dedf77b2678cc8636bdfcebe678848d5aeb24e9eaab889c6e7b1c9c8c",
+      "source_bytes": 2381
+    },
+    {
+      "path": "gui/gui-run-03.detpipe1.json",
+      "bytes": 2335,
+      "sha256": "8f55e4593defa5669c2e21cde72e61e769c300e87949036452e20ef7c28f3262",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "records/campaign/gui-final-release-v2/gui-run-03.detpipe1.json",
+      "source_sha256": "7f05c9108760e484dc198975c26077cdb768adbb638e646e6b5eea55f90e91b9",
+      "source_bytes": 2378
+    },
+    {
+      "path": "gui/gui-run-04.detpipe1.json",
+      "bytes": 2336,
+      "sha256": "93a2a696b4a042cbf8838a71c00ed1d70c8c1a81edea109e0c254388ae4b0002",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "records/campaign/gui-final-release-v2/gui-run-04.detpipe1.json",
+      "source_sha256": "b78d45d128957dc2d1549fd721db780c28d72f5cc2a103339efe34f9b7892ea6",
+      "source_bytes": 2379
+    },
+    {
+      "path": "gui/gui-run-05.detpipe1.json",
+      "bytes": 2335,
+      "sha256": "cc1ac1c9307735186cd193a5207b6bba037bb7a972c4c4ce4bb650f25caca198",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "records/campaign/gui-final-release-v2/gui-run-05.detpipe1.json",
+      "source_sha256": "f900596c0e45ab1632d71de1aeea30801b10a01dbaa35059fb4bf5ccb3e21d90",
+      "source_bytes": 2378
+    },
+    {
+      "path": "gui/gui-result.json",
+      "bytes": 5769,
+      "sha256": "19bc55d66d3e838d92d029da6b0d671ea9b8656c26ef672a48c5a8420026e32e",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "records/campaign/gui-final-release-v2/gui-result.json",
+      "source_sha256": "df4487262afff7405f19ebd31dd984178deb625bfb4fe233737c17ac91112772",
+      "source_bytes": 5947
+    },
+    {
+      "path": "microbenchmarks/energy-test-v1-kernels.json",
+      "bytes": 42165,
+      "sha256": "dd02634f72d863b57287eec12bc4cccd51d2e302e41978819e1d6a558683f63b",
+      "method": "byte-identical",
+      "source": "records/campaign/energy-test-v1-kernels.json",
+      "source_sha256": "dd02634f72d863b57287eec12bc4cccd51d2e302e41978819e1d6a558683f63b",
+      "source_bytes": 42165
+    },
+    {
+      "path": "microbenchmarks/packing-v1.json",
+      "bytes": 78416,
+      "sha256": "21aaf23b7a6a57fd820dc03a70ab1c006b43dc8b690b1e01aefc727d1c871509",
+      "method": "byte-identical",
+      "source": "records/campaign/packing-v1.json",
+      "source_sha256": "21aaf23b7a6a57fd820dc03a70ab1c006b43dc8b690b1e01aefc727d1c871509",
+      "source_bytes": 78416
+    },
+    {
+      "path": "microbenchmarks/validate-copy-v1.json",
+      "bytes": 19555,
+      "sha256": "55eb2cf176bead05ae03de2ed83351b3da43d964c98704d9ac5a513a9af65c74",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "records/campaign/validate-copy-v1.json",
+      "source_sha256": "1606e35d4bade6edc78cebfbb2e9aa63d87b64882ed0ab5dae4ca59f7e24097d",
+      "source_bytes": 19622
+    },
+    {
+      "path": "microbenchmarks/pipeline-v4fused.json",
+      "bytes": 16198,
+      "sha256": "aafdaea56c77e726ed94406a1056963b19ae1da3f641d4283c529ffeb5895fab",
+      "method": "byte-identical",
+      "source": "records/campaign/pipeline-v4fused.json",
+      "source_sha256": "aafdaea56c77e726ed94406a1056963b19ae1da3f641d4283c529ffeb5895fab",
+      "source_bytes": 16198
+    },
+    {
+      "path": "microbenchmarks/pipeline-v4frame.json",
+      "bytes": 27779,
+      "sha256": "661137f463cc065762878c3532f34676358f63f6975d91376a4b5554d0d99c6f",
+      "method": "byte-identical",
+      "source": "records/campaign/pipeline-v4frame.json",
+      "source_sha256": "661137f463cc065762878c3532f34676358f63f6975d91376a4b5554d0d99c6f",
+      "source_bytes": 27779
+    },
+    {
+      "path": "microbenchmarks/pipeline-profile-v1.json",
+      "bytes": 117651,
+      "sha256": "fbf4b60039d5d744664fda214c7b121ae3a3fd3d204fe5fc6fd9eb0ddbf5b233",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "records/campaign/pipeline-profile-v1.json",
+      "source_sha256": "04978c9fd058d0a71fc1f41de6892efb5ec9e56614d5774b31865ec8e35993a5",
+      "source_bytes": 117910
+    },
+    {
+      "path": "microbenchmarks/pipeline-compact-v1.json",
+      "bytes": 53154,
+      "sha256": "efb5f5bfd6c54c53851dbe6230503adc2d39aed02c04b363993146538c7664d1",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "records/campaign/pipeline-compact-v1.json",
+      "source_sha256": "417d92c74f0fd4ab1f3f459bbd1a9e56b5e3796051900d5d60ea3391f4da0ee8",
+      "source_bytes": 53346
+    },
+    {
+      "path": "microbenchmarks/frame-probe-v4.json",
+      "bytes": 42000,
+      "sha256": "f7ea3b806c96d277a821df911e99e67b281a647db812860f4a9983b02371e547",
+      "method": "byte-identical",
+      "source": "records/campaign/frame-probe-v4.json",
+      "source_sha256": "f7ea3b806c96d277a821df911e99e67b281a647db812860f4a9983b02371e547",
+      "source_bytes": 42000
+    },
+    {
+      "path": "build/sdkconfig",
+      "bytes": 70361,
+      "sha256": "27716f3f6443bd43030797616cff815987283faab122d7f7f2a1f83fe09bf9ee",
+      "method": "byte-identical",
+      "source": "firmware-optimized-v2/artifacts-optimized-v2/sdkconfig",
+      "source_sha256": "27716f3f6443bd43030797616cff815987283faab122d7f7f2a1f83fe09bf9ee",
+      "source_bytes": 70361
+    },
+    {
+      "path": "build/BUILD_VERIFICATION.json",
+      "bytes": 1330,
+      "sha256": "bde2873c9e29a65153b9c2ddfafd1a61a9a4ff55d42671a86ab5c4ca61951057",
+      "method": "byte-identical",
+      "source": "firmware-optimized-v2/artifacts-optimized-v2/BUILD_VERIFICATION.json",
+      "source_sha256": "bde2873c9e29a65153b9c2ddfafd1a61a9a4ff55d42671a86ab5c4ca61951057",
+      "source_bytes": 1330
+    },
+    {
+      "path": "build/FIRMWARE_VARIANT",
+      "bytes": 28,
+      "sha256": "f0f35ae140f14f1f55dd8413aaddc636c3fcf22e8491ce20037098998fd17d78",
+      "method": "byte-identical",
+      "source": "firmware-optimized-v2/artifacts-optimized-v2/FIRMWARE_VARIANT",
+      "source_sha256": "f0f35ae140f14f1f55dd8413aaddc636c3fcf22e8491ce20037098998fd17d78",
+      "source_bytes": 28
+    },
+    {
+      "path": "build/SHA256SUMS",
+      "bytes": 1177,
+      "sha256": "9db22cac8eda4d0bdfac95eb825da5fc7920d808d0fa4bb3f30c052a4e207505",
+      "method": "byte-identical",
+      "source": "firmware-optimized-v2/artifacts-optimized-v2/SHA256SUMS",
+      "source_sha256": "9db22cac8eda4d0bdfac95eb825da5fc7920d808d0fa4bb3f30c052a4e207505",
+      "source_bytes": 1177
+    },
+    {
+      "path": "build/build-info.json",
+      "bytes": 129,
+      "sha256": "eda485068b3b0c90d5530c175e011e26be665af5aa6058fd72fc2681f690e291",
+      "method": "byte-identical",
+      "source": "firmware-optimized-v2/artifacts-optimized-v2/esp32/build-info.json",
+      "source_sha256": "eda485068b3b0c90d5530c175e011e26be665af5aa6058fd72fc2681f690e291",
+      "source_bytes": 129
+    },
+    {
+      "path": "build/manifest.json",
+      "bytes": 1507,
+      "sha256": "a87c59cd690d178a95087007e29e9f85f723aa4cfba1e13c2e80c821305ff64e",
+      "method": "byte-identical",
+      "source": "firmware-optimized-v2/artifacts-optimized-v2/esp32/manifest.json",
+      "source_sha256": "a87c59cd690d178a95087007e29e9f85f723aa4cfba1e13c2e80c821305ff64e",
+      "source_bytes": 1507
+    },
+    {
+      "path": "build/flash_args",
+      "bytes": 144,
+      "sha256": "075e7d1b4744d965b57f0696e7d863d7d9bec380b1a2c608531f0b59b0246d52",
+      "method": "byte-identical",
+      "source": "firmware-optimized-v2/artifacts-optimized-v2/esp32/flash_args",
+      "source_sha256": "075e7d1b4744d965b57f0696e7d863d7d9bec380b1a2c608531f0b59b0246d52",
+      "source_bytes": 144
+    },
+    {
+      "path": "build/partition-table.csv",
+      "bytes": 155,
+      "sha256": "5b7f0f6abf09b4773f7bc74767f744e90a98ca45d291e3424b1250bf8d611873",
+      "method": "decoded from hash-verified exported partition binary with pinned ESP-IDF gen_esp32part.py; binary not published",
+      "source": "firmware-optimized-v2/artifacts-optimized-v2/esp32/esp32/1-partition-table.bin",
+      "source_sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+      "source_bytes": 3072
+    },
+    {
+      "path": "build/version.json",
+      "bytes": 460,
+      "sha256": "872a2dea0dc4b0ece0a1712a3c88073f8eb42dc1f6ed2e58262654a08aa9aa5a",
+      "method": "derived"
+    },
+    {
+      "path": "handshake/archived-handshake.json",
+      "bytes": 2819,
+      "sha256": "217b9011bedcf56935b16d31e4b5bd1595a2e5957ba61e0e7a6b4513bed05d53",
+      "method": "derived"
+    },
+    {
+      "path": "gui/clipping-counts.json",
+      "bytes": 6004,
+      "sha256": "b1cd9b0bf799f7cedacc0d79b666fc3dc19e936c9a422ffd1c50926c776e538a",
+      "method": "derived"
+    },
+    {
+      "path": "methods/final_release_v2_campaign.py.txt",
+      "bytes": 2215,
+      "sha256": "b73393ff1c9039fe786e8c648c6419a54c7a7f3c305b6a78ba1dbe4d0def8da7",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "scripts/final_release_v2_campaign.py",
+      "source_sha256": "093d0921ff9e689fb66759ee7c68218fdb0efbf0b488d6be2dcf953041db1251",
+      "source_bytes": 2282
+    },
+    {
+      "path": "methods/final_release_v2_soak.py.txt",
+      "bytes": 1288,
+      "sha256": "99d109857407fae28065c78fa8a8b75fc6c5b5b044cd386679aa7928d4bb2526",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "scripts/final_release_v2_soak.py",
+      "source_sha256": "bf62349f80eb5b117708055beb71876f00dbe8b3d27159f3510a9dbc47f9c288",
+      "source_bytes": 1355
+    },
+    {
+      "path": "methods/gui_det1_hardware_smoke.py.txt",
+      "bytes": 2437,
+      "sha256": "ef22a198c4b1f15fad6e54b7a12b27b816f1d0d8dd0b4d6e56792503a3a6de5d",
+      "method": "byte-identical",
+      "source": "scripts/gui_det1_hardware_smoke.py",
+      "source_sha256": "ef22a198c4b1f15fad6e54b7a12b27b816f1d0d8dd0b4d6e56792503a3a6de5d",
+      "source_bytes": 2437
+    },
+    {
+      "path": "methods/energy_campaign.py.txt",
+      "bytes": 3610,
+      "sha256": "74fdf0751216b0fd9cd14eeea54c1ddc11a0a40c2923f0c48a7ad12f2651b367",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "scripts/energy_campaign.py",
+      "source_sha256": "ebdd4cb4e53b8ebb4e86e43520a7aeea82353290f966e16d13eb92014ebbcc27",
+      "source_bytes": 3677
+    },
+    {
+      "path": "methods/packing_campaign.py.txt",
+      "bytes": 1532,
+      "sha256": "29f780f65dbbc92ca60e9618be2d1f481e446c37124024a6f14a050ce8fa694e",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "scripts/packing_campaign.py",
+      "source_sha256": "d0a3903b0494adaf2d4f02c5a2f982e3680ec90f020a879bd48218fd46d033c7",
+      "source_bytes": 1599
+    },
+    {
+      "path": "methods/validate_copy_campaign.py.txt",
+      "bytes": 2768,
+      "sha256": "38de19638f9503a115223fdb7796addd33b43d330f1582466b629429bdcfb7db",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "scripts/validate_copy_campaign.py",
+      "source_sha256": "02a244f2b05494fbfdb6fe5dfb4d5a4a7bf1a346a431ce057a28387c94c8530e",
+      "source_bytes": 2835
+    },
+    {
+      "path": "methods/benchmark_optimization.py.txt",
+      "bytes": 1846,
+      "sha256": "febad83589bb473bd32e1ab6e08bd9449f6c060220629b2460d7196bf3dbc48f",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "scripts/benchmark_optimization.py",
+      "source_sha256": "daa0a8142283b9710efd2737219d57e37d283d9d1f1855a99fb5ec431ce3a05a",
+      "source_bytes": 1838
+    },
+    {
+      "path": "methods/optimization_trials.py.txt",
+      "bytes": 2260,
+      "sha256": "2db85b754d026c9055dad50983d5504135ab9896466eb3c21619596917ec6cb5",
+      "method": "identifier/path substitutions; numeric measurements unchanged",
+      "source": "scripts/optimization_trials.py",
+      "source_sha256": "47adc7ad37eb854302dfe48a283f0e165e8a359a791333fef727ea550d19856a",
+      "source_bytes": 2252
+    },
+    {
+      "path": "notes/pipeline-stage-distributions.md",
+      "bytes": 4641,
+      "sha256": "d39c5ce2174278ccabc2ac904cf67069436dd9183f2dcd0e8a64a72b40e25c56",
+      "method": "byte-identical",
+      "source": "docs/pipeline-stage-distributions.md",
+      "source_sha256": "d39c5ce2174278ccabc2ac904cf67069436dd9183f2dcd0e8a64a72b40e25c56",
+      "source_bytes": 4641
+    },
+    {
+      "path": "notes/serial-packet-boundary-finding.md",
+      "bytes": 3106,
+      "sha256": "68f5d4159dcf7ef0db8d79aad6344407bd317409ac06bd36033178ba7c8dbe57",
+      "method": "byte-identical",
+      "source": "docs/serial-packet-boundary-finding.md",
+      "source_sha256": "68f5d4159dcf7ef0db8d79aad6344407bd317409ac06bd36033178ba7c8dbe57",
+      "source_bytes": 3106
+    },
+    {
+      "path": "notes/pipeline-v4-verification-correction.md",
+      "bytes": 3012,
+      "sha256": "dd388f4fced67ce9d6eab39641f46cbb6448dc0a0991b23cb4026904d051b966",
+      "method": "byte-identical",
+      "source": "docs/pipeline-v4-verification-correction.md",
+      "source_sha256": "dd388f4fced67ce9d6eab39641f46cbb6448dc0a0991b23cb4026904d051b966",
+      "source_bytes": 3012
+    },
+    {
+      "path": "build/archive-integrity-check.json",
+      "bytes": 3031,
+      "sha256": "2c60fcbcc0a2c82a576fd80f4e11017a782b57e3957e78a30fe99a29a9582755",
+      "method": "derived"
+    }
+  ]
+}

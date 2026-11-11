@@ -1,0 +1,95 @@
+{
+  "final_ab_local_rf_duty_percent": {
+    "baseline_retain_false": {
+      "min": 29.758762345948785,
+      "max": 29.772993247112506
+    },
+    "baseline_retain_true": {
+      "min": 29.754482354979842,
+      "max": 29.77306763447969
+    },
+    "optimized_retain_false": {
+      "min": 62.92532389329586,
+      "max": 62.958140685065985
+    },
+    "optimized_retain_true": {
+      "min": 62.70834207670586,
+      "max": 62.83438183090299
+    }
+  },
+  "soak": {
+    "runs": 24,
+    "captures": 73745,
+    "local_rf_duty_percent": {
+      "min": 62.771277090224274,
+      "max": 62.95844755057131
+    },
+    "host_run_rf_duty_percent": {
+      "min": 57.687025554137456,
+      "max": 57.870650324102066
+    },
+    "memory_after_every_run": [
+      "DETPIPEMEM 96688 65536"
+    ],
+    "memory_after_clear": "DETPIPEMEM 137688 73728"
+  },
+  "gui": {
+    "runs": 5,
+    "captures": 3041,
+    "last_run_local_rf_percent": 62.41780057796547,
+    "host_session_rf_percent_through_last_recording": 42.92683780226099,
+    "note": "Last-run local and cumulative host-session values are different aggregation windows."
+  },
+  "historical_det1_v2": {
+    "runs": 12,
+    "mean_local_rf_percent": 32.10476667241986,
+    "range_local_rf_percent": {
+      "min": 32.06466220249617,
+      "max": 32.11517635211278
+    },
+    "ratio_final_optimized_no_retention_mean_to_historical_mean": 1.9606697642095006
+  },
+  "microbenchmarks": {
+    "kernel_flash_median_us_ranges": {
+      "v2-baseline": {
+        "min": 1256.6208333333334,
+        "max": 1256.625
+      },
+      "gcc-shift-sign": {
+        "min": 847.5416666666666,
+        "max": 847.5416666666666
+      }
+    },
+    "packing_profiled_mean_us_ranges_by_option": {
+      "0": {
+        "min": 2642.8,
+        "max": 2644.5714285714284
+      },
+      "1": {
+        "min": 815.1818181818181,
+        "max": 821.8333333333334
+      }
+    },
+    "validate_copy_full_buffer_median_us_ranges": {
+      "validate4-memcpy": {
+        "min": 533.1625,
+        "max": 533.1625
+      },
+      "fused-scalar": {
+        "min": 614.575,
+        "max": 614.575
+      },
+      "fused-unroll4": {
+        "min": 461.07916666666665,
+        "max": 464.7916666666667
+      },
+      "fused-unroll8": {
+        "min": 533.1791666666667,
+        "max": 533.1791666666667
+      }
+    }
+  },
+  "measurement_application_sha256": "8fff02862f5036dc2775fe8e58b1aa3db29181180ae06524c5555aa86d22f1ad",
+  "verified_source_manifest_files": 45,
+  "verified_diagnostic_source_files": 16
+}

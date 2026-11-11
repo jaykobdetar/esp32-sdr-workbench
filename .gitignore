@@ -15,3 +15,7 @@ recovery/
 *.map
 .env
 .env.*
+# Deliberately reviewed public evidence summaries only; raw RF remains ignored.
+!docs/evidence/gui/*.detpipe1.json
+# Archived build identity/config only. Binary/ELF/map exclusions still apply.
+!docs/evidence/build/

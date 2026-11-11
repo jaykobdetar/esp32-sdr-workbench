@@ -2,6 +2,10 @@
 
 Profile intervals describe histogram bounds, not point quantile estimates.
 No serial ports are opened here. Caller configures and owns the radio.
+
+
+Historical lab client: unsupported by the published optimized-v2 firmware.
+See docs/diagnostic-provenance.md for matching source archives and limits.
 """
 import json
 import time

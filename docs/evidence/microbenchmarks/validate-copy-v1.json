@@ -1,0 +1,733 @@
+{
+  "status": "passed",
+  "started_utc": "2026-11-10T22:37:48Z",
+  "runs": [
+    {
+      "request": {
+        "samples": 256,
+        "rate_hz": 16000000,
+        "repeats": 63,
+        "frequency_mhz": 2440
+      },
+      "timestamp": "2026-11-10T22:37:50.645859+00:00",
+      "results": [
+        {
+          "variant": 0,
+          "name": "validate4-memcpy",
+          "count": 63,
+          "sum_cycles": 4329195,
+          "min_cycles": 66603,
+          "median_cycles": 66603,
+          "p95_cycles": 67548,
+          "p99_cycles": 182690,
+          "max_cycles": 182690,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 277.5125
+        },
+        {
+          "variant": 1,
+          "name": "fused-scalar",
+          "count": 63,
+          "sum_cycles": 5247876,
+          "min_cycles": 83002,
+          "median_cycles": 83002,
+          "p95_cycles": 83895,
+          "p99_cycles": 83896,
+          "max_cycles": 83896,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 345.84166666666664
+        },
+        {
+          "variant": 2,
+          "name": "fused-unroll4",
+          "count": 63,
+          "sum_cycles": 5722236,
+          "min_cycles": 90504,
+          "median_cycles": 90504,
+          "p95_cycles": 91395,
+          "p99_cycles": 91396,
+          "max_cycles": 91396,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 377.1
+        },
+        {
+          "variant": 3,
+          "name": "fused-unroll8",
+          "count": 63,
+          "sum_cycles": 4338935,
+          "min_cycles": 68589,
+          "median_cycles": 68589,
+          "p95_cycles": 69481,
+          "p99_cycles": 69481,
+          "max_cycles": 69481,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 285.7875
+        }
+      ],
+      "begin": "VCTEST BEGIN 256 6 63 2440",
+      "timer": {
+        "variant": 0,
+        "name": "cycle-read-pair",
+        "count": 255,
+        "sum_cycles": 255,
+        "min_cycles": 1,
+        "median_cycles": 1,
+        "p95_cycles": 1,
+        "p99_cycles": 1,
+        "max_cycles": 1,
+        "mismatch_count": 0
+      },
+      "end": {
+        "version": 1,
+        "status": 0,
+        "mismatch_mask": 0,
+        "wall_elapsed_us": 118110,
+        "cpu_hz_before": 240000000,
+        "cpu_hz_after": 240000000,
+        "core_before": 0,
+        "core_after": 0,
+        "samples": 256,
+        "rate_code": 6,
+        "repeats_requested": 63,
+        "warmup_calls": 3,
+        "cycle_bits": 32,
+        "raw_crc32": "3c524cab",
+        "capture_us": 21
+      },
+      "clock_endpoints_stable": true,
+      "host_reference": {
+        "cap20_crc_valid": true,
+        "repeated_retrieval_identical": true,
+        "iq20_roundtrip_exact": true,
+        "samples_including_tail": 256,
+        "iq20_words_crc32": "4cfe51e6",
+        "mean_energy": 111,
+        "peak_energy": 135,
+        "full_raw_metadata_verified": false,
+        "limitation": "CAP20 omits the upper12 metadata bits and guard words. Firmware raw_crc32 cannot be independently matched from this export; target comparisons cover full32-bit copy and guards."
+      },
+      "host_elapsed_us": 153128.922,
+      "trial": 0,
+      "sigmf": "records/campaign/validate-copy-v1-input-0.sigmf-meta",
+      "saved_buffer_cleared": true,
+      "post_raw_crc": true,
+      "post_info": "ESP32SDR 6 burst 16380"
+    },
+    {
+      "request": {
+        "samples": 2048,
+        "rate_hz": 16000000,
+        "repeats": 63,
+        "frequency_mhz": 2440
+      },
+      "timestamp": "2026-11-10T22:37:50.813270+00:00",
+      "results": [
+        {
+          "variant": 0,
+          "name": "validate4-memcpy",
+          "count": 63,
+          "sum_cycles": 4640992,
+          "min_cycles": 73323,
+          "median_cycles": 73323,
+          "p95_cycles": 74259,
+          "p99_cycles": 74269,
+          "max_cycles": 74269,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 305.5125
+        },
+        {
+          "variant": 1,
+          "name": "fused-scalar",
+          "count": 63,
+          "sum_cycles": 5704824,
+          "min_cycles": 90170,
+          "median_cycles": 90170,
+          "p95_cycles": 91064,
+          "p99_cycles": 91064,
+          "max_cycles": 91064,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 375.7083333333333
+        },
+        {
+          "variant": 2,
+          "name": "fused-unroll4",
+          "count": 63,
+          "sum_cycles": 5864256,
+          "min_cycles": 92744,
+          "median_cycles": 92744,
+          "p95_cycles": 93636,
+          "p99_cycles": 93636,
+          "max_cycles": 93636,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 386.43333333333334
+        },
+        {
+          "variant": 3,
+          "name": "fused-unroll8",
+          "count": 63,
+          "sum_cycles": 4747284,
+          "min_cycles": 75085,
+          "median_cycles": 75085,
+          "p95_cycles": 75976,
+          "p99_cycles": 75977,
+          "max_cycles": 75977,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 312.8541666666667
+        }
+      ],
+      "begin": "VCTEST BEGIN 2048 6 63 2440",
+      "timer": {
+        "variant": 0,
+        "name": "cycle-read-pair",
+        "count": 255,
+        "sum_cycles": 255,
+        "min_cycles": 1,
+        "median_cycles": 1,
+        "p95_cycles": 1,
+        "p99_cycles": 1,
+        "max_cycles": 1,
+        "mismatch_count": 0
+      },
+      "end": {
+        "version": 1,
+        "status": 0,
+        "mismatch_mask": 0,
+        "wall_elapsed_us": 244283,
+        "cpu_hz_before": 240000000,
+        "cpu_hz_after": 240000000,
+        "core_before": 0,
+        "core_after": 0,
+        "samples": 2048,
+        "rate_code": 6,
+        "repeats_requested": 63,
+        "warmup_calls": 3,
+        "cycle_bits": 32,
+        "raw_crc32": "a60833dd",
+        "capture_us": 129
+      },
+      "clock_endpoints_stable": true,
+      "host_reference": {
+        "cap20_crc_valid": true,
+        "repeated_retrieval_identical": true,
+        "iq20_roundtrip_exact": true,
+        "samples_including_tail": 2048,
+        "iq20_words_crc32": "4cf83c80",
+        "mean_energy": 86,
+        "peak_energy": 180,
+        "full_raw_metadata_verified": false,
+        "limitation": "CAP20 omits the upper12 metadata bits and guard words. Firmware raw_crc32 cannot be independently matched from this export; target comparisons cover full32-bit copy and guards."
+      },
+      "host_elapsed_us": 369731.02,
+      "trial": 1,
+      "sigmf": "records/campaign/validate-copy-v1-input-1.sigmf-meta",
+      "saved_buffer_cleared": true,
+      "post_raw_crc": true,
+      "post_info": "ESP32SDR 6 burst 16380"
+    },
+    {
+      "request": {
+        "samples": 16380,
+        "rate_hz": 16000000,
+        "repeats": 63,
+        "frequency_mhz": 2440
+      },
+      "timestamp": "2026-11-10T22:37:51.242344+00:00",
+      "results": [
+        {
+          "variant": 0,
+          "name": "validate4-memcpy",
+          "count": 63,
+          "sum_cycles": 8131925,
+          "min_cycles": 127067,
+          "median_cycles": 127959,
+          "p95_cycles": 128002,
+          "p99_cycles": 219475,
+          "max_cycles": 219475,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 533.1625
+        },
+        {
+          "variant": 1,
+          "name": "fused-scalar",
+          "count": 63,
+          "sum_cycles": 9292374,
+          "min_cycles": 147498,
+          "median_cycles": 147498,
+          "p95_cycles": 147498,
+          "p99_cycles": 147498,
+          "max_cycles": 147498,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 614.575
+        },
+        {
+          "variant": 2,
+          "name": "fused-unroll4",
+          "count": 63,
+          "sum_cycles": 7005905,
+          "min_cycles": 110659,
+          "median_cycles": 111550,
+          "p95_cycles": 111552,
+          "p99_cycles": 114465,
+          "max_cycles": 114465,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 464.7916666666667
+        },
+        {
+          "variant": 3,
+          "name": "fused-unroll8",
+          "count": 63,
+          "sum_cycles": 8036762,
+          "min_cycles": 127072,
+          "median_cycles": 127963,
+          "p95_cycles": 127964,
+          "p99_cycles": 127971,
+          "max_cycles": 127971,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 533.1791666666667
+        }
+      ],
+      "begin": "VCTEST BEGIN 16380 6 63 2440",
+      "timer": {
+        "variant": 0,
+        "name": "cycle-read-pair",
+        "count": 255,
+        "sum_cycles": 255,
+        "min_cycles": 1,
+        "median_cycles": 1,
+        "p95_cycles": 1,
+        "p99_cycles": 1,
+        "max_cycles": 1,
+        "mismatch_count": 0
+      },
+      "end": {
+        "version": 1,
+        "status": 0,
+        "mismatch_mask": 0,
+        "wall_elapsed_us": 1286650,
+        "cpu_hz_before": 240000000,
+        "cpu_hz_after": 240000000,
+        "core_before": 0,
+        "core_after": 0,
+        "samples": 16380,
+        "rate_code": 6,
+        "repeats_requested": 63,
+        "warmup_calls": 3,
+        "cycle_bits": 32,
+        "raw_crc32": "93164204",
+        "capture_us": 1025
+      },
+      "clock_endpoints_stable": true,
+      "host_reference": {
+        "cap20_crc_valid": true,
+        "repeated_retrieval_identical": true,
+        "iq20_roundtrip_exact": true,
+        "samples_including_tail": 16380,
+        "iq20_words_crc32": "95730464",
+        "mean_energy": 9515,
+        "peak_energy": 15775,
+        "full_raw_metadata_verified": false,
+        "limitation": "CAP20 omits the upper12 metadata bits and guard words. Firmware raw_crc32 cannot be independently matched from this export; target comparisons cover full32-bit copy and guards."
+      },
+      "host_elapsed_us": 2149027.964,
+      "trial": 2,
+      "sigmf": "records/campaign/validate-copy-v1-input-2.sigmf-meta",
+      "saved_buffer_cleared": true,
+      "post_raw_crc": true,
+      "post_info": "ESP32SDR 6 burst 16380"
+    },
+    {
+      "request": {
+        "samples": 16380,
+        "rate_hz": 16000000,
+        "repeats": 63,
+        "frequency_mhz": 2440
+      },
+      "timestamp": "2026-11-10T22:37:53.813533+00:00",
+      "results": [
+        {
+          "variant": 0,
+          "name": "validate4-memcpy",
+          "count": 63,
+          "sum_cycles": 8039571,
+          "min_cycles": 127067,
+          "median_cycles": 127959,
+          "p95_cycles": 128002,
+          "p99_cycles": 128013,
+          "max_cycles": 128013,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 533.1625
+        },
+        {
+          "variant": 1,
+          "name": "fused-scalar",
+          "count": 63,
+          "sum_cycles": 9292374,
+          "min_cycles": 147498,
+          "median_cycles": 147498,
+          "p95_cycles": 147498,
+          "p99_cycles": 147498,
+          "max_cycles": 147498,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 614.575
+        },
+        {
+          "variant": 2,
+          "name": "fused-unroll4",
+          "count": 63,
+          "sum_cycles": 6997394,
+          "min_cycles": 110659,
+          "median_cycles": 110659,
+          "p95_cycles": 111552,
+          "p99_cycles": 111552,
+          "max_cycles": 111552,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 461.07916666666665
+        },
+        {
+          "variant": 3,
+          "name": "fused-unroll8",
+          "count": 63,
+          "sum_cycles": 8037819,
+          "min_cycles": 127072,
+          "median_cycles": 127963,
+          "p95_cycles": 127964,
+          "p99_cycles": 129914,
+          "max_cycles": 129914,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 533.1791666666667
+        }
+      ],
+      "begin": "VCTEST BEGIN 16380 6 63 2440",
+      "timer": {
+        "variant": 0,
+        "name": "cycle-read-pair",
+        "count": 255,
+        "sum_cycles": 255,
+        "min_cycles": 1,
+        "median_cycles": 1,
+        "p95_cycles": 1,
+        "p99_cycles": 1,
+        "max_cycles": 1,
+        "mismatch_count": 0
+      },
+      "end": {
+        "version": 1,
+        "status": 0,
+        "mismatch_mask": 0,
+        "wall_elapsed_us": 1285801,
+        "cpu_hz_before": 240000000,
+        "cpu_hz_after": 240000000,
+        "core_before": 0,
+        "core_after": 0,
+        "samples": 16380,
+        "rate_code": 6,
+        "repeats_requested": 63,
+        "warmup_calls": 3,
+        "cycle_bits": 32,
+        "raw_crc32": "36ea0815",
+        "capture_us": 1025
+      },
+      "clock_endpoints_stable": true,
+      "host_reference": {
+        "cap20_crc_valid": true,
+        "repeated_retrieval_identical": true,
+        "iq20_roundtrip_exact": true,
+        "samples_including_tail": 16380,
+        "iq20_words_crc32": "1aa11d02",
+        "mean_energy": 40,
+        "peak_energy": 104,
+        "full_raw_metadata_verified": false,
+        "limitation": "CAP20 omits the upper12 metadata bits and guard words. Firmware raw_crc32 cannot be independently matched from this export; target comparisons cover full32-bit copy and guards."
+      },
+      "host_elapsed_us": 2147143.283,
+      "trial": 3,
+      "sigmf": "records/campaign/validate-copy-v1-input-3.sigmf-meta",
+      "saved_buffer_cleared": true,
+      "post_raw_crc": true,
+      "post_info": "ESP32SDR 6 burst 16380"
+    },
+    {
+      "request": {
+        "samples": 16380,
+        "rate_hz": 16000000,
+        "repeats": 63,
+        "frequency_mhz": 2440
+      },
+      "timestamp": "2026-11-10T22:37:56.383465+00:00",
+      "results": [
+        {
+          "variant": 0,
+          "name": "validate4-memcpy",
+          "count": 63,
+          "sum_cycles": 8035899,
+          "min_cycles": 127067,
+          "median_cycles": 127959,
+          "p95_cycles": 128002,
+          "p99_cycles": 128002,
+          "max_cycles": 128002,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 533.1625
+        },
+        {
+          "variant": 1,
+          "name": "fused-scalar",
+          "count": 63,
+          "sum_cycles": 9369781,
+          "min_cycles": 147498,
+          "median_cycles": 147498,
+          "p95_cycles": 148392,
+          "p99_cycles": 194584,
+          "max_cycles": 194584,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 614.575
+        },
+        {
+          "variant": 2,
+          "name": "fused-unroll4",
+          "count": 63,
+          "sum_cycles": 7000310,
+          "min_cycles": 110659,
+          "median_cycles": 110659,
+          "p95_cycles": 111552,
+          "p99_cycles": 115357,
+          "max_cycles": 115357,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 461.07916666666665
+        },
+        {
+          "variant": 3,
+          "name": "fused-unroll8",
+          "count": 63,
+          "sum_cycles": 8038805,
+          "min_cycles": 127072,
+          "median_cycles": 127963,
+          "p95_cycles": 127964,
+          "p99_cycles": 129914,
+          "max_cycles": 129914,
+          "mismatch_count": 0,
+          "median_us_at_endpoint_clock": 533.1791666666667
+        }
+      ],
+      "begin": "VCTEST BEGIN 16380 6 63 2440",
+      "timer": {
+        "variant": 0,
+        "name": "cycle-read-pair",
+        "count": 255,
+        "sum_cycles": 255,
+        "min_cycles": 1,
+        "median_cycles": 1,
+        "p95_cycles": 1,
+        "p99_cycles": 1,
+        "max_cycles": 1,
+        "mismatch_count": 0
+      },
+      "end": {
+        "version": 1,
+        "status": 0,
+        "mismatch_mask": 0,
+        "wall_elapsed_us": 1285636,
+        "cpu_hz_before": 240000000,
+        "cpu_hz_after": 240000000,
+        "core_before": 0,
+        "core_after": 0,
+        "samples": 16380,
+        "rate_code": 6,
+        "repeats_requested": 63,
+        "warmup_calls": 3,
+        "cycle_bits": 32,
+        "raw_crc32": "8eaa8d6a",
+        "capture_us": 1025
+      },
+      "clock_endpoints_stable": true,
+      "host_reference": {
+        "cap20_crc_valid": true,
+        "repeated_retrieval_identical": true,
+        "iq20_roundtrip_exact": true,
+        "samples_including_tail": 16380,
+        "iq20_words_crc32": "646b9c4b",
+        "mean_energy": 38,
+        "peak_energy": 54,
+        "full_raw_metadata_verified": false,
+        "limitation": "CAP20 omits the upper12 metadata bits and guard words. Firmware raw_crc32 cannot be independently matched from this export; target comparisons cover full32-bit copy and guards."
+      },
+      "host_elapsed_us": 2147095.06,
+      "trial": 4,
+      "sigmf": "records/campaign/validate-copy-v1-input-4.sigmf-meta",
+      "saved_buffer_cleared": true,
+      "post_raw_crc": true,
+      "post_info": "ESP32SDR 6 burst 16380"
+    }
+  ],
+  "parameters": {
+    "port": "SERIAL_PORT_REDACTED",
+    "output": "records/campaign/validate-copy-v1.json",
+    "repeats": 63,
+    "frequency": 2440,
+    "gain": 40
+  },
+  "device": {
+    "family": "ESP32SDR",
+    "protocol": 6,
+    "max_samples": 16380,
+    "caps": [
+      "VCTEST1",
+      "ACQOPT",
+      "CLEAROPT",
+      "PIPEKERNEL",
+      "PROF1",
+      "DET1",
+      "VERSION",
+      "GPIO",
+      "SPEC",
+      "SPECN",
+      "SPECCAPS",
+      "SPECSTAT",
+      "DCT",
+      "RXLIMITS",
+      "SERIALLEASE",
+      "TUNEEXT",
+      "RX40",
+      "RX16",
+      "LPFANA",
+      "GAIN",
+      "HWAGC",
+      "IQ8"
+    ],
+    "limits": {
+      "gain": [
+        0,
+        81,
+        1
+      ],
+      "bandwidth": [
+        12,
+        67,
+        1,
+        0
+      ],
+      "rates": [
+        80000000,
+        40000000,
+        16000000
+      ],
+      "bits": [
+        8,
+        10
+      ]
+    },
+    "version": "VERSION {\"revision\":\"unknown\",\"build_date\":\"2026-11-10\",\"build_timestamp\":\"2026-11-10T22:30:58Z\",\"profile\":\"esp32\"}",
+    "transport": "TRANSPORT UART 1000000",
+    "spectrum": {
+      "continuous": false,
+      "transports": [
+        "USB",
+        "UART"
+      ],
+      "profiles": [
+        [
+          80000000,
+          0,
+          256,
+          1,
+          1,
+          0
+        ],
+        [
+          80000000,
+          0,
+          512,
+          1,
+          1,
+          0
+        ],
+        [
+          80000000,
+          0,
+          1024,
+          1,
+          1,
+          0
+        ],
+        [
+          80000000,
+          0,
+          2048,
+          1,
+          1,
+          0
+        ],
+        [
+          40000000,
+          1,
+          256,
+          1,
+          1,
+          0
+        ],
+        [
+          40000000,
+          1,
+          512,
+          1,
+          1,
+          0
+        ],
+        [
+          40000000,
+          1,
+          1024,
+          1,
+          1,
+          0
+        ],
+        [
+          40000000,
+          1,
+          2048,
+          1,
+          1,
+          0
+        ],
+        [
+          16000000,
+          6,
+          256,
+          1,
+          1,
+          0
+        ],
+        [
+          16000000,
+          6,
+          512,
+          1,
+          1,
+          0
+        ],
+        [
+          16000000,
+          6,
+          1024,
+          1,
+          1,
+          0
+        ],
+        [
+          16000000,
+          6,
+          2048,
+          1,
+          1,
+          0
+        ]
+      ]
+    }
+  },
+  "mode_queries": {
+    "ACQOPT": "ACQOPT 3",
+    "CLEAROPT": "CLEAROPT 1",
+    "PIPEKERNEL": "PIPEKERNEL 0"
+  },
+  "post_info": "ESP32SDR 6 burst 16380",
+  "final_buffer_clear": true
+}

@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+import argparse,json,re,time,zlib,sys
+from pathlib import Path
+from datetime import datetime,timezone
+import numpy as np
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from sdr_research.protocol import Radio,ProtocolError,Capture,decode_iq
+from sdr_research.recording import save_capture
+from sdr_research.profiling import run_profile
+p=argparse.ArgumentParser();p.add_argument('--output',required=True);p.add_argument('--skip-retention-profile',action='store_true');a=p.parse_args();out=Path(a.output);out.parent.mkdir(parents=True,exist_ok=True)
+r=Radio('SERIAL_PORT_REDACTED');report={'status':'running','runs':[]}
+def save():out.write_text(json.dumps(report,indent=2))
+try:
+ report['device']=r.connect();r.configure(2440,16000000)
+ report['etestinfo']=r.command('ETESTINFO?')
+ assert report['etestinfo']=='ETESTINFO 1 8 2 255 5000'
+ if not a.skip_retention_profile:
+  report['profile_retention_retry']=run_profile(r,2000,retain=True)
+  assert report['profile_retention_retry']['summary']['status']==0
+  save()
+ for trial,n in enumerate((256,2048,16380,16380,16380)):
+  repetitions=63;start=time.monotonic_ns();stamp=datetime.now(timezone.utc).isoformat()
+  expected=f'ETEST BEGIN {n} 6 {repetitions} 2440'
+  if r.command(f'ETEST {n} 6 {repetitions}')!=expected:raise ProtocolError('Invalid ETEST BEGIN')
+  run={'samples':n,'trial':trial,'results':[]};deadline=time.monotonic()+15
+  while True:
+   line=r._line(deadline)
+   if line.startswith('ETEST REFERENCE '):run['reference']=json.loads(line[len('ETEST REFERENCE '):])
+   elif line.startswith('ETEST TIMER '):run['timer']=json.loads(line[len('ETEST TIMER '):])
+   elif line.startswith('ETEST RESULT '):run['results'].append(json.loads(line[len('ETEST RESULT '):]))
+   elif line.startswith('ETEST END '):run['end']=json.loads(line[len('ETEST END '):]);break
+   else:raise ProtocolError(f'Unexpected ETEST line {line!r}')
+  report['runs'].append(run);save()
+  if run['end']['status'] or run['end']['mismatch_mask'] or len(run['results'])!=16:raise ProtocolError('ETEST comparison/run failed')
+  if run['end']['cpu_hz_before']!=run['end']['cpu_hz_after']:raise ProtocolError('CPU clock changed')
+  header=r.command('ETESTGET');m=re.fullmatch(r'DATA (\d+) ([0-9a-fA-F]{1,8}) (\d+)',header)
+  if not m or int(m[1])!=n:raise ProtocolError('Invalid ETESTGET header')
+  payload=r._read((n*20+7)//8)
+  if zlib.crc32(payload)!=int(m[2],16):raise ProtocolError('ETESTGET CRC mismatch')
+  iq=decode_iq(payload,n,10)
+  # Independent exact host reference, ignoring unprocessed partial tail exactly like firmware.
+  block=n//64;i=np.rint(iq.real[:block*64]*512).astype(np.int64).reshape(block,64);q=np.rint(iq.imag[:block*64]*512).astype(np.int64).reshape(block,64)
+  e=((i*i+q*q).sum(axis=1)*64-i.sum(axis=1)**2-q.sum(axis=1)**2)//4096
+  host_mean=int(e.sum()//block);host_peak=int(e.max());run['host_reference']={'mean_energy':host_mean,'peak_energy':host_peak,'crc_valid':True}
+  assert host_mean==run['reference']['mean_energy'] and host_peak==run['reference']['peak_energy']
+  c=Capture(iq,16000000,2440000000,stamp,start,time.monotonic_ns(),int(m[3]),10,True,{'device':report['device'],'energy_test':run,'timestamp_reference':'host ETEST request; exact RF start unavailable'})
+  path=save_capture(c,out.parent/f'{out.stem}-input-{trial}');run['sigmf']=str(path);save()
+ report['post_capture_crc']=r.capture(16380).crc_ok;report['post_info']=r.command('INFO');report['status']='passed'
+except Exception as e:report['status']='failed';report['error']=repr(e);r.failed=True;raise
+finally:r.close();save()
+print(report['status'])

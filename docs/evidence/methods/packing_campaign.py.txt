@@ -1,0 +1,26 @@
+import sys,json
+from pathlib import Path
+root=Path(__file__).resolve().parents[1];sys.path.insert(0,str(root))
+from sdr_research.protocol import Radio
+from sdr_research.pipeline_profile import run_pipeline_profile
+out=root/'records/campaign/packing-v1.json';report={'status':'running','runs':[]}
+if out.exists():raise SystemExit('Refusing overwrite')
+def save():out.write_text(json.dumps(report,indent=2))
+r=Radio('SERIAL_PORT_REDACTED')
+try:
+ report['device']=r.connect();r.configure(2440,16000000,12,40,10)
+ for enabled in (True,False):
+  for repeat in range(3):
+   for pack in (0,1):
+    assert r.command(f'PACKOPT {pack}')==f'PACKOPT {pack}' and r.command('PACKOPT?')==f'PACKOPT {pack}'
+    s,c=run_pipeline_profile(r,enabled=enabled,cadence=32,retain=True);s.update(repeat=repeat,pack_requested=pack);report['runs'].append(s);save()
+    assert s['status']==0 and s['pack_option']==pack and s['pack_failed']==0 and c is not None and c.crc_ok
+    s['post_raw_crc']=r.capture(16380).crc_ok;assert s['post_raw_crc'];save()
+    stage=next((x for x in s['profile_stages'] if x['name']=='retention'),None)
+    print(enabled,pack,s['nominal_local_rf_duty_percent'],stage['sum_us']/stage['count'] if stage and stage['count'] else None,flush=True)
+ report['post_info']=r.command('INFO');report['status']='passed'
+except Exception as e:report['status']='failed';report['error']=repr(e);raise
+finally:
+ if r.serial is not None and not r.failed:
+  for cmd in ('PIPEPROFILE 0','PIPEYIELD 32','DETPIPECLEAR'):r.command(cmd)
+ r.close();save()

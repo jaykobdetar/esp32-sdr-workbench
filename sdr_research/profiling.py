@@ -1,4 +1,8 @@
-"""Strict finite PROF1 lab client. Histogram quantiles are bounded intervals, not exact percentiles."""
+"""Strict finite PROF1 lab client. Histogram quantiles are bounded intervals, not exact percentiles.
+
+Historical lab client: unsupported by the published optimized-v2 firmware.
+See docs/diagnostic-provenance.md for matching source archives and limits.
+"""
 import json,time
 from .protocol import ProtocolError,RATES
 

@@ -1,0 +1,6 @@
+{
+  "raw_reply": "VERSION {\"revision\":\"unknown\",\"build_date\":\"2026-11-10\",\"build_timestamp\":\"2026-11-10T23:21:02Z\",\"profile\":\"esp32\",\"firmware_variant\":\"esp32-pipeline-optimized-v2\"}",
+  "source": "final/final-installed-verification.json#/device/version",
+  "application_sha256": "8fff02862f5036dc2775fe8e58b1aa3db29181180ae06524c5555aa86d22f1ad",
+  "revision_note": "unknown is the original measured value; no Git revision is inferred."
+}

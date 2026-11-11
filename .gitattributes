@@ -1,0 +1,3 @@
+# Preserve the original generator's trailing spaces so archived source hashes
+# and byte-for-byte regeneration remain valid. Other whitespace checks apply.
+docs/evidence/diagnostic-sources/energy-candidates/energy_candidates_runtime.h whitespace=-blank-at-eol

@@ -1,0 +1,18 @@
+import sys,json,statistics
+from pathlib import Path
+root=Path(__file__).resolve().parents[1];sys.path[:0]=[str(root),str(root/'experiments/pipeline-candidates')]
+from sdr_research.protocol import Radio
+from pipeline_client import run_pipeline
+out=root/'records/campaign/final-release-v2-soak.json';report={'status':'running','runs':[]}
+def save():out.write_text(json.dumps(report,indent=2))
+r=Radio('SERIAL_PORT_REDACTED')
+try:
+ report['device']=r.connect();assert r.command('PIPECOPY 1')=='PIPECOPY 1';r.configure(2440,16000000,gain=40,bandwidth_mhz=12)
+ for key,value in [('ACQOPT',3),('CLEAROPT',1)]:assert r.command(f'{key} {value}')=='OK'
+ for repeat in range(24):
+  s,c=run_pipeline(r,5000,retain=True,kernel=3,optimized=True,copy_option=1);s['repeat']=repeat;report['runs'].append(s);save();assert s['status']==0 and c is not None and c.crc_ok
+  s['post_raw_crc']=r.capture(16380).crc_ok;assert s['post_raw_crc'];s['memory_after']=r.command('DETPIPEMEM?');save()
+  print(repeat,s['captures'],s['nominal_local_rf_duty_percent'],flush=True)
+ r.command('DETPIPECLEAR');report['memory_final']=r.command('DETPIPEMEM?');report['post_info']=r.command('INFO');report['status']='passed'
+except Exception as e:report['status']='failed';report['error']=repr(e);raise
+finally:r.close();save()

@@ -46,3 +46,11 @@ The screenshot is from the real final firmware session. It is included without r
 The selected viewer suite passed 147 tests after a clean installation into a fresh isolated Python environment. The installed `esp32-sdr --help` entry point also passed outside the checkout. This recheck did not access hardware or modify the installed device firmware. Firmware clean-build results are recorded in the build guide.
 
 The combined selected public suite passed **153 tests plus 5 subtests** (147 viewer tests and 6 firmware tests plus 5 subtests). A clean original-ESP32 firmware build from the public tree also succeeded using the pinned SDK/toolchain. No rebuilt image was flashed for this publication pass; hardware numbers above remain those of the original final campaign image.
+
+## Evidence publication check, 11 November 2026
+
+The [curated evidence supplement](evidence/README.md) publishes all final A/B, soak and GUI summaries, historical DET1 trials, build identity, microbenchmarks and selected diagnostic sources. Offline recalculation reproduces the README numbers. Every sampled post-run soak heap reply is preserved; this is not a claim about unobserved transient heap behavior.
+
+The supplement's local tests passed **156 viewer/evidence tests plus 6 firmware tests and 5 subtests**. The additional evidence tests cover integrity hashes, headline recalculation, an explicitly synthetic handshake replay, and endpoint-count handling. No new firmware build, serial query, hardware measurement or flashing was performed for this supplement. Earlier clean-build results above remain historical.
+
+Endpoint analysis of the five screenshot-session retained captures found Q-channel endpoint occupancy of **0.20–12.76%**. The [published counts and method](evidence/gui/clipping-counts.json) support a clipping/saturation concern but do not identify its cause. Raw RF remains private. A complete raw handshake, matched manual-gain/AGC comparison, terminated-input floor and launcher-created screenshot were not available and are explicitly recorded as gaps.

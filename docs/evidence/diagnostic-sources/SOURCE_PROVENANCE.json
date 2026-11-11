@@ -1,0 +1,118 @@
+{
+  "scope": "Archived research sources, not a standalone buildable firmware distribution. Original receiver variants are not enabled in the release.",
+  "license": "GPL-3.0-or-later; see ../../../firmware/LICENSE from this directory. Existing notices retained.",
+  "files": [
+    {
+      "original_relative_path": "experiments/energy-candidates/generate_dispatcher.py",
+      "published_relative_path": "energy-candidates/generate_dispatcher.py",
+      "original_sha256": "674d6308eb6ef5a4677caa76b24aba9ab28a2d45ed2e805f017424aa9d69b0ee",
+      "published_sha256": "674d6308eb6ef5a4677caa76b24aba9ab28a2d45ed2e805f017424aa9d69b0ee",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "experiments/energy-candidates/detector_energy_candidates.h",
+      "published_relative_path": "energy-candidates/detector_energy_candidates.h",
+      "original_sha256": "ed321f25250cdbbbdd9f55b8c74ff0efde4e1bd4f1c47e1d8a0cac068048e6eb",
+      "published_sha256": "ed321f25250cdbbbdd9f55b8c74ff0efde4e1bd4f1c47e1d8a0cac068048e6eb",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "experiments/energy-candidates/energy_kernel_body.inc",
+      "published_relative_path": "energy-candidates/energy_kernel_body.inc",
+      "original_sha256": "d3e77a282fdd612da9881363ddb38085ca02c7a51556159f065b9cdc9b93f5b2",
+      "published_sha256": "d3e77a282fdd612da9881363ddb38085ca02c7a51556159f065b9cdc9b93f5b2",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "experiments/energy-candidates/energy_candidates_runtime.h",
+      "published_relative_path": "energy-candidates/energy_candidates_runtime.h",
+      "original_sha256": "01853cdeecadf3d449f30d55775962bd76f46ef243c4a6ea0781f3af7b24e03a",
+      "published_sha256": "01853cdeecadf3d449f30d55775962bd76f46ef243c4a6ea0781f3af7b24e03a",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "firmware-pipeline-profile/main/targets/esp32/pipeline_profile.h",
+      "published_relative_path": "pipeline-profile/pipeline_profile.h",
+      "original_sha256": "3593a879a0b6b8ae404e2b67fac9935555604a757eba26500371b4f4adae36fe",
+      "published_sha256": "3593a879a0b6b8ae404e2b67fac9935555604a757eba26500371b4f4adae36fe",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "firmware-pipeline-profile/main/targets/esp32/profile_stats.h",
+      "published_relative_path": "pipeline-profile/profile_stats.h",
+      "original_sha256": "7f4514e003a8ff23cd561244ba295aa78dff65902ab9b980982c393b105785c4",
+      "published_sha256": "7f4514e003a8ff23cd561244ba295aa78dff65902ab9b980982c393b105785c4",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "firmware-pipeline-profile/main/targets/esp32/profile_acquire.h",
+      "published_relative_path": "pipeline-profile/profile_acquire.h",
+      "original_sha256": "4eb49efca08b339a06799d7426e7e333b6c42b801f70aa3fb6dcea87a2003ab9",
+      "published_sha256": "4eb49efca08b339a06799d7426e7e333b6c42b801f70aa3fb6dcea87a2003ab9",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "firmware-pipeline-profile/main/targets/esp32/detector_pipeline.h",
+      "published_relative_path": "pipeline-profile/detector_pipeline.h",
+      "original_sha256": "adc88f42c6077fad8e94c9b2869aaa8a310dd3764de05851b42faa66ceb59bce",
+      "published_sha256": "adc88f42c6077fad8e94c9b2869aaa8a310dd3764de05851b42faa66ceb59bce",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "firmware-pipeline-profile/main/targets/esp32/receiver.c",
+      "published_relative_path": "pipeline-profile/receiver.c",
+      "original_sha256": "3f9ef55e47f183ce8af83c43c1d5a4a34709c0219632b9362acec7f89546f129",
+      "published_sha256": "3f9ef55e47f183ce8af83c43c1d5a4a34709c0219632b9362acec7f89546f129",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "firmware-pipeline-profile/main/targets/esp32/ascii_frame.h",
+      "published_relative_path": "pipeline-profile/ascii_frame.h",
+      "original_sha256": "d0496b63932619803bcc7c064ea2c0c6274adcc64299a28e7398c2eff3845844",
+      "published_sha256": "d0496b63932619803bcc7c064ea2c0c6274adcc64299a28e7398c2eff3845844",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "firmware-pipeline-compact/main/targets/esp32/pipeline_profile.h",
+      "published_relative_path": "pipeline-compact/pipeline_profile.h",
+      "original_sha256": "2a965e9e81f63273ee84259f627a28c460c7f96caec75864ce17c84025efe6b8",
+      "published_sha256": "2a965e9e81f63273ee84259f627a28c460c7f96caec75864ce17c84025efe6b8",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "firmware-pipeline-compact/main/targets/esp32/profile_stats.h",
+      "published_relative_path": "pipeline-compact/profile_stats.h",
+      "original_sha256": "7f4514e003a8ff23cd561244ba295aa78dff65902ab9b980982c393b105785c4",
+      "published_sha256": "7f4514e003a8ff23cd561244ba295aa78dff65902ab9b980982c393b105785c4",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "firmware-pipeline-compact/main/targets/esp32/profile_acquire.h",
+      "published_relative_path": "pipeline-compact/profile_acquire.h",
+      "original_sha256": "4eb49efca08b339a06799d7426e7e333b6c42b801f70aa3fb6dcea87a2003ab9",
+      "published_sha256": "4eb49efca08b339a06799d7426e7e333b6c42b801f70aa3fb6dcea87a2003ab9",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "firmware-pipeline-compact/main/targets/esp32/detector_pipeline.h",
+      "published_relative_path": "pipeline-compact/detector_pipeline.h",
+      "original_sha256": "2766796f7bec3046654757c6cab6682bfa7f91ea59d6a67b735f3eb1e7ac3c2a",
+      "published_sha256": "2766796f7bec3046654757c6cab6682bfa7f91ea59d6a67b735f3eb1e7ac3c2a",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "firmware-pipeline-compact/main/targets/esp32/receiver.c",
+      "published_relative_path": "pipeline-compact/receiver.c",
+      "original_sha256": "3f9ef55e47f183ce8af83c43c1d5a4a34709c0219632b9362acec7f89546f129",
+      "published_sha256": "3f9ef55e47f183ce8af83c43c1d5a4a34709c0219632b9362acec7f89546f129",
+      "sanitization": []
+    },
+    {
+      "original_relative_path": "firmware-pipeline-compact/main/targets/esp32/ascii_frame.h",
+      "published_relative_path": "pipeline-compact/ascii_frame.h",
+      "original_sha256": "d0496b63932619803bcc7c064ea2c0c6274adcc64299a28e7398c2eff3845844",
+      "published_sha256": "d0496b63932619803bcc7c064ea2c0c6274adcc64299a28e7398c2eff3845844",
+      "sanitization": []
+    }
+  ]
+}

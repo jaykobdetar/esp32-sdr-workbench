@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+"""One finite benchmark phase on whichever detector firmware is explicitly installed.
+The script never flashes. Use alternating v1/v2 phases to reduce time-order bias.
+"""
+import argparse,json,time,sys,hashlib
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from sdr_research.protocol import Radio
+from sdr_research.detector import run_detection
+p=argparse.ArgumentParser();p.add_argument('--label',required=True);p.add_argument('--output',required=True);p.add_argument('--port',default='SERIAL_PORT_REDACTED');p.add_argument('--binary',required=True);p.add_argument('--repetitions',type=int,default=3);a=p.parse_args()
+out=Path(a.output);out.parent.mkdir(parents=True,exist_ok=True)
+r=Radio(a.port);report={'label':a.label,'status':'running','timestamp':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'runs':[],'flashed_binary_path':a.binary,'flashed_binary_sha256':hashlib.sha256(Path(a.binary).read_bytes()).hexdigest()}
+def save():out.write_text(json.dumps(report,indent=2))
+try:
+ report['device']=r.connect();save()
+ # Fixed receiver state and parameters in every phase. Vary only finite duration/retention.
+ r.configure(2440,16000000,0,None,10)
+ for retain in (False,True):
+  for i in range(a.repetitions):
+   summary,c=run_detection(r,2000,16380,16000000,4000,retain)
+   summary.update({'retain_requested':retain,'repeat':i,'retained_crc_valid':c.crc_ok if c is not None else None})
+   report['runs'].append(summary);save()
+   if summary['status'] or summary['errors_received']:raise RuntimeError('Detector reported error')
+ report['post_capture_crc']=r.capture(16380).crc_ok
+ report['post_info']=r.command('INFO');report['status']='passed'
+except Exception as e:report['status']='failed';report['error']=repr(e);raise
+finally:r.close();save()
+print(a.label,report['status'])

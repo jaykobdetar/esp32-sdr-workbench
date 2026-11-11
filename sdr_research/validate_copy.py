@@ -1,4 +1,8 @@
-"""Strict, finite VCTEST1 reader. No flashing; caller owns a configured Radio."""
+"""Strict, finite VCTEST1 reader. No flashing; caller owns a configured Radio.
+
+Historical lab client: unsupported by the published optimized-v2 firmware.
+See docs/diagnostic-provenance.md for matching source archives and limits.
+"""
 from datetime import datetime, timezone
 import json,re,time,zlib
 import numpy as np

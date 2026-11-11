@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+"""Finite VCTEST campaign. No firmware flashing, network or transmitter changes."""
+import argparse,json,sys,time
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from sdr_research.protocol import Radio,ProtocolError
+from sdr_research.validate_copy import run_validate_copy,clear_validate_copy
+from sdr_research.recording import save_capture
+
+def main():
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--port',default='SERIAL_PORT_REDACTED')
+    p.add_argument('--output',default='records/campaign/validate-copy-v1.json');p.add_argument('--repeats',type=int,choices=(63,127),default=63)
+    p.add_argument('--frequency',type=int,default=2440);p.add_argument('--gain',type=int,default=40)
+    a=p.parse_args();out=Path(a.output)
+    if out.exists():raise SystemExit(f'Refusing to overwrite prior campaign: {out}')
+    out.parent.mkdir(parents=True,exist_ok=True);r=Radio(a.port)
+    report={'status':'running','started_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'runs':[],'parameters':vars(a)}
+    def save():
+        tmp=out.with_suffix(out.suffix+'.tmp');tmp.write_text(json.dumps(report,indent=2));tmp.replace(out)
+    try:
+        report['device']=r.connect();r.configure(a.frequency,16_000_000,gain=a.gain,bits=10)
+        for cmd in ('ACQOPT 3','CLEAROPT 1'):
+            if r.command(cmd)!='OK':raise ProtocolError(f'Selector failed: {cmd}')
+        report['mode_queries']={key:r.command(key+'?') for key in ('ACQOPT','CLEAROPT','PIPEKERNEL')};save()
+        for trial,n in enumerate((256,2048,16380,16380,16380)):
+            run,capture=run_validate_copy(r,samples=n,repeats=a.repeats)
+            run['trial']=trial;report['runs'].append(run);save()
+            if run['end']['status'] or run['end']['mismatch_mask']:raise ProtocolError('VCTEST target verification/timing failed; partial results saved')
+            run['sigmf']=str(save_capture(capture,out.parent/f'{out.stem}-input-{trial}'))
+            clear_validate_copy(r);run['saved_buffer_cleared']=True
+            run['post_raw_crc']=r.capture(n).crc_ok;run['post_info']=r.command('INFO');save()
+        report['post_info']=r.command('INFO');report['status']='passed'
+    except Exception as exc:
+        report['status']='failed';report['error']=repr(exc)
+        if hasattr(exc,'report'):report['failed_run']=exc.report
+        raise
+    finally:
+        if r.serial is not None and not r.failed:
+            try:clear_validate_copy(r);report['final_buffer_clear']=True
+            except Exception as exc:report['cleanup_error']=repr(exc)
+        r.close();save()
+    print(json.dumps({'status':report['status'],'runs':len(report['runs']),'output':str(out)},indent=2))
+if __name__=='__main__':main()

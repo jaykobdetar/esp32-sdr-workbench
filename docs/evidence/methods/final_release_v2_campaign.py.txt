@@ -1,0 +1,33 @@
+import sys,json,hashlib
+from pathlib import Path
+root=Path(__file__).resolve().parents[1];sys.path.insert(0,str(root))
+from sdr_research.protocol import Radio
+from sdr_research.pipeline import run_pipeline,select_acquisition_policy
+from sdr_research.detector import run_detection
+out=root/'records/campaign/final-release-v2.json';report={'status':'running','runs':[],'raw_checks':[],'fallback_checks':[],'binary_sha256':hashlib.sha256((root/'firmware-optimized-v2/artifacts-optimized-v2/esp32/esp32/2-esp_sdr.bin').read_bytes()).hexdigest()}
+if out.exists():raise SystemExit('Refusing overwrite')
+def save():out.write_text(json.dumps(report,indent=2))
+r=Radio('SERIAL_PORT_REDACTED')
+try:
+ report['device']=r.connect();assert 'esp32-pipeline-optimized-v2' in report['device']['version'];r.configure(2440,16000000,12,40)
+ for retain in (False,True):
+  for repeat in range(3):
+   for mode in ('baseline','optimized'):
+    r.command('DETPIPECLEAR');select_acquisition_policy(r,mode=='optimized')
+    s,c=run_detection(r,2000,retain=retain) if mode=='baseline' else run_pipeline(r,2000,retain=retain,kernel=3,optimized=True,copy_option=1)
+    s.update(mode=mode,repeat=repeat,retain_requested=retain);report['runs'].append(s);save();assert s['status']==0
+    if mode=='optimized':assert type(s['pack_failed']) is int and s['pack_failed']==0
+    if c is not None:assert c.crc_ok
+    s['post_raw_crc']=r.capture(16380).crc_ok;assert s['post_raw_crc'];save()
+    print(mode,retain,s.get('nominal_local_rf_duty_percent',s.get('nominal_rf_duty_percent')),flush=True)
+ for rate in (16000000,40000000,80000000):
+  for bits in (8,10):
+   r.configure(2440,rate,12,40,bits)
+   for n in (256,2048,8192,16380):
+    c=r.capture(n);assert c.crc_ok;report['raw_checks'].append({'rate':rate,'bits':bits,'samples':n,'crc':True});save()
+ r.configure(2440,16000000,12,40,10)
+ for n in (256,2048,8192):
+  s,c=run_pipeline(r,200,n,retain=True,kernel=3,optimized=True,copy_option=1);report['fallback_checks'].append(s);save();assert s['status']==0 and s['fused_active']==0
+ report['post_info']=r.command('INFO');report['status']='passed'
+except Exception as e:report['status']='failed';report['error']=repr(e);raise
+finally:r.close();save()

@@ -1,0 +1,28 @@
+{
+  "v1": {
+    "runs": 12,
+    "captures": 3873,
+    "local_duty_mean": 16.49735266677319,
+    "local_duty_min": 16.466024237931734,
+    "local_duty_max": 16.524721773850988,
+    "processing_us_per_capture": 4278.218924068483,
+    "acquisition_us_per_capture": 1907.9491167176252,
+    "retained_crc_valid": 6,
+    "host_duty_retention_False": 16.443593642745338,
+    "host_duty_retention_True": 13.603854919313603
+  },
+  "v2": {
+    "runs": 12,
+    "captures": 7534,
+    "local_duty_mean": 32.10476667241986,
+    "local_duty_min": 32.06466220249617,
+    "local_duty_max": 32.11517635211278,
+    "processing_us_per_capture": 1269.3618859141193,
+    "acquisition_us_per_capture": 1902.6059207140124,
+    "retained_crc_valid": 6,
+    "host_duty_retention_False": 31.973993239864782,
+    "host_duty_retention_True": 26.486448940774963
+  },
+  "relative_rf_gain": 1.9460556685001398,
+  "processing_reduction_percent": 70.32966502081229
+}

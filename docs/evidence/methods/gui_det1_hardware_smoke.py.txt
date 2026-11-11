@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+"""Finite offscreen real-GUI integration check; never flashes."""
+import argparse,json,sys,time
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from PySide6 import QtWidgets,QtCore
+from sdr_research.gui import MainWindow
+from sdr_research.recording import load_capture
+p=argparse.ArgumentParser();p.add_argument('--expect-unsupported',action='store_true');p.add_argument('--output-directory',required=True);p.add_argument('--mode',choices=['DET1','DETPIPE1'],default='DET1');a=p.parse_args()
+out=Path(a.output_directory);out.mkdir(parents=True,exist_ok=True)
+app=QtWidgets.QApplication([]);w=MainWindow();w.mode.setCurrentIndex(w.mode.findData(a.mode));w.det_ms.setValue(1000);w.det_ratio.setValue(4);w.autosave.setChecked(True);w.output_dir=out;w.show();w.start_acquisition()
+started=time.monotonic();stopping=False;timed_out=False
+snapshot=out/'viewer.png'
+def tick():
+ global stopping,timed_out
+ running=any(x.isRunning() for x in w.workers.values())
+ runs=sum(x.run_count for x in w.workers.values())
+ if not stopping and ((not running) or runs>=4 or time.monotonic()-started>12):
+  w.grab().save(str(snapshot));w.stop_acquisition();stopping=True
+ if stopping and not running:w.poll();app.quit()
+ if time.monotonic()-started>30:
+  timed_out=True;w.stop_acquisition();app.quit()
+timer=QtCore.QTimer();timer.timeout.connect(tick);timer.start(100);app.exec()
+for worker in w.workers.values():worker.wait(10000)
+records=list(out.glob('*.det1.json' if a.mode=='DET1' else '*.detpipe1.json'));iq=list(out.glob('*.sigmf-meta'))
+for path in iq:assert load_capture(path).crc_ok
+summary={'expected_unsupported':a.expect_unsupported,'timed_out':timed_out,'worker_errors':w.worker_errors,'runs':sum(x.run_count for x in w.workers.values()),'summary_files':len(records),'retained_files':len(iq),'event_rows':w.event_table.rowCount(),'status':w.status_label.text(),'log':w.log.toPlainText(),'stats':w.stats}
+(out/'gui-result.json').write_text(json.dumps(summary,indent=2))
+assert not timed_out
+if a.expect_unsupported:
+ assert w.worker_errors and not records and not iq
+else:
+ assert not w.worker_errors and summary['runs']>=4 and len(records)>=4
+ assert all(json.loads(path.read_text())['gui_mode']==a.mode for path in records)
+ assert w.stats and all(x['mode']==a.mode for x in w.stats.values())
+print(json.dumps({k:v for k,v in summary.items() if k not in ('log','stats')},indent=2))

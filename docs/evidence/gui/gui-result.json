@@ -1,0 +1,106 @@
+{
+  "expected_unsupported": false,
+  "timed_out": false,
+  "worker_errors": {},
+  "runs": 5,
+  "summary_files": 5,
+  "retained_files": 5,
+  "event_rows": 5,
+  "status": "Stopped \u00b7 SERIAL_PORT_REDACTED \u00b7 DETPIPE1 \u00b7 Experimental K3 / ACQ3 / CLEAR1 / COPY1 (fused 1) run 5 \u00b7 2440 MHz \u00b7 local nominal RF/analyzed/post-warmup decision duty 62.42% / 62.19% / 60.56% \u00b7 host-session duty 42.93% / 42.77% / 41.64% (includes transfer/recording/gaps) \u00b7 1258 candidate-positive captures, 5 retained strongest/run; NOT unique packets \u00b7 last run: 235 candidates, IQ retained \u00b7 exact event time unknown",
+  "log": "Starting 1 independent receiver(s). Output: records/campaign/gui-final-release-v2\nSERIAL_PORT_REDACTED: state: Connecting\u2026\nSERIAL_PORT_REDACTED: info: {'family': 'ESP32SDR', 'protocol': 6, 'max_samples': 16380, 'caps': ['PIPECOPY', 'ACQOPT', 'CLEAROPT', 'PIPEKERNEL', 'DET1', 'VERSION', 'GPIO', 'SPEC', 'SPECN', 'SPECCAPS', 'SPECSTAT', 'DCT', 'RXLIMITS', 'SERIALLEASE', 'TUNEEXT', 'RX40', 'RX16', 'LPFANA', 'GAIN', 'HWAGC', 'IQ8'], 'limits': {'gain': [0, 81, 1], 'bandwidth': [12, 67, 1, 0], 'rates': [80000000, 40000000, 16000000], 'bits': [8, 10]}, 'version': 'VERSION {\"revision\":\"unknown\",\"build_date\":\"2026-11-10\",\"build_timestamp\":\"2026-11-10T23:21:02Z\",\"profile\":\"esp32\",\"firmware_variant\":\"esp32-pipeline-optimized-v2\"}', 'transport': 'TRANSPORT UART 1000000', 'spectrum': {'continuous': False, 'transports': ['USB', 'UART'], 'profiles': [[80000000, 0, 256, 1, 1, 0], [80000000, 0, 512, 1, 1, 0], [80000000, 0, 1024, 1, 1, 0], [80000000, 0, 2048, 1, 1, 0], [40000000, 1, 256, 1, 1, 0], [40000000, 1, 512, 1, 1, 0], [40000000, 1, 1024, 1, 1, 0], [40000000, 1, 2048, 1, 1, 0], [16000000, 6, 256, 1, 1, 0], [16000000, 6, 512, 1, 1, 0], [16000000, 6, 1024, 1, 1, 0], [16000000, 6, 2048, 1, 1, 0]]}}\nSERIAL_PORT_REDACTED: record: records/campaign/gui-final-release-v2/gui-run-01.detpipe1.json\nSERIAL_PORT_REDACTED: record: records/campaign/gui-final-release-v2/gui-run-02.detpipe1.json\nSERIAL_PORT_REDACTED: record: records/campaign/gui-final-release-v2/gui-run-03.detpipe1.json\nSERIAL_PORT_REDACTED: record: records/campaign/gui-final-release-v2/gui-run-04.detpipe1.json\nSERIAL_PORT_REDACTED: record: records/campaign/gui-final-release-v2/gui-run-05.detpipe1.json\nSERIAL_PORT_REDACTED: state: Stopped",
+  "stats": {
+    "SERIAL_PORT_REDACTED": {
+      "mode": "DETPIPE1",
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 611,
+        "processed_captures": 611,
+        "detections": 235,
+        "background_adc2": 16751,
+        "best_ratio_milli": 23109,
+        "wall_elapsed_us": 1002136,
+        "completion_observed_us": 626472,
+        "acquire_call_us_includes_overlap": 995381,
+        "energy_compute_us": 518616,
+        "copy_us": 283769,
+        "decision_us": 509,
+        "retention_copy_us": 6340,
+        "retained_samples": 16380,
+        "frequency_mhz": 2440,
+        "total_samples": 10008180,
+        "analyzed_samples": 9971520,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-10T23:25:50.758227+00:00",
+        "host_run_elapsed_us": 1010602.074,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1443367.253,
+        "nominal_local_rf_duty_percent": 62.41780057796547,
+        "nominal_local_decision_duty_percent": 60.56064246768902,
+        "nominal_host_rf_duty_percent": 43.33694343555957,
+        "nominal_host_decision_duty_percent": 42.0475106899214,
+        "nominal_rf_duty_percent": 62.41780057796547,
+        "nominal_decision_duty_percent": 60.56064246768902,
+        "nominal_analyzed_duty_percent": 62.18916394581176,
+        "retained_crc_valid": true,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency.",
+        "gui_mode": "DETPIPE1",
+        "candidate_count_semantics": "candidate-positive captures, not unique packets",
+        "retained_semantics": "at most one strongest candidate capture per finite run",
+        "timestamp_reference": "host run request time; exact event time unavailable",
+        "host_session_nominal_rf_duty_percent": 42.926837802260984,
+        "host_session_nominal_analyzed_duty_percent": 42.76959663815015,
+        "host_session_nominal_decision_duty_percent": 41.644451050826234,
+        "retained_sigmf": "gui-run-05.sigmf-meta",
+        "host_session_elapsed_through_recording_s": 7.252394794
+      },
+      "count": 3041,
+      "runs": 5,
+      "candidates": 1258,
+      "retained": 5,
+      "nominal_duty": 0.4292582283819609,
+      "analyzed_duty": 0.4276858539190234,
+      "decision_duty": 0.41643466407570806,
+      "elapsed": 7.252566274,
+      "render_drops": 0,
+      "occupancy": {
+        "2440": [
+          1258,
+          2961
+        ]
+      },
+      "has_capture": true,
+      "host_updated_ns": 14281113597460,
+      "nominal_rf_s": 3.1132237499999995,
+      "analyzed_s": 3.10182,
+      "decision_s": 3.0202199999999997
+    }
+  }
+}
