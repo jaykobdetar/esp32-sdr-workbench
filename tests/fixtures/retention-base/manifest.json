@@ -1,0 +1,22 @@
+{
+  "base_commit": "3e382d94ce914e1b89fcc04c688f7d8a2a7f6b89",
+  "files": {
+    "firmware/FIRMWARE_VARIANT": "f0f35ae140f14f1f55dd8413aaddc636c3fcf22e8491ce20037098998fd17d78",
+    "firmware/main/targets/esp32/ascii_frame.h": "f17d35d2894d03e6bb5cf4ffef1f695ecb746bb40c72c9a15d79c1c2b56a05b8",
+    "firmware/main/targets/esp32/detector_energy.h": "ba0583f143bf6e57200bd1c805e8e4c8d10c3e1f1fb754abe519bf629f54179c",
+    "firmware/main/targets/esp32/detector_experiment.h": "aefdd9a677e70c55b6ab100d9a06c5429edc69eaa6cc13dac414d214f139636a",
+    "firmware/main/targets/esp32/detector_pipeline.h": "6e4bfe1123279b51e3f333ee2362481d93150371a792f8afeac6387202e4879d",
+    "firmware/main/targets/esp32/pack20_candidates.h": "892b23d36310f4cfd4341722673a4755c8f587839fb00cb0ba182e89e4ae6c0a",
+    "firmware/main/targets/esp32/pipeline_acquisition_options.h": "f382244e4ab57b6a3aef73da148d5bfde474c5d1d390f197ce78d33769afbfbe",
+    "firmware/main/targets/esp32/pipeline_energy3.h": "babee11ca4f5207caf1acddd4de3c1cb7f826d91964151b393718a5200292d29",
+    "firmware/main/targets/esp32/pipeline_energy_body.inc": "d3e77a282fdd612da9881363ddb38085ca02c7a51556159f065b9cdc9b93f5b2",
+    "firmware/main/targets/esp32/profile_acquire.h": "4eb49efca08b339a06799d7426e7e333b6c42b801f70aa3fb6dcea87a2003ab9",
+    "firmware/main/targets/esp32/profile_command.h": "2e3237e057157d1fb125e96a5f66910808f98612815b0cf44862de060f1300ff",
+    "firmware/main/targets/esp32/profile_stats.h": "7f4514e003a8ff23cd561244ba295aa78dff65902ab9b980982c393b105785c4",
+    "firmware/main/targets/esp32/receiver.c": "16877b3e1019fdaee84f00700f430fcdc7b36dedd5ecc948c9def7a8e5201257",
+    "firmware/main/targets/esp32/sram_guard.ld": "1a141bd0ef01a591b271151f4c8845d1dcf1b099f28d99ff4eaf0f09f03bf61f",
+    "firmware/main/targets/esp32/validate_candidates.h": "7cd835b2878f63a7f917aab4be85ba205574ed63c86ef3f3bc9489e54760034b",
+    "firmware/main/targets/esp32/validate_copy_runtime.h": "2a999efa0450d659fbf3f0882ba29171d348a0f4f218605f35806d37230600ee",
+    "firmware/main/targets/esp32/validate_copy_test.h": "ee4f6c735621d9f97f99fe5cc474fd8e42524ab454742c4f6b3eb6e9f506b898"
+  }
+}

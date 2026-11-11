@@ -80,3 +80,19 @@ The maintenance pass above was combined with the [controlled nRF52840 validation
 - Index pages were added for `docs/` and `scripts/`.
 
 The controlled-source data changes two statements made earlier in this record. A known transmitter now shows that part of the candidate rate is source-dependent, although roughly 193–202 candidate windows per second remained with the source off for the optimized image. A manual gain sweep now exists (index 60 usable, up to 10% clipping at index 80), but a matched hardware-AGC comparison and a terminated-input floor are still missing.
+
+## Automated build and compatibility coverage
+
+`firmware.yml` compiles the current ESP32 release with the exact pinned SDK and
+the nRF52840 application with pinned vendor sources. The retention matrix entry
+applies the archived patch to its original base, not to the evolving release.
+No compile job accesses hardware. Transmitter C checks are collected by pytest.
+
+`latest-dependencies.yml` runs weekly and on demand, deliberately installing the
+latest Qt independently of production constraints. It runs the host suite and a
+six-second real Qt/PyQtGraph paint loop in a subprocess. A crash fails the job;
+success alone is not grounds to remove the production pin without review.
+
+## Subsequent 19-item improvement pass
+
+The [checklist](improvement-checklist.md) separates implemented software from remaining board/physical checks. All three firmware variants compile locally, but the new adaptive-Q16 image was not flashed. A separate [24-run matched AGC/manual trial](matched-gain-comparison.md) used unchanged installed optimized-v2 firmware, fixed −20 dBm source power and unmeasured bench geometry. Its transmitter was stopped and prior settings restored. The new launcher screenshot is explicitly synthetic UI evidence. Remote CI/schedules are configured locally, not yet published or run.

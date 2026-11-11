@@ -19,3 +19,7 @@ Software checks used the existing Python 3.14 research environment (including Qt
 [Source provenance](rf-source-provenance.json) lists unchanged analysis/coordinator source and portability-only campaign edits. [Evidence provenance](evidence/nrf-validation/README.md) explains original/public hashes and omissions. [Transmitter provenance](../nrf52840-transmitter/THIRD_PARTY.md) retains third-party notices and pins. Existing source, historical evidence and personal working records were preserved.
 
 The experiment does not establish packet recall, calibrated sensitivity, continuous reception, two-receiver timing coverage, Quest decoding, or reservoir superiority.
+
+## Subsequent offline statistics verification
+
+The updated verifier now recomputes every archived ABAB and paired-retention bootstrap interval using the original seed, sample count and resampling order. It also recomputes Wilson intervals and exact McNemar p, and enumerates paired sign flips and cycle pair-label permutations. All match the unchanged published measurement JSON. See [the evidence method](evidence/nrf-validation/README.md) for exchangeability and small-sample limits. No new RF measurements are implied by this recalculation.

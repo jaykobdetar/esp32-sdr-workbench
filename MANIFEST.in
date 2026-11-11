@@ -1,0 +1,3 @@
+include CHANGELOG.md
+include experiments/retention/retention-experiment.patch
+recursive-include tests/fixtures/retention-base *.c *.h *.inc *.ld *.json *.md FIRMWARE_VARIANT

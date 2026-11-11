@@ -50,7 +50,74 @@ class NrfEvidenceTests(unittest.TestCase):
         self.assertEqual(h['retention_on']['reservoir'], {'full_crc': 3, 'n': 12})
         self.assertEqual(h['retention_on']['strongest'], {'full_crc': 2, 'n': 12})
         self.assertAlmostEqual(h['retention_paired_difference'], 1 / 12)
-        self.assertFalse(h['bootstrap_intervals_recomputed'])
+        self.assertTrue(h['bootstrap_intervals_recomputed'])
+        self.assertEqual(h['bootstrap_method']['resamples'], 20000)
+        self.assertEqual(
+            h['abab_exact_paired_sign_flip']['historical-1'],
+            {
+                'two_sided_p': 0.125,
+                'assignments': 16,
+            },
+        )
+        self.assertAlmostEqual(
+            h['abab_cycle_effects'][0]['exact_pair_label_permutation']['two_sided_p'], 2 / 70
+        )
+        self.assertEqual(h['retention_exact_mcnemar_two_sided_p'], 1.0)
+        self.assertEqual(h['retention_exact_paired_sign_flip']['two_sided_p'], 1.0)
+        self.assertEqual(h['retention_paired_bootstrap_percentile_95'], [-1 / 6, 1 / 3])
+
+    def test_changed_abab_interval_rejected(self):
+        records, abab, retention = self.headline_inputs()
+        abab['phases'][0]['states']['on']['candidate_rate']['bootstrap_percentile_95'][0] += 1
+        with self.assertRaisesRegex(ValueError, 'interval mismatch'):
+            verifier.recompute_headlines(records, abab, retention)
+
+    def test_changed_cycle_interval_rejected(self):
+        records, abab, retention = self.headline_inputs()
+        abab['cycle_effects'][0]['bootstrap_percentile_95'][0] += 1
+        with self.assertRaisesRegex(ValueError, 'cycle excess interval mismatch'):
+            verifier.recompute_headlines(records, abab, retention)
+
+    def test_changed_retention_interval_rejected(self):
+        records, abab, retention = self.headline_inputs()
+        retention['paired_bootstrap_percentile_95'][0] += 0.1
+        with self.assertRaisesRegex(ValueError, 'Retention paired bootstrap interval mismatch'):
+            verifier.recompute_headlines(records, abab, retention)
+
+    def test_changed_wilson_interval_rejected(self):
+        records, abab, retention = self.headline_inputs()
+        retention['groups'][0]['full_crc_wilson_95'][0] += 0.1
+        with self.assertRaisesRegex(ValueError, 'Retention Wilson interval mismatch'):
+            verifier.recompute_headlines(records, abab, retention)
+
+    def test_changed_exact_mcnemar_rejected(self):
+        records, abab, retention = self.headline_inputs()
+        retention['exact_mcnemar_two_sided_p'] = 0.5
+        with self.assertRaisesRegex(ValueError, 'McNemar mismatch'):
+            verifier.recompute_headlines(records, abab, retention)
+
+    def test_exact_paired_permutation_known_answers(self):
+        self.assertEqual(verifier.exact_sign_flip([1, 2, 3, 4])['two_sided_p'], 0.125)
+        self.assertEqual(verifier.exact_sign_flip([1, -1, 2, -2])['two_sided_p'], 1.0)
+        self.assertEqual(verifier.exact_sign_flip([0, 0, 0, 0])['two_sided_p'], 1.0)
+        self.assertEqual(verifier.exact_sign_flip([1, 0, 0, 0])['two_sided_p'], 1.0)
+        with self.assertRaises(ValueError):
+            verifier.exact_sign_flip([])
+
+    def test_exact_independent_permutation_known_answers(self):
+        result = verifier.exact_independent_permutation([0, 0, 0, 0], [1, 1, 1, 1])
+        self.assertEqual(result['assignments'], 70)
+        self.assertAlmostEqual(result['two_sided_p'], 2 / 70)
+        self.assertEqual(
+            verifier.exact_independent_permutation([1] * 4, [1] * 4)['two_sided_p'], 1.0
+        )
+
+    def test_reordered_input_records_preserve_seeded_result(self):
+        records, abab, retention = self.headline_inputs()
+        self.assertEqual(
+            verifier.recompute_headlines(records, abab, retention),
+            verifier.recompute_headlines(list(reversed(records)), abab, retention),
+        )
 
     def test_changed_detection_count_rejected(self):
         records, abab, retention = self.headline_inputs()

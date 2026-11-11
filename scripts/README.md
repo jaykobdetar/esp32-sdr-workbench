@@ -8,12 +8,12 @@ Run everything from the repository root. Only the campaign scripts and the multi
 |---|---|
 | `launch.sh` | Start the viewer from a source checkout. |
 
-## Check the published evidence (offline, standard library only)
+## Check the published evidence (offline)
 
 | Script | Purpose |
 |---|---|
 | `verify_evidence.py` | Recompute the benchmark, soak and GUI headline numbers from `docs/evidence/`. |
-| `verify_nrf_evidence.py` | Recompute the controlled-source totals, duty and rate comparisons and known-packet CRCs from `docs/evidence/nrf-validation/`. |
+| `verify_nrf_evidence.py` | Recompute the controlled-source totals, duty/rate comparisons, seeded bootstrap intervals, exact pair tests and known-packet CRCs (requires NumPy) from `docs/evidence/nrf-validation/`. |
 
 ## Analyse recordings you hold locally (offline)
 
@@ -44,3 +44,7 @@ These drive an ESP32 receiver and the [nRF52840 transmitter](../nrf52840-transmi
 ## Why some of these files are not auto-formatted
 
 The campaign and analysis scripts above, `sdr_research/multireceiver.py` and three of their tests have their exact bytes recorded in [`docs/rf-source-provenance.json`](../docs/rf-source-provenance.json). Most are byte-identical to the code that produced the published measurements. They are excluded from ruff in `pyproject.toml`, and `tests/test_source_provenance.py` fails if one changes. To edit one deliberately, update its `public_sha256` in the provenance file and set `byte_identical` to `false` in the same change.
+
+## Matched gain trials
+
+`python -m nrf_campaigns.nrf_gain_compare --help` describes the bounded no-flash AGC/manual ON/OFF runner. `python -m nrf_campaigns.nrf_gain_analysis --help` analyzes private originals without radio access. See [the matched-gain report](../docs/matched-gain-comparison.md) for actual trial results and geometry limitations.

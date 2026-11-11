@@ -83,3 +83,20 @@ Pipeline selectors:
 - `ACQOPT <0..3>` and `CLEAROPT <0|1>`: setters reply `OK`; queries reply `<name> <value>`.
 
 Read back selectors. Acquisition timing includes overlapped prior-buffer work, so adding it to energy time double-counts work. Energy analyzes complete 64-sample blocks only (16320 of 16380 samples); guard/tail memory validation still covers the complete requested region and aperture. Histogram lab telemetry is not part of this release's detector stream. Some END JSON lines have ASCII whitespace padding for the documented UART framing workaround; parse JSON rather than require one fixed byte count.
+
+## Unflashed adaptive-q16-v3 extension
+
+Current source adds `background_policy: 2` and `background_q16` to DET1/DETPIPE1
+END summaries while preserving their version-1 framing. This is a new detector
+policy, not the measured optimized-v2 binary. Raw gain-register start/end
+snapshots and device-monotonic trigger metadata are additive. See
+[adaptive detector semantics and limits](adaptive-detector.md).
+
+`PIPEKEEP 3` selects one-shot three-crop retention for the next valid DETPIPE1;
+`PIPEKEEP 1` cancels it and `PIPEKEEP?` reads pending selection. Default remains
+single full capture. END includes `retention_capacity` and `retained_candidates`
+(slot, samples, offset_samples, generation, trigger_device_us, score_milli,
+capture_us). `DETPIPEGET` returns strongest and `DETPIPEGET <slot>` retrieves an
+occupied slot, using normal CAP20/CRC framing. Crops are bounded to 5120 samples;
+320 µs at 16 MS/s but too short for the known 292 µs frame at 40/80 MS/s.
+Firmware has not been flashed or board-soak validated; no new RF results claimed.

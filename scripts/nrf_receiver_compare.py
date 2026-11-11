@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """Single-image historical DET1 versus optimized comparison. Never flashes hardware."""
-import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import nrf_rf_campaign as campaign
+from nrf_campaigns import nrf_rf_campaign as campaign
 
 
 def parser():
@@ -23,8 +20,7 @@ def prepare(args):
 
 def main():
     args = prepare(parser().parse_args())
-    sys.path.insert(0, str(campaign.ROOT/'nrf52840-transmitter/host'))
-    from rf_tx import Transmitter
+    from nrf_tx.rf_tx import Transmitter
     radio = campaign.Radio(args.rx_port)
     try:
         with Transmitter(args.tx_port) as tx:

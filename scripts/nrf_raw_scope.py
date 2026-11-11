@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Finite randomized direct-IQ RF contrast sweep; no packet-recall inference."""
-import sys,json,time,random,argparse
+import json,time,random,argparse
 from pathlib import Path
 import numpy as np
-ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT));sys.path.insert(0,str(ROOT/'nrf52840-transmitter/host'))
-from rf_tx import Transmitter
+from nrf_tx.rf_tx import Transmitter
 from sdr_research.protocol import Radio
 from sdr_research.recording import save_capture
 p=argparse.ArgumentParser(description=__doc__)

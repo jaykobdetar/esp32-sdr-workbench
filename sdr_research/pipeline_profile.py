@@ -12,7 +12,7 @@ import json
 import time
 
 from .pipeline import run_pipeline
-from .protocol import ProtocolError, Radio
+from .protocol import Capture, ProtocolError, Radio
 
 
 class ProfileMemoryError(ProtocolError):
@@ -106,7 +106,7 @@ def _uints(obj, fields):
         raise ProtocolError('Invalid profile integer field')
 
 
-def parse_init(line):
+def parse_init(line: str) -> dict[str, int | bool]:
     obj = _object(line, 'PPROF1 INIT ')
     version = obj.get('version')
     fields = INIT_FIELDS if version == 1 else INIT_FIELDS | {'bins_count_bits', 'overflow'}
@@ -127,7 +127,7 @@ def parse_init(line):
     return obj
 
 
-def parse_stage(line, expected_id):
+def parse_stage(line: str, expected_id: int) -> dict[str, int | str]:
     obj = _object(line, 'PPROF1 STAGE ')
     if set(obj) != STAGE_FIELDS:
         raise ProtocolError('Invalid profile STAGE fields')
@@ -254,16 +254,16 @@ class _ProfileRadio:
 
 
 def run_pipeline_profile(
-    radio,
+    radio: Radio,
     *,
-    enabled=True,
-    cadence=32,
-    milliseconds=2000,
-    samples=16380,
-    rate_hz=16000000,
-    ratio_milli=4000,
-    retain=False,
-):
+    enabled: bool = True,
+    cadence: int = 32,
+    milliseconds: int = 2000,
+    samples: int = 16380,
+    rate_hz: int = 16000000,
+    ratio_milli: int = 4000,
+    retain: bool = False,
+) -> tuple[dict[str, object], Capture | None]:
     if type(enabled) is not bool or type(cadence) is not int or cadence not in (32, 64, 128):
         raise ValueError('Invalid profile mode or yield cadence')
     # Validate request before making persistent selector changes.

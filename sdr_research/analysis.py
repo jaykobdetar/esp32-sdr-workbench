@@ -1,9 +1,12 @@
 """Conservative exploratory detectors. Scores are NOT transmitter identity."""
 
 import numpy as np
+from numpy.typing import ArrayLike, NDArray
 
 
-def spectrum(iq, rate_hz, nfft=1024, remove_dc=True):
+def spectrum(
+    iq: ArrayLike, rate_hz: float, nfft: int = 1024, remove_dc: bool = True
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
     x = np.asarray(iq, dtype=np.complex64)
     nfft = min(int(nfft), len(x))
     if nfft < 2:
@@ -19,7 +22,9 @@ def spectrum(iq, rate_hz, nfft=1024, remove_dc=True):
     )
 
 
-def detect_event(iq, rate_hz, threshold_db=10):
+def detect_event(
+    iq: ArrayLike, rate_hz: float, threshold_db: float = 10
+) -> dict[str, bool | float | str]:
     # Block-energy change detector avoids comparing passband peaks to out-of-band floor.
     # Cannot detect an event spanning the entire capture without a calibrated baseline.
     x = np.asarray(iq, dtype=np.complex64)
@@ -49,7 +54,7 @@ def detect_event(iq, rate_hz, threshold_db=10):
     )
 
 
-def endpoint_counts(iq, bits):
+def endpoint_counts(iq: ArrayLike, bits: int) -> dict[str, int | float]:
     """Count samples whose I or wire-Q component sits on a signed ADC endpoint code.
 
     Endpoints are the lowest and highest codes of a signed ``bits``-wide component
@@ -80,12 +85,12 @@ def endpoint_counts(iq, bits):
 class NoiseCalibration:
     """Per-setting PSD reference. User must collect idle data; resets on setting changes."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.key = None
         self.frames = []
         self.baseline = None
 
-    def add(self, key, power_dbfs):
+    def add(self, key: object, power_dbfs: ArrayLike) -> NDArray[np.floating]:
         if key != self.key:
             self.key = key
             self.frames = []

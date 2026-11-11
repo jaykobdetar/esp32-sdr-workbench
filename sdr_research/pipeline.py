@@ -5,21 +5,25 @@ import re
 import time
 import zlib
 from datetime import datetime, timezone
+from typing import Any
 
-from sdr_research.protocol import RATES, Capture, ProtocolError, decode_iq
+from sdr_research.protocol import RATES, Capture, ProtocolError, Radio, decode_iq
+
+from .summary_validation import retained_trigger_metadata, validate_run_summary
 
 
 def run_pipeline(
-    radio,
-    milliseconds=2000,
-    samples=16380,
-    rate_hz=16000000,
-    ratio_milli=4000,
-    retain=True,
-    kernel=0,
-    optimized=False,
-    copy_option=None,
-):
+    radio: Radio,
+    milliseconds: int = 2000,
+    samples: int = 16380,
+    rate_hz: int = 16000000,
+    ratio_milli: int = 4000,
+    retain: bool = True,
+    kernel: int = 0,
+    optimized: bool = False,
+    copy_option: int | None = None,
+    candidate_count: int = 1,
+) -> tuple[dict[str, Any], Capture | None]:
     if any(type(v) is not int for v in (milliseconds, samples, rate_hz, ratio_milli)):
         raise ValueError('Integer request fields required')
     if (
@@ -38,6 +42,8 @@ def run_pipeline(
         raise ValueError('Optimized mode requires kernel 3')
     if copy_option is not None and (type(copy_option) is not int or copy_option not in (0, 1)):
         raise ValueError('copy_option must be None, 0 or 1')
+    if type(candidate_count) is not int or candidate_count not in (1, 3):
+        raise ValueError('candidate_count must be 1 or 3')
     frequency = radio.settings['frequency_mhz']
     total_start = time.monotonic_ns()
     copy_policy = select_copy_policy(radio, copy_option)
@@ -48,6 +54,16 @@ def run_pipeline(
         raise ProtocolError('Pipeline kernel readback failed')
     if radio.command('DETPIPEINFO?') != 'DETPIPEINFO 1 5000 16 64':
         raise ProtocolError('Unsupported pipeline firmware')
+    if candidate_count == 3:
+        try:
+            if (
+                radio.command('PIPEKEEP 3') != 'PIPEKEEP 3'
+                or radio.command('PIPEKEEP?') != 'PIPEKEEP 3'
+            ):
+                raise ProtocolError('PIPEKEEP selection/readback failed')
+        except Exception:
+            radio.failed = True
+            raise
     stamp = datetime.now(timezone.utc).isoformat()
     start = time.monotonic_ns()
     command = f'DETPIPE1 {milliseconds} {samples} {RATES[rate_hz]} {ratio_milli} {int(retain)}'
@@ -69,34 +85,17 @@ def run_pipeline(
                 raise ProtocolError('Invalid pipeline end')
             summary = json.loads(line[len('DETPIPE1 END ') :])
             break
-        fields = [
-            'version',
-            'kernel',
-            'status',
-            'captures',
-            'processed_captures',
-            'detections',
-            'background_adc2',
-            'best_ratio_milli',
-            'wall_elapsed_us',
-            'completion_observed_us',
-            'acquire_call_us_includes_overlap',
-            'energy_compute_us',
-            'copy_us',
-            'decision_us',
-            'retention_copy_us',
-            'retained_samples',
-            'frequency_mhz',
-            'total_samples',
-            'analyzed_samples',
-            'sample_rate_hz',
-            'errors',
-            'warmup_captures',
-        ]
-        if not isinstance(summary, dict) or any(
-            type(summary.get(k)) is not int or summary[k] < 0 for k in fields
-        ):
-            raise ProtocolError('Invalid pipeline summary types/ranges')
+        summary = validate_run_summary(
+            summary,
+            samples=samples,
+            rate_hz=rate_hz,
+            frequency_mhz=frequency,
+            retain=retain,
+            pipeline=True,
+            kernel=kernel,
+            errors_received=bool(errors),
+            candidate_count=candidate_count,
+        )
         for selector, field in [('ACQOPT', 'acquisition_option'), ('CLEAROPT', 'clear_option')]:
             policy = policies[selector]
             if policy['supported'] and (
@@ -115,32 +114,6 @@ def run_pipeline(
                     'Pipeline copy_option/fused_active summary mismatch or missing field'
                 )
         count = summary['captures']
-        if summary['version'] != 1 or summary['status'] not in (0, 1, 2):
-            raise ProtocolError('Unsupported pipeline summary version/status')
-        if summary['kernel'] != kernel:
-            raise ProtocolError('Pipeline kernel mismatch')
-        if summary['frequency_mhz'] != frequency or summary['sample_rate_hz'] != rate_hz:
-            raise ProtocolError('Pipeline settings mismatch')
-        if (
-            summary['processed_captures'] != count
-            or summary['total_samples'] != count * samples
-            or summary['analyzed_samples'] != count * (samples // 64) * 64
-        ):
-            raise ProtocolError('Inconsistent pipeline counters')
-        if summary['warmup_captures'] != min(count, 16) or summary['detections'] > max(
-            0, count - 16
-        ):
-            raise ProtocolError('Inconsistent pipeline warmup/detections')
-        if (
-            not summary['wall_elapsed_us']
-            or summary['retained_samples'] not in (0, samples)
-            or (not retain and summary['retained_samples'])
-        ):
-            raise ProtocolError('Invalid pipeline timing/retention')
-        if summary['retained_samples'] and not summary['detections']:
-            raise ProtocolError('Retained pipeline IQ without candidate')
-        if summary['errors'] != int(summary['status'] != 0) or (errors and summary['status'] == 0):
-            raise ProtocolError('Pipeline error status mismatch')
         summary['errors_received'] = errors
         summary['host_request_timestamp'] = stamp
         summary['host_run_elapsed_us'] = (time.monotonic_ns() - start) / 1000
@@ -148,13 +121,14 @@ def run_pipeline(
         if summary['status'] == 0 and summary['retained_samples']:
             line = radio.command('DETPIPEGET')
             header = re.fullmatch(r'DATA (\d+) ([0-9a-fA-F]{1,8}) (\d+)', line)
-            if not header or int(header[1]) != samples:
+            retained_samples = summary['retained_samples']
+            if not header or int(header[1]) != retained_samples:
                 raise ProtocolError('Invalid retained pipeline header')
-            payload = radio._read((samples * 20 + 7) // 8)
+            payload = radio._read((retained_samples * 20 + 7) // 8)
             if zlib.crc32(payload) != int(header[2], 16):
                 raise ProtocolError('Retained pipeline CRC mismatch')
             capture = Capture(
-                decode_iq(payload, samples, 10),
+                decode_iq(payload, retained_samples, 10),
                 rate_hz,
                 frequency * 1000000,
                 stamp,
@@ -165,11 +139,21 @@ def run_pipeline(
                 True,
                 {
                     'detector_summary': summary,
+                    **retained_trigger_metadata(summary),
                     'device': radio.info,
                     'timestamp_reference': 'pipeline run start, not RF arrival',
                     'firmware_capture_us_semantics': 'trigger to observed completion, may include overlapped prior processing; not RF duration',
                 },
             )
+        if capture is not None and candidate_count == 3:
+            strongest = next(
+                c
+                for c in summary['retained_candidates']
+                if c['generation'] == summary['retained_generation']
+            )
+            if capture.firmware_capture_us != strongest['capture_us']:
+                raise ProtocolError('Strongest candidate capture timing mismatch')
+            _set_candidate_metadata(capture, strongest)
         summary['copy_policy'] = copy_policy
         summary['acquisition_policies'] = policies
         summary['kernel_requested'] = kernel
@@ -200,7 +184,9 @@ def run_pipeline(
         raise
 
 
-def select_acquisition_policy(radio, optimized=False):
+def select_acquisition_policy(
+    radio: Radio, optimized: bool = False
+) -> dict[str, dict[str, int | bool | None]]:
     """Never probe absent legacy capabilities or silently accept sticky policies."""
     caps = set(radio.info.get('caps', []))
     requested = {'ACQOPT': 3 if optimized else 0, 'CLEAROPT': 1 if optimized else 0}
@@ -226,7 +212,7 @@ def select_acquisition_policy(radio, optimized=False):
     return policies
 
 
-def select_copy_policy(radio, copy_option):
+def select_copy_policy(radio: Radio, copy_option: int | None) -> dict[str, int | bool | None]:
     """None deliberately preserves legacy experiment behavior without probing."""
     policy = {
         'requested': copy_option,
@@ -248,3 +234,101 @@ def select_copy_policy(radio, copy_option):
     except Exception:
         radio.failed = True
         raise
+
+
+def run_pipeline_candidates(
+    radio: Radio,
+    milliseconds: int = 2000,
+    samples: int = 16380,
+    rate_hz: int = 16000000,
+    ratio_milli: int = 4000,
+    retain: bool = True,
+    kernel: int = 0,
+    optimized: bool = False,
+    copy_option: int | None = None,
+) -> tuple[dict[str, Any], list[Capture]]:
+    """Opt in to three bounded crops; return strongest first, then remaining slots.
+
+    Requires PIPEKEEP firmware. No fallback silently changes retention policy.
+    Crop trigger times refer to the original acquisition, with offset_samples
+    giving nominal crop placement, not a hardware timestamp for each sample.
+    """
+    total_start = time.monotonic_ns()
+    summary, strongest = run_pipeline(
+        radio,
+        milliseconds,
+        samples,
+        rate_hz,
+        ratio_milli,
+        retain,
+        kernel,
+        optimized,
+        copy_option,
+        candidate_count=3,
+    )
+    if strongest is None:
+        summary['retained_event_count'] = 0
+        return summary, []
+    candidates = summary['retained_candidates']
+    best = next(c for c in candidates if c['generation'] == summary['retained_generation'])
+    _set_candidate_metadata(strongest, best)
+    captures = [strongest]
+    try:
+        for item in candidates:
+            if item['slot'] == best['slot']:
+                continue
+            line = radio.command(f'DETPIPEGET {item["slot"]}')
+            header = re.fullmatch(r'DATA (\d+) ([0-9a-fA-F]{1,8}) (\d+)', line)
+            if (
+                not header
+                or int(header[1]) != item['samples']
+                or int(header[3]) != item['capture_us']
+            ):
+                raise ProtocolError('Invalid retained candidate header')
+            payload = radio._read((item['samples'] * 20 + 7) // 8)
+            if zlib.crc32(payload) != int(header[2], 16):
+                raise ProtocolError('Retained candidate CRC mismatch')
+            capture = Capture(
+                decode_iq(payload, item['samples'], 10),
+                rate_hz,
+                strongest.frequency_hz,
+                strongest.timestamp,
+                strongest.monotonic_start_ns,
+                time.monotonic_ns(),
+                int(header[3]),
+                10,
+                True,
+                dict(strongest.metadata),
+            )
+            _set_candidate_metadata(capture, item)
+            captures.append(capture)
+    except Exception:
+        radio.failed = True
+        raise
+    summary['host_total_elapsed_us'] = (time.monotonic_ns() - total_start) / 1000
+    summary['nominal_host_rf_duty_percent'] = (
+        100 * summary['total_samples'] / rate_hz / (summary['host_total_elapsed_us'] / 1e6)
+    )
+    summary['nominal_host_decision_duty_percent'] = (
+        100
+        * max(0, summary['captures'] - 16)
+        * (samples // 64)
+        * 64
+        / rate_hz
+        / (summary['host_total_elapsed_us'] / 1e6)
+    )
+    summary['retained_event_count'] = len(captures)
+    return summary, captures
+
+
+def _set_candidate_metadata(capture: Capture, candidate: dict[str, int]) -> None:
+    capture.metadata.update(
+        retained_candidate=dict(candidate),
+        trigger_device_us=candidate['trigger_device_us'],
+        retained_generation=candidate['generation'],
+        crop_offset_samples=candidate['offset_samples'],
+        crop_timing_note=(
+            'trigger_device_us is original acquisition trigger uptime; crop offset/fs '
+            'is nominal sample timing, not calibrated RF arrival'
+        ),
+    )

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "esp32-sdr-research"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Native burst-aware ESP32 RF research workbench"
 readme = "README.md"
 license = "GPL-3.0-or-later"
@@ -31,10 +31,15 @@ dev = ["pytest>=8", "ruff==0.16.9"]
 Repository = "https://github.com/jaykobdetar/esp32-sdr-workbench"
 
 [project.scripts]
-esp32-sdr = "sdr_research.gui:main"
+esp32-sdr = "sdr_research.cli:main"
+nrf-rf-tx = "nrf_tx.rf_tx:main"
 
 [tool.setuptools]
-packages = ["sdr_research"]
+packages = ["sdr_research", "nrf_tx", "nrf_campaigns"]
+package-dir = {nrf_tx = "nrf52840-transmitter/host", nrf_campaigns = "scripts"}
+
+[tool.setuptools.dynamic]
+version = {attr = "sdr_research._version.__version__"}
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "firmware/tests", "nrf52840-transmitter/tests"]

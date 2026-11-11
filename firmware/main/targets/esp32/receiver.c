@@ -46,6 +46,9 @@ static uint32_t *const samples = (void *)0x3ffe8000;
 static unsigned acquisition_option, clear_option;
 static unsigned gain_max, gain_code = 40;
 static bool hardware_agc = true;
+/* Device monotonic microseconds sampled immediately before the dump trigger
+ * register write. Not a calibrated RF arrival timestamp or host clock. */
+static uint64_t capture_trigger_device_us;
 static unsigned frequency_mhz = 2412;
 /* Original ESP32 BBTOP RX filter: registers 1/2, seven-bit capacitor DAC.
  * Preserve bit 7 and restore PHY calibration before any retune or transfer. */
@@ -125,6 +128,7 @@ static bool acquire_iq_with_validation(unsigned n, unsigned source, unsigned clo
     uint32_t ctrl = n | (source << 20) | ((clock == 0) << 16) | ((clock == 2) << 15);
     REG_WRITE(DUMP_CTRL, ctrl | BIT(31));
     int64_t start = esp_timer_get_time();
+    capture_trigger_device_us = (uint64_t)start;
     REG_SET_BIT(DUMP_CTRL, BIT(19));
     REG_CLR_BIT(DUMP_CTRL, BIT(19));
     if (during_wait) during_wait(context);
@@ -257,7 +261,7 @@ static void command(char *line) {
     char extra;
     if (!strcmp(line, "CAPS"))
         reply(
-            "CAPS PIPECOPY ACQOPT CLEAROPT PIPEKERNEL DET1 VERSION GPIO SPEC SPECN SPECCAPS SPECSTAT DCT "
+            "CAPS PIPEKEEP PIPECOPY ACQOPT CLEAROPT PIPEKERNEL DET1 VERSION GPIO SPEC SPECN SPECCAPS SPECSTAT DCT "
 #if !CONFIG_ESP_SDR_CP2102_VIEWER_COMPAT
             "UARTBAUD "
 #endif

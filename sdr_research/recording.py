@@ -1,14 +1,39 @@
 """Single discontinuous burst per SigMF recording. No invented continuous timestamps."""
 
 import json
+import os
+import tempfile
 from pathlib import Path
 
 import numpy as np
 
+from ._version import __version__
 from .protocol import Capture
 
 
-def save_capture(capture, path_without_suffix):
+def atomic_write_json(path: str | Path, document: dict) -> None:
+    """Publish complete JSON with a same-directory rename, cleaning failed temp writes.
+
+    A new summary is invisible until its final recording outcome is known. Existing readers
+    see either the previous complete document or the new complete document, never a prefix.
+    """
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=f'.{path.name}.', suffix='.tmp', dir=path.parent)
+    try:
+        with os.fdopen(fd, 'w') as output:
+            json.dump(document, output, indent=2)
+            output.flush()
+            os.fsync(output.fileno())
+        os.replace(temporary, path)
+    finally:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+
+
+def save_capture(capture: Capture, path_without_suffix: str | Path) -> Path:
     base = Path(path_without_suffix)
     if base.suffix in ('.sigmf-meta', '.sigmf-data'):
         base = base.with_suffix('')
@@ -25,7 +50,7 @@ def save_capture(capture, path_without_suffix):
             'core:sample_rate': capture.sample_rate_hz,
             'core:version': '1.2.5',
             'core:description': 'ESP32 discontinuous raw I/Q burst, not a continuous session',
-            'core:recorder': 'esp32-sdr-research 0.1.0',
+            'core:recorder': f'esp32-sdr-research {__version__}',
             'core:extensions': [{'name': 'sdr_research', 'version': '1.0.0', 'optional': True}],
             'sdr_research:metadata': capture.metadata,
             'sdr_research:timing': {
@@ -56,7 +81,7 @@ def save_capture(capture, path_without_suffix):
     return meta
 
 
-def load_capture(meta_path):
+def load_capture(meta_path: str | Path) -> Capture:
     path = Path(meta_path)
     doc = json.loads(path.read_text())
     g = doc['global']

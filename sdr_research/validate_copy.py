@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 
 import numpy as np
 
-from .protocol import RATES, Capture, ProtocolError, decode_iq
+from .protocol import RATES, Capture, ProtocolError, Radio, decode_iq
 
 NAMES = ('validate4-memcpy', 'fused-scalar', 'fused-unroll4', 'fused-unroll8')
 STAT_INTS = (
@@ -113,7 +113,9 @@ def _pack20(words):
     return bytes(out)
 
 
-def run_validate_copy(radio, samples=16380, rate_hz=16_000_000, repeats=63):
+def run_validate_copy(
+    radio: Radio, samples: int = 16380, rate_hz: int = 16_000_000, repeats: int = 63
+) -> tuple[dict[str, object], Capture]:
     if (
         any(type(v) is not int for v in (samples, rate_hz, repeats))
         or not 256 <= samples <= 16380
@@ -263,6 +265,6 @@ def run_validate_copy(radio, samples=16380, rate_hz=16_000_000, repeats=63):
         raise
 
 
-def clear_validate_copy(radio):
+def clear_validate_copy(radio: Radio) -> None:
     if radio.command('VCTESTCLEAR') != 'OK':
         raise ProtocolError('VCTESTCLEAR failed')

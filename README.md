@@ -1,19 +1,26 @@
 # ESP32 SDR Research Workbench
 
+**Current source versus measured hardware:** the current source builds the experimental
+`esp32-pipeline-adaptive-q16-v3` detector variant. Its new detector behavior is checked offline and by
+compile tests only; it has not been flashed or validated on the board. Published numerical
+RF results apply to the historical optimized-v2 installed image, not this new source.
+Single-candidate retention remains the default pending board checks.
+
 **A native RF viewer and optimized, burst-aware energy detector for the original ESP32.**
 
 Explore the ESP32 receiver's raw I/Q, inspect spectra and recorded events, and compare honest acquisition duty with end-to-end host coverage. This project builds on [ESPARGOS/esp-sdr](https://github.com/ESPARGOS/esp-sdr), adding a Python/Qt workbench and an experimental guarded acquisition/processing pipeline.
 
 > **Not continuous SDR.** Reception has gaps. Detector counts are unclassified candidate-positive captures, not decoded packets. A separate offline decoder validates only the controlled known Nordic test frames. Power is relative dBFS, not calibrated dBm.
 
-![Native viewer operating with the optimized firmware on a real ESP32](docs/viewer-hardware.png)
+![Documented launcher in explicitly simulated mode, with the ADC-endpoint column](docs/viewer-launcher-demo.png)
 
-*Genuine hardware session, not simulated data: original ESP32 over CP2102 UART, 2440 MHz, 16 MS/s, optimized pipeline. The plotted trace is the strongest retained I/Q capture, not a continuous live stream. The screenshot was captured during the final hardware validation; its status line is an intermediate run, not the final benchmark aggregate. It was grabbed by the GUI hardware smoke harness, which constructs the window directly and so shows the desktop's light theme and the pre-indicator event table; the documented launcher applies a dark palette and now adds an ADC-endpoint column.*
+*Actual `scripts/launch.sh --demo` window, captured on 11 November 2026 with the launcher's dark palette and the ADC-endpoint event column. The checked SIMULATED demo control, device names and status label identify synthetic raw I/Q. This screenshot demonstrates the UI, not receiver performance or new RF evidence. The historical hardware screenshot remains archived as `docs/viewer-hardware.png`.*
 
 ## What you get
 
 - **Native desktop viewer:** spectrum, capture-index waterfall, frequency survey, heuristic occupancy, event inspection and SigMF replay.
 - **Three acquisition modes:** raw snapshots, experimental DET1 and the optimized finite pipeline.
+- **Headless recorder:** `esp32-sdr record` saves bounded or unattended sessions without Qt, with atomic final summaries and graceful stop signals. [Guide](docs/headless-recording.md).
 - **Event recording:** structured JSON summaries for every detector run, including no-event runs and the requested gain mode, gain index and bandwidth; CRC-checked SigMF I/Q for the strongest qualifying capture per run.
 - **Saturation indicator:** every displayed or recorded capture reports the share of samples sitting on an ADC endpoint code, and 1% or more is flagged as likely clipping.
 - **Truthful duty indicators:** local nominal RF, analyzed and post-warmup decision exposure, plus separate host-session values including transfer and recording gaps.
@@ -53,6 +60,8 @@ python3 scripts/verify_nrf_evidence.py
 ```
 
 The [campaign guide](docs/nrf-controlled-source-campaign.md) covers new measurements using explicit device ports and your own verified receiver binary. The [offline analyzer](scripts/analyze_nrf_iq.py) works on privately held originals; the public summary alone cannot replay RF demodulation. The [multi-receiver coordinator](docs/multi-receiver-preparation.md) has fake-device tests and a historical one-receiver health check, not a two-receiver experiment.
+
+The subsequent [matched AGC/manual comparison](docs/matched-gain-comparison.md) completed 24 bounded runs on the unchanged installed firmware at −20 dBm. Candidate rates depended strongly on gain, but four-block variability does not establish packet-detection superiority. Geometry remains unmeasured.
 
 ## Quick start: viewer
 

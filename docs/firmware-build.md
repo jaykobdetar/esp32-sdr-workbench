@@ -99,7 +99,7 @@ python3 -m venv /tmp/esp-sdr-test-env
 /tmp/esp-sdr-test-env/bin/python -m pytest -q firmware/tests
 ```
 
-A host C compiler with UndefinedBehaviorSanitizer is needed for C arithmetic/guard checks. CI runs this suite on every push, but CI does not build the firmware. These tests do not open serial ports or flash hardware. They are a small release subset, not a substitute for receiver ownership, CRC and soak checks on an actual device.
+A host C compiler with UndefinedBehaviorSanitizer is needed for C arithmetic/guard checks. CI runs this suite on every push and separately compiles the release firmware and the historical retention experiment against its immutable base. The nRF52840 application is also compile-checked. These tests do not open serial ports or flash hardware. They are a small release subset, not a substitute for receiver ownership, CRC and soak checks on an actual device.
 
 ## Runtime and safety
 
@@ -110,3 +110,15 @@ Keep a verified compatible recovery firmware and follow the exported offset/part
 ## Licenses
 
 Firmware derivative: GPL-3.0-or-later. ESP-DSP and the retained ESP-IDF-derived compatibility files: Apache-2.0. See `firmware/SOURCE_PROVENANCE.md` and component license files. The external SDK includes separately licensed binary libraries; review vendor terms before redistributing compiled firmware.
+
+## Current adaptive source versus historical measurements
+
+The current `firmware/FIRMWARE_VARIANT` is `esp32-pipeline-adaptive-q16-v3`.
+Use that value for a new build's `--version`; the optimized-v2 examples above
+describe the historical baseline and are not a performance claim for this source.
+The Q16 adaptation and optional three-crop retention are compile/host tested,
+**not flashed or board-soak validated**. Historical retention CI builds its pinned
+base with the archived patch, not this changed source. Read
+[adaptive detector](adaptive-detector.md) before evaluating the new firmware;
+heap/stack high-water, CRC and timing checks remain necessary. No recovery image
+or installed radio firmware is replaced by a compile-only build.

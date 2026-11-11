@@ -40,6 +40,7 @@ jobs:
           ruff format --check .
       # Runs tests/, firmware/tests/ and nrf52840-transmitter/tests/ (see pyproject.toml).
       # Includes the offline evidence recalculations and host C checks under
-      # UndefinedBehaviorSanitizer. No firmware build and no hardware.
+      # UndefinedBehaviorSanitizer, plus transmitter parser/schedule/stop/CRC checks.
+      # Firmware compile jobs are in firmware.yml. No hardware.
       - name: Host tests
         run: QT_QPA_PLATFORM=offscreen python -m pytest -q

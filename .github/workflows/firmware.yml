@@ -1,0 +1,75 @@
+name: Firmware compile
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  esp32:
+    name: ESP32 (${{ matrix.variant }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [release, historical-retention]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install SDK build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends git wget flex bison gperf cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
+      - name: Install exact supported ESP-IDF and its toolchain
+        run: |
+          git clone --filter=blob:none https://github.com/espressif/esp-idf.git "$RUNNER_TEMP/esp-idf"
+          git -C "$RUNNER_TEMP/esp-idf" checkout --detach 25fe69f946311abdaf9ad56591f25fedbc20ac98
+          git -C "$RUNNER_TEMP/esp-idf" submodule update --init --recursive
+          "$RUNNER_TEMP/esp-idf/install.sh" esp32
+      - name: Build release or immutable historical retention experiment
+        env:
+          VARIANT: ${{ matrix.variant }}
+        run: |
+          . "$RUNNER_TEMP/esp-idf/export.sh"
+          source_root="$GITHUB_WORKSPACE"
+          version="$(cat firmware/FIRMWARE_VARIANT)"
+          if [ "$VARIANT" = historical-retention ]; then
+            source_root="$RUNNER_TEMP/retention-source"
+            git worktree add --detach "$source_root" 3e382d94ce914e1b89fcc04c688f7d8a2a7f6b89
+            git -C "$source_root" apply --check "$GITHUB_WORKSPACE/experiments/retention/retention-experiment.patch"
+            git -C "$source_root" apply "$GITHUB_WORKSPACE/experiments/retention/retention-experiment.patch"
+            version=esp32-pipeline-retention-experiment
+          fi
+          python "$source_root/firmware/tools/build_firmware.py" --profile esp32 --version "$version" --jobs 2 --build-root "$RUNNER_TEMP/build-$VARIANT" --output "$RUNNER_TEMP/artifacts-$VARIANT"
+      # Compilation is not hardware validation. No flashing, radios or secret inputs.
+
+  nrf52840:
+    name: nRF52840 application compile
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install ARM compiler and host dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi binutils-arm-none-eabi
+          python -m pip install pyserial
+      - name: Fetch pinned transmitter sources
+        working-directory: nrf52840-transmitter
+        run: |
+          git clone https://github.com/makerdiary/uf2-bootloader.git vendor/uf2-bootloader
+          git -C vendor/uf2-bootloader checkout --detach 4d08cbb6150a833f146531fa787c3c28fa3ffabb
+          git -C vendor/uf2-bootloader submodule update --init lib/nrfx lib/tinyusb
+      - name: Build and validate application-only UF2
+        run: python nrf52840-transmitter/host/build_firmware.py --version 0.2.2 --output-root "$RUNNER_TEMP/nrf-artifacts"

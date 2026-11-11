@@ -15,14 +15,14 @@ variants=[
  ('bandwidth24',['--bandwidth-mhz','24']),('threshold2',['--ratio-milli','2000']),('threshold8',['--ratio-milli','8000']),
  ('buffer8192',['--samples','8192']),('mode1',['--mode-mbps','1']),
  ('hopping',['--hop-list','2420,2440,2460','--hop-every','1']),('burst5',['--burst-count','5','--burst-gap-us','20000'])]
-base=[sys.executable,str(ROOT/'scripts/nrf_rf_campaign.py'),'--rx-port',a.rx_port,'--tx-port',a.tx_port,'--rx-artifact',a.rx_artifact,'--pairs','3','--raw-pairs','1','--milliseconds','1000','--power-dbm','0','--gain','60','--length','64','--interval-us','2000','--jitter-us','150','--geometry',a.geometry]
+base=[sys.executable,'-m','nrf_campaigns.nrf_rf_campaign','--rx-port',a.rx_port,'--tx-port',a.tx_port,'--rx-artifact',a.rx_artifact,'--pairs','3','--raw-pairs','1','--milliseconds','1000','--power-dbm','0','--gain','60','--length','64','--interval-us','2000','--jitter-us','150','--geometry',a.geometry]
 report={'started_ns':time.time_ns(),'status':'running','variants':[]}
 try:
  for name,args in variants:
   cmd=base+['--output-directory',str(out/name)]+args
   row={'name':name,'command':cmd,'started_ns':time.time_ns()};report['variants'].append(row)
   (out/'screen.json').write_text(json.dumps(report,indent=2))
-  with (out/f'{name}.log').open('w') as f:subprocess.run(cmd,stdout=f,stderr=subprocess.STDOUT,check=True,cwd=ROOT)
+  with (out/f'{name}.log').open('w') as f:subprocess.run(cmd,stdout=f,stderr=subprocess.STDOUT,check=True)
   row['ended_ns']=time.time_ns();row['status']='passed';print(name,'passed',flush=True)
  report['status']='passed'
 except BaseException as e:report['status']='failed';report['error']=repr(e);raise

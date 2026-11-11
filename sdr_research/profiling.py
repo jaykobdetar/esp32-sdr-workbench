@@ -7,12 +7,17 @@ See docs/diagnostic-provenance.md for matching source archives and limits.
 import json
 import time
 
-from .protocol import RATES, ProtocolError
+from .protocol import RATES, ProtocolError, Radio
 
 
 def run_profile(
-    radio, milliseconds=2000, samples=16380, rate_hz=16000000, ratio_milli=4000, retain=False
-):
+    radio: Radio,
+    milliseconds: int = 2000,
+    samples: int = 16380,
+    rate_hz: int = 16000000,
+    ratio_milli: int = 4000,
+    retain: bool = False,
+) -> dict[str, object]:
     if (
         not 1 <= milliseconds <= 5000
         or not 256 <= samples <= 16380

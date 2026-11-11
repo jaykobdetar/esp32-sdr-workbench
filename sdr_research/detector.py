@@ -7,13 +7,20 @@ import re
 import time
 import zlib
 from datetime import datetime, timezone
+from typing import Any
 
-from .protocol import RATES, Capture, ProtocolError, decode_iq
+from .protocol import RATES, Capture, ProtocolError, Radio, decode_iq
+from .summary_validation import retained_trigger_metadata, validate_run_summary
 
 
 def run_detection(
-    radio, milliseconds=2000, samples=16380, rate_hz=16_000_000, ratio_milli=4000, retain=True
-):
+    radio: Radio,
+    milliseconds: int = 2000,
+    samples: int = 16380,
+    rate_hz: int = 16_000_000,
+    ratio_milli: int = 4000,
+    retain: bool = True,
+) -> tuple[dict[str, Any], Capture | None]:
     if (
         not 1 <= milliseconds <= 5000
         or not 256 <= samples <= 16380
@@ -46,50 +53,10 @@ def run_detection(
                 raise ProtocolError('Malformed detector end')
             summary = json.loads(line[len('DET1 END ') :])
             break
-        if summary.get('version') != 1:
-            raise ProtocolError('Unknown detector summary version')
-        integer_fields = (
-            'status',
-            'captures',
-            'detections',
-            'warmup_captures',
-            'errors',
-            'wall_elapsed_us',
-            'total_samples',
-            'analyzed_samples',
-            'retained_samples',
-            'sample_rate_hz',
-            'frequency_mhz',
+        summary = validate_run_summary(
+            summary, samples=samples, rate_hz=rate_hz, frequency_mhz=frequency, retain=retain
         )
-        if any(type(summary.get(key)) is not int or summary[key] < 0 for key in integer_fields):
-            raise ProtocolError('Invalid detector numeric fields')
-        if (
-            summary['status'] not in (0, 1)
-            or summary['errors'] not in (0, 1)
-            or bool(summary['status']) != bool(summary['errors'])
-        ):
-            raise ProtocolError('Inconsistent detector status')
-        if summary['warmup_captures'] != min(summary['captures'], 16):
-            raise ProtocolError('Invalid detector warmup count')
-        if summary['detections'] > summary['captures'] - summary['warmup_captures']:
-            raise ProtocolError('Invalid detector event count')
-        if summary['retained_samples'] and (not retain or not summary['detections']):
-            raise ProtocolError('Unexpected retained detector event')
-        if summary.get('sample_rate_hz') != rate_hz or summary.get('frequency_mhz') != frequency:
-            raise ProtocolError('Detector settings mismatch')
-        if (
-            summary.get('retained_samples') not in (0, samples)
-            or summary.get('wall_elapsed_us', 0) <= 0
-        ):
-            raise ProtocolError('Invalid detector sample count or timing')
-        count = summary.get('captures', -1)
-        if (
-            not isinstance(count, int)
-            or count < 0
-            or summary.get('total_samples') != count * samples
-            or summary.get('analyzed_samples') != count * (samples // 64) * 64
-        ):
-            raise ProtocolError('Inconsistent detector counters')
+        count = summary['captures']
         summary['host_elapsed_us'] = (time.monotonic_ns() - start) / 1000
         summary['host_request_timestamp'] = stamp
         summary['errors_received'] = errors
@@ -132,6 +99,7 @@ def run_detection(
                 True,
                 {
                     'detector_summary': summary,
+                    **retained_trigger_metadata(summary),
                     'timestamp_reference': 'detector run host start; exact event time unavailable',
                     'device': radio.info,
                 },

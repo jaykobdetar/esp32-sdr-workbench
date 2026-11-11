@@ -3,26 +3,19 @@
 from __future__ import annotations
 
 import argparse
-import json
 import queue
-import threading
-import time
-import uuid
 from collections import deque
-from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
 import pyqtgraph as pg
 from PySide6 import QtCore, QtGui, QtWidgets
+from serial.tools import list_ports
 
-from .analysis import NoiseCalibration, detect_event, endpoint_counts, spectrum
-from .detector import run_detection
-from .pipeline import run_pipeline, select_acquisition_policy
-from .protocol import Capture, Radio
+from .acquisition import DETECTOR_MODES, AcquisitionWorker
+from .analysis import NoiseCalibration, endpoint_counts, spectrum
 from .recording import load_capture, save_capture
 
-DETECTOR_MODES = ('DET1', 'DETPIPE1')
 # Share of samples on an ADC endpoint code above which the viewer flags likely clipping.
 CLIP_WARN_PERCENT = 1.0
 
@@ -32,319 +25,6 @@ def endpoint_text(capture):
     percent = endpoint_counts(capture.iq, capture.bits)['either_component_endpoint_percent']
     warning = ' · LIKELY CLIPPING' if percent >= CLIP_WARN_PERCENT else ''
     return f'ADC endpoints {percent:.2f}%{warning}'
-
-
-def receiver_settings(settings, frequency_mhz):
-    """Host-requested receiver configuration, recorded with every detector-run summary."""
-    gain = settings.get('gain')
-    return {
-        'frequency_mhz': frequency_mhz,
-        'rate_hz': settings.get('rate_hz'),
-        'bandwidth_mhz': settings.get('bandwidth_mhz'),
-        'gain_mode': 'hardware_agc' if gain is None else 'manual',
-        'gain_index': gain,
-        'bits': settings.get('bits'),
-        'samples': settings.get('samples'),
-        'note': 'Host-requested settings. The firmware does not report the gain that '
-        'hardware AGC selected during a run.',
-    }
-
-
-class AcquisitionWorker(QtCore.QThread):
-    """One owner per serial connection; bounded rendering and event-notice queues."""
-
-    def __init__(self, port, settings, output_dir, demo=False):
-        super().__init__()
-        self.port, self.settings, self.output_dir = port, dict(settings), Path(output_dir)
-        self.demo = demo
-        self.stop_requested = threading.Event()
-        self.frames = deque(maxlen=2)
-        self.notices = queue.Queue(maxsize=256)
-        self.render_drops = 0
-        self.event_notices_dropped = 0
-        self.capture_count = 0
-        self.run_count = 0
-        self.candidate_count = 0
-        self.retained_count = 0
-        self.analyzed_s = 0.0
-        self.decision_s = 0.0
-        self.nominal_rf_s = 0.0
-        self.started_ns = 0
-        self.last_end_ns = None
-        self.occupancy_counts = {}
-        self.rng = np.random.default_rng()
-
-    def notice(self, kind, value):
-        try:
-            self.notices.put_nowait((kind, value))
-        except queue.Full:
-            self.event_notices_dropped += 1
-
-    def stop(self):
-        self.stop_requested.set()
-
-    def demo_capture(self, frequency):
-        s = self.settings
-        n, rate = s['samples'], s['rate_hz']
-        start = time.monotonic_ns()
-        iq = (self.rng.normal(0, 0.008, n) + 1j * self.rng.normal(0, 0.008, n)).astype(np.complex64)
-        if self.capture_count % 5 in (0, 1):
-            left, right = n // 4, 3 * n // 4
-            t = np.arange(right - left) / rate
-            iq[left:right] += 0.16 * np.exp(2j * np.pi * 1_500_000 * t)
-        self.stop_requested.wait(0.09)
-        end = time.monotonic_ns()
-        return Capture(
-            iq=iq,
-            sample_rate_hz=rate,
-            frequency_hz=frequency * 1e6,
-            timestamp=datetime.now(timezone.utc).isoformat(),
-            monotonic_start_ns=start,
-            monotonic_end_ns=end,
-            firmware_capture_us=round(n / rate * 1e6),
-            bits=s['bits'],
-            crc_ok=True,
-            metadata={'synthetic': True, 'device': self.port},
-        )
-
-    def detector_run(self, radio, frequency):
-        """One bounded run; JSON is preserved even when no IQ was retained."""
-        s = self.settings
-        mode = s.get('mode', 'DET1')
-        if mode == 'DETPIPE1':
-            summary, capture = run_pipeline(
-                radio,
-                milliseconds=s['det_ms'],
-                samples=s['samples'],
-                rate_hz=s['rate_hz'],
-                ratio_milli=s['ratio_milli'],
-                retain=True,
-                kernel=3,
-                optimized=True,
-                copy_option=1 if 'PIPECOPY' in radio.info.get('caps', []) else None,
-            )
-        else:
-            policies = select_acquisition_policy(radio, False)
-            summary, capture = run_detection(
-                radio,
-                milliseconds=s['det_ms'],
-                samples=s['samples'],
-                rate_hz=s['rate_hz'],
-                ratio_milli=s['ratio_milli'],
-                retain=True,
-            )
-            summary['acquisition_policies'] = policies
-        self.run_count += 1
-        self.capture_count += summary['captures']
-        self.candidate_count += summary.get('detections', 0)
-        self.retained_count += int(capture is not None)
-        rate = summary['sample_rate_hz']
-        self.nominal_rf_s += summary['total_samples'] / rate
-        self.analyzed_s += summary['analyzed_samples'] / rate
-        decided = max(
-            0, summary['captures'] - summary.get('warmup_captures', min(summary['captures'], 16))
-        )
-        self.decision_s += decided * (s['samples'] // 64) * 64 / rate
-        hits, observations = self.occupancy_counts.get(frequency, (0, 0))
-        self.occupancy_counts[frequency] = (
-            hits + summary.get('detections', 0),
-            observations + decided,
-        )
-        meta_path = None
-        if capture is not None:
-            # Exact event time is not supplied by DET1. This is a run-start reference.
-            capture.metadata['timestamp_reference'] = (
-                'detector run host start; exact event time unavailable'
-            )
-            capture.metadata['settings'] = dict(s)
-            capture.metadata['endpoint_counts'] = endpoint_counts(capture.iq, capture.bits)
-        elapsed = max((time.monotonic_ns() - self.started_ns) / 1e9, 1e-9)
-        summary = dict(summary)
-        summary['receiver_settings'] = receiver_settings(s, frequency)
-        # Saturation indicator for the retained capture only; other captures are not kept.
-        summary['retained_endpoint_counts'] = (
-            capture.metadata['endpoint_counts'] if capture is not None else None
-        )
-        summary['gui_mode'] = mode
-        summary['candidate_count_semantics'] = 'candidate-positive captures, not unique packets'
-        summary['retained_semantics'] = 'at most one strongest candidate capture per finite run'
-        summary['timestamp_reference'] = 'host run request time; exact event time unavailable'
-        summary['host_session_nominal_rf_duty_percent'] = 100 * self.nominal_rf_s / elapsed
-        summary['host_session_nominal_analyzed_duty_percent'] = 100 * self.analyzed_s / elapsed
-        summary['host_session_nominal_decision_duty_percent'] = 100 * self.decision_s / elapsed
-        if s['autosave']:
-            self.output_dir.mkdir(parents=True, exist_ok=True)
-            stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
-            base = (
-                self.output_dir
-                / f'{stamp}-{self.port.replace("/", "_")}-{mode}-{uuid.uuid4().hex[:8]}'
-            )
-            # Write summary first, so an IQ-save failure never discards this run.
-            summary_path = Path(str(base) + f'.{mode.lower()}.json')
-            summary['retained_sigmf'] = None
-            with summary_path.open('x') as output:
-                json.dump(summary, output, indent=2)
-            try:
-                if capture is not None:
-                    meta_path = str(save_capture(capture, base))
-                    summary['retained_sigmf'] = Path(meta_path).name
-            except Exception as exc:
-                summary['recording_error'] = str(exc)
-                raise
-            finally:
-                recorded_elapsed = max((time.monotonic_ns() - self.started_ns) / 1e9, 1e-9)
-                summary['host_session_elapsed_through_recording_s'] = recorded_elapsed
-                summary['host_session_nominal_rf_duty_percent'] = (
-                    100 * self.nominal_rf_s / recorded_elapsed
-                )
-                summary['host_session_nominal_analyzed_duty_percent'] = (
-                    100 * self.analyzed_s / recorded_elapsed
-                )
-                summary['host_session_nominal_decision_duty_percent'] = (
-                    100 * self.decision_s / recorded_elapsed
-                )
-                temporary = Path(str(summary_path) + '.tmp')
-                with temporary.open('x') as output:
-                    json.dump(summary, output, indent=2)
-                temporary.replace(summary_path)
-            self.notice('record', str(summary_path))
-        elapsed = max((time.monotonic_ns() - self.started_ns) / 1e9, 1e-9)
-        stats = {
-            'mode': mode,
-            'summary': summary,
-            'count': self.capture_count,
-            'runs': self.run_count,
-            'candidates': self.candidate_count,
-            'retained': self.retained_count,
-            'nominal_duty': self.nominal_rf_s / elapsed,
-            'analyzed_duty': self.analyzed_s / elapsed,
-            'decision_duty': self.decision_s / elapsed,
-            'elapsed': elapsed,
-            'render_drops': self.render_drops,
-            'occupancy': dict(self.occupancy_counts),
-            'has_capture': capture is not None,
-            'host_updated_ns': time.monotonic_ns(),
-            'nominal_rf_s': self.nominal_rf_s,
-            'analyzed_s': self.analyzed_s,
-            'decision_s': self.decision_s,
-        }
-        if capture is not None:
-            result = detect_event(
-                capture.iq, capture.sample_rate_hz, threshold_db=s['threshold_db']
-            )
-            ratio = summary.get('best_ratio_milli')
-            result['snr_db'] = (
-                float(10 * np.log10(ratio / 1000)) if ratio and ratio > 0 else float('nan')
-            )
-            result.update(
-                detector=f'{mode} strongest candidate/run',
-                detected=True,
-                endpoint_counts=capture.metadata['endpoint_counts'],
-                timestamp_reference='host run start; exact event time unavailable',
-            )
-            self.notice('event', (capture, result, meta_path))
-        if len(self.frames) == self.frames.maxlen:
-            self.render_drops += 1
-        self.frames.append((capture, summary, stats))
-        if summary.get('status') or summary.get('errors') or summary.get('errors_received'):
-            raise RuntimeError(
-                f'{mode} ended with status {summary.get("status")}; summary recorded if recording enabled. Reconnect before retry.'
-            )
-
-    def run(self):
-        radio = None
-        self.started_ns = time.monotonic_ns()
-        self.notice('state', 'SIMULATED input' if self.demo else 'Connecting…')
-        try:
-            s = self.settings
-            if self.demo and s.get('mode') in DETECTOR_MODES:
-                raise ValueError(
-                    f'{s["mode"]} needs experimental hardware firmware. Demo is raw simulated IQ only; no fabricated {s["mode"]} performance is shown.'
-                )
-            if not self.demo:
-                radio = Radio(self.port, baud=1_000_000)
-                self.notice('info', radio.connect())
-            frequencies = (
-                list(range(s['scan_low'], s['scan_high'] + 1, s['scan_step']))
-                if s['scan']
-                else [s['frequency_mhz']]
-            )
-            previous_frequency = None
-            self.started_ns = (
-                time.monotonic_ns()
-            )  # exclude connection negotiation from acquisition duty
-            while not self.stop_requested.is_set():
-                frequency = frequencies[self.run_count % len(frequencies)]
-                if radio is not None and previous_frequency != frequency:
-                    radio.configure(
-                        frequency_mhz=frequency,
-                        rate_hz=s['rate_hz'],
-                        bandwidth_mhz=s['bandwidth_mhz'],
-                        gain=s['gain'],
-                        bits=s['bits'],
-                    )
-                    previous_frequency = frequency
-                if s.get('mode') in DETECTOR_MODES:
-                    self.detector_run(radio, frequency)
-                    continue
-                self.run_count += 1
-                capture = self.demo_capture(frequency) if self.demo else radio.capture(s['samples'])
-                self.capture_count += 1
-                self.nominal_rf_s += len(capture.iq) / capture.sample_rate_hz
-                elapsed = max((capture.monotonic_end_ns - self.started_ns) / 1e9, 1e-9)
-                gap = (
-                    None
-                    if self.last_end_ns is None
-                    else max(0.0, (capture.monotonic_start_ns - self.last_end_ns) / 1e6)
-                )
-                self.last_end_ns = capture.monotonic_end_ns
-                result = detect_event(
-                    capture.iq, capture.sample_rate_hz, threshold_db=s['threshold_db']
-                )
-                result['endpoint_counts'] = endpoint_counts(capture.iq, capture.bits)
-                capture.metadata['endpoint_counts'] = result['endpoint_counts']
-                hits, observations = self.occupancy_counts.get(frequency, (0, 0))
-                self.occupancy_counts[frequency] = (
-                    hits + int(result.get('detected', False)),
-                    observations + 1,
-                )
-                meta_path = None
-                if result.get('detected'):
-                    if s['autosave']:
-                        self.output_dir.mkdir(parents=True, exist_ok=True)
-                        stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
-                        safe_port = self.port.replace('/', '_')
-                        meta_path = str(
-                            save_capture(capture, self.output_dir / f'{stamp}-{safe_port}')
-                        )
-                    self.notice('event', (capture, result, meta_path))
-                item = (
-                    capture,
-                    result,
-                    {
-                        'count': self.capture_count,
-                        'nominal_duty': self.nominal_rf_s / elapsed,
-                        'elapsed': elapsed,
-                        'gap_ms': gap,
-                        'render_drops': self.render_drops,
-                        'occupancy': dict(self.occupancy_counts),
-                    },
-                )
-                if len(self.frames) == self.frames.maxlen:
-                    self.render_drops += 1
-                self.frames.append(item)
-        except Exception as exc:
-            message = f'{type(exc).__name__}: {exc}'
-            if self.settings.get('mode') in DETECTOR_MODES:
-                message += ' · Detector mode requires compatible experimental firmware; nothing was flashed. Select Raw I/Q for existing firmware.'
-            self.notice('error', message)
-        finally:
-            if radio is not None:
-                try:
-                    radio.close()
-                except Exception as exc:
-                    self.notice('error', f'Close: {exc}')
-            self.notice('state', 'Stopped')
 
 
 class InspectionWindow(QtWidgets.QDialog):
@@ -457,13 +137,19 @@ class MainWindow(QtWidgets.QMainWindow):
         controls = QtWidgets.QGroupBox('Acquisition · settings apply on Start')
         root.addWidget(controls)
         grid = QtWidgets.QGridLayout(controls)
-        self.port = QtWidgets.QLineEdit('/dev/ttyUSB0')
+        self.port_picker = QtWidgets.QComboBox()
+        self.port_picker.setEditable(True)
+        self.port = self.port_picker.lineEdit()
+        self.refresh_ports()
         self.port.setPlaceholderText('Ports separated by commas; optional @MHz per device')
         self.port.setToolTip(
             'One acquisition worker per port. Example: /dev/ttyUSB0@2440,/dev/ttyUSB1@2480. A frequency suffix pins that receiver even if survey is enabled. No synchronized timing is claimed.'
         )
         grid.addWidget(QtWidgets.QLabel('Ports'), 0, 0)
-        grid.addWidget(self.port, 0, 1, 1, 3)
+        grid.addWidget(self.port_picker, 0, 1, 1, 2)
+        self.refresh_ports_button = QtWidgets.QPushButton('Refresh ports')
+        self.refresh_ports_button.clicked.connect(self.refresh_ports)
+        grid.addWidget(self.refresh_ports_button, 0, 3)
         self.demo = QtWidgets.QCheckBox('SIMULATED demo')
         grid.addWidget(self.demo, 0, 4)
         self.start_button = QtWidgets.QPushButton('Start')
@@ -567,6 +253,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.autosave.setToolTip(
             'Raw: save candidate IQ. Detector: save every run summary, including no event, and strongest retained IQ when present.'
         )
+        self.agc_warning = QtWidgets.QLabel(
+            'WARNING: hardware AGC changes gain during detector runs. Energies and candidate '
+            'rates are not comparable across gain steps. Use fixed manual gain for comparisons.'
+        )
+        self.agc_warning.setWordWrap(True)
+        self.agc_warning.setStyleSheet('color: #d97706; font-weight: bold;')
+        grid.addWidget(self.agc_warning, 5, 0, 1, 7)
+        self.gain.valueChanged.connect(self.update_mode_controls)
         self.mode.currentIndexChanged.connect(self.update_mode_controls)
         self.update_mode_controls()
         display = QtWidgets.QHBoxLayout()
@@ -704,8 +398,26 @@ class MainWindow(QtWidgets.QMainWindow):
         self.status_label.setWordWrap(True)
         root.addWidget(self.status_label)
 
+    def refresh_ports(self):
+        """Read-only enumeration; preserve manually entered multi-receiver assignments."""
+        current = self.port.text()
+        self.port_picker.clear()
+        try:
+            ports = sorted(list_ports.comports(), key=lambda port: port.device)
+            for port in ports:
+                self.port_picker.addItem(port.device)
+                self.port_picker.setItemData(
+                    self.port_picker.count() - 1,
+                    port.description,
+                    QtCore.Qt.ItemDataRole.ToolTipRole,
+                )
+        except (OSError, ValueError):
+            ports = []
+        self.port.setText(current or (ports[0].device if ports else '/dev/ttyUSB0'))
+
     def update_mode_controls(self):
         det = self.mode.currentData() in DETECTOR_MODES
+        self.agc_warning.setVisible(det and self.gain.value() < 0)
         self.det_ms.setEnabled(det)
         self.det_ratio.setEnabled(det)
         self.bits.setEnabled(not det)

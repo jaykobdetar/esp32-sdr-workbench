@@ -5,7 +5,10 @@ import argparse
 import struct
 from pathlib import Path
 
-from flash_uf2 import validate_image
+if __package__:
+    from .flash_uf2 import validate_image
+else:  # Preserve documented direct-script invocation.
+    from flash_uf2 import validate_image
 
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('binary', type=Path)

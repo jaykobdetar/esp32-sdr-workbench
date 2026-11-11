@@ -29,9 +29,7 @@ def spin(app, predicate, timeout=4):
 def read_summaries(app, folder, pattern, timeout=4):
     """Return every run summary in `folder` once all of them are final.
 
-    The worker writes a summary before saving the capture and rewrites it afterwards, so a
-    file read in between can be incomplete JSON or still lack the recording outcome. Only the
-    final rewrite carries `host_session_elapsed_through_recording_s`.
+    Summaries are published atomically only after the final recording outcome is known.
     """
     import json
 
@@ -187,7 +185,7 @@ def detector_fake(monkeypatch):
 
     import numpy as np
 
-    import sdr_research.gui as gui
+    import sdr_research.acquisition as acquisition
     from sdr_research.protocol import Capture
 
     calls = []
@@ -254,8 +252,8 @@ def detector_fake(monkeypatch):
             )
         return summary, capture
 
-    monkeypatch.setattr(gui, 'Radio', FakeRadio)
-    monkeypatch.setattr(gui, 'run_detection', run)
+    monkeypatch.setattr(acquisition, 'Radio', FakeRadio)
+    monkeypatch.setattr(acquisition, 'run_detection', run)
     return state, calls
 
 
@@ -386,7 +384,7 @@ def test_det1_recording_failure_preserves_summary_and_closes(
     app, detector_fake, monkeypatch, tmp_path
 ):
 
-    import sdr_research.gui as gui
+    import sdr_research.acquisition as acquisition
 
     state, calls = detector_fake
     state['retain'] = True
@@ -394,7 +392,7 @@ def test_det1_recording_failure_preserves_summary_and_closes(
     def fail_save(*args):
         raise OSError('simulated disk full')
 
-    monkeypatch.setattr(gui, 'save_capture', fail_save)
+    monkeypatch.setattr(acquisition, 'save_capture', fail_save)
     w = MainWindow()
     w.output_dir = tmp_path
     w.mode.setCurrentIndex(1)
@@ -429,24 +427,24 @@ def test_optimized_pipeline_record_render_restart(
     app, detector_fake, monkeypatch, tmp_path, retain, copy_cap
 ):
 
-    import sdr_research.gui as gui
+    import sdr_research.acquisition as acquisition
 
     state, calls = detector_fake
     state['retain'] = retain
     if copy_cap:
-        original = gui.Radio
+        original = acquisition.Radio
 
         class CopyRadio(original):
             def __init__(self, *a, **kw):
                 super().__init__(*a, **kw)
                 self.info['caps'] = ['PIPECOPY']
 
-        monkeypatch.setattr(gui, 'Radio', CopyRadio)
+        monkeypatch.setattr(acquisition, 'Radio', CopyRadio)
 
     def pipeline(*args, kernel, optimized, copy_option, **kwargs):
         assert copy_option == (1 if copy_cap else None)
         assert kernel == 3 and optimized is True
-        summary, capture = gui.run_detection(*args, **kwargs)
+        summary, capture = acquisition.run_detection(*args, **kwargs)
         summary['copy_policy'] = {
             'requested': copy_option,
             'returned': copy_option,
@@ -459,7 +457,7 @@ def test_optimized_pipeline_record_render_restart(
         }
         return summary, capture
 
-    monkeypatch.setattr(gui, 'run_pipeline', pipeline)
+    monkeypatch.setattr(acquisition, 'run_pipeline', pipeline)
     w = MainWindow()
     w.output_dir = tmp_path
     w.mode.setCurrentIndex(2)
@@ -503,7 +501,8 @@ def test_optimized_pipeline_record_render_restart(
 def test_endpoint_text_flags_only_saturated_captures():
     import numpy as np
 
-    from sdr_research.gui import CLIP_WARN_PERCENT, endpoint_text, receiver_settings
+    from sdr_research.acquisition import receiver_settings
+    from sdr_research.gui import CLIP_WARN_PERCENT, endpoint_text
     from sdr_research.protocol import Capture
 
     def capture(iq):
@@ -524,3 +523,49 @@ def test_endpoint_text_flags_only_saturated_captures():
         40,
         2440,
     )
+
+
+def test_port_picker_preserves_manual_assignments(app, monkeypatch):
+    from types import SimpleNamespace
+
+    import sdr_research.gui as gui
+
+    monkeypatch.setattr(
+        gui.list_ports,
+        'comports',
+        lambda: [
+            SimpleNamespace(device='/dev/ttyUSB7', description='Test receiver'),
+            SimpleNamespace(device='/dev/ttyACM0', description='Test CDC'),
+        ],
+    )
+    w = MainWindow()
+    try:
+        assert w.port_picker.count() == 2
+        assert w.port.text() == '/dev/ttyACM0'
+        w.port.setText('/dev/custom@2440,/dev/ttyUSB7@2480')
+        w.refresh_ports()
+        assert w.port.text() == '/dev/custom@2440,/dev/ttyUSB7@2480'
+        monkeypatch.setattr(gui.list_ports, 'comports', lambda: [])
+        w.refresh_ports()
+        assert w.port.text() == '/dev/custom@2440,/dev/ttyUSB7@2480'
+    finally:
+        cleanup(app, w)
+
+
+def test_agc_detector_warning_tracks_both_controls(app):
+    w = MainWindow()
+    w.show()
+    try:
+        assert not w.agc_warning.isVisible()
+        w.mode.setCurrentIndex(1)
+        assert w.agc_warning.isVisible()
+        w.gain.setValue(40)
+        assert not w.agc_warning.isVisible()
+        w.mode.setCurrentIndex(2)
+        assert not w.agc_warning.isVisible()
+        w.gain.setValue(-1)
+        assert w.agc_warning.isVisible()
+        w.mode.setCurrentIndex(0)
+        assert not w.agc_warning.isVisible()
+    finally:
+        cleanup(app, w)

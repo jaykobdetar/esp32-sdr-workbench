@@ -1,0 +1,45 @@
+name: Latest dependency compatibility
+
+on:
+  schedule:
+    - cron: '23 8 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  latest:
+    name: Unpinned dependencies (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.13']
+    env:
+      PYTHONFAULTHANDLER: '1'
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Qt runtime libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3
+      - name: Deliberately test beyond production dependency constraints
+        run: |
+          python -m pip install --upgrade pip setuptools
+          python -m pip install --upgrade numpy pyserial pyqtgraph PySide6 pytest
+          python -m pip install --no-deps -e .
+          python -m pip freeze
+      - name: Host suite including real Qt paint smoke coverage
+        run: python -m pytest -q
+      - name: Repeated real event-loop painting in a separate process
+        if: ${{ !cancelled() }}
+        run: python scripts/qt_paint_smoke.py
+      - name: Record dependency resolution even on failure
+        if: always()
+        run: python -m pip freeze

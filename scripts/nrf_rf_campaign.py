@@ -6,11 +6,9 @@ import hashlib
 import json
 from pathlib import Path
 import random
-import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
 from sdr_research.protocol import Radio
 from sdr_research.pipeline import run_pipeline, select_acquisition_policy
 from sdr_research.detector import run_detection
@@ -229,8 +227,7 @@ def execute(args, radio, tx, *, sleep=time.sleep, clock=time.monotonic_ns,
 
 def main():
     args = parser().parse_args()
-    sys.path.insert(0, str(ROOT/'nrf52840-transmitter/host'))
-    from rf_tx import Transmitter
+    from nrf_tx.rf_tx import Transmitter
     radio = Radio(args.rx_port)
     try:
         with Transmitter(args.tx_port) as tx:

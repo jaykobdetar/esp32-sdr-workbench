@@ -11,7 +11,10 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from flash_uf2 import validate_image
+if __package__:
+    from .flash_uf2 import validate_image
+else:  # Preserve documented direct-script invocation.
+    from flash_uf2 import validate_image
 
 ROOT = Path(__file__).resolve().parents[1]
 

@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
 import numpy as np
+from numpy.typing import NDArray
 
 RATES = {
     80_000_000: 0,
@@ -40,7 +41,7 @@ class ProtocolError(RuntimeError):
 
 @dataclass
 class Capture:
-    iq: np.ndarray
+    iq: NDArray[np.complex64]
     sample_rate_hz: int
     frequency_hz: int
     timestamp: str
@@ -52,15 +53,15 @@ class Capture:
     metadata: dict = field(default_factory=dict)
 
     @property
-    def nominal_rf_seconds(self):
+    def nominal_rf_seconds(self) -> float:
         return len(self.iq) / self.sample_rate_hz
 
     @property
-    def host_seconds(self):
+    def host_seconds(self) -> float:
         return (self.monotonic_end_ns - self.monotonic_start_ns) / 1e9
 
 
-def decode_iq(payload, n, bits):
+def decode_iq(payload: bytes, n: int, bits: int) -> NDArray[np.complex64]:
     expected = (n * bits * 2 + 7) // 8
     if len(payload) != expected:
         raise ProtocolError('Wrong I/Q payload length')
@@ -88,7 +89,7 @@ def decode_iq(payload, n, bits):
 
 
 class Radio:
-    def __init__(self, port, baud=1_000_000, transport=None):
+    def __init__(self, port: str, baud: int = 1_000_000, transport=None) -> None:
         self.port = port
         self.baud = baud
         self.serial = transport
@@ -96,7 +97,7 @@ class Radio:
         self.settings = {}
         self.failed = False
 
-    def _line(self, deadline=None):
+    def _line(self, deadline: float | None = None) -> str:
         deadline = deadline or time.monotonic() + 4
         out = bytearray()
         while time.monotonic() < deadline:
@@ -113,7 +114,7 @@ class Radio:
                 raise ProtocolError('Oversized reply')
         raise TimeoutError('Serial reply timed out')
 
-    def _read(self, n, deadline=None):
+    def _read(self, n: int, deadline: float | None = None) -> bytes:
         deadline = deadline or time.monotonic() + max(5, n * 10 / self.baud * 3)
         out = bytearray()
         while len(out) < n and time.monotonic() < deadline:
@@ -122,7 +123,7 @@ class Radio:
             raise TimeoutError(f'Truncated binary payload: {len(out)}/{n}')
         return bytes(out)
 
-    def command(self, cmd):
+    def command(self, cmd: str) -> str:
         if self.failed:
             raise ProtocolError('Connection framing uncertain; reconnect required')
         try:
@@ -136,7 +137,7 @@ class Radio:
             raise ProtocolError(f'{cmd}: {line}')
         return line
 
-    def synchronize(self):
+    def synchronize(self) -> None:
         deadline = time.monotonic() + 12
         # Do not reinterpret arbitrary capture bytes as commands; drain until exact nonce echo.
         while time.monotonic() < deadline:
@@ -154,7 +155,7 @@ class Radio:
         self.failed = True
         raise TimeoutError('Could not synchronize ESP-SDR')
 
-    def connect(self):
+    def connect(self) -> dict[str, object]:
         if self.serial is None:
             import serial
 
@@ -187,7 +188,14 @@ class Radio:
         self.settings = {}
         return self.info
 
-    def configure(self, frequency_mhz=2440, rate_hz=16_000_000, bandwidth_mhz=0, gain=None, bits=8):
+    def configure(
+        self,
+        frequency_mhz: int = 2440,
+        rate_hz: int = 16_000_000,
+        bandwidth_mhz: int = 0,
+        gain: int | None = None,
+        bits: int = 8,
+    ) -> None:
         limits = self.info['limits']
         if rate_hz not in limits['rates'] or bits not in limits['bits']:
             raise ValueError('Unsupported rate or precision')
@@ -218,7 +226,7 @@ class Radio:
         new['configure_ns'] = time.monotonic_ns() - started
         self.settings = new
 
-    def capture(self, samples=16380):
+    def capture(self, samples: int = 16380) -> Capture:
         if not self.settings:
             self.configure()
         if not 256 <= samples <= self.info['max_samples']:
@@ -260,7 +268,13 @@ class Radio:
             self.failed = True
             raise
 
-    def spectrum_run(self, milliseconds=1000, fft_bins=256, rate_hz=16_000_000, detector=1):
+    def spectrum_run(
+        self,
+        milliseconds: int = 1000,
+        fft_bins: int = 256,
+        rate_hz: int = 16_000_000,
+        detector: int = 1,
+    ) -> dict[str, object]:
         profiles = self.info.get('spectrum', {}).get('profiles', [])
         profile = next((p for p in profiles if p[0] == rate_hz and p[2] == fft_bins), None)
         if profile is None:
@@ -332,7 +346,7 @@ class Radio:
         result['host_elapsed_s'] = (time.monotonic_ns() - start) / 1e9
         return result
 
-    def close(self):
+    def close(self) -> None:
         if self.serial:
             try:
                 if not self.failed:

@@ -1,6 +1,7 @@
 #pragma once
 /* Experimental DET1 protocol; finite runs only, no spontaneous output. */
 #include "detector_energy.h"
+#include "detector_background.h"
 static uint32_t *det_retained;
 static unsigned det_retained_n, det_retained_capture_us;
 
@@ -33,9 +34,13 @@ static bool detector_command(const char *line) {
         if (!det_retained) { reply("ERR detector_memory\n"); return true; }
     }
     prepare_rx();
+    uint32_t gain_register_start = REG_READ(RX_GAIN);
+    uint64_t retained_trigger_us = 0, first_trigger_us = 0, last_trigger_us = 0;
+    unsigned retained_generation = 0;
     reply("DET1 BEGIN %u %u %u %u %u %u\n", ms, n, rate, ratio, retain, frequency_mhz);
-    unsigned captures = 0, events = 0, background = 1, best_ratio = 0, status = 0;
-    uint64_t warm_total = 0, trigger_us = 0, acquisition_us = 0, analysis_us = 0, retain_us = 0;
+    unsigned captures = 0, events = 0, best_ratio = 0, status = 0;
+    detector_background_t background = {.q16=1};
+    uint64_t trigger_us = 0, acquisition_us = 0, analysis_us = 0, retain_us = 0;
     int64_t start = esp_timer_get_time();
     while (esp_timer_get_time() - start < (int64_t)ms * 1000) {
         unsigned captured_us;
@@ -46,44 +51,42 @@ static bool detector_command(const char *line) {
         uint32_t mean, peak;
         detector_energy(samples, n, &mean, &peak);
         captures++;
-        if (captures <= 16) {
-            warm_total += mean;
-            background = warm_total / captures;
-            if (!background) background = 1;
-        } else if ((uint64_t)peak * 1000 > (uint64_t)background * ratio) {
+        if (!first_trigger_us) first_trigger_us = capture_trigger_device_us;
+        last_trigger_us = capture_trigger_device_us;
+        unsigned score;
+        if (detector_background_step(&background, mean, peak, ratio, &score)) {
             events++;
-            unsigned score = (uint64_t)peak * 1000 / background;
             if (score > best_ratio) {
                 best_ratio = score;
                 if (retain) {
                     int64_t c = esp_timer_get_time();
                     memcpy(det_retained, samples, n * sizeof(uint32_t));
                     det_retained_n = n; det_retained_capture_us = captured_us;
+                    retained_trigger_us = capture_trigger_device_us;
+                    retained_generation = captures;
                     retain_us += esp_timer_get_time() - c;
                 }
             }
-        } else {
-            background = ((uint64_t)background * 63 + mean + 32) / 64;
-            if (!background) background = 1;
         }
         analysis_us += esp_timer_get_time() - b;
         /* Yield deliberately, included in elapsed time, to avoid watchdog starvation. */
         if ((captures & 31) == 0) vTaskDelay(1);
     }
     uint64_t elapsed = esp_timer_get_time() - start;
-    char summary[1024];
+    char summary[1600];
     int length = snprintf(summary, sizeof(summary),
         "DET1 END {\"version\":1,\"status\":%u,\"captures\":%u,\"detections\":%u,"
-        "\"background_adc2\":%u,\"best_ratio_milli\":%u,\"wall_elapsed_us\":%" PRIu64 ","
+        "\"background_policy\":2,\"background_q16\":%" PRIu64 ",\"background_adc2\":%u,\"best_ratio_milli\":%u,\"wall_elapsed_us\":%" PRIu64 ","
         "\"trigger_to_done_us\":%" PRIu64 ",\"acquire_call_us\":%" PRIu64 ","
         "\"processing_us\":%" PRIu64 ",\"retention_copy_us\":%" PRIu64 ","
         "\"retained_samples\":%u,\"frequency_mhz\":%u,\"total_samples\":%" PRIu64 ","
-        "\"analyzed_samples\":%" PRIu64 ",\"sample_rate_hz\":%u,\"errors\":%u,\"warmup_captures\":%u,\"acquisition_option\":%u,\"clear_option\":%u}\n",
-        status, captures, events, background, best_ratio, elapsed, trigger_us, acquisition_us,
+        "\"analyzed_samples\":%" PRIu64 ",\"sample_rate_hz\":%u,\"errors\":%u,\"warmup_captures\":%u,\"acquisition_option\":%u,\"clear_option\":%u,\"gain_register_start\":%" PRIu32 ",\"gain_register_end\":%" PRIu32 ",\"hardware_agc\":%u,\"gain_index_requested\":%u,\"first_trigger_device_us\":%" PRIu64 ",\"last_trigger_device_us\":%" PRIu64 ",\"retained_trigger_device_us\":%" PRIu64 ",\"retained_generation\":%u}\n",
+        status, captures, events, background.q16, (unsigned)(background.q16 / DETECTOR_BACKGROUND_SCALE), best_ratio, elapsed, trigger_us, acquisition_us,
         analysis_us - retain_us, retain_us, det_retained_n, frequency_mhz,
         (uint64_t)captures * n, (uint64_t)captures * (n / 64) * 64,
         rate == 0 ? 80000000u : rate == 1 ? 40000000u : 16000000u,
-        status ? 1u : 0u, captures < 16 ? captures : 16u,acquisition_option,clear_option);
+        status ? 1u : 0u, captures < 16 ? captures : 16u,acquisition_option,clear_option, gain_register_start, (uint32_t)REG_READ(RX_GAIN),
+        (unsigned)hardware_agc, gain_code, first_trigger_us, last_trigger_us, retained_trigger_us, retained_generation);
     if (length > 0 && length < sizeof(summary)) burst_serial_send(summary, length);
     else reply("ERR detector_summary\n");
     return true;

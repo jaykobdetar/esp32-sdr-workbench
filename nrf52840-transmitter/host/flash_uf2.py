@@ -13,7 +13,10 @@ import subprocess
 import time
 from pathlib import Path
 
-from rf_tx import Transmitter, discover, target_serial
+if __package__:
+    from .rf_tx import Transmitter, discover, target_serial
+else:  # Preserve documented direct-script invocation.
+    from rf_tx import Transmitter, discover, target_serial
 
 APP_START, APP_LIMIT = 0x23000, 0x40000
 BOARD = 'nRF52840-MDK-USB-DONGLE'

@@ -2,7 +2,7 @@
 """Offline integrity and decoded-test-packet checks; no radio/device access.
 
 Checks published artifacts, not fresh IQ demodulation or packet recall.
-Standard library only. Raises ValueError on inconsistency.
+Replays the published seeded NumPy bootstrap; raises ValueError on inconsistency.
 """
 
 import argparse
@@ -10,8 +10,11 @@ import hashlib
 import json
 import math
 from collections import Counter
+from itertools import combinations, product
 from pathlib import Path
 from statistics import mean
+
+import numpy as np
 
 
 def known_payload(sequence, length):
@@ -63,15 +66,73 @@ def close(actual, expected, message):
     require(math.isclose(actual, expected, rel_tol=1e-10, abs_tol=1e-9), message)
 
 
+def bootstrap_means(values, rng):
+    """Match the archived analysis: 20,000 paired resamples with seed 52840."""
+    values = np.asarray(values, dtype=float)
+    require(values.size > 0 and np.isfinite(values).all(), 'Invalid bootstrap values')
+    return values[rng.integers(0, len(values), size=(20000, len(values)))].mean(axis=1)
+
+
+def verify_interval(actual, saved, label):
+    require(len(saved) == len(actual) == 2, label + ' interval length mismatch')
+    for value, expected in zip(actual, saved, strict=True):
+        close(float(value), expected, label + ' interval mismatch')
+    return [float(value) for value in actual]
+
+
+def exact_sign_flip(values):
+    """Two-sided paired randomization test, including ties and all 2**n assignments.
+
+    Exact enumeration is not a guarantee of exchangeability: temporal ordering and
+    nonrandomized ON/OFF assignment still limit causal interpretation.
+    """
+    values = tuple(float(value) for value in values)
+    require(0 < len(values) <= 20, 'Exact paired test requires 1 to 20 pairs')
+    require(all(math.isfinite(value) for value in values), 'Nonfinite paired value')
+    observed = abs(math.fsum(values))
+    extreme = sum(
+        abs(math.fsum(value * sign for value, sign in zip(values, signs, strict=True)))
+        >= observed - 1e-10
+        for signs in product((-1, 1), repeat=len(values))
+    )
+    return {'two_sided_p': extreme / (2 ** len(values)), 'assignments': 2 ** len(values)}
+
+
+def exact_independent_permutation(first, second):
+    """Relabel whole ON/OFF pairs, never IQ samples, for descriptive cycle tests."""
+    require(len(first) == len(second) == 4, 'Cycle test requires two groups of four pairs')
+    pool = tuple(first) + tuple(second)
+    observed = abs(mean(second) - mean(first))
+    extreme = 0
+    total = 0
+    for selected in combinations(range(8), 4):
+        group = set(selected)
+        difference = mean(pool[i] for i in range(8) if i not in group) - mean(
+            pool[i] for i in selected
+        )
+        extreme += abs(difference) >= observed - 1e-10
+        total += 1
+    return {'two_sided_p': extreme / total, 'assignments': total}
+
+
 def recompute_headlines(records, abab, retention):
-    """Recompute point estimates only; saved bootstrap intervals are not rerun."""
+    """Verify point estimates and every archived interval from published run data."""
+    rng = np.random.default_rng(52840)
     phase_results = {}
+    phase_deltas = {}
+    phase_intervals = {}
+    phase_tests = {}
     for phase in abab['phases']:
         name = phase['phase']
-        rows = [r for r in records if r['recording'].startswith('nrf-abab/' + name + '/')]
+        require(name not in phase_results, 'Duplicate ABAB phase')
+        rows = sorted(
+            (r for r in records if r['recording'].startswith('nrf-abab/' + name + '/')),
+            key=lambda row: row['recording'],
+        )
         require(len(rows) == phase['runs'] == 8, 'ABAB phase size mismatch')
         pairs = {}
         states = {}
+        state_intervals = {}
         for on in (True, False):
             rr = [r for r in rows if r['tx_on'] is on]
             require(len(rr) == 4, 'ABAB state size mismatch')
@@ -90,14 +151,20 @@ def recompute_headlines(records, abab, retention):
                 metrics.append(values)
             state = 'on' if on else 'off'
             states[state] = {k: mean(v[k] for v in metrics) for k in metrics[0]}
+            state_intervals[state] = {}
             for key, value in states[state].items():
                 saved = phase['states'][state][key]
                 require(saved['n'] == 4, 'ABAB saved state size mismatch')
                 close(value, saved['mean'], 'ABAB ' + key + ' mismatch')
                 for observed, expected in zip(
-                    sorted(v[key] for v in metrics), sorted(saved['values']), strict=True
+                    [v[key] for v in metrics], saved['values'], strict=True
                 ):
                     close(observed, expected, 'ABAB per-run ' + key + ' mismatch')
+                state_intervals[state][key] = verify_interval(
+                    np.percentile(bootstrap_means([v[key] for v in metrics], rng), [2.5, 97.5]),
+                    saved['bootstrap_percentile_95'],
+                    'ABAB ' + key,
+                )
         pair_ids = sorted({pair for pair, on in pairs})
         require(len(pair_ids) == 4, 'ABAB pair count mismatch')
         deltas = [pairs[(pair, True)] - pairs[(pair, False)] for pair in pair_ids]
@@ -110,7 +177,23 @@ def recompute_headlines(records, abab, retention):
             deltas, phase['paired_candidate_excess']['values'], strict=True
         ):
             close(actual, expected, 'ABAB pair excess mismatch')
+        require(phase['paired_candidate_excess']['n'] == len(deltas), 'ABAB pair n mismatch')
+        phase_deltas[name] = deltas
+        phase_tests[name] = exact_sign_flip(deltas)
+        phase_intervals[name] = {
+            'states': state_intervals,
+            'paired_candidate_excess': verify_interval(
+                np.percentile(bootstrap_means(deltas, rng), [2.5, 97.5]),
+                phase['paired_candidate_excess']['bootstrap_percentile_95'],
+                'ABAB paired candidate excess',
+            ),
+        }
         phase_results[name] = {'states': states, 'candidate_excess_per_second': mean(deltas)}
+    require(
+        list(phase_results) == ['historical-1', 'historical-2', 'optimized-1', 'optimized-2'],
+        'ABAB phase order mismatch for seeded bootstrap',
+    )
+    require([row['cycle'] for row in abab['cycle_effects']] == [1, 2], 'ABAB cycle mismatch')
     cycles = []
     for saved in abab['cycle_effects']:
         cycle = saved['cycle']
@@ -123,7 +206,24 @@ def recompute_headlines(records, abab, retention):
             saved['optimized_minus_historical_excess_per_second'],
             'ABAB cycle excess mismatch',
         )
-        cycles.append({'cycle': cycle, 'optimized_minus_historical_excess_per_second': excess})
+        historical = phase_deltas[f'historical-{cycle}']
+        optimized = phase_deltas[f'optimized-{cycle}']
+        historical_boot = bootstrap_means(historical, rng)
+        optimized_boot = bootstrap_means(optimized, rng)
+        cycles.append(
+            {
+                'cycle': cycle,
+                'optimized_minus_historical_excess_per_second': excess,
+                'bootstrap_percentile_95': verify_interval(
+                    np.percentile(optimized_boot - historical_boot, [2.5, 97.5]),
+                    saved['bootstrap_percentile_95'],
+                    'ABAB cycle excess',
+                ),
+                'exact_pair_label_permutation': exact_independent_permutation(
+                    historical, optimized
+                ),
+            }
+        )
     headline_duty = {
         kind: {
             metric: mean(
@@ -143,6 +243,15 @@ def recompute_headlines(records, abab, retention):
         require(len(rows) == group['n'] == 12, 'Retention group size mismatch')
         valid = sum(r['full_address_payload_rf_crc_count'] > 0 for r in rows)
         require(valid == group['full_crc'], 'Retention full-frame count mismatch')
+        z = 1.959963984540054
+        n = len(rows)
+        proportion = valid / n
+        denominator = 1 + z * z / n
+        center = (proportion + z * z / (2 * n)) / denominator
+        half = z * math.sqrt(proportion * (1 - proportion) / n + z * z / (4 * n * n)) / denominator
+        verify_interval(
+            [center - half, center + half], group['full_crc_wilson_95'], 'Retention Wilson'
+        )
         if on:
             policy_results[mode] = {'full_crc': valid, 'n': len(rows)}
             for r in rows:
@@ -151,6 +260,11 @@ def recompute_headlines(records, abab, retention):
                 paired[key] = r['full_address_payload_rf_crc_count'] > 0
     pair_ids = sorted({p for p, mode in paired})
     require(len(pair_ids) == 12, 'Retention pair count mismatch')
+    require(
+        len(retention['pairs']) == 12
+        and sorted(row['pair'] for row in retention['pairs']) == pair_ids,
+        'Retention saved pair IDs mismatch',
+    )
     delta = []
     for p in pair_ids:
         strongest = paired[(p, 'strongest')]
@@ -168,12 +282,41 @@ def recompute_headlines(records, abab, retention):
         and delta.count(-1) == retention['discordant_strongest_only'],
         'Retention discordant pair count mismatch',
     )
+    retention_interval = verify_interval(
+        np.percentile(bootstrap_means(delta, np.random.default_rng(52840)), [2.5, 97.5]),
+        retention['paired_bootstrap_percentile_95'],
+        'Retention paired bootstrap',
+    )
+    wins, losses = delta.count(1), delta.count(-1)
+    discordant = wins + losses
+    mcnemar = (
+        min(
+            1.0,
+            2 * sum(math.comb(discordant, k) for k in range(min(wins, losses) + 1)) / 2**discordant,
+        )
+        if discordant
+        else 1.0
+    )
+    close(mcnemar, retention['exact_mcnemar_two_sided_p'], 'Retention McNemar mismatch')
     return {
         'abab_on_duty_percent': headline_duty,
         'abab_cycle_effects': cycles,
         'retention_on': policy_results,
         'retention_paired_difference': difference,
-        'bootstrap_intervals_recomputed': False,
+        'bootstrap_intervals_recomputed': True,
+        'bootstrap_method': {'seed': 52840, 'resamples': 20000, 'percentiles': [2.5, 97.5]},
+        'abab_phase_bootstrap_intervals': phase_intervals,
+        'abab_exact_paired_sign_flip': phase_tests,
+        'retention_paired_bootstrap_percentile_95': retention_interval,
+        'retention_exact_mcnemar_two_sided_p': mcnemar,
+        'retention_exact_paired_sign_flip': exact_sign_flip(delta),
+        'statistical_cautions': [
+            'Bootstrap units are whole ON/OFF pairs, not IQ samples or detected candidates.',
+            'Four pairs give only 16 sign assignments; the minimum two-sided p is 0.125.',
+            'Tests assume exchangeable labels or symmetric paired errors; temporal ABAB order '
+            'and only two cycles do not establish those assumptions or causal improvement.',
+            'Intervals are descriptive small-sample percentile intervals, not packet recall.',
+        ],
     }
 
 
