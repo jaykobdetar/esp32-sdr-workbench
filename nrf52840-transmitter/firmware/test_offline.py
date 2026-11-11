@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """Compile actual parser/status source fragments into a host-only test harness."""
-from pathlib import Path
+
 import subprocess
+from pathlib import Path
+
 Path('build').mkdir(exist_ok=True)
-s=Path('main.c').read_text()
-parser=s[s.index('static bool parse_num'):s.index(' if(seen!=3')]+ '\n}\n'
-status_start=s.index('static void status')
-status=s[status_start:s.index('static void reboot(void){', status_start)]
-prefix='''#include <stdint.h>
+s = Path('main.c').read_text()
+parser = s[s.index('static bool parse_num') : s.index(' if(seen!=3')] + '\n}\n'
+status_start = s.index('static void status')
+status = s[status_start : s.index('static void reboot(void){', status_start)]
+prefix = """#include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,8 +30,8 @@ static uint32_t now_us(void){return 10;}
 static void radio_stop(void){running=false;}
 static void reply(const char*s){assert(strlen(s)<1900);strcpy(output,s);}
 static void error(const char*s){(void)s;error_count++;}
-'''
-tests='''static void run(const char*s){strcpy(line,s);command();}
+"""
+tests = """static void run(const char*s){strcpy(line,s);command();}
 int main(void){
  run("CONFIG length=32 payload_hex=deadbeef hop_list=2402,2440,2480 hop_every=3 seed=123 burst_count=5 burst_gap_us=5000");
  assert(!error_count&&pattern_len==4&&pattern[0]==0xde&&pattern[3]==0xef&&hop_count==3&&hops[2]==2480&&random_seed==123&&burst_count==5);
@@ -48,7 +50,18 @@ int main(void){
  running=true;unsigned before=error_count;run("DEVICE");assert(error_count==before+1);running=false;mock_radio.STATE=1;run("DEVICE");assert(error_count==before+2);mock_radio.STATE=0;run("DEVICE");assert(!strcmp(output,"device_mock"));
  puts("parser/status tests passed: atomic config, aliases, hex, hops, seed, numeric bounds, duplicate keys");
 }
-'''
-Path('build/test_parser_generated.c').write_text(prefix+status+parser+tests)
-subprocess.run(['cc','-std=c11','-I.','-fsanitize=undefined,address','build/test_parser_generated.c','-o','build/test_parser'],check=True)
-subprocess.run(['build/test_parser'],check=True,env={'ASAN_OPTIONS':'detect_leaks=0'})
+"""
+Path('build/test_parser_generated.c').write_text(prefix + status + parser + tests)
+subprocess.run(
+    [
+        'cc',
+        '-std=c11',
+        '-I.',
+        '-fsanitize=undefined,address',
+        'build/test_parser_generated.c',
+        '-o',
+        'build/test_parser',
+    ],
+    check=True,
+)
+subprocess.run(['build/test_parser'], check=True, env={'ASAN_OPTIONS': 'detect_leaks=0'})
