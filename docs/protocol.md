@@ -13,7 +13,8 @@ Commands are newline-terminated ASCII over UART, 8N1, no flow control. Query `TR
 - `RANGE?` → advertised minimum/maximum frequency and step in MHz.
 - `LIMITS?` → JSON gain-index range, bandwidth range, sample rates and component bit depths.
 - `FREQ <MHz>` → `OK` for accepted tuning. Acceptance does not establish PLL lock or calibrated RF sensitivity.
-- `GAIN HARDWARE`, `GAIN MANUAL <index>` → `OK`; `GAIN?` reports mode/index and limits. Indices are not dB.
+- `GAIN HARDWARE`, `GAIN MANUAL <index>` → `OK`. Indices are not dB.
+- `GAIN?` → `GAIN <HARDWARE|MANUAL> <index> 0 <max-index> <forced>`: the index is `-1` under hardware AGC, and `<forced>` is the live force bit read back from the gain register. This format is taken from `receiver.c`; no measured reply was archived. The firmware has no command that reports the gain hardware AGC chose during a capture.
 - `BANDWIDTH <MHz>` → `OK`; zero selects the widest setting. `LPF AUTO`, `LPF <0..127>` and `LPF?` expose experimental filter controls.
 - `RELEASE` → `OK`, releasing the transport lease. `ERR busy` can indicate another active transport owner.
 
@@ -38,6 +39,40 @@ CRC32 is over the transmitted bytes, compatible with zlib CRC32. CAP20 concatena
 `DETINFO?` and `DETPIPEINFO?` return respectively `DETINFO 1 5000 16 64` and `DETPIPEINFO 1 5000 16 64`: protocol revision, maximum run milliseconds, warmup captures, energy block length.
 
 `DET1 <ms> <samples> <rate-code> <ratio-milli> <retain>` and `DETPIPE1` with the same arguments accept 1–5000 ms, 256–16380 samples, supported rates, ratio 1000–1000000 and retention 0/1. They emit `<command> BEGIN` with the request fields plus frequency MHz, then `<command> END {json}` after finite acquisition. Errors may occur between BEGIN and END. Verify summary types, status, counts and requested settings, not just presence of END. `sdr_research/detector.py` and `sdr_research/pipeline.py` implement the host checks.
+
+### Decision rule
+
+Both detectors apply the same rule to each capture, in signed 10-bit ADC units:
+
+1. Split the capture into complete 64-sample blocks and compute each block's variance (mean-removed I and Q power). The capture's `mean` is the average block variance and its `peak` is the largest.
+2. For the first 16 captures of a run, only accumulate: `background` is the running average of `mean`.
+3. Afterwards a capture is candidate-positive when `peak * 1000 > background * ratio-milli`. Its score is `peak * 1000 / background`; the capture with the highest score in the run is the one retained.
+4. Only captures that are **not** positive update the background, as `(63 * background + mean + 32) / 64`. A sustained rise in level is therefore never absorbed within a run.
+
+`background` is an integer with a floor of 1, so at low signal levels the threshold moves in coarse steps.
+
+### END summary fields
+
+`DETPIPE1 END` carries one JSON object. All values are non-negative integers.
+
+| Field | Meaning |
+|---|---|
+| `version`, `kernel` | Summary revision (1) and the energy kernel that ran (0 or 3). |
+| `status`, `errors` | 0 = clean; 1 = an acquisition failed; 2 = packing or internal accounting failed. `errors` is 1 whenever `status` is non-zero. |
+| `captures`, `processed_captures` | Successful acquisitions and captures that reached the decision rule; they must match. |
+| `warmup_captures` | Captures used only to seed the background, at most 16. |
+| `detections` | Candidate-positive captures, not unique transmissions. |
+| `background_adc2`, `best_ratio_milli` | Final background and highest score, as defined above. |
+| `wall_elapsed_us` | Run wall time, the denominator of local duty. |
+| `completion_observed_us` | Sum of trigger-to-done polling times. |
+| `acquire_call_us_includes_overlap` | Time inside the acquire call, which includes the overlapped energy work. |
+| `energy_compute_us`, `copy_us`, `decision_us`, `retention_copy_us` | Stage totals. They overlap the acquire time and must not be added to it. |
+| `total_samples`, `analyzed_samples` | `captures * samples`, and the part in complete 64-sample blocks. |
+| `retained_samples` | Size of the retained capture, or 0. |
+| `frequency_mhz`, `sample_rate_hz` | Echo of the tuned frequency and nominal rate. |
+| `acquisition_option`, `clear_option`, `copy_option`, `fused_active`, `pack_failed` | Selector readback and whether the fused path actually ran. |
+
+`DET1 END` has the same shape without the kernel, copy and overlap fields; it reports `trigger_to_done_us`, `acquire_call_us` and `processing_us` instead. The summary carries no gain or saturation information: the viewer adds the requested gain settings and the retained capture's ADC-endpoint counts on the host side.
 
 `DETGET` / `DETPIPEGET` retrieve retained CAP20 with the same DATA framing; missing retention is an error. `DETPIPECLEAR` releases retained pipeline data. `DETPIPEMEM?` reports allocation headroom. `DETPIPEALLOCTEST` is a bounded allocation diagnostic, not RF capture.
 

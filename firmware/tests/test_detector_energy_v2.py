@@ -1,16 +1,18 @@
 """Exact v1/v2 arithmetic equivalence across valid lengths, tails and extremes."""
-from pathlib import Path
+
 import shutil
 import subprocess
 import tempfile
 import unittest
+from pathlib import Path
 
-ROOT=Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[1]
+
 
 class DetectorEnergyV2(unittest.TestCase):
-    @unittest.skipUnless(shutil.which('cc'),'Host C compiler unavailable')
+    @unittest.skipUnless(shutil.which('cc'), 'Host C compiler unavailable')
     def test_exact_v1_equivalence_under_ubsan(self):
-        source=r'''
+        source = r"""
 #include <stdint.h>
 #include <stdio.h>
 #include <assert.h>
@@ -62,14 +64,33 @@ int main(void){
  printf("%u exact v1/v2 comparisons passed; tails unchanged\n",checks);
  return 0;
 }
-'''
+"""
         with tempfile.TemporaryDirectory() as t:
-            p=Path(t);(p/'check.c').write_text(source)
-            for optimization in ('-O0','-O2'):
-                subprocess.run(['cc','-std=c11',optimization,'-Wall','-Wextra','-Werror',
-                                '-fsanitize=undefined','-fno-sanitize-recover=all','-I'+str(ROOT),
-                                str(p/'check.c'),'-o',str(p/'check')],check=True)
-                result=subprocess.run([str(p/'check')],check=True,capture_output=True,text=True,timeout=90)
-                self.assertIn('5496 exact v1/v2 comparisons passed',result.stdout)
+            p = Path(t)
+            (p / 'check.c').write_text(source)
+            for optimization in ('-O0', '-O2'):
+                subprocess.run(
+                    [
+                        'cc',
+                        '-std=c11',
+                        optimization,
+                        '-Wall',
+                        '-Wextra',
+                        '-Werror',
+                        '-fsanitize=undefined',
+                        '-fno-sanitize-recover=all',
+                        '-I' + str(ROOT),
+                        str(p / 'check.c'),
+                        '-o',
+                        str(p / 'check'),
+                    ],
+                    check=True,
+                )
+                result = subprocess.run(
+                    [str(p / 'check')], check=True, capture_output=True, text=True, timeout=90
+                )
+                self.assertIn('5496 exact v1/v2 comparisons passed', result.stdout)
 
-if __name__=='__main__':unittest.main()
+
+if __name__ == '__main__':
+    unittest.main()

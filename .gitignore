@@ -9,6 +9,7 @@ records/
 recovery/
 *.sigmf-data
 *.sigmf-meta
+*.det1.json
 *.detpipe1.json
 *.bin
 *.elf

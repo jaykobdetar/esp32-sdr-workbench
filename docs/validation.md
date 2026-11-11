@@ -54,3 +54,29 @@ The [curated evidence supplement](evidence/README.md) publishes all final A/B, s
 The supplement's local tests passed **156 viewer/evidence tests plus 6 firmware tests and 5 subtests**. The additional evidence tests cover integrity hashes, headline recalculation, an explicitly synthetic handshake replay, and endpoint-count handling. No new firmware build, serial query, hardware measurement or flashing was performed for this supplement. Earlier clean-build results above remain historical.
 
 Endpoint analysis of the five screenshot-session retained captures found Q-channel endpoint occupancy of **0.20–12.76%**. The [published counts and method](evidence/gui/clipping-counts.json) support a clipping/saturation concern but do not identify its cause. Raw RF remains private. A complete raw handshake, matched manual-gain/AGC comparison, terminated-input floor and launcher-created screenshot were not available and are explicitly recorded as gaps.
+
+## Maintenance pass, 11 November 2026
+
+This pass changed host-side code, packaging and documentation only. **No firmware source was edited, no firmware was built, and no board was queried or flashed**, so every hardware number above still describes the original campaign image.
+
+- Python sources were reformatted with ruff. The syntax tree of every file was compared before and after the formatter and was identical; the only hand edits were explicit `zip(strict=True)`, exception chaining and named field tuples for the spectrum frames.
+- The viewer now reports the share of samples on an ADC endpoint code for each displayed capture, adds it to the event table, flags 1% or more as likely clipping, and stores the counts in SigMF metadata and in each detector-run summary. It uses the same convention as `scripts/count_sigmf_endpoints.py`.
+- Each detector-run summary now records the requested gain mode, gain index, bandwidth, rate and sample count. This is the host's request, not a firmware readback of the gain hardware AGC selected.
+- SciPy was removed from the dependencies because nothing imports it; the suite passes in an environment without it. The unused `validation` extra was dropped.
+- CI was added for lint, format and both host suites. It does not build firmware.
+- The first CI run exposed a crash that predates this pass: with PySide6 6.12.0 on Python 3.10 or 3.11 the viewer aborts within seconds of starting (`Fatal Python error: none_dealloc`), because that PySide6 release over-releases `None` while pyqtgraph paints. Python 3.12 and newer are unaffected because `None` is immortal there, which is why the original Python 3.13 environment never showed it. PySide6 6.8.3, 6.9.3, 6.10.3 and 6.11.3 were checked on Python 3.10 and do not crash. The dependency is now constrained to PySide6 below 6.12 on Python older than 3.12.
+
+The viewer and evidence suite passed **160 tests** on Python 3.10, 3.11, 3.12 and 3.13, and the firmware host suite **6 tests plus 5 subtests**. The GUI tests were run offscreen. The viewer changes have not been exercised against real hardware.
+
+Analysis of the published summaries adds two detector limitations, now listed in the README: 5–48% of post-warmup captures were candidate-positive depending on the run, and the adaptive background does not update on positive captures. Under manual gain index 40 the recorded background was 2–34 ADC² units; under hardware AGC it was about 14,000–16,750, where the highest possible score is bounded by the converter's full scale. A matched manual-gain/AGC comparison and a terminated-input floor are still missing.
+
+## Integration with the controlled-source publication, 11 November 2026
+
+The maintenance pass above was combined with the [controlled nRF52840 validation](nrf-validation-summary.md) published the same day. Again no firmware source was edited, nothing was built or flashed and no device was opened.
+
+- The fifteen campaign, analysis and test sources whose hashes are recorded in `rf-source-provenance.json` were left byte-for-byte unchanged and excluded from the formatter. A new test checks those hashes, and the hash of the retention patch, on every run. The other new Python files were formatted, with identical syntax trees before and after.
+- Two GUI tests read run summaries while the worker was still rewriting them, which failed intermittently on Python 3.10. They now wait for the final rewrite. One of the two was an assertion added in the maintenance pass; the other predates it.
+- `pytest` now collects all three host suites, and CI runs them together. The combined suite passed **238 tests plus 5 subtests** on Python 3.10 and 3.13, and both offline evidence verifiers passed.
+- Index pages were added for `docs/` and `scripts/`.
+
+The controlled-source data changes two statements made earlier in this record. A known transmitter now shows that part of the candidate rate is source-dependent, although roughly 193–202 candidate windows per second remained with the source off for the optimized image. A manual gain sweep now exists (index 60 usable, up to 10% clipping at index 80), but a matched hardware-AGC comparison and a terminated-input floor are still missing.

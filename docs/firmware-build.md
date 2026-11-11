@@ -99,7 +99,7 @@ python3 -m venv /tmp/esp-sdr-test-env
 /tmp/esp-sdr-test-env/bin/python -m pytest -q firmware/tests
 ```
 
-A host C compiler with UndefinedBehaviorSanitizer is needed for C arithmetic/guard checks. These tests do not open serial ports or flash hardware. They are a small release subset, not a substitute for receiver ownership, CRC and soak checks on an actual device.
+A host C compiler with UndefinedBehaviorSanitizer is needed for C arithmetic/guard checks. CI runs this suite on every push, but CI does not build the firmware. These tests do not open serial ports or flash hardware. They are a small release subset, not a substitute for receiver ownership, CRC and soak checks on an actual device.
 
 ## Runtime and safety
 
