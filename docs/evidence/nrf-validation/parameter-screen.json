@@ -1,0 +1,2534 @@
+{
+  "results": {
+    "cautions": [
+      "Three ON/OFF pairs per detector mode, one raw pair per variant.",
+      "Sequential one-factor screen is time-confounded and not calibrated sensitivity certification.",
+      "No candidate count is packet recall.",
+      "Only address plus complete payload plus CRC establishes complete-frame validation; 8-byte payload has no deterministic suffix beyond RFTX and unconstrained sequence."
+    ],
+    "variants": [
+      {
+        "analysis": "records/nrf-screen/bandwidth24/analysis-20261111T210743129315Z/analysis.json",
+        "aperture_us": [
+          1023.7499999999999
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 63.573102544616376,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 71.88525935628735,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.755787226611204,
+              "local_rf_duty": 29.534625849611604,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 135.45836190090372,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.764554980512116,
+              "local_rf_duty": 29.55387393592928,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 191.956977134759,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 197.6241055284494,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 42.985312561478246,
+              "local_rf_duty": 61.88563439993798,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 389.5810826632084,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 42.941076301881346,
+              "local_rf_duty": 61.82072427322558,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 64,
+          "power_dbm": 0
+        },
+        "timing": [
+          {
+            "completed_delta": 719,
+            "index": 12,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 719,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 719,
+            "index": 6,
+            "max_completion_latency_us": 476,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 719,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 5,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 721,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 7,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 4,
+            "max_completion_latency_us": 448,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 212,
+            "index": 0,
+            "max_completion_latency_us": 456,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 213,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 725,
+            "index": 13,
+            "max_completion_latency_us": 448,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "bandwidth24"
+      },
+      {
+        "analysis": "records/nrf-screen/buffer8192/analysis-20261111T210743794353Z/analysis.json",
+        "aperture_us": [
+          512.0
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 91.5700585195147,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 70.5399225461343,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 16.429241132011867,
+              "local_rf_duty": 19.98512223546864,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 162.109981065649,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 16.433678218048627,
+              "local_rf_duty": 19.99164484973284,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 250.10486997501422,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 204.1176174133362,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 36.80711312886743,
+              "local_rf_duty": 45.417012670643715,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 454.22248738835043,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 36.71211570144802,
+              "local_rf_duty": 45.31862539560125,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 64,
+          "power_dbm": 0
+        },
+        "timing": [
+          {
+            "completed_delta": 617,
+            "index": 12,
+            "max_completion_latency_us": 458,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 617,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 617,
+            "index": 6,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 618,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 618,
+            "index": 5,
+            "max_completion_latency_us": 1589,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 618,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 621,
+            "index": 7,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 622,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 622,
+            "index": 4,
+            "max_completion_latency_us": 483,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 622,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 108,
+            "index": 0,
+            "max_completion_latency_us": 448,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 109,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 622,
+            "index": 13,
+            "max_completion_latency_us": 465,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 622,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "buffer8192"
+      },
+      {
+        "analysis": "records/nrf-screen/burst5/analysis-20261111T210744290319Z/analysis.json",
+        "aperture_us": [
+          1023.7499999999999
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 57.632359045254155,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 50.579061803914364,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.754326939290095,
+              "local_rf_duty": 29.537574096687276,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 108.21142084916852,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.764374789473454,
+              "local_rf_duty": 29.55458400031982,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 69.54105909328854,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 134.40483355853078,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 42.68815053127147,
+              "local_rf_duty": 61.439491984011845,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 203.94589265181932,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 42.52166032473799,
+              "local_rf_duty": 61.20946098201679,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 5,
+          "burst_gap_us": 20000,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 64,
+          "power_dbm": 0
+        },
+        "timing": [
+          {
+            "completed_delta": 240,
+            "index": 12,
+            "max_completion_latency_us": 475,
+            "max_launch_lateness_us": 1232,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 240,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 240,
+            "index": 6,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1232,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 240,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 240,
+            "index": 5,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1232,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 240,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 240,
+            "index": 7,
+            "max_completion_latency_us": 483,
+            "max_launch_lateness_us": 1232,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 240,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 240,
+            "index": 4,
+            "max_completion_latency_us": 484,
+            "max_launch_lateness_us": 1232,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 240,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 70,
+            "index": 0,
+            "max_completion_latency_us": 448,
+            "max_launch_lateness_us": 1232,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 70,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 240,
+            "index": 13,
+            "max_completion_latency_us": 449,
+            "max_launch_lateness_us": 1232,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 240,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "burst5"
+      },
+      {
+        "analysis": "records/nrf-screen/hopping/analysis-20261111T210744971150Z/analysis.json",
+        "aperture_us": [
+          1023.7499999999999
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 29.748802557962215,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 51.89271965132088,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.802595896187572,
+              "local_rf_duty": 29.596663748404897,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 81.6415222092831,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.775111138669914,
+              "local_rf_duty": 29.574039230827783,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 82.53483117775883,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 144.45905453661464,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.37079840936979,
+              "local_rf_duty": 62.43301443165907,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 226.99388571437348,
+              "exact_header_buffers": 1,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.06835422446102,
+              "local_rf_duty": 62.01452773646949,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [
+            2420,
+            2440,
+            2460
+          ],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 64,
+          "power_dbm": 0
+        },
+        "timing": [
+          {
+            "completed_delta": 719,
+            "index": 12,
+            "max_completion_latency_us": 458,
+            "max_launch_lateness_us": 1258,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 719,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 6,
+            "max_completion_latency_us": 466,
+            "max_launch_lateness_us": 1259,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 5,
+            "max_completion_latency_us": 465,
+            "max_launch_lateness_us": 1258,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 7,
+            "max_completion_latency_us": 483,
+            "max_launch_lateness_us": 1259,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 4,
+            "max_completion_latency_us": 466,
+            "max_launch_lateness_us": 1258,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 212,
+            "index": 0,
+            "max_completion_latency_us": 466,
+            "max_launch_lateness_us": 1258,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 213,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 13,
+            "max_completion_latency_us": 465,
+            "max_launch_lateness_us": 1259,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "hopping"
+      },
+      {
+        "analysis": "records/nrf-screen/interval10ms/analysis-20261111T210745697494Z/analysis.json",
+        "aperture_us": [
+          1023.7499999999999
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 24.957069430189016,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 63.278184669210155,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.793685535207683,
+              "local_rf_duty": 29.59533925722182,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 88.23525409939917,
+              "exact_header_buffers": 1,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.789277625031797,
+              "local_rf_duty": 29.58746345384286,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 51.87191458663324,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 167.33472716520177,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.3496783402029,
+              "local_rf_duty": 62.393408144337506,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 1,
+              "candidate_rate": 219.206641751835,
+              "exact_header_buffers": 1,
+              "full_payload_buffers": 1,
+              "host_rf_duty": 43.05882941334147,
+              "local_rf_duty": 61.979529600580214,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 10000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 64,
+          "power_dbm": 0
+        },
+        "timing": [
+          {
+            "completed_delta": 144,
+            "index": 12,
+            "max_completion_latency_us": 440,
+            "max_launch_lateness_us": 1227,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 144,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 144,
+            "index": 6,
+            "max_completion_latency_us": 427,
+            "max_launch_lateness_us": 1228,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 144,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 144,
+            "index": 5,
+            "max_completion_latency_us": 431,
+            "max_launch_lateness_us": 1227,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 144,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 145,
+            "index": 7,
+            "max_completion_latency_us": 456,
+            "max_launch_lateness_us": 1227,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 145,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 145,
+            "index": 4,
+            "max_completion_latency_us": 440,
+            "max_launch_lateness_us": 1227,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 145,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 42,
+            "index": 0,
+            "max_completion_latency_us": 427,
+            "max_launch_lateness_us": 1227,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 42,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 145,
+            "index": 13,
+            "max_completion_latency_us": 456,
+            "max_launch_lateness_us": 1227,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 145,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "interval10ms"
+      },
+      {
+        "analysis": "records/nrf-screen/mode1/analysis-20261111T210746390765Z/analysis.json",
+        "aperture_us": [
+          1023.7499999999999
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 141.5247740093959,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 67.84418172854909,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.82182912155658,
+              "local_rf_duty": 29.624278275992975,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 209.36895573794502,
+              "exact_header_buffers": 2,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.884774623041277,
+              "local_rf_duty": 29.713609010641267,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 311.3764187606157,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 170.01054517949436,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.345201126108975,
+              "local_rf_duty": 62.39344395467386,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 481.38696394011004,
+              "exact_header_buffers": 1,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.129926612881036,
+              "local_rf_duty": 62.08761977416639,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 1,
+          "payload_len": 64,
+          "power_dbm": 0
+        },
+        "timing": [
+          {
+            "completed_delta": 719,
+            "index": 12,
+            "max_completion_latency_us": 1936,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 718,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 721,
+            "index": 6,
+            "max_completion_latency_us": 1916,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 719,
+            "index": 5,
+            "max_completion_latency_us": 740,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 725,
+            "index": 7,
+            "max_completion_latency_us": 1861,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 725,
+            "index": 4,
+            "max_completion_latency_us": 1732,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 212,
+            "index": 0,
+            "max_completion_latency_us": 751,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 213,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 726,
+            "index": 13,
+            "max_completion_latency_us": 1967,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "mode1"
+      },
+      {
+        "analysis": "records/nrf-screen/payload128/analysis-20261111T210747158252Z/analysis.json",
+        "aperture_us": [
+          1023.7499999999999
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 141.12846365441777,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 76.2380602333388,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.789253298056256,
+              "local_rf_duty": 29.584911145825572,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 217.36652388775659,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.759700986029685,
+              "local_rf_duty": 29.54563703479688,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 270.0821035283695,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 209.59890366621585,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.08496405335177,
+              "local_rf_duty": 62.05336005864992,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 479.68100719458533,
+              "exact_header_buffers": 1,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.03135875969326,
+              "local_rf_duty": 61.955050678997246,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 128,
+          "power_dbm": 0
+        },
+        "timing": [
+          {
+            "completed_delta": 720,
+            "index": 12,
+            "max_completion_latency_us": 741,
+            "max_launch_lateness_us": 1243,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 721,
+            "index": 6,
+            "max_completion_latency_us": 1733,
+            "max_launch_lateness_us": 1243,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 719,
+            "index": 5,
+            "max_completion_latency_us": 741,
+            "max_launch_lateness_us": 1243,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 719,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 725,
+            "index": 7,
+            "max_completion_latency_us": 1853,
+            "max_launch_lateness_us": 1243,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 725,
+            "index": 4,
+            "max_completion_latency_us": 1774,
+            "max_launch_lateness_us": 1243,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 212,
+            "index": 0,
+            "max_completion_latency_us": 732,
+            "max_launch_lateness_us": 1243,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 213,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 726,
+            "index": 13,
+            "max_completion_latency_us": 1925,
+            "max_launch_lateness_us": 1243,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "payload128"
+      },
+      {
+        "analysis": "records/nrf-screen/payload32/analysis-20261111T210747849280Z/analysis.json",
+        "aperture_us": [
+          1023.7499999999999
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 97.18995337337711,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 76.5427401753945,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.783280077607483,
+              "local_rf_duty": 29.57446747736311,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 1,
+              "candidate_rate": 173.7326935487716,
+              "exact_header_buffers": 1,
+              "full_payload_buffers": 1,
+              "host_rf_duty": 20.78378966604581,
+              "local_rf_duty": 29.57527052883125,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 231.401689966781,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 169.35842691204655,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.37315894272822,
+              "local_rf_duty": 62.43852222060705,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 400.76011687882755,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 42.98405789213579,
+              "local_rf_duty": 61.88246298554413,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 32,
+          "power_dbm": 0
+        },
+        "timing": [
+          {
+            "completed_delta": 720,
+            "index": 12,
+            "max_completion_latency_us": 344,
+            "max_launch_lateness_us": 1218,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 719,
+            "index": 6,
+            "max_completion_latency_us": 310,
+            "max_launch_lateness_us": 1218,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 719,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 5,
+            "max_completion_latency_us": 325,
+            "max_launch_lateness_us": 1218,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 7,
+            "max_completion_latency_us": 318,
+            "max_launch_lateness_us": 1217,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 4,
+            "max_completion_latency_us": 327,
+            "max_launch_lateness_us": 1217,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 212,
+            "index": 0,
+            "max_completion_latency_us": 302,
+            "max_launch_lateness_us": 1218,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 213,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 13,
+            "max_completion_latency_us": 362,
+            "max_launch_lateness_us": 1218,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "payload32"
+      },
+      {
+        "analysis": "records/nrf-screen/payload8/analysis-20261111T210748565106Z/analysis.json",
+        "aperture_us": [
+          1023.7499999999999
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 95.80953785774021,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 73.23795807487686,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.789005108526993,
+              "local_rf_duty": 29.58411563682019,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 1,
+              "candidate_rate": 169.04749593261707,
+              "exact_header_buffers": 1,
+              "full_payload_buffers": 1,
+              "host_rf_duty": 20.806901178883344,
+              "local_rf_duty": 29.605492612077303,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 160.41166007644424,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 199.289617571991,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.30536953667629,
+              "local_rf_duty": 62.331274245270244,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 359.7012776484352,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.011553816634745,
+              "local_rf_duty": 61.932109752166355,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 8,
+          "power_dbm": 0
+        },
+        "timing": [
+          {
+            "completed_delta": 720,
+            "index": 12,
+            "max_completion_latency_us": 203,
+            "max_launch_lateness_us": 1200,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 6,
+            "max_completion_latency_us": 246,
+            "max_launch_lateness_us": 1200,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 719,
+            "index": 5,
+            "max_completion_latency_us": 203,
+            "max_launch_lateness_us": 1201,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 719,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 7,
+            "max_completion_latency_us": 237,
+            "max_launch_lateness_us": 1201,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 725,
+            "index": 4,
+            "max_completion_latency_us": 257,
+            "max_launch_lateness_us": 1200,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 212,
+            "index": 0,
+            "max_completion_latency_us": 265,
+            "max_launch_lateness_us": 1200,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 213,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 13,
+            "max_completion_latency_us": 265,
+            "max_launch_lateness_us": 1201,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "payload8"
+      },
+      {
+        "analysis": "records/nrf-screen/power-minus20/analysis-20261111T210749298431Z/analysis.json",
+        "aperture_us": [
+          1023.7499999999999
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": -6.04050570173996,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 75.23754659089671,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.788572118434313,
+              "local_rf_duty": 29.584156860383775,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 69.19704088915675,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.77833280576498,
+              "local_rf_duty": 29.566346383950144,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 14.067614836638086,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 169.69066056056167,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.374833984741095,
+              "local_rf_duty": 62.43831211813518,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 183.75827539719975,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.10219777567848,
+              "local_rf_duty": 62.06121099242089,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 64,
+          "power_dbm": -20
+        },
+        "timing": [
+          {
+            "completed_delta": 720,
+            "index": 12,
+            "max_completion_latency_us": 449,
+            "max_launch_lateness_us": 1228,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 6,
+            "max_completion_latency_us": 465,
+            "max_launch_lateness_us": 1228,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 5,
+            "max_completion_latency_us": 474,
+            "max_launch_lateness_us": 1228,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 721,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 7,
+            "max_completion_latency_us": 465,
+            "max_launch_lateness_us": 1229,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 4,
+            "max_completion_latency_us": 466,
+            "max_launch_lateness_us": 1228,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 212,
+            "index": 0,
+            "max_completion_latency_us": 466,
+            "max_launch_lateness_us": 1228,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 213,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 725,
+            "index": 13,
+            "max_completion_latency_us": 465,
+            "max_launch_lateness_us": 1229,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "power-minus20"
+      },
+      {
+        "analysis": "records/nrf-screen/power-minus40/analysis-20261111T210750011899Z/analysis.json",
+        "aperture_us": [
+          1023.7499999999999
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": -2.671758489121288,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 53.889332307066205,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.750007144841515,
+              "local_rf_duty": 29.525650598410028,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 51.21757381794492,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.763820178083545,
+              "local_rf_duty": 29.554232987755114,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": -0.7127884440211005,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 154.7256199173934,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.42013251575191,
+              "local_rf_duty": 62.54119055731354,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 154.0128314733723,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.377311559362305,
+              "local_rf_duty": 62.45542070192372,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 64,
+          "power_dbm": -40
+        },
+        "timing": [
+          {
+            "completed_delta": 722,
+            "index": 12,
+            "max_completion_latency_us": 456,
+            "max_launch_lateness_us": 1229,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 722,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 6,
+            "max_completion_latency_us": 466,
+            "max_launch_lateness_us": 1229,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 5,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1229,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 721,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 7,
+            "max_completion_latency_us": 474,
+            "max_launch_lateness_us": 1228,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 4,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1229,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 212,
+            "index": 0,
+            "max_completion_latency_us": 448,
+            "max_launch_lateness_us": 1228,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 213,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 725,
+            "index": 13,
+            "max_completion_latency_us": 448,
+            "max_launch_lateness_us": 1228,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "power-minus40"
+      },
+      {
+        "analysis": "records/nrf-screen/power-minus8/analysis-20261111T210750741191Z/analysis.json",
+        "aperture_us": [
+          1023.7499999999999
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 112.34049037755382,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 75.22364548473989,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.76013068388091,
+              "local_rf_duty": 29.545520351275357,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 187.5641358622937,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.82236940304143,
+              "local_rf_duty": 29.619977328029012,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 262.6455458524903,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 174.05513843019511,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.24107669185747,
+              "local_rf_duty": 62.245770975997154,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 436.7006842826854,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.2679961459822,
+              "local_rf_duty": 62.290650902073686,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 1,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 64,
+          "power_dbm": -8
+        },
+        "timing": [
+          {
+            "completed_delta": 721,
+            "index": 12,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 721,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 6,
+            "max_completion_latency_us": 449,
+            "max_launch_lateness_us": 1227,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 5,
+            "max_completion_latency_us": 476,
+            "max_launch_lateness_us": 1227,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 7,
+            "max_completion_latency_us": 484,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 4,
+            "max_completion_latency_us": 447,
+            "max_launch_lateness_us": 1227,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 212,
+            "index": 0,
+            "max_completion_latency_us": 474,
+            "max_launch_lateness_us": 1227,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 213,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 13,
+            "max_completion_latency_us": 449,
+            "max_launch_lateness_us": 1227,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "power-minus8"
+      },
+      {
+        "analysis": "records/nrf-screen/rate40/analysis-20261111T210751491502Z/analysis.json",
+        "aperture_us": [
+          409.5
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 75.2630369938658,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 66.57503586437457,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 10.118557401273657,
+              "local_rf_duty": 14.396053122293132,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 141.83807285824037,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 10.109751400269063,
+              "local_rf_duty": 14.384522626488057,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 177.3673970535576,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 144.45349445885935,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 19.26733869925448,
+              "local_rf_duty": 27.735813342133444,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 321.82089151241695,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 19.064350812273005,
+              "local_rf_duty": 27.447749747058793,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 64,
+          "power_dbm": 0
+        },
+        "timing": [
+          {
+            "completed_delta": 719,
+            "index": 12,
+            "max_completion_latency_us": 466,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 719,
+            "index": 6,
+            "max_completion_latency_us": 465,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 719,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 719,
+            "index": 5,
+            "max_completion_latency_us": 449,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 7,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 4,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 212,
+            "index": 0,
+            "max_completion_latency_us": 439,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 212,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 13,
+            "max_completion_latency_us": 458,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "rate40"
+      },
+      {
+        "analysis": "records/nrf-screen/rate80/analysis-20261111T210831534499Z/analysis.json",
+        "aperture_us": [
+          204.75
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 65.80354009190984,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 63.57895536028534,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 5.470487414157618,
+              "local_rf_duty": 7.782474868111971,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 129.38249545219517,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 5.472753976043265,
+              "local_rf_duty": 7.783857548356472,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 110.86848134977956,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 152.0427578497747,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 9.609422268970611,
+              "local_rf_duty": 13.83543722673273,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 262.91123919955425,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 9.593862177805612,
+              "local_rf_duty": 13.812048022477489,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 64,
+          "power_dbm": 0
+        },
+        "timing": [
+          {
+            "completed_delta": 720,
+            "index": 12,
+            "max_completion_latency_us": 475,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 6,
+            "max_completion_latency_us": 475,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 5,
+            "max_completion_latency_us": 463,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 7,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 4,
+            "max_completion_latency_us": 456,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 212,
+            "index": 0,
+            "max_completion_latency_us": 456,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 212,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 13,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "rate80"
+      },
+      {
+        "analysis": "records/nrf-screen/reference/analysis-20261111T210752601775Z/analysis.json",
+        "aperture_us": [
+          1023.7499999999999
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 131.05013632243057,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 54.22245947431031,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.800457360731173,
+              "local_rf_duty": 29.597630811012134,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 185.2725957967409,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.797504276261556,
+              "local_rf_duty": 29.592048287692744,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 252.52881678887437,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 157.4058196810495,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.33782247721218,
+              "local_rf_duty": 62.37592317977791,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 1,
+              "candidate_rate": 409.9346364699239,
+              "exact_header_buffers": 2,
+              "full_payload_buffers": 1,
+              "host_rf_duty": 43.03520810234115,
+              "local_rf_duty": 61.96273971332548,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 1,
+              "candidate_rate": null,
+              "exact_header_buffers": 1,
+              "full_payload_buffers": 1,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 64,
+          "power_dbm": 0
+        },
+        "timing": [
+          {
+            "completed_delta": 721,
+            "index": 12,
+            "max_completion_latency_us": 1661,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 6,
+            "max_completion_latency_us": 448,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 721,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 5,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 7,
+            "max_completion_latency_us": 465,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 4,
+            "max_completion_latency_us": 440,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 213,
+            "index": 0,
+            "max_completion_latency_us": 1680,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 212,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 723,
+            "index": 13,
+            "max_completion_latency_us": 466,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "reference"
+      },
+      {
+        "analysis": "records/nrf-screen/threshold2/analysis-20261111T210753324475Z/analysis.json",
+        "aperture_us": [
+          1023.7499999999999
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 98.72040753816302,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 89.51431614838145,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.778026003278228,
+              "local_rf_duty": 29.564444692132213,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 188.23472368654447,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.798714024923957,
+              "local_rf_duty": 29.586093641365892,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 237.88091789541437,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 183.70442506394113,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.36237683245153,
+              "local_rf_duty": 62.41739338417068,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 421.5853429593555,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 42.99870361600647,
+              "local_rf_duty": 61.895254624640394,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 64,
+          "power_dbm": 0
+        },
+        "timing": [
+          {
+            "completed_delta": 721,
+            "index": 12,
+            "max_completion_latency_us": 483,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 721,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 6,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 721,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 5,
+            "max_completion_latency_us": 483,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 721,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 723,
+            "index": 7,
+            "max_completion_latency_us": 475,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 723,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 4,
+            "max_completion_latency_us": 483,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 212,
+            "index": 0,
+            "max_completion_latency_us": 457,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 213,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 725,
+            "index": 13,
+            "max_completion_latency_us": 474,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "threshold2"
+      },
+      {
+        "analysis": "records/nrf-screen/threshold8/analysis-20261111T210754014713Z/analysis.json",
+        "aperture_us": [
+          1023.7499999999999
+        ],
+        "groups": {
+          "baseline": {
+            "candidate_excess": 91.82499095655237,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 44.94215887631481,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.759010690612673,
+              "local_rf_duty": 29.545214664125353,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 136.76714983286718,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 20.859860790378175,
+              "local_rf_duty": 29.67397356688924,
+              "n": 3
+            }
+          },
+          "optimized": {
+            "candidate_excess": 214.5302560846628,
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 128.78615236651817,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.28064552792617,
+              "local_rf_duty": 62.317304505340985,
+              "n": 3
+            },
+            "on": {
+              "address_crc_buffers": 0,
+              "candidate_rate": 343.31640845118096,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": 43.210123614816496,
+              "local_rf_duty": 62.193307713920326,
+              "n": 3
+            }
+          },
+          "raw": {
+            "off": {
+              "address_crc_buffers": 0,
+              "candidate_rate": null,
+              "exact_header_buffers": 0,
+              "full_payload_buffers": 0,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            },
+            "on": {
+              "address_crc_buffers": 1,
+              "candidate_rate": null,
+              "exact_header_buffers": 1,
+              "full_payload_buffers": 1,
+              "host_rf_duty": null,
+              "local_rf_duty": null,
+              "n": 1
+            }
+          }
+        },
+        "records": 14,
+        "source_configuration": {
+          "burst_count": 0,
+          "burst_gap_us": 0,
+          "frequency_mhz": 2440,
+          "hop_list": [],
+          "interval_us": 2000,
+          "jitter_us": 150,
+          "mode_mbps": 2,
+          "payload_len": 64,
+          "power_dbm": 0
+        },
+        "timing": [
+          {
+            "completed_delta": 720,
+            "index": 12,
+            "max_completion_latency_us": 483,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 721,
+            "index": 6,
+            "max_completion_latency_us": 1568,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 720,
+            "index": 5,
+            "max_completion_latency_us": 465,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 720,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 7,
+            "max_completion_latency_us": 474,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 724,
+            "index": 4,
+            "max_completion_latency_us": 448,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 724,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 213,
+            "index": 0,
+            "max_completion_latency_us": 483,
+            "max_launch_lateness_us": 1225,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 213,
+            "timing_saturated": false
+          },
+          {
+            "completed_delta": 726,
+            "index": 13,
+            "max_completion_latency_us": 1507,
+            "max_launch_lateness_us": 1226,
+            "missed_slots_delta": 0,
+            "scheduled_delta": 725,
+            "timing_saturated": false
+          }
+        ],
+        "variant": "threshold8"
+      }
+    ]
+  },
+  "source": "nrf-screen/summary-20261111T210832681388Z.json",
+  "source_sha256": "3306cb31ec58f39079d28d63b8a8a49bd507ce09497a77f044013cbba789d08d"
+}

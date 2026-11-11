@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "file": "README.md",
+      "bytes": 7146,
+      "sha256": "c309126f71f4851964f12c875256edfffbcd2d33c5524c1c86a3ffcbedb039d7"
+    },
+    {
+      "file": "abab-comparison.json",
+      "bytes": 13439,
+      "sha256": "5ec3e8ad37eb0a101e6252fa5a60e33cf8a5378ad2262d85ae0f7d7a7e07800d"
+    },
+    {
+      "file": "analysis-summaries.json",
+      "bytes": 75804,
+      "sha256": "2312e7d1352ce0863244b97430074c6f524b59563d8301aafb11878b9b4a6cd0"
+    },
+    {
+      "file": "campaign-totals.json",
+      "bytes": 892,
+      "sha256": "fa1c3128a0d2ee3aed09016a4b998da61462590c10fa8149c25a2f73fdeeb33e"
+    },
+    {
+      "file": "known-packets.json",
+      "bytes": 18626,
+      "sha256": "ee4a8db2be08a00801da1fa3660aafad2e63e6750f6031e5cd2eb516c6944cd9"
+    },
+    {
+      "file": "parameter-screen.json",
+      "bytes": 80627,
+      "sha256": "36862d4fabafbe5ee7f20185e25723a6c68be1ed49981669a191ba1cac80d531"
+    },
+    {
+      "file": "recordings.json",
+      "bytes": 3028923,
+      "sha256": "af78439a17ec746e01e1f534cedbc7d85a76b3ada38ad89c1662d8960a419779"
+    },
+    {
+      "file": "retention-comparison.json",
+      "bytes": 42458,
+      "sha256": "0040dac78a90628fc26a4fe068449b03860d401cffcaa722032a8068ba3332c2"
+    },
+    {
+      "file": "source-provenance.json",
+      "bytes": 828,
+      "sha256": "fd1ed59a1b747651fe77b0dc61874a877eed40a493c3cb7ba4e4f9e10ea6a8ec"
+    }
+  ]
+}

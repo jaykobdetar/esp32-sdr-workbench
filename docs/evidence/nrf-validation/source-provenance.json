@@ -1,0 +1,26 @@
+[
+  {
+    "sha256": "1ca9adff4acb42274bd6c5fe9f86b3c9acd1ab9aecdcc0cc7432dcc0a4348084",
+    "source": "docs/nrf-validation-summary.md"
+  },
+  {
+    "sha256": "9f67156c650fbf13fb9139474c746341e3625244fdde8f3762cd30cc77fdf452",
+    "source": "docs/controlled-rf-analysis.md"
+  },
+  {
+    "sha256": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e",
+    "source": "scripts/analyze_nrf_iq.py"
+  },
+  {
+    "sha256": "35d76598776636feff1a2b9ad46640e0b1421108a4bbe80e64315589717ea6ea",
+    "source": "scripts/compare_nrf_abab.py"
+  },
+  {
+    "sha256": "b00dd93548f2d99e67a4d40ec56b783945afc8c104293e194ee96a5b6ea20278",
+    "source": "scripts/summarize_nrf_screen.py"
+  },
+  {
+    "sha256": "1a1de0a10fb8dcc624a66c9b482d2ec477f1757a5df8eedeebcdd1da838954af",
+    "source": "scripts/summarize_nrf_retention.py"
+  }
+]
