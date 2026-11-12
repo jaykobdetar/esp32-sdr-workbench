@@ -10,7 +10,7 @@ confounds sequential RF comparisons. The verified v2 application was restored.
 Single-candidate retention remains the default. A subsequent, identified v4 build
 passed a [bounded passive smoke check](docs/review-follow-up.md); it was then replaced
 with the verified v2 application. V4 has no new soak or RF-performance validation. The [calibration guide](docs/calibration-fingerprints.md) describes future boundary logging; [measured-v2 source provenance](docs/measured-v2-source.md) identifies the historical source snapshot. The [remaining-validation guide](docs/remaining-validation-guide.md)
-covers the remaining bench work and release-image validation.
+covers the remaining bench work and release-image validation. The [independent review fixes](docs/safety-review-fixes.md) record the exact v5/v6 builds, software checks and bounded hardware-validation limits.
 
 **A native RF viewer and optimized, burst-aware energy detector for the original ESP32.**
 
