@@ -15,6 +15,7 @@ from PySide6 import QtCore, QtGui
 from PySide6 import QtWidgets as W
 
 from .analysis import endpoint_counts, spectrum
+from .diversity import combine_spectra
 from .gui import InspectionWindow
 from .lab_devices import discover_devices
 from .lab_session import LabSession, ReceiverConfig, TransmitterConfig
@@ -61,6 +62,7 @@ class ReceiverView(W.QFrame):
     def __init__(self, name: str, color: str) -> None:
         super().__init__()
         self.setObjectName('card')
+        self.setMaximumHeight(430)
         self.color = color
         self.last_capture = None
         self.last_received = None
@@ -80,6 +82,7 @@ class ReceiverView(W.QFrame):
         self.plot.showGrid(x=True, y=True, alpha=0.15)
         self.curve = self.plot.plot(pen=pg.mkPen(color, width=1.5))
         self.plot.setMinimumHeight(150)
+        self.plot.setMaximumHeight(190)
         layout.addWidget(self.plot, 2)
         self.water = pg.PlotWidget()
         self.water.setLabel('bottom', 'Frequency', units='MHz')
@@ -89,7 +92,8 @@ class ReceiverView(W.QFrame):
         self.image = pg.ImageItem(axisOrder='row-major')
         self.image.setLookupTable(pg.colormap.get('viridis').getLookupTable())
         self.water.addItem(self.image)
-        self.water.setMinimumHeight(120)
+        self.water.setMinimumHeight(80)
+        self.water.setMaximumHeight(110)
         layout.addWidget(self.water, 1)
         self.metrics = label('No captures yet', 'muted', True)
         layout.addWidget(self.metrics)
@@ -137,6 +141,61 @@ class ReceiverView(W.QFrame):
             self.status.setText(f'Last capture {age:.1f}s ago')
 
 
+class CombinedView(ReceiverView):
+    def __init__(self) -> None:
+        super().__init__('Combined diversity spectrum', '#77ded1')
+        self.signature = None
+        self.water.setLabel('left', 'Display update')
+
+    def update_inputs(self, inputs: dict) -> None:
+        result = combine_spectra(inputs, time.monotonic())
+        self.status.setText(
+            f'Oldest input {result.max_age_s:.1f}s'
+            if result.contributors
+            else 'Waiting for fresh usable captures'
+        )
+        self.metrics.setText(
+            f'{result.mode} · ' + (', '.join(result.contributors) or 'no contributors')
+        )
+        excluded = '; '.join(f'{name}: {reason}' for name, reason in result.excluded.items())
+        self.health.setText(
+            'Noncoherent, asynchronous power display. Not continuous I/Q, calibrated RF power or packet recall.'
+            + ('\nExcluded: ' + excluded if excluded else '')
+            + (
+                '\nAll usable inputs have possible clipping.'
+                if result.mode == 'least-clipped fallback'
+                else ''
+            )
+        )
+        signature = (
+            tuple((name, id(inputs[name][0])) for name in result.contributors),
+            result.mode,
+        )
+        if not result.contributors:
+            self.curve.clear()
+            self.image.clear()
+            self.waterfall = np.full((60, 512), -100.0)
+            self.signature = signature
+            return
+        if signature == self.signature:
+            return
+        self.signature = signature
+        self.curve.setData(result.frequency_mhz, result.power_dbfs)
+        if self.waterfall.shape[1] != len(result.power_dbfs):
+            self.waterfall = np.full((60, len(result.power_dbfs)), -100.0)
+        self.waterfall = np.roll(self.waterfall, -1, axis=0)
+        self.waterfall[-1] = result.power_dbfs
+        self.image.setImage(self.waterfall, levels=(-100, -10), autoLevels=False)
+        self.image.setRect(
+            QtCore.QRectF(
+                float(result.frequency_mhz[0]),
+                -59,
+                float(result.frequency_mhz[-1] - result.frequency_mhz[0]),
+                60,
+            )
+        )
+
+
 class StudioWindow(W.QMainWindow):
     def __init__(self, demo: bool = False) -> None:
         super().__init__()
@@ -149,6 +208,8 @@ class StudioWindow(W.QMainWindow):
         self.devices = []
         self.device_rows = []
         self.latest = {}
+        self.arrivals = {}
+        self.combined = None
         self.views = {}
         self.dialogs = []
         self.last_output = None
@@ -503,10 +564,28 @@ class StudioWindow(W.QMainWindow):
         self.progress.setValue(0)
         self.progress.setFormat('Not running')
         layout.addWidget(self.progress)
+        display_row = W.QHBoxLayout()
+        display_row.addWidget(label('Display', 'muted'))
+        self.display_mode = combo(
+            [('Combined', 'combined'), ('Individual', 'individual'), ('Both', 'both')]
+        )
+        self.display_mode.currentIndexChanged.connect(self.update_display_mode)
+        display_row.addWidget(self.display_mode)
+        display_row.addWidget(
+            label(
+                'Combined averages compatible receiver powers, not their I/Q phases.', 'muted', True
+            ),
+            1,
+        )
+        layout.addLayout(display_row)
         self.views_container = W.QWidget()
         self.views_layout = W.QGridLayout(self.views_container)
         self.views_layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self.views_container, 1)
+        plots_scroll = W.QScrollArea()
+        plots_scroll.setWidgetResizable(True)
+        plots_scroll.setFrameShape(W.QFrame.Shape.NoFrame)
+        plots_scroll.setWidget(self.views_container)
+        layout.addWidget(plots_scroll, 1)
         self.empty_plot = label(
             'Your receivers will appear here\nEach has its own spectrum and capture-history waterfall.',
             'empty',
@@ -769,6 +848,7 @@ class StudioWindow(W.QMainWindow):
         self.finished_session = None
         self.last_output = folder if self.save.isChecked() else None
         self.latest.clear()
+        self.arrivals.clear()
         self.views.clear()
         self.rx_select.clear()
         self.log.clear()
@@ -777,11 +857,14 @@ class StudioWindow(W.QMainWindow):
             if item.widget():
                 item.widget().hide()
                 item.widget().deleteLater()
+        self.combined = CombinedView()
+        self.views_layout.addWidget(self.combined, 0, 0, 1, 2)
         for i, receiver in enumerate(rx):
             view = ReceiverView(receiver.label, COLORS[i % len(COLORS)])
-            self.views_layout.addWidget(view, i // 2, i % 2)
+            self.views_layout.addWidget(view, 1 + i // 2, i % 2)
             self.views[receiver.label] = view
             self.rx_select.addItem(receiver.label)
+        self.update_display_mode()
         self.live_title.setText('Simulated session' if demo else TASKS[task][0])
         self.live_hint.setText(
             f'{self.frequency.value()} MHz · {self.duration.currentText()} · {"synthetic data, no hardware" if demo else "independent burst receivers"}'
@@ -830,7 +913,12 @@ class StudioWindow(W.QMainWindow):
             frames.clear()
             if capture is not None:
                 self.latest[name] = capture
+                self.arrivals[name] = time.monotonic()
             self.views[name].update_capture(capture, stats)
+        if self.combined and self.finished_session is not session:
+            self.combined.update_inputs(
+                {name: (capture, self.arrivals[name]) for name, capture in self.latest.items()}
+            )
         self.inspect_button.setEnabled(bool(self.latest))
         if session.is_alive():
             for view in self.views.values():
@@ -872,8 +960,17 @@ class StudioWindow(W.QMainWindow):
             self.update_plan()
             for view in self.views.values():
                 view.status.setText('Stopped · last capture')
+            if self.combined:
+                self.combined.status.setText('Stopped · last combined display')
         if self.closing:
             self.close()
+
+    def update_display_mode(self) -> None:
+        mode = self.display_mode.currentData()
+        if self.combined:
+            self.combined.setVisible(mode in ('combined', 'both'))
+        for view in self.views.values():
+            view.setVisible(mode in ('individual', 'both'))
 
     def inspect_latest(self) -> None:
         capture = self.latest.get(self.rx_select.currentText())

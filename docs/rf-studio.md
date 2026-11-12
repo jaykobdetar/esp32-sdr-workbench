@@ -76,3 +76,11 @@ Open **Paste settings / ask an LLM** on the setup screen.
 Uncheck **Save session and captures**, then choose **Until I stop · receive only**. Listen and Compare receivers can run without a preset deadline. Press **Stop all devices** or close the window normally to finish. Live frame queues and the diagnostic log are bounded; there are no session artifacts to fill disk. This is indefinite operation, not an unlimited-duration stability guarantee. Transmitter tests still require a finite duration of 60 seconds or less.
 
 The memory-only mode was also verified on both physical receivers: 902 and 901 detector captures, three retained each, manual stop, no errors, and no output directory created.
+
+## Combined and individual displays
+
+The live view starts with **Combined**, a noncoherent diversity spectrum. **Individual** restores the separate receiver views, and **Both** shows them together (scroll if needed). Capture inspection always opens an actual individual receiver buffer, never fabricated combined I/Q.
+
+The combined display averages FFT **linear power**, then converts back to dBFS. Opposite I/Q phases therefore cannot cancel as they would in a naive sample sum. Only transport-CRC-valid, finite samples from the same frequency, sample rate and ADC format are eligible; the newest valid buffer defines the compatibility group. Inputs older than two seconds by local arrival time are excluded. This freshness test is not a proof of simultaneous RF acquisition. Samples exceeding 1% ADC endpoints are excluded when a cleaner receiver exists; if all are clipped, a clearly labeled least-clipped single-receiver fallback is used. The UI lists contributors and exclusions.
+
+This can provide one easier-to-read power view, but is **not** a phase-coherent receiver, calibrated combined RF amplitude, continuous I/Q waveform, coverage measurement, or proof of improved packet recovery. Independent gain and calibration differences remain. Averaging asynchronous bursts may dilute a transient seen by only one receiver. Preserve individual views for diagnosis. After Stop, the last combined result is explicitly marked as stopped; no new samples are implied.

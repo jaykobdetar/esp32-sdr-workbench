@@ -228,3 +228,19 @@ def test_import_until_stopped_and_no_save(window):
     w.settings_text.setPlainText(json.dumps(d))
     w.apply_pasted_settings()
     assert w.current_settings() == d and w.session is None
+
+
+def test_combined_individual_both_views(window, app):
+    w = window
+    w.show()
+    w.start_session()
+    until(app, lambda: len(w.latest) == 2)
+    w.poll()
+    assert w.combined.isVisible()
+    assert all(not v.isVisible() for v in w.views.values())
+    assert 'Receiver' in w.combined.metrics.text()
+    w.display_mode.setCurrentIndex(1)
+    assert not w.combined.isVisible()
+    assert all(v.isVisible() for v in w.views.values())
+    w.display_mode.setCurrentIndex(2)
+    assert w.combined.isVisible() and all(v.isVisible() for v in w.views.values())
