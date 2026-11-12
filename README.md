@@ -33,6 +33,12 @@ Explore the ESP32 receiver's raw I/Q, inspect spectra and recorded events, and c
 - **Complete firmware source:** guarded memory ownership, exact integer energy processing, overlapping acquisition/processing, fused full-size validation/copy and faster exact CAP20 packing.
 - **No automatic flashing:** the viewer does not replace firmware or change operating-system security settings.
 
+## Offline RF analysis
+
+For new campaign summaries, use the [version 2 offline analysis guide](docs/offline-rf-analysis-v2.md).
+It includes passed no-retention runs in denominators, distinguishes missing IQ analysis,
+and validates current capture metadata. Historical scripts and evidence remain unchanged.
+
 ## Measured result
 
 On **one ESP32-D0WD-V3 rev. 3.1 with 4 MB flash**, at 2440 MHz, nominal 16 MS/s, 16,380 samples, manual gain index 40, bandwidth setting 12 MHz and a 4× adaptive power threshold:
