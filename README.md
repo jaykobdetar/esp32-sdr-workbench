@@ -1,7 +1,7 @@
 # ESP32 SDR Research Workbench
 
-**Current source versus measured hardware:** v4 identifies the three-crop tie-retention fix and read-only calibration fingerprinting
-and optional, default-off heap/stack telemetry for `esp32-pipeline-adaptive-q16-v4`. The
+**Current source versus measured hardware:** v5 adds fail-closed NVS startup and strict SPEC parsing to the three-crop tie-retention fix and read-only calibration fingerprinting
+and optional, default-off heap/stack telemetry for `esp32-pipeline-adaptive-q16-v5`. The
 [adaptive evaluation](docs/evidence/adaptive-evaluation/evaluation-report.md) separates the
 unchanged released-v3 binary from the instrumented, tie-fixed candidate. Only the latter
 completed the 30-minute soak. The evaluation does **not** establish a retained-packet

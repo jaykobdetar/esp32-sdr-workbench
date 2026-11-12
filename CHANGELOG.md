@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Identify combined safety fixes as `esp32-pipeline-adaptive-q16-v5`; preserve the
+  earlier v4 build identity and historical measurements.
+- Preserve NVS on initialization failure and reject malformed SPEC arguments.
+- Freeze validated UF2 bytes, keep recovery files private outside installed packages,
+  and distinguish version/health observations from exact image verification.
+- Publish recordings without overwriting existing files and retain SPC1 gain.
+- Add manifest-first v2 RF analysis, explicit current metadata adapters and rejection
+  of unsupported custom payloads; keep historical analysis sources unchanged.
+- Include public source resources in sdists and explain checkout-only firmware builds.
+
 - Identify corrected source as `esp32-pipeline-adaptive-q16-v4`, distinct from
   both historically tested v3 binaries. Preserve their evidence unchanged.
 - Add read-only stored-PHY SHA-256 observations at campaign stage/run boundaries,

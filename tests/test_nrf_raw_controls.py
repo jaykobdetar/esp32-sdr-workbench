@@ -325,14 +325,16 @@ def test_invalid_seed_rejected_before_io(tmp_path, seed):
     assert not a.output_directory.exists()
 
 
-def test_v4_calibration_records_query_only_with_source_stopped(tmp_path):
+@pytest.mark.parametrize('variant', m.CALIBRATION_VARIANTS)
+@pytest.mark.parametrize('missing', [False, True])
+def test_calibration_records_query_only_with_source_stopped(tmp_path, variant, missing):
     class CurrentRX(RX):
         def __init__(self):
             super().__init__()
-            self.variant = m.CURRENT_VARIANT
+            self.variant = variant
 
         def connect(self):
-            return dict(super().connect(), caps=['CALHASH'])
+            return dict(super().connect(), caps=[] if missing else ['CALHASH'])
 
         def command(self, cmd):
             if cmd == 'CALHASH?':
@@ -343,7 +345,12 @@ def test_v4_calibration_records_query_only_with_source_stopped(tmp_path):
             return super().command(cmd)
 
     a, tx, rx = args(tmp_path), TX(), CurrentRX()
-    a.expected_variant = m.CURRENT_VARIANT
+    a.expected_variant = variant
+    if missing:
+        with pytest.raises(RuntimeError, match='capability missing'):
+            m.execute(a, rx, tx, saver=lambda c, p: p, sleep=lambda _: None)
+        assert not tx.running
+        return
     report = m.execute(a, rx, tx, saver=lambda c, p: p, sleep=lambda _: None)
     assert report['status'] == 'passed'
     assert len(report['calibration_observations']) == 26

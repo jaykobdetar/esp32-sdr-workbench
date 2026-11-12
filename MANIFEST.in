@@ -727,6 +727,19 @@ include tests/test_summary_validation.py
 include docs/source-distribution.md
 include nrf52840-transmitter/tests/test_build_distribution.py
 
+include docs/host-recording-and-spectrum-safety.md
+include docs/offline-rf-analysis-v2.md
+include docs/spec-argument-validation.md
+include docs/safety-review-fixes.md
+include firmware/tests/test_nvs_preservation.py
+include firmware/tests/test_spectrum_arguments.py
+include scripts/analyze_nrf_iq_v2.py
+include scripts/nrf_analysis_v2.py
+include scripts/summarize_nrf_retention_v2.py
+include scripts/summarize_nrf_screen_v2.py
+include tests/test_nrf_analysis_v2.py
+include tests/test_recording.py
+
 # Defense in depth for setuptools' automatic inclusions and future additions.
 global-exclude *.py[cod] *.sigmf-data *.sigmf-meta *.bin *.elf *.hex *.uf2 *.map
 global-exclude .env .env.*

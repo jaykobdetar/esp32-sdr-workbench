@@ -12,7 +12,7 @@ import random
 import time
 from pathlib import Path
 
-from sdr_research.calibration import ADAPTIVE_VARIANTS, CURRENT_VARIANT, record_calibration
+from sdr_research.calibration import ADAPTIVE_VARIANTS, CALIBRATION_VARIANTS, record_calibration
 from sdr_research.protocol import Radio
 from sdr_research.recording import atomic_write_json, save_capture
 
@@ -161,7 +161,7 @@ def execute(args, radio, tx, *, saver=save_capture, sleep=time.sleep):
             radio,
             report['device'],
             boundary,
-            required=version['firmware_variant'] == CURRENT_VARIANT,
+            required=version['firmware_variant'] in CALIBRATION_VARIANTS,
         )
         persist()
 

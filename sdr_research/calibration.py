@@ -8,8 +8,9 @@ import json
 import re
 from datetime import datetime, timezone
 
-CURRENT_VARIANT = 'esp32-pipeline-adaptive-q16-v4'
-ADAPTIVE_VARIANTS = ('esp32-pipeline-adaptive-q16-v3', CURRENT_VARIANT)
+CURRENT_VARIANT = 'esp32-pipeline-adaptive-q16-v5'
+CALIBRATION_VARIANTS = ('esp32-pipeline-adaptive-q16-v4', CURRENT_VARIANT)
+ADAPTIVE_VARIANTS = ('esp32-pipeline-adaptive-q16-v3', *CALIBRATION_VARIANTS)
 
 
 def record_calibration(report, radio, info, boundary, *, required=False):

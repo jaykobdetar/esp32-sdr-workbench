@@ -13,7 +13,7 @@ import time
 from pathlib import Path
 from statistics import mean
 
-from sdr_research.calibration import ADAPTIVE_VARIANTS, CURRENT_VARIANT, record_calibration
+from sdr_research.calibration import ADAPTIVE_VARIANTS, CALIBRATION_VARIANTS, record_calibration
 from sdr_research.pipeline import run_pipeline, run_pipeline_candidates
 from sdr_research.protocol import Radio
 from sdr_research.recording import save_capture
@@ -239,7 +239,7 @@ def execute(
             radio,
             report['device'],
             boundary,
-            required=args.expected_variant == CURRENT_VARIANT,
+            required=args.expected_variant in CALIBRATION_VARIANTS,
         )
         persist()
 

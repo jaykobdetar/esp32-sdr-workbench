@@ -463,13 +463,14 @@ def test_main_rejects_same_device_alias_before_serial_open(tmp_path, monkeypatch
         m.main()
 
 
+@pytest.mark.parametrize('variant', m.CALIBRATION_VARIANTS)
 @pytest.mark.parametrize('missing', [False, True])
-def test_v4_calibration_boundary_logging_and_preflight(tmp_path, missing):
+def test_calibration_boundary_logging_and_preflight(tmp_path, missing, variant):
     class CurrentRX(AdaptiveRX):
         def connect(self):
             info = super().connect()
             info['version'] = 'VERSION ' + json.dumps(
-                dict(firmware_variant=m.CURRENT_VARIANT, revision='test-revision')
+                dict(firmware_variant=variant, revision='test-revision')
             )
             info['caps'] = [] if missing else ['CALHASH']
             return info
@@ -483,7 +484,7 @@ def test_v4_calibration_boundary_logging_and_preflight(tmp_path, missing):
             return super().command(cmd)
 
     a, tx, rx = adaptive_args(tmp_path, 1), TX(), CurrentRX()
-    a.expected_variant = m.CURRENT_VARIANT
+    a.expected_variant = variant
 
     def run(*args, **kw):
         summary, capture = pipeline()
