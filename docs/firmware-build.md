@@ -109,6 +109,14 @@ A host C compiler with UndefinedBehaviorSanitizer is needed for C arithmetic/gua
 
 ## Runtime and safety
 
+Original-ESP32 startup now fails before radio initialization on **any** NVS-init
+error, including full/incompatible storage. It prints a preservation/recovery
+message and enters the SDK fatal-error path (which may reboot according to its
+configuration). It never erases NVS as an automatic repair. Do not bypass the
+failure with an erase: retain a private backup and review the matching firmware
+and a specific migration/recovery procedure first. This error path is checked
+with host fault injection, not by corrupting device calibration on hardware.
+
 Optimized finite pipeline selection is explicit: `PIPEKERNEL 3`, `ACQOPT 3`, `CLEAROPT 1`, `PIPECOPY 1`, with readback and END-policy verification. Defaults remain 0 for compatibility. Fused copy activates only at 16,380 samples; smaller lengths use the separate path. Full guard coverage, calibration/restoration, finite-command limits and fixed every 32-capture yielding remain. Do not disable those safeguards to chase a throughput number. Nominal RF duration is sample_count/sample_rate, not CPU completion latency; overlapping timing fields cannot simply be added.
 
 Keep a verified compatible recovery firmware and follow the exported offset/partition metadata when manually flashing. Never perform full-chip erasure or overwrite device calibration/NVS as part of ordinary application updates. This package contains no recovery/device backup. Only claim performance from the exact binary and settings actually measured.

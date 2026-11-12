@@ -303,12 +303,15 @@ static void command(char *line) {
 
 void app_main(void) {
     esp_log_level_set("*", ESP_LOG_NONE);
+    /* NVS may contain device calibration and owner settings. Never erase it
+     * to recover from incompatible/full/corrupt storage. Fail before radio
+     * initialization; recovery requires a separately reviewed backup/migration. */
     esp_err_t e = nvs_flash_init();
-    if (e == ESP_ERR_NVS_NO_FREE_PAGES || e == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        e = nvs_flash_init();
+    if (e != ESP_OK) {
+        printf("NVS init failed (%d); storage preserved. Stop and review a private backup/migration before recovery.\n", (int)e);
+        ESP_ERROR_CHECK(e);
+        return;
     }
-    ESP_ERROR_CHECK(e);
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));

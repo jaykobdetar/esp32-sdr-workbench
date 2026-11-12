@@ -7,9 +7,10 @@ import argparse
 import hashlib
 import json
 import os
-import shutil
+import stat
 import struct
 import subprocess
+import tempfile
 import time
 from pathlib import Path
 
@@ -29,7 +30,14 @@ RECOVERY = (
 
 
 def validate_image(path):
-    data = Path(path).read_bytes()
+    """Validate a file for inspection/build tools; update() freezes its own bytes."""
+    return validate_image_bytes(Path(path).read_bytes())
+
+
+def validate_image_bytes(data):
+    """Validate exactly the immutable byte snapshot that will be transferred."""
+    if not isinstance(data, bytes):
+        raise TypeError('UF2 snapshot must be immutable bytes')
     if not data or len(data) % 512:
         raise ValueError('UF2 must contain complete 512-byte blocks')
     blocks = {}
@@ -124,26 +132,79 @@ def wait_for(fn, timeout, description):
     raise TimeoutError(f'Timed out waiting for {description}; last error={last}. {RECOVERY}')
 
 
-def update(image, expected_version, initial=False, timeout=35, output=None, serial_number=None):
+def default_state_directory():
+    """Private per-user state, independent of a read-only installed package."""
+    xdg = os.environ.get('XDG_STATE_HOME')
+    base = Path(xdg) if xdg and Path(xdg).is_absolute() else Path.home() / '.local' / 'state'
+    return base / 'esp32-sdr-workbench' / 'nrf-updater'
+
+
+def private_directory(path):
+    path.mkdir(mode=0o700, parents=True, exist_ok=True)
+    info = path.lstat()
+    if (
+        not stat.S_ISDIR(info.st_mode)
+        or info.st_uid != os.getuid()
+        or stat.S_IMODE(info.st_mode) & 0o077
+    ):
+        raise PermissionError(
+            f'Updater state directory must be an owner-only real directory: {path}'
+        )
+    return path
+
+
+def private_file(path, *, binary=False):
+    """Create owner-only, exclusively: existing paths/symlinks are never overwritten."""
+    flags = os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+    fd = os.open(path, flags, 0o600)
+    return os.fdopen(fd, 'w+b' if binary else 'w+', encoding=None if binary else 'utf-8')
+
+
+def update(
+    image,
+    expected_version,
+    initial=False,
+    timeout=35,
+    output=None,
+    serial_number=None,
+    state_directory=None,
+):
     serial_number = target_serial(serial_number)
     image = Path(image).resolve()
+    image_data = image.read_bytes()
+    validation = validate_image_bytes(image_data)
     report = {
         'started_ns': time.time_ns(),
         'expected_version': expected_version,
         'target_serial': serial_number,
         'image': str(image),
-        'validation': validate_image(image),
+        'validation': validation,
+        'requested_image_verified': False,
+        'write_outcome': 'not_started',
         'events': [],
     }
-    root = Path(__file__).resolve().parents[1]
-    backup = root / 'recovery' / str(report['started_ns'])
-    backup.mkdir(parents=True)
-    log = Path(output) if output else root / 'logs' / f'update-{report["started_ns"]}.json'
-    log.parent.mkdir(exist_ok=True, parents=True)
+    state = private_directory(
+        Path(state_directory) if state_directory else default_state_directory()
+    )
+    session = Path(tempfile.mkdtemp(prefix='update-', dir=state))
+    backup = private_directory(session / 'recovery')
+    log = Path(output) if output else session / 'update.json'
+    # Open before resetting any device. Never truncate an existing file or follow
+    # a symlink. Retain this private descriptor rather than reopening its path.
+    log_file = private_file(log)
+    report['log'] = str(log)
+    report['recovery_directory'] = str(backup)
+
+    def persist():
+        log_file.seek(0)
+        log_file.write(json.dumps(report, indent=2))
+        log_file.truncate()
+        log_file.flush()
+        os.fsync(log_file.fileno())
 
     def event(name, **kw):
         report['events'].append({'event': name, 'host_ns': time.time_ns(), **kw})
-        log.write_text(json.dumps(report, indent=2))
+        persist()
 
     try:
         if not initial:
@@ -158,15 +219,21 @@ def update(image, expected_version, initial=False, timeout=35, output=None, seri
                 tx.serial.close()  # no STOP after intentional reset
         mount = wait_for(lambda: verified_mount(serial_number), timeout, 'verified UF2BOOT volume')
         event('bootloader_identified', mount=str(mount))
+        old = None
         for name in ('INFO_UF2.TXT', 'CURRENT.UF2', 'INDEX.HTM'):
-            shutil.copyfile(mount / name, backup / name)
+            snapshot = (mount / name).read_bytes()
+            with private_file(backup / name, binary=True) as saved:
+                saved.write(snapshot)
+                saved.flush()
+                os.fsync(saved.fileno())
+            if name == 'CURRENT.UF2':
+                old = snapshot
         event(
             'pre_update_backup',
             directory=str(backup),
-            current_sha256=hashlib.sha256((backup / 'CURRENT.UF2').read_bytes()).hexdigest(),
+            current_sha256=hashlib.sha256(old).hexdigest(),
         )
         # Validate preserved SoftDevice header and destination before every update.
-        old = (backup / 'CURRENT.UF2').read_bytes()
         chunks = {}
         for off in range(0, len(old), 512):
             h = struct.unpack_from('<8I', old, off)
@@ -174,23 +241,26 @@ def update(image, expected_version, initial=False, timeout=35, output=None, seri
         info = chunks.get(0x3000, b'')
         if len(info) < 12 or struct.unpack_from('<II', info, 4) != (0x51B1E5DB, APP_START):
             raise RuntimeError('Existing SoftDevice/application boundary changed; refusing flash')
-        # Count write as uncertain until readback through the new application.
+        # USB transfer and version/health do not establish exact installed bytes.
+        report['write_outcome'] = 'uncertain'
         event('write_begin')
         try:
             with (mount / 'RFTEST.UF2').open('wb', buffering=0) as f:
-                data = image.read_bytes()
                 offset = 0
-                while offset < len(data):
-                    n = f.write(data[offset : offset + 512])
+                while offset < len(image_data):
+                    n = f.write(image_data[offset : offset + 512])
                     if not n:
                         raise OSError('Short UF2 write')
                     offset += n
                 os.fsync(f.fileno())
+            report['write_outcome'] = 'completed'
             event('write_complete')
         except OSError as e:
+            report['write_outcome'] = 'uncertain'
             event('write_outcome_uncertain', error=str(e))
             # A bootloader can disconnect after the last block before fsync returns.
-            # Never retry writes here. Await exact-version health to resolve outcome.
+            # Never retry writes here. Even matching version/health cannot resolve
+            # exact image identity (the old application may have the same version).
         port = wait_for(lambda: discover(serial_number), timeout, 'application USB enumeration')
         with Transmitter(port, serial_number=serial_number) as tx:
             hello = tx.hello()
@@ -201,15 +271,26 @@ def update(image, expected_version, initial=False, timeout=35, output=None, seri
                 or status.get('running') is not False
             ):
                 raise RuntimeError(f'Application health/version mismatch: {hello}, {status}')
-            event('verified', hello=hello, status=status)
-            report['result'] = 'verified'
+            event('version_health_observed', hello=hello, status=status)
+            report['result'] = (
+                'version_health_verified'
+                if report['write_outcome'] == 'completed'
+                else 'write_uncertain_version_health_observed'
+            )
+            report['verification_scope'] = (
+                'Application reports expected version, healthy and stopped; '
+                'requested image identity has not been read back or verified.'
+            )
     except Exception as e:
         report['result'] = 'blocked_or_unverified'
         event('failure', error=str(e), manual_recovery=RECOVERY)
         raise
     finally:
         report['ended_ns'] = time.time_ns()
-        log.write_text(json.dumps(report, indent=2))
+        try:
+            persist()
+        finally:
+            log_file.close()
     return report
 
 
@@ -223,19 +304,20 @@ def main():
     )
     p.add_argument('--validate-only', action='store_true')
     p.add_argument('--timeout', type=float, default=35)
-    p.add_argument('--output', type=Path)
+    p.add_argument('--output', type=Path, help='New private log file; existing files are refused')
+    p.add_argument('--state-directory', type=Path, help='Owner-only updater state directory')
     a = p.parse_args()
     if a.validate_only:
         print(json.dumps(validate_image(a.image), indent=2))
         return
     if not a.expected_version:
         p.error('--expected-version is required to flash')
-    print(
-        json.dumps(
-            update(a.image, a.expected_version, a.initial, a.timeout, a.output, a.serial), indent=2
-        )
+    report = update(
+        a.image, a.expected_version, a.initial, a.timeout, a.output, a.serial, a.state_directory
     )
+    print(json.dumps(report, indent=2))
+    return 0 if report['result'] == 'version_health_verified' else 2
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())
