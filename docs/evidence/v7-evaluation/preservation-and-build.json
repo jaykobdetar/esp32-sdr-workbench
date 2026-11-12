@@ -1,0 +1,39 @@
+{
+  "measured_commit": "b39c09b88eaeba6bb28f8e3812816444fa906531",
+  "variant": "esp32-pipeline-adaptive-q16-v7",
+  "application_sha256": "db7ab188ba6c0616eac5be151052ecf26b56f9b3d8284bd35f04c190265dde19",
+  "build_info": {
+    "profile": "esp32",
+    "version": "b39c09b88eaeba6bb28f8e3812816444fa906531",
+    "idf_commit": "25fe69f946311abdaf9ad56591f25fedbc20ac98"
+  },
+  "install": {
+    "status": "passed",
+    "operation": "application-only install",
+    "offset": 65536,
+    "chip": "ESP32-D0WD-V3 (revision v3.1)",
+    "flash_size": "4MB",
+    "known_good_installed_verified": true,
+    "new_application_verified": true,
+    "prefix_unchanged_before_boot": true
+  },
+  "restore": {
+    "status": "passed",
+    "operation": "application-only verified v2 restoration",
+    "prefix_changed_after_v7_boot": true,
+    "boot_partition_phyinit_unchanged": true,
+    "v2_application_verified": true,
+    "prefix_unchanged_during_restore": true
+  },
+  "final": {
+    "status": "passed",
+    "stored_calibration_equal_at_preinstall_and_postv7_snapshots": false,
+    "raw_crc_valid": 3,
+    "retained_crc_valid": true,
+    "heap_final": "DETPIPEMEM 137688 73728",
+    "transmitter_configuration_restored": true
+  },
+  "calibration_storage_and_internal_checksums_valid": true,
+  "final_transmitter_stopped": true,
+  "final_receiver_version": "VERSION {\"revision\":\"unknown\",\"build_date\":\"2026-11-10\",\"build_timestamp\":\"2026-11-10T23:21:02Z\",\"profile\":\"esp32\",\"firmware_variant\":\"esp32-pipeline-optimized-v2\"}"
+}

@@ -1,0 +1,4432 @@
+{
+  "complete": true,
+  "decoder_sha256": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e",
+  "runs": [
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 0,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0336-capture-0.sigmf-data",
+          "source_sha256": "a95e6326cb90fe4953264dfd7f247e2fe3a1d172bc4b1a879c4ed3839260d5d4",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 0,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0337-capture-0.sigmf-data",
+          "source_sha256": "2848955e9fef7252688d3af4221c5ac115bbe4d453bfe2c15156d6fbf4acb8b8",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 0,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0338-capture-0.sigmf-data",
+          "source_sha256": "ab056f577e6f18fa44a490baec483ece0478f271c4d325db8b6c593e111f2364",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 0,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0339-capture-0.sigmf-data",
+          "source_sha256": "2af868a1b2155d1f7af1ed0aa6ae0a974ca2fbc9611478eb3d5579d8e99ff87a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 1,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0340-capture-0.sigmf-data",
+          "source_sha256": "f095e36bf32053a04b1f0799cb23a01baf804e190e8243200cfe9358d911f58c",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 1,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0341-capture-0.sigmf-data",
+          "source_sha256": "84dc3a820683f6010c7000cd80a03a405f12b87d3fb1dbe83e1244abc491f603",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 1,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0342-capture-0.sigmf-data",
+          "source_sha256": "6a14b43384b36e371fe98305dbd43ee8fb6d1ed08d66431c74e50d98501c8d86",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 1,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0343-capture-0.sigmf-data",
+          "source_sha256": "95cac2d308e0beb29d3909e5c584a84c5baa8f76e8e3a68f400f861dcf04f589",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 2,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0344-capture-0.sigmf-data",
+          "source_sha256": "1049d52dc255b707c9d6ef7c4a662348a36333ee84844186ebe8bca03a369e12",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 2,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0345-capture-0.sigmf-data",
+          "source_sha256": "1d1cf7fbf61362977a521fe902b36242c9bd0350cd0ada6669f5cfdcccf4714a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 2,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0346-capture-0.sigmf-data",
+          "source_sha256": "18c2a7e9eb0223fbac7e81972b74afe5c11141231d9d7bd19b69941f35be5efe",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 2,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0347-capture-0.sigmf-data",
+          "source_sha256": "ae5a45cefc8a0849bb4fb3c0422929fc56cd430c39d661b735be49d380b05696",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 3,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0348-capture-0.sigmf-data",
+          "source_sha256": "5c479ae11db3810b7d1bdb48bfb75bf15adc3108ca764c19b1ac3958fefc69d4",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 3,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0349-capture-0.sigmf-data",
+          "source_sha256": "bf780819c2f458082db709db8c7793d9aa8d8c6022523c07cd8755e73b57dfa2",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 3,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0350-capture-0.sigmf-data",
+          "source_sha256": "4f8f50b6ae0f4763ce5bb96f528fc9a4960ab2f1f84db09e7c6e624881b83215",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 3,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0351-capture-0.sigmf-data",
+          "source_sha256": "c72c1a0fd4e003fbacb4b05db608f853bbf90adbd0da8e6997ae66a9abe35d79",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 4,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0352-capture-0.sigmf-data",
+          "source_sha256": "ef0be95a062de1adf99be2a5c21d661d09038ec759fbd5c42484f2c08829ff56",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 4,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0353-capture-0.sigmf-data",
+          "source_sha256": "a238cf074f1e591cf41f925d67ab26dd66ceb0cd76a3603336b96c675d210a58",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 4,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0354-capture-0.sigmf-data",
+          "source_sha256": "199418bad56117d7ea300b62c891aaf586895f814947bd13aea87d7564e2f3bd",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 4,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0355-capture-0.sigmf-data",
+          "source_sha256": "11b5ac3482e3bebc86462dbdcba2c50f4c6830deb8fab0116a1ea89d599ce2d7",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 5,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0356-capture-0.sigmf-data",
+          "source_sha256": "baf7558c839f75d8af34d8a43b082be1c20ee2b4bb6254b9cf130851106c81b4",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 5,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0357-capture-0.sigmf-data",
+          "source_sha256": "27f423f6841202a882e2ba13dc052fae3d800f759b314acfc48754c9a19a0f1a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 5,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0358-capture-0.sigmf-data",
+          "source_sha256": "89c2e55f0be9543f936ff249552280afd34db9b7565e60eb150ed232d1c43bd1",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 5,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0359-capture-0.sigmf-data",
+          "source_sha256": "6009e1f3910e4aa6d9a4046631add0d7a9ca206b959cfd1fad709cb2131d2062",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 6,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0360-capture-0.sigmf-data",
+          "source_sha256": "86affd35e4a56311d909dd4119637e1682bb69f40a7d81e98fd6508a1e2e34f3",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 6,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0361-capture-0.sigmf-data",
+          "source_sha256": "4df071447ed386532a82f8e90bbf8065aa7a9555bc61f4052ca776d52d0ba7ed",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 6,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0362-capture-0.sigmf-data",
+          "source_sha256": "2b64cd2a226cc882b02e90cb934826fbb63bb871e384dc620adddd57b5adc683",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 6,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0363-capture-0.sigmf-data",
+          "source_sha256": "5119cd37b39ce68dd8de57089c1df860ba5725e1c0c2090332ea080f0939a32c",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 7,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0364-capture-0.sigmf-data",
+          "source_sha256": "7168616565070536a1571a6a20b0cb01ec4fa6b3716506cb835e3951142032a2",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 7,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0365-capture-0.sigmf-data",
+          "source_sha256": "f6e431f224cff2924a6f133118c2f7124968e07904145acea8cc2759dba2701d",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 7,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0366-capture-0.sigmf-data",
+          "source_sha256": "bc8472fc5c70df534a5edad1ea2503512609cb89c8df49a51e80fbb3d581cba3",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 7,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0367-capture-0.sigmf-data",
+          "source_sha256": "c9b9f5634fbce18e2022794f1f2ae4c7256c1e92642ab827f8f86e51aad279d1",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 8,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0368-capture-0.sigmf-data",
+          "source_sha256": "be9ec546b423169e9eae34cb12099baa761cc98bd5cb58fbcc4fe510358ab3b1",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 8,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0369-capture-0.sigmf-data",
+          "source_sha256": "ead10f7175854405404fb4ae6ae8cb8b0f39a2937d993c03ae5e43641071b55f",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 8,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0370-capture-0.sigmf-data",
+          "source_sha256": "0408ff7678a9f3b95db6fccb32cc10b4211a665c39b7785b0a04992d7ed450d9",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 8,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0371-capture-0.sigmf-data",
+          "source_sha256": "f70d6dfcb05d143f4c7ad497e8688e19f723a48c5238710b1876603b6312c125",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 9,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0372-capture-0.sigmf-data",
+          "source_sha256": "0670a92a4306c84ae8a7e91716016bf110c07a7f425ab03ca16f9040c3d60b0f",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 9,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0373-capture-0.sigmf-data",
+          "source_sha256": "a0614045c0500252cb6af9601e85780babefe637ff943a8101805cd13c8b4455",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 9,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0374-capture-0.sigmf-data",
+          "source_sha256": "9240880c206d45f13605f0ededf89bff898500f1933b0917a427acb57cf46ea4",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 9,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0375-capture-0.sigmf-data",
+          "source_sha256": "d56bd8cc0bde901580f89bc8b4a838fd007605f1a413d591721fe15b223086c5",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 10,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0376-capture-0.sigmf-data",
+          "source_sha256": "bb7e1aa123a34a0643a00102f415f3139b67661266bfc08088be7584a8b8a8f4",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 10,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0377-capture-0.sigmf-data",
+          "source_sha256": "5076d661c0879a3071e6afdf9dfb4e6a8c94962b26d4924e931c149eb77c2924",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 10,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0378-capture-0.sigmf-data",
+          "source_sha256": "180a711fc00c7dbe049539ee671335f209c83e383a81217434d90fec0015883c",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 10,
+      "tx_on": false,
+      "recordings": []
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 11,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0380-capture-0.sigmf-data",
+          "source_sha256": "f4ac49d87f73e85ec975cb73c8f6e6d90958fbddb928555a185e290d5c000497",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 11,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0381-capture-0.sigmf-data",
+          "source_sha256": "72b5e6f659f777ab677030c0146b740f116f0fae3161db00cdf2dc6aea51450f",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": -20,
+      "pair": 11,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0382-capture-0.sigmf-data",
+          "source_sha256": "6308e765e30ee04dc8ea2f06ffed671ff9f9450912271860ef322ba251f3d312",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": -20,
+      "pair": 11,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0383-capture-0.sigmf-data",
+          "source_sha256": "35290564478d11738564bfc6b66cf62dd345f922af0d72f587688cbca37e68e3",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 0,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0384-capture-0.sigmf-data",
+          "source_sha256": "513a4d7923571b3064b0cd49fd679596370d321bb91253fac41c4a03ec07e8ba",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 0,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0385-capture-0.sigmf-data",
+          "source_sha256": "4e103238a89a54ef7a43fd01d91daa89b49506b2d668220d029822d0380c75a0",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 0,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0386-capture-0.sigmf-data",
+          "source_sha256": "cc67d6f5a0691393f7295b6e15ac0294ffd7fae5d46b5c3404d07c1eeb50d6ca",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 0,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0387-capture-0.sigmf-data",
+          "source_sha256": "4d244a76bed2f7df8de8a8ab71be81f4d7a6a238b2b3834a669381a49f8ed3ad",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 1,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0388-capture-0.sigmf-data",
+          "source_sha256": "f1ee5f2018d3932ef74cda3fa450864f9afca1e1bb6e9264f16c0345a74efbe8",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 1,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0389-capture-0.sigmf-data",
+          "source_sha256": "fa3c8b14a66d0b8bde7288c023c3e0ade726b367bea5f53329f079714a6cbd55",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 1,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0390-capture-0.sigmf-data",
+          "source_sha256": "3600b06e0fde99304c27f50d270129958d986207ed1ac91f2050c3cf8d338b4c",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 1,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0391-capture-0.sigmf-data",
+          "source_sha256": "5a1614afc73ca2058d1c913aa71794f8c6388b1b3051dfdbe03e2de6531f7214",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 2,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0392-capture-0.sigmf-data",
+          "source_sha256": "011fe46146637928ebeb239b26103608d81024c867777af0e2176b796eee00cc",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 2,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0393-capture-0.sigmf-data",
+          "source_sha256": "31bc3d7cfc027766a38b36b50f762408b417cf4166dcccfd4b85443d445811af",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 2,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0394-capture-0.sigmf-data",
+          "source_sha256": "785ca59e733fc9a4220e0ee301f8e22b650d05296cb32c047877b42edc4801f1",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 2,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0395-capture-0.sigmf-data",
+          "source_sha256": "903cc1ef6ff8b7bfd79686fb191f846ac3cb75d1ac61c6d80644c1d2bd83bc09",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 3,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0396-capture-0.sigmf-data",
+          "source_sha256": "43262794267f568a6a9708a9d53a92a42c695dcd6574d80066ff7dd5f8227f39",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 3,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0397-capture-0.sigmf-data",
+          "source_sha256": "1727df25550e0d935e41b1815388c8d73a0a6cb138b0af05b1d8d3eea01eee18",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 3,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0398-capture-0.sigmf-data",
+          "source_sha256": "02d064e1fc2523816d473518b20f10da8526eaee35d83823ec0659f6f5b8cf3b",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 3,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0399-capture-0.sigmf-data",
+          "source_sha256": "1a47f5a46302ba5fabc28c6877be696ec0848ba4774ed29b4cff8939a8e26d4c",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 4,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0400-capture-0.sigmf-data",
+          "source_sha256": "03320b8a13ec964331bdb084c6bf4c31e2e4cce06437ef58cd8a82ba1c8372aa",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 4,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0401-capture-0.sigmf-data",
+          "source_sha256": "02d80d1bab9188f33738441b02a264939dc68e9cc99642a98617854ce72c2856",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 4,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0402-capture-0.sigmf-data",
+          "source_sha256": "3c643942403db7072e6b12cb2639558563f4e367c485402f8a8d1728ebe2ebc8",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 4,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0403-capture-0.sigmf-data",
+          "source_sha256": "d85be79e9c64f72b5f9af32c7999c94e9e60383a819bb81509baadcfb0367c45",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 5,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0404-capture-0.sigmf-data",
+          "source_sha256": "2c60c1fff52292da5e80fb550d17890040e4202c524137a54a1e2213abdf0d0b",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 5,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0405-capture-0.sigmf-data",
+          "source_sha256": "54c9e2810d6d76462e212f67711a937b026d31e316a6b6ee646620cd7ae98b45",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 5,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0406-capture-0.sigmf-data",
+          "source_sha256": "f4d3c877f1b0af620868ea4ba4c78f3c960617adca92b2407364acb1d03203c9",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 5,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0407-capture-0.sigmf-data",
+          "source_sha256": "6d7ee4ff61f109a9062f1ba3d33e919f76d036bb51b6670d0c6cfe0cd32e49a1",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 6,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0408-capture-0.sigmf-data",
+          "source_sha256": "a237b9be4a3715ceb953e50da2896d8e990065bec3c79defec901316c31a3442",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 6,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0409-capture-0.sigmf-data",
+          "source_sha256": "9ad6814427de1a2d5898ab779d94110e6766c46626a89b04c02fffe34aa999e8",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 6,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0410-capture-0.sigmf-data",
+          "source_sha256": "18d2c0d94ab8f75b9ea975bcd0020fc5a2ab946cd288e1e21177f1f30fb6e7ae",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 6,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0411-capture-0.sigmf-data",
+          "source_sha256": "e07af14a9b4b91fba94a8d20ea3d41528d15eda821d838e96bd39de6da98161e",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 7,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0412-capture-0.sigmf-data",
+          "source_sha256": "973c025e244ca04b8b1bf5d5f9422ba899df5507fcd0ccaf5d197801fbc9b0fa",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 7,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0413-capture-0.sigmf-data",
+          "source_sha256": "96c7cd0a5a9477c7bcef9a6acabdeae1b0f683ad4739d4d150450c4f762af9d8",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 7,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0414-capture-0.sigmf-data",
+          "source_sha256": "258151ed8b5e2770a65a43fbef97be9ffe8065d7d0096c84b5ca4e2ce0bdaf4a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 7,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0415-capture-0.sigmf-data",
+          "source_sha256": "6eaf3e196e97d82d78730b115a0f5e9183d93dd159c6bb50fb39c526c08369d1",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 8,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0416-capture-0.sigmf-data",
+          "source_sha256": "00a18dc94f2e5f8f7a0ba7f8cc2c2b44332c6fcc493df2b485a95628da6dfb51",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 8,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0417-capture-0.sigmf-data",
+          "source_sha256": "8cf8b0fab1f8a60b230ac36e1d422d0e81d153e4233bffa73fd374c59a309f36",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 8,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0418-capture-0.sigmf-data",
+          "source_sha256": "55376444e3449ce8468e8c148be3597a49a0e899beeaa27e7de016b89646bb51",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 8,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0419-capture-0.sigmf-data",
+          "source_sha256": "56fe0300383bfab6f034e003816a008b539447e4e99e30daa77ac9295edce483",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 9,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0420-capture-0.sigmf-data",
+          "source_sha256": "b914e4ce9b731f6ea2faea0c5b66b1907e3b9e55b8715307080952cd37cc6b6a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 9,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0421-capture-0.sigmf-data",
+          "source_sha256": "1d525faee4ae00c00e14fcd8880bdf8405a0e351a4d872b09e01989bc5987a13",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 9,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0422-capture-0.sigmf-data",
+          "source_sha256": "45cccfbab90212fea797c8180237245dfc14abffc53c22436ea708ec54b0304c",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 9,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0423-capture-0.sigmf-data",
+          "source_sha256": "752d54185bf88e281a45a14f40faa93db06d98478c715fb48bd57179775b0a50",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 10,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0424-capture-0.sigmf-data",
+          "source_sha256": "fdbeab8ffaba5f87ee6f94c480f390384ebb42250d7170c8b3f55519066aa63c",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 10,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0425-capture-0.sigmf-data",
+          "source_sha256": "588244f18e3ade238532a33234e4af0ee04950c6fc1db81507095a26c492f759",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 10,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0426-capture-0.sigmf-data",
+          "source_sha256": "3b6ef2ba40adc6f6f58402e66a058020796e84a1c6a3ca35017d91c1022eec1b",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 10,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0427-capture-0.sigmf-data",
+          "source_sha256": "1e1d5dea399f8b82ffaaea82e56efe4aa263ee39b39c2ccad573cc1a5069464f",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 11,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0428-capture-0.sigmf-data",
+          "source_sha256": "d76df18baaaf78a512992a9bd4bf28a4a0f2b05ead68d3bbe3a58bdb0ca4b0ee",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": -20,
+      "pair": 11,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0429-capture-0.sigmf-data",
+          "source_sha256": "e8758bcfd693586047a14f9fced6c06689b3f50e73cd39934f1410f52314a98b",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 11,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0430-capture-0.sigmf-data",
+          "source_sha256": "fb72dafacbb6255daf4400388a91f8f732292b248994a99bd228e88d5717c7e6",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": -20,
+      "pair": 11,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0431-capture-0.sigmf-data",
+          "source_sha256": "a1c2a64863c3faa84cb356103d2d385fcae133230a7ad3656b19c06b4d68a3a7",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 0,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0432-capture-0.sigmf-data",
+          "source_sha256": "6afb84439a413945e5fda826678e4643c728a186d0a788df34a95148f7841eda",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 0,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0433-capture-0.sigmf-data",
+          "source_sha256": "43dc84f7cda8f5542dcfcb898814b37129e13246fdb6c8c8e52faae0186c79d1",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 0,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0434-capture-0.sigmf-data",
+          "source_sha256": "0e6981cf2552395f951520c8aad3e25e8b97b1ae5370175232c035c3c7701a6d",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 0,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0435-capture-0.sigmf-data",
+          "source_sha256": "90ad3f55e145430d7ad0761356022aa178b0c693992676f5d63d531e5bb804a5",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 1,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0436-capture-0.sigmf-data",
+          "source_sha256": "0562dbfe6016a9ba392419eb7087bead2181f1aa439ef259dfcac19de79b35bd",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 1,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0437-capture-0.sigmf-data",
+          "source_sha256": "f879f039e6bcec82f94b860137c668532c496da5de5e9edcfee0edcbb56e30c8",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 1,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0438-capture-0.sigmf-data",
+          "source_sha256": "88a682e50bd0a4b2fbc8d254141bae43ad6d7e588a0ac7da437349dcc5fb96e5",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 1,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0439-capture-0.sigmf-data",
+          "source_sha256": "84c7ffd57b0daf9fc9734917b2ffea265244d00dac89a8445a1b0059ee198378",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 2,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0440-capture-0.sigmf-data",
+          "source_sha256": "47840e132af6e79a2afd421a6729692df75506994fcbf09adb28a15966ca6e76",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 2,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0441-capture-0.sigmf-data",
+          "source_sha256": "85591d5337057f180dc96af55b50a05f09fd5e68a56a5bd5ee19813983b3876f",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 2,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0442-capture-0.sigmf-data",
+          "source_sha256": "f25647c6fc4e04efa601dc680ae124c240c744ecf8a2619a80f1d03529d3dd37",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 2,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0443-capture-0.sigmf-data",
+          "source_sha256": "6909a30ee510a0c099b0cce466b059e5de9212edf8a400192fb145d6392a761a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 3,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0444-capture-0.sigmf-data",
+          "source_sha256": "0a9b6dd7d27dee4ef408ca6600453277a1920cab4be2a6eac02ce85981683c29",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 3,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0445-capture-0.sigmf-data",
+          "source_sha256": "fff1163f0f57b461e813118340ee88a25b4f07e2e3fbcb5e32c91235b994bb8f",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 3,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0446-capture-0.sigmf-data",
+          "source_sha256": "66d7845ccf32134ccba65ca1bdc055c122463e0f639621f815f5142df0967a49",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 3,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0447-capture-0.sigmf-data",
+          "source_sha256": "a820b8f02eda73892b49647ea1480e6e931671a99dccf1ec6bce5b4d1c2c6abf",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 4,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0448-capture-0.sigmf-data",
+          "source_sha256": "065bedee4f48672dfebdf9da547481e657865c02717cf09fcc8b76dea8351054",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 4,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0449-capture-0.sigmf-data",
+          "source_sha256": "729a47299d9189a00904b9665dcdadde4c818dc65a4ca841d808483a9f845d68",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 4,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0450-capture-0.sigmf-data",
+          "source_sha256": "5a488a68c88812ee76b3d7f3c9a0ca394fc3c58e22dd557d75da950e266698bf",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 4,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0451-capture-0.sigmf-data",
+          "source_sha256": "4135bb3335a8d41ee18186731e24d3256cc2df027ad54a02c61d5cd9ccb304a6",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 5,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0452-capture-0.sigmf-data",
+          "source_sha256": "dff966eb9ece5dbe06dc701928260773cb97b534c6cb73403fcdb03bd2cb6a3c",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 5,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0453-capture-0.sigmf-data",
+          "source_sha256": "a204f791267c2db3416bc77bbc1b32704e8246c0c8f1ee2a2dab57d57ec77d7a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 5,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0454-capture-0.sigmf-data",
+          "source_sha256": "5254fdabdae368430cc02d81386b9d6b370ad4039fa5ccdfaa29ad05f17c5914",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 5,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0455-capture-0.sigmf-data",
+          "source_sha256": "2c2e452d23de92d34625268969d25f72665a68b02fbf533888e604c6f76031ab",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 6,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0456-capture-0.sigmf-data",
+          "source_sha256": "3f625994b043e18479f3b69a90a0d944dfb6bdb72d2f8271128b8f700c05bb43",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 6,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0457-capture-0.sigmf-data",
+          "source_sha256": "6c52149c3424a86e903dcbfa55add2635aec3a579329a655efb08974b8f320da",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 6,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0458-capture-0.sigmf-data",
+          "source_sha256": "a52558834eefeb53e8aea72d66a6032606ce280283ced048bc4cec4da56db6ff",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 6,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0459-capture-0.sigmf-data",
+          "source_sha256": "5203e2bfa4275d9e12fdf08de50e25d2edf694ea5979bc30733bf78ac0ffab2b",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 7,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0460-capture-0.sigmf-data",
+          "source_sha256": "3ea852c1f638e2b20eacdc1a48914448a28874cf051838176ddd5cf75c5bcd2f",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 7,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0461-capture-0.sigmf-data",
+          "source_sha256": "19ab336c35d8af6f88d1f18084df5d00ff5b36c16e92b2ba7fb4fdfaaa30f58d",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 7,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0462-capture-0.sigmf-data",
+          "source_sha256": "a311505844a70e2b187daf9c6d536cce7c26e6e032cbeb47b44f03be6ed83b38",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 7,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0463-capture-0.sigmf-data",
+          "source_sha256": "373b6f351276bde885b79a0c08a08dea9ea2009d9141065838595a01d9f330d0",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 8,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0464-capture-0.sigmf-data",
+          "source_sha256": "1ba9da4ee7132a19a8bfcd5903b4535840a2fb484bd40025d53d7a1a470a80a9",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 8,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0465-capture-0.sigmf-data",
+          "source_sha256": "a03e948de24be20954b71f21f5a6dd22a0903c1a60cb9d20212576403923781e",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 8,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0466-capture-0.sigmf-data",
+          "source_sha256": "5c6b70a45c6d413f7065f7f3e9954d3ccf619b274e41df6a51416b966e376f78",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 8,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0467-capture-0.sigmf-data",
+          "source_sha256": "aff1fa3adeca559949de0e2a043a5a1bfc4f44c991a5fea242d4ab6141764b13",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 9,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0468-capture-0.sigmf-data",
+          "source_sha256": "fd7652831c4a7fee9179e7a02ef23925aa4461964ee39be2a2e62a066e9d5412",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 9,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0469-capture-0.sigmf-data",
+          "source_sha256": "5629f8e609a0c7a44a6891811c510df050d3e7f773a41f9ebcaa4f45f7ecabc6",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 9,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0470-capture-0.sigmf-data",
+          "source_sha256": "cc8e4d5bb8fddaa6389e5b574a8af1db9ba447b9df26b30b8ae8f9b6414df4a0",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 9,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0471-capture-0.sigmf-data",
+          "source_sha256": "1709dba5c0eef44f6d2288fb80b9f7a7b956ba48ac2aad729f7808e20b2efbd0",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 10,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0472-capture-0.sigmf-data",
+          "source_sha256": "a49120f8164de89194f65bf20d11ba65c412f7a1b7690b058ec2a09d473d832e",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 10,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0473-capture-0.sigmf-data",
+          "source_sha256": "2ec3b1d79765638877fa759b10cc730ef7a6d3f30e2601c28a02f150935dbda9",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 10,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0474-capture-0.sigmf-data",
+          "source_sha256": "bd776a927b38df94e07e27aa96c201b985ab245eb1a84b0212f72efa6e209d46",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 10,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0475-capture-0.sigmf-data",
+          "source_sha256": "815b79aa59c35621ecb970f51ee7908cba444a44b9a270a01d8b806e155e5e7a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 11,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0476-capture-0.sigmf-data",
+          "source_sha256": "7e1e34e1616b6a54bcfe44c5531d875b8e364dd2b3bfcb06a7dbea8333eefda5",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 11,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0477-capture-0.sigmf-data",
+          "source_sha256": "f3623f84aa526ce8a0c8a56d97cab690e593f829af309ff9847a9f6da87baca2",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": -20,
+      "pair": 11,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0478-capture-0.sigmf-data",
+          "source_sha256": "62d00ff0bc850e5298b9fac75708d06ae8b78d5e32a68b2da74d2812cbe89381",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": -20,
+      "pair": 11,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0479-capture-0.sigmf-data",
+          "source_sha256": "8422e794b369c3aec3f0134a048b5fbf3c0507d9ebf05b8116b7c5770fc6aed1",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 0,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0480-capture-0.sigmf-data",
+          "source_sha256": "5b3164d4481318ba9b1ec28abe43c1f553d3585e7139cd447b48366aad9af168",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 0,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0481-capture-0.sigmf-data",
+          "source_sha256": "c7ccde42d772f608dea45e7f74500a7e4b875652fb88a839153edc22422e07a3",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 0,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0482-capture-0.sigmf-data",
+          "source_sha256": "d578844231b96329604087c7d3385e325b9d5d1f4e62f062923c60fc9f8e658a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 0,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0483-capture-0.sigmf-data",
+          "source_sha256": "0e41bb3ab0761ac41f2af3df543d80494729c4df0875403006fae5dbcb0e43af",
+          "full_payload_matches": [
+            {
+              "sequence": 447,
+              "crc_verified": false,
+              "address_verified": true,
+              "crc_available": true,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 1,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0484-capture-0.sigmf-data",
+          "source_sha256": "f32599f357d98bbbcb12eca89c0de5d825ff15918370d94234e0a0f9aa46428a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 1,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0485-capture-0.sigmf-data",
+          "source_sha256": "b24c668554f33be010327805155d938de6acb7b8a8a0091981d4ad159bab258f",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 1,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0486-capture-0.sigmf-data",
+          "source_sha256": "b9c21b02a8ab7b671e72cdeb455680e76b383ba1c1587468e6921e06cff74cdd",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 1
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 1,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0487-capture-0.sigmf-data",
+          "source_sha256": "55c00772266d32b7d117d607fa3ba09c9305069e5dae0f92880fe9194a0262ff",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 2,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0488-capture-0.sigmf-data",
+          "source_sha256": "22710472d615a24081239ad8dcc7c422e0f8a48cf3cb483d10c5034f5bde4939",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 2,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0489-capture-0.sigmf-data",
+          "source_sha256": "e458e1ef4840094dc31feac9fad56190e097a80c7fb12e0595f7c02870998156",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 2,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0490-capture-0.sigmf-data",
+          "source_sha256": "45f47b1d35b87b514a7fe115006025f03ffc5308551bb6b7a959d9baf29d0477",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 2,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0491-capture-0.sigmf-data",
+          "source_sha256": "61960f8e4baa992c92f86cf7eb826963b0e9ec090f61726512b81f3dc4b39f9e",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 3,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0492-capture-0.sigmf-data",
+          "source_sha256": "35746358951acbb17cf35cc04cc3d86c60748d68c3c5cc5eb829cd4c7efdeb58",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 3,
+      "tx_on": false,
+      "recordings": []
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 3,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0494-capture-0.sigmf-data",
+          "source_sha256": "80cb8eb0d091727f65f0aacb593000d437eb7b468655c65f1ce12ba9797f24d6",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 3,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0495-capture-0.sigmf-data",
+          "source_sha256": "f4fe7726a7b35c991d00bad7fbf6eadaab553b1ef6d7e46e95f6e262041786c0",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 4,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0496-capture-0.sigmf-data",
+          "source_sha256": "7a6ff7edaf8b2ad749b8cc09db734667147aa890a2e078f9a4c0c1ece016fe0f",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 4,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0497-capture-0.sigmf-data",
+          "source_sha256": "bbcd664aade5080a8f79161e28f11d2059919c21e69282f209bfafb7f35fe8dd",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 3
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 4,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0498-capture-0.sigmf-data",
+          "source_sha256": "5e19ff5cee34a997e442f13fc8067a9347e44d8186f4587b9e5c5191f8114a60",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 4,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0499-capture-0.sigmf-data",
+          "source_sha256": "61e49ccf90bc726b5a186794e60278e8adf95b3748ba13b0cbb4407171d13170",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 5,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0500-capture-0.sigmf-data",
+          "source_sha256": "b700bdd5ab276b31d64f7764f1b62d1cc22bcbe3dac8f819b4b69bc9b806e5da",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 5,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0501-capture-0.sigmf-data",
+          "source_sha256": "61c5759591750c9ebc0a80572bfbeccf1ef80d734717bbeadacc8981aff6f931",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 5,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0502-capture-0.sigmf-data",
+          "source_sha256": "d072cea011ea0a9dada630bb3ef5b6f78596ec3425b167191dadd0c730265672",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 5,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0503-capture-0.sigmf-data",
+          "source_sha256": "0dcfc90de26d9a3a8f74464477b46a371212e86954f372163fb9a8070073b3f2",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 6,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0504-capture-0.sigmf-data",
+          "source_sha256": "1a517b87c97a96ca02bd430c7cad5c9a700fa1c538b60bf9fd5d8941acb9ac24",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 6,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0505-capture-0.sigmf-data",
+          "source_sha256": "fe8c1366aac5599e198366e6b0066c635518fa713008c0a01dcaedd1cda289ab",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 6,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0506-capture-0.sigmf-data",
+          "source_sha256": "ea7dadb83319c4dbe8d60f9e434524edfdd2f34c1e920a243ff3d6615e996892",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 6,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0507-capture-0.sigmf-data",
+          "source_sha256": "10bab676046278b7fe5b73f668a5c1214071f7a0219a7bdfe0bdd0bf3b34d0d4",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 7,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0508-capture-0.sigmf-data",
+          "source_sha256": "f1874e7d8f86764d6c82c8923c6c800c75c5a976c18d1e77eda6d41db16608d1",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 7,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0509-capture-0.sigmf-data",
+          "source_sha256": "bb12c4f70f5a5d27ca1b6b8f1a43cadbce2bd15428ac49a1d977b241541094bc",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 7,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0510-capture-0.sigmf-data",
+          "source_sha256": "10823876494d73c3809e63f472442998e13f5c6018958c62763b005a8b538f14",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 7,
+      "tx_on": false,
+      "recordings": []
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 8,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0512-capture-0.sigmf-data",
+          "source_sha256": "7b8a034c942cbc21f341fbf21c7284616ad014454bbb2ae0a1f763454117050d",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 8,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0513-capture-0.sigmf-data",
+          "source_sha256": "586731a3e9a795366d6068ecdbce1eaf5561aff0b050c91ff0545c324e8e5326",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 8,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0514-capture-0.sigmf-data",
+          "source_sha256": "e19159b0605ac8ec0a891f1b2248b5bb99d495c0e21ae5117137ab7643426305",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 8,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0515-capture-0.sigmf-data",
+          "source_sha256": "7ce8f8fb686257e2592600858ae2e765ac142d45cb3c97973688346649f99f4f",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 9,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0516-capture-0.sigmf-data",
+          "source_sha256": "b7c8b85479167a0a251cd183add9678c44ab8211474f14821a06947e90f4f8a2",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 9,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0517-capture-0.sigmf-data",
+          "source_sha256": "6138a911a81a1de779414a58d6392c17aa1c87de5ba242e0fc41fb4e8e40606a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 9,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0518-capture-0.sigmf-data",
+          "source_sha256": "ae6b408439e0f9d9aca613229ea72cdf683989e9ee5c8b4a4e31906b838d0ce0",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 9,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0519-capture-0.sigmf-data",
+          "source_sha256": "924efaefbecf235d838867d31e6517b6af330d96dfdf8a88259113f05f9b61dd",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 10,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0520-capture-0.sigmf-data",
+          "source_sha256": "f909acc9d0a0ae9dfa81c32be33c4679a0dbd6298843744e79e1069ee41b904e",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 10,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0521-capture-0.sigmf-data",
+          "source_sha256": "0366c856691fb58e76797d765624ed8bf8cff0e75fd4b59b2f634da6ab8d3934",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 10,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0522-capture-0.sigmf-data",
+          "source_sha256": "577a29f274a4fa5a935d6061459c6b26b6b62003d66aed7f7870ffb90d7bc3e9",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 10,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0523-capture-0.sigmf-data",
+          "source_sha256": "685c0aebec3cda804c25b2ac413bac35b51f71c424f6a5903e34d05fb6a8cefd",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 11,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0524-capture-0.sigmf-data",
+          "source_sha256": "61494bcea0d9103e8f47435069a65a5ff81fb572fffffadcf80fd834aa4d5ae0",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 11,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0525-capture-0.sigmf-data",
+          "source_sha256": "34f686ff338a7d21a2eb8a16af0ec7ba73cb2f07560c42925a7a946212d81894",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 40,
+      "power": 0,
+      "pair": 11,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0526-capture-0.sigmf-data",
+          "source_sha256": "0d3f271b528eb83b963f1a75aa76f669bb65bf5ea31906e371cdbf40ecb0aa65",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 40,
+      "power": 0,
+      "pair": 11,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0527-capture-0.sigmf-data",
+          "source_sha256": "9478b64806cb080189c7673d83d29f73975a8e23a25588ad9ff1580fbd986371",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 0,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0528-capture-0.sigmf-data",
+          "source_sha256": "4d5ef28f5840ecf1c41d5507421b8ae0992c5a91830ed0bc6f11afcefc24cf37",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 0,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0529-capture-0.sigmf-data",
+          "source_sha256": "4d30439ae204785b13afa67e0772d0ca0e0ab1196ad7eefd5cfcfe0aaed958f6",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 0,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0530-capture-0.sigmf-data",
+          "source_sha256": "f5f867f31949de509422ddca604888c3f583c9e10436bdf5e7228247a5fd387a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 0,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0531-capture-0.sigmf-data",
+          "source_sha256": "7883b3c1ca363873feb9163131732492e5d3235601221e32700201a3abfabd1d",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 1,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0532-capture-0.sigmf-data",
+          "source_sha256": "8ae14b4cbb7a91a2c266c88241cae8ac3d4466078df59429eaa3276f940bc35b",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 1,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0533-capture-0.sigmf-data",
+          "source_sha256": "f2f6a010c7ded4c1d2f07158dd899a2189296d3f80ffa1c848c62475b259e6ee",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 1,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0534-capture-0.sigmf-data",
+          "source_sha256": "619dc3b6460443509ec5887fe8f1c6356351248bf09b9ca77cdf062081d28335",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 1,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0535-capture-0.sigmf-data",
+          "source_sha256": "8d183bdfd1643ae37530b2c4ad74d78368e6a2fa2ee60df58d507a9be616ff11",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 2,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0536-capture-0.sigmf-data",
+          "source_sha256": "b1148ec0fb0cfd6a6e44e8bc4a4f8e4a80ffe3717d750b5236626dfc2cc5c304",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 2,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0537-capture-0.sigmf-data",
+          "source_sha256": "41f0eb14157f4184b96909de4f61f48e5eb1b4c8b78407fbb78e6873719d2feb",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 2,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0538-capture-0.sigmf-data",
+          "source_sha256": "56100b2aa0897f45ffea60f61d63e5442f153461a1c182a8fb94c436854d5fa6",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 2,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0539-capture-0.sigmf-data",
+          "source_sha256": "45791654aa878a52d844872906700bcdc81ff58440daec4f83b9368f35364f1a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 3,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0540-capture-0.sigmf-data",
+          "source_sha256": "6128e75ef43789e65ca3bbaf1cd5565d0c81c1b7f6cc6a59f080ef7570a94334",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 3,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0541-capture-0.sigmf-data",
+          "source_sha256": "3bcc313858537e97ea327dfcd6c3df1fcac6439e2493289541b61005a0b6aa59",
+          "full_payload_matches": [
+            {
+              "sequence": 236,
+              "crc_verified": true,
+              "address_verified": true,
+              "crc_available": true,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 3,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0542-capture-0.sigmf-data",
+          "source_sha256": "6c42f7d09d499a4dee7c0ce4e6894e11014335caa63a5764b7c0f836b8f3d861",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 3,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0543-capture-0.sigmf-data",
+          "source_sha256": "a350d294df6ff8bb527f9c3e7f59ecc0a969645476fb238a2feb7ed0d213a8fc",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 4,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0544-capture-0.sigmf-data",
+          "source_sha256": "57dd18be35b80c6723502ff1a13724fb7cbf7b2fd4fd97615e74a29db9754191",
+          "full_payload_matches": [
+            {
+              "sequence": 386,
+              "crc_verified": false,
+              "address_verified": false,
+              "crc_available": true,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 4,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0545-capture-0.sigmf-data",
+          "source_sha256": "6ad683b9f9b560b47336f06d32e0fd8800de6f9a308bdcd603d8d06fb3917f01",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 4,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0546-capture-0.sigmf-data",
+          "source_sha256": "aa5b19e60ecf434dff27c985653b420de12e8a3dbd132b68332b5e337ba3dc5d",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 4,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0547-capture-0.sigmf-data",
+          "source_sha256": "b70b3f5239b742c82614fe3cf99c2f66986e9fbd24842eeccd7006e37df4a9bf",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 5,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0548-capture-0.sigmf-data",
+          "source_sha256": "db900899303ecb07ed636598dd29c6e05eefeb917b2bcee18b87a89fdae2d0d0",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 5,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0549-capture-0.sigmf-data",
+          "source_sha256": "ac16f5bc8b7b9a873f144bba7e0a39ff288378aa4bcc7dd20a7218e48e7de786",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 5,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0550-capture-0.sigmf-data",
+          "source_sha256": "97a6579b174fcf96c4ac1d06a04288783dea7c810951aa66ad556d827a3fe3ef",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 5,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0551-capture-0.sigmf-data",
+          "source_sha256": "a782c8882791318ac29477bff3df20e2286d151a3568cdbb6f6f468e0a7a7804",
+          "full_payload_matches": [
+            {
+              "sequence": 534,
+              "crc_verified": true,
+              "address_verified": true,
+              "crc_available": true,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 6,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0552-capture-0.sigmf-data",
+          "source_sha256": "64acca73488b1db499141d5b6d37ce3534710493b25e4841889653d374c131e0",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 6,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0553-capture-0.sigmf-data",
+          "source_sha256": "6c7a918abbbb0c525573e4eb26204e56a64a17a722a20f433da6e19409ba0629",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 6,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0554-capture-0.sigmf-data",
+          "source_sha256": "f1bbfe715237e6c8a655cca0cce067af2a1189fcbd35b11a1f0bd13bae7f7269",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 6,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0555-capture-0.sigmf-data",
+          "source_sha256": "d9020d4605d47b4abccdbb296a45ade7d2934c2222f9c11d309b5ddf44aad61a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 7,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0556-capture-0.sigmf-data",
+          "source_sha256": "d91b2f8952796017a494c2678833919f6680354eedd0b0725ba732adff4b745b",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 7,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0557-capture-0.sigmf-data",
+          "source_sha256": "c495ba256a654191c086492fe1b3306b9d6a16d79606bd29bf242128d75baab4",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 7,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0558-capture-0.sigmf-data",
+          "source_sha256": "4d015d5df9175d69d939fee03bf43328f320b81995664d4f3896fa84f758a66e",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 7,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0559-capture-0.sigmf-data",
+          "source_sha256": "e3f7232490a5222b39357e60e855a368791d629425ff784690aa6114b655de78",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 8,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0560-capture-0.sigmf-data",
+          "source_sha256": "aab3f562659ae37d739b107f68028bb1d28e3ef9c7510a9fb2a67ce562561e4e",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 8,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0561-capture-0.sigmf-data",
+          "source_sha256": "b987a69d6565bd9dac060d0eb76ee97079abed69abec0abf6349bef991e5b77e",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 8,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0562-capture-0.sigmf-data",
+          "source_sha256": "dd217dae355c0d17e41de158a68e533cd2d4d56cb0e1937590b6a85db675a1f3",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 8,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0563-capture-0.sigmf-data",
+          "source_sha256": "8cb8d84edcd29146485136c4782d3ee0ac835b4348ad75b42a84334d8c101af6",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 9,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0564-capture-0.sigmf-data",
+          "source_sha256": "cdf0e92630c149166a403127f355e73767635bbfb2cdf166fa6a79b2858c8c8c",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 9,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0565-capture-0.sigmf-data",
+          "source_sha256": "6246f04d984d351cd07c62a6b8e468864c349a0e559390d2c1a3817bc5858e0e",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 9,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0566-capture-0.sigmf-data",
+          "source_sha256": "c91a924b3b281667caa0f8e542d413ca22e6117c51a057fe482776bb5de5aba5",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 9,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0567-capture-0.sigmf-data",
+          "source_sha256": "feb2eb68033d0e0b8daf9d2ebbfdedea15ded3699081a4e0b29561712156147f",
+          "full_payload_matches": [
+            {
+              "sequence": 229,
+              "crc_verified": true,
+              "address_verified": true,
+              "crc_available": true,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 10,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0568-capture-0.sigmf-data",
+          "source_sha256": "3d35398ee017bb723e209e854a6d86e89f04a436d9ecdf664d48ddbc9810c957",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 10,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0569-capture-0.sigmf-data",
+          "source_sha256": "6a158bce75567a8aa0106f2a71f44380fd8938add1e81c1bec15685669cda482",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 10,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0570-capture-0.sigmf-data",
+          "source_sha256": "9a3843a5f58e2c7f50b45abf963b44b5a267cfb0f0b94acc0d258cbdd64fceb9",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 10,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0571-capture-0.sigmf-data",
+          "source_sha256": "3cb30442d875c013758c1a7f3c94c1e11df8e2afa0be85980e43495c9745430c",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 11,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0572-capture-0.sigmf-data",
+          "source_sha256": "743637ac4be23178f5792bbf1d23d918d84215421de6610ee5d4b1d088152f61",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 11,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0573-capture-0.sigmf-data",
+          "source_sha256": "338a99895691c053a38a4cd52119ee497292b07a667501b255efe9d480d9b619",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": 60,
+      "power": 0,
+      "pair": 11,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0574-capture-0.sigmf-data",
+          "source_sha256": "dcc43d0b79c21de7eac47407eb9f0d132280df3ca39d0d83b74f4768fcaf4380",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": 60,
+      "power": 0,
+      "pair": 11,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0575-capture-0.sigmf-data",
+          "source_sha256": "1377c2d009e58a1b7175fd1f1d08f651587471fd61a3f77cb0b0221a47f6f6dc",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 0,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0576-capture-0.sigmf-data",
+          "source_sha256": "c514c4b0293bfe0a58d78dff6058abda3ecf92976b2e013327c31bc3d184f38b",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 0,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0577-capture-0.sigmf-data",
+          "source_sha256": "a186d9c10c97d9091db704caf38b523fd7e250f638cf0ab41a6617f4dbae8d8c",
+          "full_payload_matches": [
+            {
+              "sequence": 390,
+              "crc_verified": true,
+              "address_verified": true,
+              "crc_available": true,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 0,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0578-capture-0.sigmf-data",
+          "source_sha256": "14b76657a60277704cb3a83f05e891e16db7c5e6eb3d8c4351005c6c85cd351b",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 0,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0579-capture-0.sigmf-data",
+          "source_sha256": "09bcdbc6e6310ea34b8bd12c3a7382445eb90c53f36d2ddc0fbb2f86ce578f3f",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 1,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0580-capture-0.sigmf-data",
+          "source_sha256": "5b027724c93d764e3ef2cd2f8b52beda76b25262bda724fff35d5306793ca89c",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 1,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0581-capture-0.sigmf-data",
+          "source_sha256": "ff6f4a7ab93d4923ee7d83d682c8e7418192569340d1ac38833333f2217d33fd",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 1,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0582-capture-0.sigmf-data",
+          "source_sha256": "97c6566c4f1c970248c51731a0924e8eccf0277e47ada4dd000da623166b8ea7",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 1,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0583-capture-0.sigmf-data",
+          "source_sha256": "e7cc2b62cd8a12c67b2a93dcfc240518e596fcace14c8d7a7889353c59cc16ce",
+          "full_payload_matches": [
+            {
+              "sequence": 8388946,
+              "crc_verified": false,
+              "address_verified": true,
+              "crc_available": true,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 2,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0584-capture-0.sigmf-data",
+          "source_sha256": "fc01d233076212dc3e163215cf8dc4ef9e49480af85da847197e996aaac30388",
+          "full_payload_matches": [
+            {
+              "sequence": 408,
+              "crc_verified": true,
+              "address_verified": true,
+              "crc_available": true,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 2,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0585-capture-0.sigmf-data",
+          "source_sha256": "2f54115975dea52cc32bb84e6ab3455cdbc52435b1331e6479af8f1745803f12",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 2,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0586-capture-0.sigmf-data",
+          "source_sha256": "ecd59fb3c77abbfeeb9fb3bbe9d6d4d6a914a960fcd4b15be630cbdc2e5ac079",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 2,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0587-capture-0.sigmf-data",
+          "source_sha256": "75a8b9036d8169c59a6f1030188f386d66a3af2684a556f682dfb0cd4d1bc34e",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 3,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0588-capture-0.sigmf-data",
+          "source_sha256": "c4fa26e6c7b885dfe3efa7e8b78ad6eb207866efaca1ec9d6e8ab5d4dfab12cf",
+          "full_payload_matches": [
+            {
+              "sequence": 375,
+              "crc_verified": true,
+              "address_verified": true,
+              "crc_available": true,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 3,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0589-capture-0.sigmf-data",
+          "source_sha256": "1715d9b14d9f015d44e0bbce53241464a00741273ceee57f3219114c17c2e343",
+          "full_payload_matches": [
+            {
+              "sequence": 466,
+              "crc_verified": true,
+              "address_verified": true,
+              "crc_available": true,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 3,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0590-capture-0.sigmf-data",
+          "source_sha256": "2c23fea41692610c5e721cc8b53f48d582b31d356e3d951883a2d5c6c33b957e",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 3,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0591-capture-0.sigmf-data",
+          "source_sha256": "e957bd26233df0fd80c12fa4f026127f0e422b8d3fa3fd31c74c03c4ec28fe72",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 4,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0592-capture-0.sigmf-data",
+          "source_sha256": "50347fe52bae53c0ed029f69cb012eddaa073b33f74ab9832438ac56965ead85",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 4,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0593-capture-0.sigmf-data",
+          "source_sha256": "7d9f314d3b794d6067f979e07a5b4a1c81b184340959b39b0cde5d7a7a38facd",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 4,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0594-capture-0.sigmf-data",
+          "source_sha256": "55c302b1d8b9028cd2a1f8e05e088d5646a019aecabc93387b8dbdfc52bbaa3a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 4,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0595-capture-0.sigmf-data",
+          "source_sha256": "82abdfce19706d0de5d26fad592b44de2e9bb85c6f75fb705e131edf9ae7d7cc",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 5,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0596-capture-0.sigmf-data",
+          "source_sha256": "00ffa65c8c9295a8d9b26466f8d1589ff8d6723aab5effeb24099cd92f5d633a",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 5,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0597-capture-0.sigmf-data",
+          "source_sha256": "bcd7c68ba0c98d2fdb43bf23e2f8d0a53bf15168b019bf81cc6e38d6790b10b7",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 5,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0598-capture-0.sigmf-data",
+          "source_sha256": "838d7b094d007ec70e6fa722141f4efb6e7784871b9207ac596b65deec7f6672",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 5,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0599-capture-0.sigmf-data",
+          "source_sha256": "306773baae92b3df9cd1ee24a61846bcac79e940619d00d084bb4b7f9bba0af7",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 6,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0600-capture-0.sigmf-data",
+          "source_sha256": "6c78395ffc2d8b6c1543efdb552ae37dbddf849eeb1e70322e1a7baf65831674",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 6,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0601-capture-0.sigmf-data",
+          "source_sha256": "79560e686d38ee3fd60c5f8a928e66e31e6982b3ee62efa564a0ff294983d7ff",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 6,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0602-capture-0.sigmf-data",
+          "source_sha256": "3e7ac1cae9b97838b356850de3f5c66f0c462bf4cdc75d978caacdae0b2d0c5d",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 6,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0603-capture-0.sigmf-data",
+          "source_sha256": "307b002b9c179d0f92c09b451506ed31fc5197713a7b03948b4dc9828e2839b0",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 7,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0604-capture-0.sigmf-data",
+          "source_sha256": "4cace8a2eb4fd364bf5e49fc6dff85ca7ae20efa0cab0c4eeaad4332bd459011",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 7,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0605-capture-0.sigmf-data",
+          "source_sha256": "ead6e8fd21fbd294c10224709207a5aa270d40ec59188ead57078c0b8f39c796",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 7,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0606-capture-0.sigmf-data",
+          "source_sha256": "9897fcc50ba5c279f646cc4cde9d7e56fb706ec30efb451c163d82f3b6876d7e",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 7,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0607-capture-0.sigmf-data",
+          "source_sha256": "cd944b484c9c536e92e7c38b3aca6e82ee779b258a6bf5686a562d8812f9fe5d",
+          "full_payload_matches": [
+            {
+              "sequence": 135,
+              "crc_verified": true,
+              "address_verified": true,
+              "crc_available": true,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 8,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0608-capture-0.sigmf-data",
+          "source_sha256": "9fd15ea4aa9dba278d16d419a0222d20e7c68fcc9aa3b66b6adf1ef2871198b4",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 8,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0609-capture-0.sigmf-data",
+          "source_sha256": "41ab6e1b7563a6773a0b6b25f6c860c1419cc9e25a378dd3deef25fdfaed179c",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 8,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0610-capture-0.sigmf-data",
+          "source_sha256": "8dcdb288ce716c1a70d687bbd9a32eafbde1f5a3062aeea478d5d092c2656a8b",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 8,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0611-capture-0.sigmf-data",
+          "source_sha256": "0c31140187a91d0b1c69694092f44593e5238ed3a7840ef7350dcb0c329d7dbc",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 9,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0612-capture-0.sigmf-data",
+          "source_sha256": "cb6cf03f9fbce0c65043ff7756c5fa3d6bf41e8e9f3e92ffd6cebb2129b39504",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 5
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 9,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0613-capture-0.sigmf-data",
+          "source_sha256": "d65a3439b7d3bd4122781bd1760a7a0993ff3f76ceb1d0b7760df394b71f861d",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 9,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0614-capture-0.sigmf-data",
+          "source_sha256": "98d675666fecb17c71f73f478e50005a9d2d53489cf728180a311c0fa7aaef27",
+          "full_payload_matches": [
+            {
+              "sequence": 412,
+              "crc_verified": true,
+              "address_verified": true,
+              "crc_available": true,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 9,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0615-capture-0.sigmf-data",
+          "source_sha256": "6d7314302b66d3ff07235670376fd46e90fb39512df0b6974ed3c22007c4f72f",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 10,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0616-capture-0.sigmf-data",
+          "source_sha256": "57fe85bf6d4afc0be97f10737ec13bde8ba431e86137ec42e6b4a0b9e3583e70",
+          "full_payload_matches": [
+            {
+              "sequence": 458,
+              "crc_verified": false,
+              "address_verified": true,
+              "crc_available": false,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 10,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0617-capture-0.sigmf-data",
+          "source_sha256": "1fd3b10b6ceaeee9b6960ae354b5b154bc20d922f524ee79922e4240df4049d2",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 10,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0618-capture-0.sigmf-data",
+          "source_sha256": "ee94a0d656fe8fca1836ba7ac4ba295cbc6533164cfbd0577dafebc5b5d6b3dd",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 10,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0619-capture-0.sigmf-data",
+          "source_sha256": "24b3b936b4398ca6552dfb99519aca572f57e48225255141c91b2a075dc98699",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 11,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0620-capture-0.sigmf-data",
+          "source_sha256": "acc80837ed178d5b1cc636e6cc26fa390315c76b9c80f4490ca4bd454d789319",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 4
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 11,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0621-capture-0.sigmf-data",
+          "source_sha256": "c626c305104dc23f9107da55b1b372fc083b4b9ab10129bb80e3afc0189c5962",
+          "full_payload_matches": [
+            {
+              "sequence": 389,
+              "crc_verified": true,
+              "address_verified": true,
+              "crc_available": true,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    },
+    {
+      "policy": 1,
+      "gain": null,
+      "power": 0,
+      "pair": 11,
+      "tx_on": false,
+      "recordings": [
+        {
+          "file": "0622-capture-0.sigmf-data",
+          "source_sha256": "78c4b48001ccdef264de54fd488b746387c43aaf6346d4059cc7453cc7f8ea32",
+          "full_payload_matches": [],
+          "sync_min_bit_errors": 6
+        }
+      ]
+    },
+    {
+      "policy": 2,
+      "gain": null,
+      "power": 0,
+      "pair": 11,
+      "tx_on": true,
+      "recordings": [
+        {
+          "file": "0623-capture-0.sigmf-data",
+          "source_sha256": "0d6b82efdde9441aee7370bf1a84c7e28d6991ba3fade0e9fd754ccc85aa48e8",
+          "full_payload_matches": [
+            {
+              "sequence": 485,
+              "crc_verified": true,
+              "address_verified": true,
+              "crc_available": true,
+              "address_available": true
+            },
+            {
+              "sequence": 131557,
+              "crc_verified": false,
+              "address_verified": true,
+              "crc_available": true,
+              "address_available": true
+            }
+          ],
+          "sync_min_bit_errors": 0
+        }
+      ]
+    }
+  ]
+}

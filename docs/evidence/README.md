@@ -2,6 +2,10 @@
 
 This is a curated, privacy-reviewed export of existing research records from 2026-11-10, published on 2026-11-11. No board was queried or flashed and no new RF measurement was performed for this supplement. Local originals were preserved. It contains measured results and explicitly labeled derived checks, not invented serial transcripts.
 
+## V7 evaluation supplement
+
+The [v7 evaluation](v7-evaluation/README.md) publishes the 12 November exact-release board campaign, same-image policy comparisons, confirmed parser limitation and calibrated interpretation limits. It includes 984 run summaries and an offline arithmetic verifier. Historical evidence below is unchanged.
+
 ## Adaptive evaluation supplement
 
 The [adaptive evaluation](adaptive-evaluation/README.md) adds privacy-reviewed

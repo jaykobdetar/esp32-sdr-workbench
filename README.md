@@ -12,7 +12,7 @@ Explore the ESP32 receiver's raw I/Q, inspect spectra and recorded events, and c
 
 ## Firmware status
 
-Every measured number in this README belongs to **optimized-v2**, which is also the image installed on the test board. Later images change the detector and add safety fixes, but none has shown a retained-packet advantage over v2.
+The headline duty benchmarks below belong to **optimized-v2**, which is also the image installed on the test board. Later images change the detector and add safety fixes, but none has shown a retained-packet advantage over v2.
 
 | Image | What it adds | Evidence from the board |
 |---|---|---|
@@ -21,7 +21,7 @@ Every measured number in this README belongs to **optimized-v2**, which is also 
 | `adaptive-q16-v3`, instrumented | Tie-retention fix and heap/stack telemetry | Boundary matrix and a 30-minute soak (same evaluation) |
 | `adaptive-q16-v4` | Tie fix in the release source, read-only calibration fingerprint | Short passive smoke check ([follow-up](docs/review-follow-up.md)) |
 | `adaptive-q16-v5`, `v6` | NVS preserved on startup failure, strict `SPEC` parsing, NUL rejection | Short passive smoke checks ([review fixes](docs/safety-review-fixes.md)) |
-| `adaptive-q16-v7` (current source) | [Selectable background rule](docs/adaptive-detector.md#comparing-the-two-rules-on-one-image); idles instead of rebooting on NVS failure | **None.** Compiled in CI and host-tested only |
+| `adaptive-q16-v7` (current source) | [Selectable background rule](docs/adaptive-detector.md#comparing-the-two-rules-on-one-image); idles instead of rebooting on NVS failure | 984-run exact-release campaign, 30-minute soak and same-image RF comparisons; minor selector parser bug remains ([v7 evaluation](docs/evidence/v7-evaluation/README.md)) |
 
 Two cautions apply to every comparison between images: they were run in sequence, and the stored PHY calibration changed at an unknown point during the v3 evaluation. V7's rule selector exists so the old and new background rules can be compared within one session on one image. The [remaining-validation guide](docs/remaining-validation-guide.md) covers the outstanding bench work, and the [calibration guide](docs/calibration-fingerprints.md) the boundary logging for future campaigns.
 

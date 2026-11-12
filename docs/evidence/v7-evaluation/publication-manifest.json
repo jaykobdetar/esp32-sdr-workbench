@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "measured_commit": "b39c09b88eaeba6bb28f8e3812816444fa906531",
+  "files": {
+    "README.md": "c8682f9cfddb0272bb80f0b93ac33d60fda8919613c59e1a6f545228575d443e",
+    "extra-v2.json": "79b7a30cbf9d1bedcf7a5ca02defdf8c44a54684322c6b92969a21f990d91948",
+    "extra-v7.json": "f2d5be52c1b59ca50038e01e2e6b12662fb0018c10c0e80dc72629c9cdd1e32a",
+    "preservation-and-build.json": "179a9a4ef28fe5228925c18cf5bb0ecedaf03badb02f466069d979ade4b17bd4",
+    "rf-decoder-summaries.json": "50443fa08d39890b210a65db7818354b5dda8096146224cca3d9f82897dbd9f8",
+    "rf-statistics.json": "62718bdbec7484397787666fa46977fff37cc78cfa2c1a5524f6272ebf32ca43",
+    "run-summaries.json": "78b21a85a3779b0c7301fb8b399d511de3a31050c555e96a23f47daaf30b665d"
+  }
+}

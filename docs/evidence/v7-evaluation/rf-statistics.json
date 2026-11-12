@@ -1,0 +1,279 @@
+{
+  "groups": [
+    {
+      "power": -20,
+      "gain": 40,
+      "policies": {
+        "1": {
+          "on_minus_off_candidates_per_second": {
+            "mean": 5.7275760963441265,
+            "ci95": [
+              -47.36858872093292,
+              56.33980573330998
+            ],
+            "exact_two_sided_signflip_p": 0.8330078125,
+            "pairs": 12
+          },
+          "mean_local_duty": 62.08231970230037,
+          "retained_files": 23,
+          "full_payloads": 0,
+          "crc_valid_packets": 0
+        },
+        "2": {
+          "on_minus_off_candidates_per_second": {
+            "mean": 1.3378696115619786,
+            "ci95": [
+              -14.617315758056632,
+              16.913792048803042
+            ],
+            "exact_two_sided_signflip_p": 0.8828125,
+            "pairs": 12
+          },
+          "mean_local_duty": 61.97555925553723,
+          "retained_files": 24,
+          "full_payloads": 0,
+          "crc_valid_packets": 0
+        }
+      },
+      "adaptive_minus_legacy_source_effect": {
+        "mean": -4.389706484782148,
+        "ci95": [
+          -55.58240105423938,
+          42.34227767410241
+        ],
+        "exact_two_sided_signflip_p": 0.8681640625,
+        "pairs": 12
+      }
+    },
+    {
+      "power": -20,
+      "gain": 60,
+      "policies": {
+        "1": {
+          "on_minus_off_candidates_per_second": {
+            "mean": -18.176388694848047,
+            "ci95": [
+              -62.17854085396783,
+              28.167274865619223
+            ],
+            "exact_two_sided_signflip_p": 0.47265625,
+            "pairs": 12
+          },
+          "mean_local_duty": 61.33110742018417,
+          "retained_files": 24,
+          "full_payloads": 0,
+          "crc_valid_packets": 0
+        },
+        "2": {
+          "on_minus_off_candidates_per_second": {
+            "mean": -26.791591595744677,
+            "ci95": [
+              -88.91141900953644,
+              43.98505019670388
+            ],
+            "exact_two_sided_signflip_p": 0.45458984375,
+            "pairs": 12
+          },
+          "mean_local_duty": 61.681307345324306,
+          "retained_files": 24,
+          "full_payloads": 0,
+          "crc_valid_packets": 0
+        }
+      },
+      "adaptive_minus_legacy_source_effect": {
+        "mean": -8.615202900896634,
+        "ci95": [
+          -101.42204658748216,
+          87.50819599492432
+        ],
+        "exact_two_sided_signflip_p": 0.85400390625,
+        "pairs": 12
+      }
+    },
+    {
+      "power": -20,
+      "gain": null,
+      "policies": {
+        "1": {
+          "on_minus_off_candidates_per_second": {
+            "mean": 18.53403905564912,
+            "ci95": [
+              -53.825399952168716,
+              93.4605160266963
+            ],
+            "exact_two_sided_signflip_p": 0.64599609375,
+            "pairs": 12
+          },
+          "mean_local_duty": 61.411122860652625,
+          "retained_files": 24,
+          "full_payloads": 0,
+          "crc_valid_packets": 0
+        },
+        "2": {
+          "on_minus_off_candidates_per_second": {
+            "mean": 1.7930757570773064,
+            "ci95": [
+              -70.86089162591561,
+              71.52509031808803
+            ],
+            "exact_two_sided_signflip_p": 0.97509765625,
+            "pairs": 12
+          },
+          "mean_local_duty": 61.571853924237395,
+          "retained_files": 24,
+          "full_payloads": 0,
+          "crc_valid_packets": 0
+        }
+      },
+      "adaptive_minus_legacy_source_effect": {
+        "mean": -16.740963298571824,
+        "ci95": [
+          -137.86820791268175,
+          90.47905215631236
+        ],
+        "exact_two_sided_signflip_p": 0.796875,
+        "pairs": 12
+      }
+    },
+    {
+      "power": 0,
+      "gain": 40,
+      "policies": {
+        "1": {
+          "on_minus_off_candidates_per_second": {
+            "mean": 175.96587737715754,
+            "ci95": [
+              75.38237443445814,
+              277.85518766742746
+            ],
+            "exact_two_sided_signflip_p": 0.01611328125,
+            "pairs": 12
+          },
+          "mean_local_duty": 62.07406054373164,
+          "retained_files": 22,
+          "full_payloads": 1,
+          "crc_valid_packets": 0
+        },
+        "2": {
+          "on_minus_off_candidates_per_second": {
+            "mean": 290.17847875018504,
+            "ci95": [
+              276.76814255648407,
+              301.84177864923464
+            ],
+            "exact_two_sided_signflip_p": 0.00048828125,
+            "pairs": 12
+          },
+          "mean_local_duty": 61.93758976332992,
+          "retained_files": 24,
+          "full_payloads": 0,
+          "crc_valid_packets": 0
+        }
+      },
+      "adaptive_minus_legacy_source_effect": {
+        "mean": 114.21260137302745,
+        "ci95": [
+          18.730580807863806,
+          209.91381223965882
+        ],
+        "exact_two_sided_signflip_p": 0.04150390625,
+        "pairs": 12
+      }
+    },
+    {
+      "power": 0,
+      "gain": 60,
+      "policies": {
+        "1": {
+          "on_minus_off_candidates_per_second": {
+            "mean": 205.00278306598764,
+            "ci95": [
+              149.93735180114044,
+              255.83420180810742
+            ],
+            "exact_two_sided_signflip_p": 0.00048828125,
+            "pairs": 12
+          },
+          "mean_local_duty": 61.37886176853201,
+          "retained_files": 24,
+          "full_payloads": 2,
+          "crc_valid_packets": 2
+        },
+        "2": {
+          "on_minus_off_candidates_per_second": {
+            "mean": 190.46836057942633,
+            "ci95": [
+              86.13483975119637,
+              265.2704379326739
+            ],
+            "exact_two_sided_signflip_p": 0.00634765625,
+            "pairs": 12
+          },
+          "mean_local_duty": 61.60935454276705,
+          "retained_files": 24,
+          "full_payloads": 2,
+          "crc_valid_packets": 1
+        }
+      },
+      "adaptive_minus_legacy_source_effect": {
+        "mean": -14.534422486561297,
+        "ci95": [
+          -98.42060002988858,
+          66.203160704654
+        ],
+        "exact_two_sided_signflip_p": 0.74853515625,
+        "pairs": 12
+      }
+    },
+    {
+      "power": 0,
+      "gain": null,
+      "policies": {
+        "1": {
+          "on_minus_off_candidates_per_second": {
+            "mean": 223.34596146903786,
+            "ci95": [
+              178.29322244816348,
+              262.0448059333752
+            ],
+            "exact_two_sided_signflip_p": 0.00048828125,
+            "pairs": 12
+          },
+          "mean_local_duty": 61.43623019548991,
+          "retained_files": 24,
+          "full_payloads": 7,
+          "crc_valid_packets": 5
+        },
+        "2": {
+          "on_minus_off_candidates_per_second": {
+            "mean": 243.38514715460872,
+            "ci95": [
+              195.9675088254678,
+              280.1748414542544
+            ],
+            "exact_two_sided_signflip_p": 0.00048828125,
+            "pairs": 12
+          },
+          "mean_local_duty": 61.50467589140826,
+          "retained_files": 24,
+          "full_payloads": 4,
+          "crc_valid_packets": 3
+        }
+      },
+      "adaptive_minus_legacy_source_effect": {
+        "mean": 20.03918568557088,
+        "ci95": [
+          -47.78670019189864,
+          87.61921300510501
+        ],
+        "exact_two_sided_signflip_p": 0.5986328125,
+        "pairs": 12
+      }
+    }
+  ],
+  "caveats": [
+    "Candidate events are not packets; not recall.",
+    "12 temporal pairs per setting; conditions randomized within block; unmeasured geometry.",
+    "Percentile bootstrap descriptive; exact sign-flip p values unadjusted across six settings; not a universal detector ranking."
+  ]
+}

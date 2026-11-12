@@ -1,0 +1,2514 @@
+{
+  "status": "passed",
+  "device_version": "VERSION {\"revision\":\"unknown\",\"build_date\":\"2026-11-10\",\"build_timestamp\":\"2026-11-10T23:21:02Z\",\"profile\":\"esp32\",\"firmware_variant\":\"esp32-pipeline-optimized-v2\"}",
+  "timing_runs": [
+    {
+      "index": 0,
+      "retain": false,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 616,
+        "processed_captures": 616,
+        "detections": 135,
+        "background_adc2": 2,
+        "best_ratio_milli": 4569000,
+        "wall_elapsed_us": 1002348,
+        "completion_observed_us": 631684,
+        "acquire_call_us_includes_overlap": 996086,
+        "energy_compute_us": 522441,
+        "copy_us": 285386,
+        "decision_us": 478,
+        "retention_copy_us": 0,
+        "retained_samples": 0,
+        "frequency_mhz": 2440,
+        "total_samples": 10090080,
+        "analyzed_samples": 10053120,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:32:49.529885+00:00",
+        "host_run_elapsed_us": 1011229.381,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1029323.78,
+        "nominal_local_rf_duty_percent": 62.915274934453905,
+        "nominal_local_decision_duty_percent": 61.056639011600765,
+        "nominal_host_rf_duty_percent": 61.266436494841294,
+        "nominal_host_decision_duty_percent": 59.456510370332644,
+        "nominal_rf_duty_percent": 62.915274934453905,
+        "nominal_decision_duty_percent": 61.056639011600765,
+        "nominal_analyzed_duty_percent": 62.68481605191011,
+        "retained_crc_valid": false,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 1,
+      "retain": true,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 611,
+        "processed_captures": 611,
+        "detections": 136,
+        "background_adc2": 2,
+        "best_ratio_milli": 4251500,
+        "wall_elapsed_us": 1002211,
+        "completion_observed_us": 626485,
+        "acquire_call_us_includes_overlap": 994311,
+        "energy_compute_us": 518253,
+        "copy_us": 283047,
+        "decision_us": 445,
+        "retention_copy_us": 6395,
+        "retained_samples": 16380,
+        "frequency_mhz": 2440,
+        "total_samples": 10008180,
+        "analyzed_samples": 9971520,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:32:50.567883+00:00",
+        "host_run_elapsed_us": 1010946.792,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1443711.165,
+        "nominal_local_rf_duty_percent": 62.41312957051958,
+        "nominal_local_decision_duty_percent": 60.556110439817566,
+        "nominal_host_rf_duty_percent": 43.32661997526354,
+        "nominal_host_decision_duty_percent": 42.037494390368586,
+        "nominal_rf_duty_percent": 62.41312957051958,
+        "nominal_decision_duty_percent": 60.556110439817566,
+        "nominal_analyzed_duty_percent": 62.18451004828325,
+        "retained_crc_valid": true,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 2,
+      "retain": false,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 616,
+        "processed_captures": 616,
+        "detections": 136,
+        "background_adc2": 3,
+        "best_ratio_milli": 2812000,
+        "wall_elapsed_us": 1002419,
+        "completion_observed_us": 631630,
+        "acquire_call_us_includes_overlap": 995996,
+        "energy_compute_us": 522591,
+        "copy_us": 285342,
+        "decision_us": 462,
+        "retention_copy_us": 0,
+        "retained_samples": 0,
+        "frequency_mhz": 2440,
+        "total_samples": 10090080,
+        "analyzed_samples": 10053120,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:32:52.019875+00:00",
+        "host_run_elapsed_us": 1010923.688,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1029485.475,
+        "nominal_local_rf_duty_percent": 62.910818729493364,
+        "nominal_local_decision_duty_percent": 61.05231445134221,
+        "nominal_host_rf_duty_percent": 61.25681374960633,
+        "nominal_host_decision_duty_percent": 59.447171899147,
+        "nominal_rf_duty_percent": 62.910818729493364,
+        "nominal_decision_duty_percent": 61.05231445134221,
+        "nominal_analyzed_duty_percent": 62.68037617004467,
+        "retained_crc_valid": false,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 3,
+      "retain": true,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 613,
+        "processed_captures": 613,
+        "detections": 94,
+        "background_adc2": 4,
+        "best_ratio_milli": 55250,
+        "wall_elapsed_us": 1002316,
+        "completion_observed_us": 628447,
+        "acquire_call_us_includes_overlap": 995717,
+        "energy_compute_us": 519574,
+        "copy_us": 283974,
+        "decision_us": 429,
+        "retention_copy_us": 4762,
+        "retained_samples": 16380,
+        "frequency_mhz": 2440,
+        "total_samples": 10040940,
+        "analyzed_samples": 10004160,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:32:53.057873+00:00",
+        "host_run_elapsed_us": 1010850.783,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1443453.948,
+        "nominal_local_rf_duty_percent": 62.61086822918122,
+        "nominal_local_decision_duty_percent": 60.753295367927876,
+        "nominal_host_rf_duty_percent": 43.476187852721154,
+        "nominal_host_decision_duty_percent": 42.18631296438145,
+        "nominal_rf_duty_percent": 62.61086822918122,
+        "nominal_decision_duty_percent": 60.753295367927876,
+        "nominal_analyzed_duty_percent": 62.38152438951389,
+        "retained_crc_valid": true,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 4,
+      "retain": false,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 616,
+        "processed_captures": 616,
+        "detections": 25,
+        "background_adc2": 29,
+        "best_ratio_milli": 315620,
+        "wall_elapsed_us": 1002423,
+        "completion_observed_us": 631582,
+        "acquire_call_us_includes_overlap": 996012,
+        "energy_compute_us": 522584,
+        "copy_us": 285468,
+        "decision_us": 401,
+        "retention_copy_us": 0,
+        "retained_samples": 0,
+        "frequency_mhz": 2440,
+        "total_samples": 10090080,
+        "analyzed_samples": 10053120,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:32:54.509876+00:00",
+        "host_run_elapsed_us": 1010976.079,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1029723.625,
+        "nominal_local_rf_duty_percent": 62.910567694476285,
+        "nominal_local_decision_duty_percent": 61.05207083237316,
+        "nominal_host_rf_duty_percent": 61.242646540230645,
+        "nominal_host_decision_duty_percent": 59.43342321586533,
+        "nominal_rf_duty_percent": 62.910567694476285,
+        "nominal_decision_duty_percent": 61.05207083237316,
+        "nominal_analyzed_duty_percent": 62.680126054569776,
+        "retained_crc_valid": false,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 5,
+      "retain": true,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 611,
+        "processed_captures": 611,
+        "detections": 31,
+        "background_adc2": 26,
+        "best_ratio_milli": 329307,
+        "wall_elapsed_us": 1001234,
+        "completion_observed_us": 626493,
+        "acquire_call_us_includes_overlap": 993596,
+        "energy_compute_us": 518144,
+        "copy_us": 283152,
+        "decision_us": 395,
+        "retention_copy_us": 5543,
+        "retained_samples": 16380,
+        "frequency_mhz": 2440,
+        "total_samples": 10008180,
+        "analyzed_samples": 9971520,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:32:55.547862+00:00",
+        "host_run_elapsed_us": 1009894.031,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1442500.246,
+        "nominal_local_rf_duty_percent": 62.47403204445714,
+        "nominal_local_decision_duty_percent": 60.615200842160775,
+        "nominal_host_rf_duty_percent": 43.36299087189202,
+        "nominal_host_decision_duty_percent": 42.072783119650154,
+        "nominal_rf_duty_percent": 62.47403204445714,
+        "nominal_decision_duty_percent": 60.615200842160775,
+        "nominal_analyzed_duty_percent": 62.24518943623569,
+        "retained_crc_valid": true,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 6,
+      "retain": false,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 615,
+        "processed_captures": 615,
+        "detections": 127,
+        "background_adc2": 2,
+        "best_ratio_milli": 4269000,
+        "wall_elapsed_us": 1001827,
+        "completion_observed_us": 630506,
+        "acquire_call_us_includes_overlap": 994534,
+        "energy_compute_us": 521460,
+        "copy_us": 285156,
+        "decision_us": 486,
+        "retention_copy_us": 0,
+        "retained_samples": 0,
+        "frequency_mhz": 2440,
+        "total_samples": 10073700,
+        "analyzed_samples": 10036800,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:32:56.998856+00:00",
+        "host_run_elapsed_us": 1010311.612,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1028850.32,
+        "nominal_local_rf_duty_percent": 62.84580571296242,
+        "nominal_local_decision_duty_percent": 60.98657752286572,
+        "nominal_host_rf_duty_percent": 61.19512603154948,
+        "nominal_host_decision_duty_percent": 59.3847314933041,
+        "nominal_rf_duty_percent": 62.84580571296242,
+        "nominal_decision_duty_percent": 60.98657752286572,
+        "nominal_analyzed_duty_percent": 62.615601296431414,
+        "retained_crc_valid": false,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 7,
+      "retain": true,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 612,
+        "processed_captures": 612,
+        "detections": 116,
+        "background_adc2": 2,
+        "best_ratio_milli": 1449500,
+        "wall_elapsed_us": 1001848,
+        "completion_observed_us": 627512,
+        "acquire_call_us_includes_overlap": 995831,
+        "energy_compute_us": 518746,
+        "copy_us": 283513,
+        "decision_us": 443,
+        "retention_copy_us": 6331,
+        "retained_samples": 16380,
+        "frequency_mhz": 2440,
+        "total_samples": 10024560,
+        "analyzed_samples": 9987840,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:32:58.035853+00:00",
+        "host_run_elapsed_us": 1010641.269,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1442456.646,
+        "nominal_local_rf_duty_percent": 62.53792990553457,
+        "nominal_local_decision_duty_percent": 60.67986361204494,
+        "nominal_host_rf_duty_percent": 43.435274241164265,
+        "nominal_host_decision_duty_percent": 42.14476751767831,
+        "nominal_rf_duty_percent": 62.53792990553457,
+        "nominal_decision_duty_percent": 60.67986361204494,
+        "nominal_analyzed_duty_percent": 62.308853239213924,
+        "retained_crc_valid": true,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 8,
+      "retain": false,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 616,
+        "processed_captures": 616,
+        "detections": 106,
+        "background_adc2": 2,
+        "best_ratio_milli": 4203000,
+        "wall_elapsed_us": 1002423,
+        "completion_observed_us": 631629,
+        "acquire_call_us_includes_overlap": 995966,
+        "energy_compute_us": 522573,
+        "copy_us": 285381,
+        "decision_us": 449,
+        "retention_copy_us": 0,
+        "retained_samples": 0,
+        "frequency_mhz": 2440,
+        "total_samples": 10090080,
+        "analyzed_samples": 10053120,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:32:59.486850+00:00",
+        "host_run_elapsed_us": 1010922.878,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1029514.016,
+        "nominal_local_rf_duty_percent": 62.910567694476285,
+        "nominal_local_decision_duty_percent": 61.05207083237316,
+        "nominal_host_rf_duty_percent": 61.2551155398743,
+        "nominal_host_decision_duty_percent": 59.44552385773444,
+        "nominal_rf_duty_percent": 62.910567694476285,
+        "nominal_decision_duty_percent": 61.05207083237316,
+        "nominal_analyzed_duty_percent": 62.680126054569776,
+        "retained_crc_valid": false,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 9,
+      "retain": true,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 612,
+        "processed_captures": 612,
+        "detections": 112,
+        "background_adc2": 2,
+        "best_ratio_milli": 4121000,
+        "wall_elapsed_us": 1001850,
+        "completion_observed_us": 627411,
+        "acquire_call_us_includes_overlap": 995238,
+        "energy_compute_us": 519021,
+        "copy_us": 283753,
+        "decision_us": 431,
+        "retention_copy_us": 5553,
+        "retained_samples": 16380,
+        "frequency_mhz": 2440,
+        "total_samples": 10024560,
+        "analyzed_samples": 9987840,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:00.524844+00:00",
+        "host_run_elapsed_us": 1010378.111,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1442221.436,
+        "nominal_local_rf_duty_percent": 62.53780506063783,
+        "nominal_local_decision_duty_percent": 60.67974247641863,
+        "nominal_host_rf_duty_percent": 43.44235804299888,
+        "nominal_host_decision_duty_percent": 42.15164085246615,
+        "nominal_rf_duty_percent": 62.53780506063783,
+        "nominal_decision_duty_percent": 60.67974247641863,
+        "nominal_analyzed_duty_percent": 62.3087288516245,
+        "retained_crc_valid": true,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 10,
+      "retain": false,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 616,
+        "processed_captures": 616,
+        "detections": 77,
+        "background_adc2": 13,
+        "best_ratio_milli": 593692,
+        "wall_elapsed_us": 1002427,
+        "completion_observed_us": 631608,
+        "acquire_call_us_includes_overlap": 995925,
+        "energy_compute_us": 522396,
+        "copy_us": 285370,
+        "decision_us": 421,
+        "retention_copy_us": 0,
+        "retained_samples": 0,
+        "frequency_mhz": 2440,
+        "total_samples": 10090080,
+        "analyzed_samples": 10053120,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:01.975839+00:00",
+        "host_run_elapsed_us": 1010618.491,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1029054.0,
+        "nominal_local_rf_duty_percent": 62.91031666146264,
+        "nominal_local_decision_duty_percent": 61.051827215348354,
+        "nominal_host_rf_duty_percent": 61.282498294550145,
+        "nominal_host_decision_duty_percent": 59.47209767417454,
+        "nominal_rf_duty_percent": 62.91031666146264,
+        "nominal_decision_duty_percent": 61.051827215348354,
+        "nominal_analyzed_duty_percent": 62.67987594109098,
+        "retained_crc_valid": false,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 11,
+      "retain": true,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 615,
+        "processed_captures": 615,
+        "detections": 51,
+        "background_adc2": 34,
+        "best_ratio_milli": 248647,
+        "wall_elapsed_us": 1001704,
+        "completion_observed_us": 630614,
+        "acquire_call_us_includes_overlap": 995151,
+        "energy_compute_us": 521763,
+        "copy_us": 284924,
+        "decision_us": 423,
+        "retention_copy_us": 803,
+        "retained_samples": 16380,
+        "frequency_mhz": 2440,
+        "total_samples": 10073700,
+        "analyzed_samples": 10036800,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:03.012836+00:00",
+        "host_run_elapsed_us": 1009993.352,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1442160.187,
+        "nominal_local_rf_duty_percent": 62.85352259749388,
+        "nominal_local_decision_duty_percent": 60.99406611134627,
+        "nominal_host_rf_duty_percent": 43.657164833382,
+        "nominal_host_decision_duty_percent": 42.365612745902276,
+        "nominal_rf_duty_percent": 62.85352259749388,
+        "nominal_decision_duty_percent": 60.99406611134627,
+        "nominal_analyzed_duty_percent": 62.62328991398657,
+        "retained_crc_valid": true,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 12,
+      "retain": false,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 616,
+        "processed_captures": 616,
+        "detections": 72,
+        "background_adc2": 12,
+        "best_ratio_milli": 705666,
+        "wall_elapsed_us": 1002423,
+        "completion_observed_us": 631676,
+        "acquire_call_us_includes_overlap": 996001,
+        "energy_compute_us": 522344,
+        "copy_us": 285376,
+        "decision_us": 400,
+        "retention_copy_us": 0,
+        "retained_samples": 0,
+        "frequency_mhz": 2440,
+        "total_samples": 10090080,
+        "analyzed_samples": 10053120,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:04.463828+00:00",
+        "host_run_elapsed_us": 1011115.071,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1029424.241,
+        "nominal_local_rf_duty_percent": 62.910567694476285,
+        "nominal_local_decision_duty_percent": 61.05207083237316,
+        "nominal_host_rf_duty_percent": 61.26045753375648,
+        "nominal_host_decision_duty_percent": 59.45070803903869,
+        "nominal_rf_duty_percent": 62.910567694476285,
+        "nominal_decision_duty_percent": 61.05207083237316,
+        "nominal_analyzed_duty_percent": 62.680126054569776,
+        "retained_crc_valid": false,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 13,
+      "retain": true,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 607,
+        "processed_captures": 607,
+        "detections": 363,
+        "background_adc2": 2,
+        "best_ratio_milli": 4431500,
+        "wall_elapsed_us": 1001559,
+        "completion_observed_us": 622484,
+        "acquire_call_us_includes_overlap": 992814,
+        "energy_compute_us": 514610,
+        "copy_us": 281176,
+        "decision_us": 542,
+        "retention_copy_us": 11083,
+        "retained_samples": 16380,
+        "frequency_mhz": 2440,
+        "total_samples": 9942660,
+        "analyzed_samples": 9906240,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:05.502825+00:00",
+        "host_run_elapsed_us": 1010304.226,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1443047.975,
+        "nominal_local_rf_duty_percent": 62.04489700556831,
+        "nominal_local_decision_duty_percent": 60.188166648195455,
+        "nominal_host_rf_duty_percent": 43.06275749425448,
+        "nominal_host_decision_duty_percent": 41.774078924853484,
+        "nominal_rf_duty_percent": 62.04489700556831,
+        "nominal_decision_duty_percent": 60.188166648195455,
+        "nominal_analyzed_duty_percent": 61.817626320566234,
+        "retained_crc_valid": true,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 14,
+      "retain": false,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 616,
+        "processed_captures": 616,
+        "detections": 101,
+        "background_adc2": 2,
+        "best_ratio_milli": 979500,
+        "wall_elapsed_us": 1002424,
+        "completion_observed_us": 631512,
+        "acquire_call_us_includes_overlap": 995813,
+        "energy_compute_us": 522138,
+        "copy_us": 285359,
+        "decision_us": 431,
+        "retention_copy_us": 0,
+        "retained_samples": 0,
+        "frequency_mhz": 2440,
+        "total_samples": 10090080,
+        "analyzed_samples": 10053120,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:06.954821+00:00",
+        "host_run_elapsed_us": 1010464.664,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1029602.491,
+        "nominal_local_rf_duty_percent": 62.91050493603505,
+        "nominal_local_decision_duty_percent": 61.05200992793469,
+        "nominal_host_rf_duty_percent": 61.24985181295564,
+        "nominal_host_decision_duty_percent": 59.44041563123996,
+        "nominal_rf_duty_percent": 62.91050493603505,
+        "nominal_decision_duty_percent": 61.05200992793469,
+        "nominal_analyzed_duty_percent": 62.680063526012944,
+        "retained_crc_valid": false,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 15,
+      "retain": true,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 614,
+        "processed_captures": 614,
+        "detections": 20,
+        "background_adc2": 34,
+        "best_ratio_milli": 89882,
+        "wall_elapsed_us": 1001094,
+        "completion_observed_us": 629477,
+        "acquire_call_us_includes_overlap": 994445,
+        "energy_compute_us": 520534,
+        "copy_us": 284733,
+        "decision_us": 381,
+        "retention_copy_us": 1599,
+        "retained_samples": 16380,
+        "frequency_mhz": 2440,
+        "total_samples": 10057320,
+        "analyzed_samples": 10020480,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:07.992814+00:00",
+        "host_run_elapsed_us": 1009180.321,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1441833.529,
+        "nominal_local_rf_duty_percent": 62.78955822330371,
+        "nominal_local_decision_duty_percent": 60.929343298431526,
+        "nominal_host_rf_duty_percent": 43.59605234287764,
+        "nominal_host_decision_duty_percent": 42.30446773026874,
+        "nominal_rf_duty_percent": 62.78955822330371,
+        "nominal_decision_duty_percent": 60.929343298431526,
+        "nominal_analyzed_duty_percent": 62.559559841533364,
+        "retained_crc_valid": true,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 16,
+      "retain": false,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 616,
+        "processed_captures": 616,
+        "detections": 103,
+        "background_adc2": 5,
+        "best_ratio_milli": 1644400,
+        "wall_elapsed_us": 1002419,
+        "completion_observed_us": 631597,
+        "acquire_call_us_includes_overlap": 995941,
+        "energy_compute_us": 522591,
+        "copy_us": 285337,
+        "decision_us": 431,
+        "retention_copy_us": 0,
+        "retained_samples": 0,
+        "frequency_mhz": 2440,
+        "total_samples": 10090080,
+        "analyzed_samples": 10053120,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:09.443810+00:00",
+        "host_run_elapsed_us": 1010427.848,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1029478.846,
+        "nominal_local_rf_duty_percent": 62.910818729493364,
+        "nominal_local_decision_duty_percent": 61.05231445134221,
+        "nominal_host_rf_duty_percent": 61.257208193280356,
+        "nominal_host_decision_duty_percent": 59.44755469021071,
+        "nominal_rf_duty_percent": 62.910818729493364,
+        "nominal_decision_duty_percent": 61.05231445134221,
+        "nominal_analyzed_duty_percent": 62.68037617004467,
+        "retained_crc_valid": false,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 17,
+      "retain": true,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 613,
+        "processed_captures": 613,
+        "detections": 31,
+        "background_adc2": 31,
+        "best_ratio_milli": 267903,
+        "wall_elapsed_us": 1001471,
+        "completion_observed_us": 628457,
+        "acquire_call_us_includes_overlap": 994463,
+        "energy_compute_us": 519675,
+        "copy_us": 284279,
+        "decision_us": 406,
+        "retention_copy_us": 3180,
+        "retained_samples": 16380,
+        "frequency_mhz": 2440,
+        "total_samples": 10040940,
+        "analyzed_samples": 10004160,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:10.481806+00:00",
+        "host_run_elapsed_us": 1009519.319,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1442792.395,
+        "nominal_local_rf_duty_percent": 62.66369670215114,
+        "nominal_local_decision_duty_percent": 60.80455649739233,
+        "nominal_host_rf_duty_percent": 43.496122669817645,
+        "nominal_host_decision_duty_percent": 42.205656344619136,
+        "nominal_rf_duty_percent": 62.66369670215114,
+        "nominal_decision_duty_percent": 60.80455649739233,
+        "nominal_analyzed_duty_percent": 62.434159351593806,
+        "retained_crc_valid": true,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 18,
+      "retain": false,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 616,
+        "processed_captures": 616,
+        "detections": 47,
+        "background_adc2": 22,
+        "best_ratio_milli": 9222,
+        "wall_elapsed_us": 1002419,
+        "completion_observed_us": 631515,
+        "acquire_call_us_includes_overlap": 995793,
+        "energy_compute_us": 522147,
+        "copy_us": 285391,
+        "decision_us": 408,
+        "retention_copy_us": 0,
+        "retained_samples": 0,
+        "frequency_mhz": 2440,
+        "total_samples": 10090080,
+        "analyzed_samples": 10053120,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:11.933801+00:00",
+        "host_run_elapsed_us": 1010288.028,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1029293.616,
+        "nominal_local_rf_duty_percent": 62.910818729493364,
+        "nominal_local_decision_duty_percent": 61.05231445134221,
+        "nominal_host_rf_duty_percent": 61.268231940535024,
+        "nominal_host_decision_duty_percent": 59.458252775173136,
+        "nominal_rf_duty_percent": 62.910818729493364,
+        "nominal_decision_duty_percent": 61.05231445134221,
+        "nominal_analyzed_duty_percent": 62.68037617004467,
+        "retained_crc_valid": false,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 19,
+      "retain": true,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 611,
+        "processed_captures": 611,
+        "detections": 94,
+        "background_adc2": 2,
+        "best_ratio_milli": 4528000,
+        "wall_elapsed_us": 1001238,
+        "completion_observed_us": 626401,
+        "acquire_call_us_includes_overlap": 993644,
+        "energy_compute_us": 517877,
+        "copy_us": 283122,
+        "decision_us": 439,
+        "retention_copy_us": 5551,
+        "retained_samples": 16380,
+        "frequency_mhz": 2440,
+        "total_samples": 10008180,
+        "analyzed_samples": 9971520,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:12.971801+00:00",
+        "host_run_elapsed_us": 1009757.58,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1442681.47,
+        "nominal_local_rf_duty_percent": 62.47378245731783,
+        "nominal_local_decision_duty_percent": 60.61495868115273,
+        "nominal_host_rf_duty_percent": 43.3575437826896,
+        "nominal_host_decision_duty_percent": 42.06749810129605,
+        "nominal_rf_duty_percent": 62.47378245731783,
+        "nominal_decision_duty_percent": 60.61495868115273,
+        "nominal_analyzed_duty_percent": 62.24494076333499,
+        "retained_crc_valid": true,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 20,
+      "retain": false,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 616,
+        "processed_captures": 616,
+        "detections": 381,
+        "background_adc2": 2,
+        "best_ratio_milli": 4224500,
+        "wall_elapsed_us": 1002426,
+        "completion_observed_us": 631604,
+        "acquire_call_us_includes_overlap": 996049,
+        "energy_compute_us": 522515,
+        "copy_us": 285318,
+        "decision_us": 535,
+        "retention_copy_us": 0,
+        "retained_samples": 0,
+        "frequency_mhz": 2440,
+        "total_samples": 10090080,
+        "analyzed_samples": 10053120,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:14.423792+00:00",
+        "host_run_elapsed_us": 1010561.556,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1029190.607,
+        "nominal_local_rf_duty_percent": 62.910379419528226,
+        "nominal_local_decision_duty_percent": 61.05188811942228,
+        "nominal_host_rf_duty_percent": 61.274364117860635,
+        "nominal_host_decision_duty_percent": 59.46420379641107,
+        "nominal_rf_duty_percent": 62.910379419528226,
+        "nominal_decision_duty_percent": 61.05188811942228,
+        "nominal_analyzed_duty_percent": 62.67993846927354,
+        "retained_crc_valid": false,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 21,
+      "retain": true,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 610,
+        "processed_captures": 610,
+        "detections": 266,
+        "background_adc2": 3,
+        "best_ratio_milli": 2753666,
+        "wall_elapsed_us": 1001621,
+        "completion_observed_us": 625372,
+        "acquire_call_us_includes_overlap": 995160,
+        "energy_compute_us": 517047,
+        "copy_us": 282847,
+        "decision_us": 499,
+        "retention_copy_us": 8707,
+        "retained_samples": 16380,
+        "frequency_mhz": 2440,
+        "total_samples": 9991800,
+        "analyzed_samples": 9955200,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:15.461788+00:00",
+        "host_run_elapsed_us": 1009967.349,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1442601.018,
+        "nominal_local_rf_duty_percent": 62.34768440358179,
+        "nominal_local_decision_duty_percent": 60.48994579786166,
+        "nominal_host_rf_duty_percent": 43.28899620948417,
+        "nominal_host_decision_duty_percent": 41.99913853103908,
+        "nominal_rf_duty_percent": 62.34768440358179,
+        "nominal_decision_duty_percent": 60.48994579786166,
+        "nominal_analyzed_duty_percent": 62.11930460723167,
+        "retained_crc_valid": true,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 22,
+      "retain": false,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 616,
+        "processed_captures": 616,
+        "detections": 94,
+        "background_adc2": 2,
+        "best_ratio_milli": 93000,
+        "wall_elapsed_us": 1002423,
+        "completion_observed_us": 631524,
+        "acquire_call_us_includes_overlap": 995818,
+        "energy_compute_us": 522128,
+        "copy_us": 285357,
+        "decision_us": 412,
+        "retention_copy_us": 0,
+        "retained_samples": 0,
+        "frequency_mhz": 2440,
+        "total_samples": 10090080,
+        "analyzed_samples": 10053120,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:16.912784+00:00",
+        "host_run_elapsed_us": 1010498.819,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1029231.619,
+        "nominal_local_rf_duty_percent": 62.910567694476285,
+        "nominal_local_decision_duty_percent": 61.05207083237316,
+        "nominal_host_rf_duty_percent": 61.27192250590973,
+        "nominal_host_decision_duty_percent": 59.46183431428374,
+        "nominal_rf_duty_percent": 62.910567694476285,
+        "nominal_decision_duty_percent": 61.05207083237316,
+        "nominal_analyzed_duty_percent": 62.680126054569776,
+        "retained_crc_valid": false,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    },
+    {
+      "index": 23,
+      "retain": true,
+      "summary": {
+        "version": 1,
+        "kernel": 3,
+        "status": 0,
+        "captures": 614,
+        "processed_captures": 614,
+        "detections": 59,
+        "background_adc2": 12,
+        "best_ratio_milli": 693583,
+        "wall_elapsed_us": 1002094,
+        "completion_observed_us": 629536,
+        "acquire_call_us_includes_overlap": 995861,
+        "energy_compute_us": 520870,
+        "copy_us": 284455,
+        "decision_us": 418,
+        "retention_copy_us": 3181,
+        "retained_samples": 16380,
+        "frequency_mhz": 2440,
+        "total_samples": 10057320,
+        "analyzed_samples": 10020480,
+        "sample_rate_hz": 16000000,
+        "errors": 0,
+        "warmup_captures": 16,
+        "acquisition_option": 3,
+        "clear_option": 1,
+        "copy_option": 1,
+        "fused_active": 1,
+        "pack_failed": 0,
+        "background_policy_selection": {
+          "requested": null,
+          "returned": null,
+          "supported": false
+        },
+        "errors_received": [],
+        "host_request_timestamp": "2026-11-12T08:33:17.951760+00:00",
+        "host_run_elapsed_us": 1010827.496,
+        "copy_policy": {
+          "requested": 1,
+          "returned": 1,
+          "supported": true
+        },
+        "acquisition_policies": {
+          "ACQOPT": {
+            "requested": 3,
+            "returned": 3,
+            "supported": true
+          },
+          "CLEAROPT": {
+            "requested": 1,
+            "returned": 1,
+            "supported": true
+          }
+        },
+        "kernel_requested": 3,
+        "kernel_returned": 3,
+        "host_total_elapsed_us": 1443702.372,
+        "nominal_local_rf_duty_percent": 62.72689987166872,
+        "nominal_local_decision_duty_percent": 60.86854127457105,
+        "nominal_host_rf_duty_percent": 43.53961815060313,
+        "nominal_host_decision_duty_percent": 42.24970546768625,
+        "nominal_rf_duty_percent": 62.72689987166872,
+        "nominal_decision_duty_percent": 60.86854127457105,
+        "nominal_analyzed_duty_percent": 62.497131007669935,
+        "retained_crc_valid": true,
+        "timing_note": "Acquisition includes overlapped energy; do not sum it with energy compute time. RF aperture is N/fs, never observed completion latency."
+      }
+    }
+  ],
+  "malformed_commands": [],
+  "raw_controls": [
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0000-raw.sigmf-data",
+        "source_sha256": "42018703106fc90410e3db2d91a0a2da9f24f65f6f001e7891a288b9f314d010",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0001-raw.sigmf-data",
+        "source_sha256": "ffc540c48443a4a6fe5d45af230f250010085af569dd471ac209a1811f485775",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0002-raw.sigmf-data",
+        "source_sha256": "7bd531570d9d31ec44fb7b3e6867e7f3ff1f2d960d0f28b2a9644dc838bf2676",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0003-raw.sigmf-data",
+        "source_sha256": "29ed68e6cfa7d37262541299d8afdf625c6deda39a9815161b8e3e3df21e6dd9",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0004-raw.sigmf-data",
+        "source_sha256": "a2616e0eb0ebe93901251858fd32340f1c69c87524a3b0bf544907aef4d09e05",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0005-raw.sigmf-data",
+        "source_sha256": "58bd89aa1b75aa415e191bf2838bea4b50dfd1a95f83811993019847d1e086b3",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0006-raw.sigmf-data",
+        "source_sha256": "eaf6ed1f3d566120fb9ee4cbaf9643185fb57a0b6cab91f8e1c07f2acadab8cd",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0007-raw.sigmf-data",
+        "source_sha256": "b63dc7848ed6c2be2b104fec729fb47fe3e6352de31a3bbef15eced2a826fc33",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0008-raw.sigmf-data",
+        "source_sha256": "b3232b1c2490f5d9047773c5b48b0e6e0b01daa91f270f75f4caa954adf6a734",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0009-raw.sigmf-data",
+        "source_sha256": "f476d4d536b09f6d1a911881c2f308774edfff4f20fb5af3567f3aee258df775",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0010-raw.sigmf-data",
+        "source_sha256": "1f25428413bb173349de6522fd0690c88406f7d627dbd0b17ee76abbb3180644",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0011-raw.sigmf-data",
+        "source_sha256": "bd4c30299b8900a81fd6b44937e245db67a27eca44a1202f6b282bb0a61efa8f",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0012-raw.sigmf-data",
+        "source_sha256": "4999adda072064134b6cc61166b0c2bf52de0bb37cb22b141ed9ca4a309a63a3",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0013-raw.sigmf-data",
+        "source_sha256": "b799c0f8f227b1b26b554080450acf82171d6ee6212c04e16c630fc952f70b9b",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0014-raw.sigmf-data",
+        "source_sha256": "4f1b52df83d9bbf76f52435a6f69945c671e8241e2dde489011bfb6d240e19c6",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0015-raw.sigmf-data",
+        "source_sha256": "ce61bf63c5eb0feae869de5e783cb9cd21803f585baf666546b4fce0b463eaf7",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0016-raw.sigmf-data",
+        "source_sha256": "296371fcb51eceb6c7c0af0e5ba133d022ff581d36777fe99d80a558a89b8cbb",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0017-raw.sigmf-data",
+        "source_sha256": "537e0d8665687cb2d56029fc08587ab10ab76c0afbd2c29d29b94892bb7e4a64",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 7
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0018-raw.sigmf-data",
+        "source_sha256": "bbdacd770f32abcf928c9066461b9c71d2ada0366debee6b0c67952c6fb012e0",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0019-raw.sigmf-data",
+        "source_sha256": "1147c99c82e6f2b11705ffe8231c5c027eeb5449e87ef7bfb3e9c24b9153fec3",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0020-raw.sigmf-data",
+        "source_sha256": "7c7501e2265b1638ed5f5e6a28f061529fee623d21db645cda77ffedca08a68d",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0021-raw.sigmf-data",
+        "source_sha256": "7d69a066929bbc09e758e755356a968d0b9be61f29df0e827d957e8e4ef7c549",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0022-raw.sigmf-data",
+        "source_sha256": "93295a08f55f74be0af273762dac79d3c7bb398c9eebac710575d076be7f2676",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 4
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0023-raw.sigmf-data",
+        "source_sha256": "b67d766fe154d083687474edf04ea1b56d4beb338b60f2afb8160055d0813d82",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 4
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0024-raw.sigmf-data",
+        "source_sha256": "3ef80f6a1c1c88f0bc9408d27396b2b79e7d6b9fe691378377aa58a549211f40",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0025-raw.sigmf-data",
+        "source_sha256": "c80aa1deaf94a344b96b620eea28d46366ea277360c1c33c67eb79c9ec3c0e8a",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0026-raw.sigmf-data",
+        "source_sha256": "e589d2537be25ac7b073ebaf806811f325e5a5d41a5f549d258b8d269add6181",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 13
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0027-raw.sigmf-data",
+        "source_sha256": "b2a2ef5547270f5b3c4ebf042527ec136b6cbe1169d180a9ed9f27902665979d",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 13
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0028-raw.sigmf-data",
+        "source_sha256": "fbd9adcfa24f78142f1dafc230d917d01066a57f220e3079fcccb5b91709a243",
+        "full_payload_matches": [
+          {
+            "sequence": 30,
+            "crc_verified": true,
+            "address_verified": true,
+            "crc_available": true,
+            "address_available": true
+          }
+        ],
+        "sync_min_bit_errors": 0
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0029-raw.sigmf-data",
+        "source_sha256": "97d3ffc173c74623e80fb386afc370550f26bee9e4e86700081cd0312d315895",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0030-raw.sigmf-data",
+        "source_sha256": "d0fd5cb15408cdc5206cd50cfd9ffdf7f6f20718f76c464fab4d450663877c98",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0031-raw.sigmf-data",
+        "source_sha256": "090da9687cd95a4baf083b2d15f890f351bf52cfb64b7de4a4cd59fca0b1907c",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0032-raw.sigmf-data",
+        "source_sha256": "093dfbf4a153ec112953bb2db10c1f80023eed159509b730da370098480f6256",
+        "full_payload_matches": [
+          {
+            "sequence": 30,
+            "crc_verified": true,
+            "address_verified": true,
+            "crc_available": true,
+            "address_available": true
+          }
+        ],
+        "sync_min_bit_errors": 0
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0033-raw.sigmf-data",
+        "source_sha256": "69d249089d34b1333cbf9b8ac69e19eed0e2be3ca5693250cc5a44811f756525",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0034-raw.sigmf-data",
+        "source_sha256": "6c3046312deda6ee291d19b30f5a06197485036e671a2e552598e23435ee0a29",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0035-raw.sigmf-data",
+        "source_sha256": "812249981ea761ac157e50c7f173d1a738ce9435cceb666f7daf3d0c7b3ab5e1",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0036-raw.sigmf-data",
+        "source_sha256": "cfdd9a4f2d3c8488f047667c4a420251b95c10d6ffce44ee4c633f681e43b8f1",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0037-raw.sigmf-data",
+        "source_sha256": "e6ea25ea55eac144dab30a55c78a2836a9fb5d065fc2fc02ab2a3f6bcc21b730",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 4
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0038-raw.sigmf-data",
+        "source_sha256": "e1618a4e181dd714f720fe6b6896bc5cff173a7ea196243eb4308916f2bab169",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 4
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0039-raw.sigmf-data",
+        "source_sha256": "d4fdc945344bb43a162fe780c04338bc39ce7eecf4a7166d07ca809331e90091",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 4
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0040-raw.sigmf-data",
+        "source_sha256": "8e41be6a9ad10c432b279c51c0b883b616442fe5736bbd026ee1e4e9a83ce183",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0041-raw.sigmf-data",
+        "source_sha256": "2592a38e1f17c3a192c630aad3406df5641c0360edccb43959491e6ddc429e35",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0042-raw.sigmf-data",
+        "source_sha256": "6116b61db4f07c6358c76b29c9f9316923f6a3a0a391798f33db66926ae1ada9",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0043-raw.sigmf-data",
+        "source_sha256": "869fce3a91d1b5817635a878cfc362f82891ccc650112158306c3d17f5c4957e",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0044-raw.sigmf-data",
+        "source_sha256": "1d185fa2a70936c700afa5cb0b20c03b3588c73520b5fea9af1f20edd2a03b02",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0045-raw.sigmf-data",
+        "source_sha256": "d78e5b48d85c43e079cf571033fb5770bc164d65d6e538bd74620d13642521b8",
+        "full_payload_matches": [
+          {
+            "sequence": 30,
+            "crc_verified": true,
+            "address_verified": true,
+            "crc_available": true,
+            "address_available": true
+          }
+        ],
+        "sync_min_bit_errors": 0
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0046-raw.sigmf-data",
+        "source_sha256": "8513bf336091c1ad9d1932abd80906fccdfe001b3173ac86a68893e072204b9b",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0047-raw.sigmf-data",
+        "source_sha256": "8b7d2a2ccb5e5f1db4e4755a10008bdeb28ed3b77d406cff7e26067b6798ad81",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0048-raw.sigmf-data",
+        "source_sha256": "edcbfd60c8156cf3332a674899006998575d90808be8d72d76fd6d9a9c26595f",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 3
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0049-raw.sigmf-data",
+        "source_sha256": "6cf70f600756a703371489080533a7a91b9bf6fe5ed4791797cdb2740a5ce6e9",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0050-raw.sigmf-data",
+        "source_sha256": "5e3ad7a8e3fbbba5163181d80424e2bc7037ca0eb31928f10e512b2d820651f4",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 3
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0051-raw.sigmf-data",
+        "source_sha256": "c48fbc1056fa006aa64ba9cbc696dd69e4d2b5266af6816d1394f80aa3986c06",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0052-raw.sigmf-data",
+        "source_sha256": "f4108559b0abb00a17aa0760d75ec7faa798283b3d34888b58d9daca01c9e07a",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0053-raw.sigmf-data",
+        "source_sha256": "b6065eefdc22239fea956881bb11abd210cffac84ac562cff645b1c6c5aca52e",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0054-raw.sigmf-data",
+        "source_sha256": "66dc886301d12fe479db42aafa548987bdbc8d228b45cb19eff1267f629fbe97",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0055-raw.sigmf-data",
+        "source_sha256": "048995871c876bd872fd1038cb914c230556c5422778c0e1d7f5b3a690da4ea7",
+        "full_payload_matches": [
+          {
+            "sequence": 30,
+            "crc_verified": true,
+            "address_verified": true,
+            "crc_available": true,
+            "address_available": true
+          }
+        ],
+        "sync_min_bit_errors": 0
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0056-raw.sigmf-data",
+        "source_sha256": "3895ad52a7bbfd96c664e4d4a2c6a53ca9c63894c871bc543e21bdec1a493dbd",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0057-raw.sigmf-data",
+        "source_sha256": "9b5df0650f0b42252ffac0832fe92ac9bf13b5473f462038909cc55a16565668",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0058-raw.sigmf-data",
+        "source_sha256": "3acffc380a425b8381daa118ba4f0a1b33c947b157aaa6bf082d51ce1e4f0cd7",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0059-raw.sigmf-data",
+        "source_sha256": "0f739e8ed413c28fef98077b7a79bc885a92201b3f8f08a7a39b9aeaa2f2fbc7",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0060-raw.sigmf-data",
+        "source_sha256": "2f0d71e1097d0a8ac4c17fa2d725b1208e00ce4a0c85dd2dc431d9d2c0a27e99",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0061-raw.sigmf-data",
+        "source_sha256": "03ec024d13584a93e57fff44e03bbebc9a0cd8aba0e1b665cb7ea160b3a85e69",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0062-raw.sigmf-data",
+        "source_sha256": "241875a47a31c22f8b3e9656ea9216d7c52a191abf1e8ef94f2fccc4c857ce4e",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0063-raw.sigmf-data",
+        "source_sha256": "4f574f0ce9ee03ca5352cb3f2b163aa3f86aad0e56af77a4a1ba64a26ebb6357",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 11
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0064-raw.sigmf-data",
+        "source_sha256": "da39fb67288c8a74b0ca1c996c855f5fb0da7501b006010c071b3056dbc9e991",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0065-raw.sigmf-data",
+        "source_sha256": "e2900e946952f9c55063231b3e61d92ac9846edc078f6013701b22d1955ee879",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0066-raw.sigmf-data",
+        "source_sha256": "e4cc59b1816da8cc1ee404f7224dd69b301d1c1e05eece0310922f12bff6393b",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 4
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0067-raw.sigmf-data",
+        "source_sha256": "13f375c141fa1748c395b057d5358883ed609f5609a0170cbe8cb3f058734351",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 7
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0068-raw.sigmf-data",
+        "source_sha256": "da10c359e42bdf2a35624aecdbcdfc1c52bad470300ad5395b87dfc9d9a733e6",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 6
+      }
+    },
+    {
+      "tx_on": false,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0069-raw.sigmf-data",
+        "source_sha256": "25eca0af618827001aacb3a3ede98dbcfead945ad87690a7553d493def4c0c77",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2470,
+      "mode": "raw",
+      "decoder": {
+        "file": "0070-raw.sigmf-data",
+        "source_sha256": "4a0b9eca6ec695bbd76d453d2774671fafe39db50956e9d79c6dd9382980556b",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    },
+    {
+      "tx_on": true,
+      "frequency_mhz": 2440,
+      "mode": "raw",
+      "decoder": {
+        "file": "0071-raw.sigmf-data",
+        "source_sha256": "9bc00ab13428eda410c085fddcb67535751c6050119026c11d4f4dc2c68debbd",
+        "full_payload_matches": [],
+        "sync_min_bit_errors": 5
+      }
+    }
+  ],
+  "transmitter_stopped": true
+}
