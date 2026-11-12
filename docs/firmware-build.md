@@ -1,6 +1,8 @@
 # Build the original-ESP32 firmware
 
-Current source is the **unflashed `esp32-pipeline-adaptive-q16-v4` variant**.
+Current source is **`esp32-pipeline-adaptive-q16-v4`**. Its identified default-off
+build passed a [bounded passive smoke check](review-follow-up.md), not a soak or
+RF-performance validation.
 Historical optimized-v2 measurements do not validate this new detector. See the
 [remaining-validation guide](remaining-validation-guide.md) before board trials.
 

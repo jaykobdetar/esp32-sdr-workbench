@@ -7,8 +7,9 @@ unchanged released-v3 binary from the instrumented, tie-fixed candidate. Only th
 completed the 30-minute soak. The evaluation does **not** establish a retained-packet
 advantage over optimized-v2. Stored PHY calibration changed at an unknown point, which
 confounds sequential RF comparisons. The verified v2 application was restored.
-Single-candidate retention remains the default; this publication creates no new release
-or board installation. The [calibration guide](docs/calibration-fingerprints.md) describes future boundary logging; [measured-v2 source provenance](docs/measured-v2-source.md) identifies the historical source snapshot. The [remaining-validation guide](docs/remaining-validation-guide.md)
+Single-candidate retention remains the default. A subsequent, identified v4 build
+passed a [bounded passive smoke check](docs/review-follow-up.md); it was then replaced
+with the verified v2 application. V4 has no new soak or RF-performance validation. The [calibration guide](docs/calibration-fingerprints.md) describes future boundary logging; [measured-v2 source provenance](docs/measured-v2-source.md) identifies the historical source snapshot. The [remaining-validation guide](docs/remaining-validation-guide.md)
 covers the remaining bench work and release-image validation.
 
 **A native RF viewer and optimized, burst-aware energy detector for the original ESP32.**

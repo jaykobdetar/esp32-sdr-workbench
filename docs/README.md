@@ -15,6 +15,8 @@ Current work: [19-item improvement checklist](improvement-checklist.md) · [Full
 [Calibration fingerprints](calibration-fingerprints.md) documents private read-only boundary logging.
 [Measured-v2 source](measured-v2-source.md) records the retrospective tag provenance.
 
+[Review follow-up](review-follow-up.md) records v4 fixes and bounded passive validation.
+
 ## Latest adaptive evaluation
 
 [Report and public evidence](evidence/adaptive-evaluation/README.md): released-v3

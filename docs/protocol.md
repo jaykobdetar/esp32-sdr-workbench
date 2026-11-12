@@ -3,9 +3,10 @@
 This documents the published `firmware/` original-ESP32 command path, not every historical upstream backend. Source authority: `firmware/main/common/burst_commands.h`, `burst_capture.h`, `burst_serial.c`, and `firmware/main/targets/esp32/receiver.c`. Unsupported lab commands are described separately in [diagnostic provenance](diagnostic-provenance.md).
 
 The common wire framing is shared with historical optimized-v2. The current
-`adaptive-q16-v3` source changes the background policy and adds metadata/crop
-commands; those changes are [described below](#unflashed-adaptive-q16-v3-extension)
-and have not been validated on a board.
+`adaptive-q16-v4` source retains the v3 background policy and metadata/crop
+commands [described below](#adaptive-q16-extension), fixes tie retention and adds
+read-only stored-calibration observation. See the exact-image [evaluation](evidence/adaptive-evaluation/README.md)
+and [v4 smoke limits](review-follow-up.md), rather than treating different builds as interchangeable.
 
 ## Transport and discovery
 
@@ -48,7 +49,7 @@ CRC32 is over the transmitted bytes, compatible with zlib CRC32. CAP20 concatena
 ### Historical optimized-v2 decision rule (policy 1)
 
 The measured historical image applies this rule to each capture, in signed
-10-bit ADC units. **Current adaptive-q16-v3 uses policy 2 below**, not this
+10-bit ADC units. **Current adaptive-q16-v4 uses policy 2 below**, not this
 positive-latching integer rule:
 
 1. Split the capture into complete 64-sample blocks and compute each block's variance (mean-removed I and Q power). The capture's `mean` is the average block variance and its `peak` is the largest.
@@ -92,7 +93,7 @@ Pipeline selectors:
 
 Read back selectors. Acquisition timing includes overlapped prior-buffer work, so adding it to energy time double-counts work. Energy analyzes complete 64-sample blocks only (16320 of 16380 samples); guard/tail memory validation still covers the complete requested region and aperture. Histogram lab telemetry is not part of this release's detector stream. Some END JSON lines have ASCII whitespace padding for the documented UART framing workaround; parse JSON rather than require one fixed byte count.
 
-## Unflashed adaptive-q16-v3 extension
+## Adaptive-q16 extension
 
 Current source adds `background_policy: 2` and `background_q16` to DET1/DETPIPE1
 END summaries while preserving their version-1 framing. Policy 2 keeps 16 warmup
