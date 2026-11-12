@@ -87,11 +87,20 @@ int main(void){
  /* Background-rule selector: default 2, strict arguments, sticky across runs,
   * and every summary reports the rule that actually ran. */
  reset(0,0);assert(detector_pipeline_command("BGPOLICY?"));assert(!strcmp(output,"BGPOLICY 2\n"));
- const char *bad_policy[]={"BGPOLICY","BGPOLICY 0","BGPOLICY 3","BGPOLICY 1 x","BGPOLICY -1","BGPOLICY two"};
+ /* The first three were accepted as rule 1 by the v7 board: a missing
+  * separator and two values that wrap to 1 in a 32-bit unsigned scan. */
+ const char *bad_policy[]={"BGPOLICY1","BGPOLICY 4294967297","BGPOLICY -4294967295",
+  "BGPOLICY","BGPOLICY ","BGPOLICY 0","BGPOLICY 3","BGPOLICY 1 x","BGPOLICY -1","BGPOLICY two",
+  "BGPOLICY  1","BGPOLICY 1 ","BGPOLICY 01","BGPOLICY +1","BGPOLICY 1.0","BGPOLICY 2x","BGPOLICY2",
+  "BGPOLICY 4294967298","BGPOLICY\t1","BGPOLICYX 1"};
+ for(unsigned start=1;start<=2;start++)
  for(unsigned k=0;k<sizeof(bad_policy)/sizeof(bad_policy[0]);k++){
+  /* From either stored rule: rejected, and the stored rule is unchanged. */
+  detector_background_policy=start;
   output[0]=0;assert(detector_pipeline_command(bad_policy[k]));
-  assert(!strcmp(output,"ERR background_policy\n"));assert(detector_background_policy==2);
+  assert(!strcmp(output,"ERR background_policy\n"));assert(detector_background_policy==start);
  }
+ detector_background_policy=2;
  output[0]=0;assert(detector_pipeline_command("DETPIPE1 20 256 6 4000 1"));
  assert(strstr(output,"\"background_policy\":2,"));
  reset(0,0);assert(detector_pipeline_command("BGPOLICY 1"));assert(!strcmp(output,"BGPOLICY 1\n"));

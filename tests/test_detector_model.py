@@ -379,7 +379,11 @@ def persistent_source_flag_rate(policy, strength, runs=20, captures=600):
 
 
 def test_model_prediction_rules_differ_only_for_a_moderate_persistent_source():
-    """Documented, hardware-untested prediction behind the same-image comparison."""
+    """Pins the reference model's behavior, not hardware.
+
+    The v7 same-image board comparison did not show this legacy advantage; see
+    docs/adaptive-detector.md. The burst geometry and noise here are simplifications.
+    """
     # Weak bursts are missed and strong bursts caught by both rules alike.
     for strength in (3, 5):
         assert persistent_source_flag_rate(1, strength) == 0

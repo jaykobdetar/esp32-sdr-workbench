@@ -1,8 +1,8 @@
 # Adaptive detector and bounded candidate crops
 
-The current source variant is **esp32-pipeline-adaptive-q16-v7**, identifying the
+The current source variant is **esp32-pipeline-adaptive-q16-v8**, identifying the
 tie-retention fix, read-only calibration fingerprint query and optional default-off
-health instrumentation, with fail-closed NVS startup and strict SPEC parsing added in v5, serial NUL rejection in v6, and the runtime background-rule selector in v7. V7 has been compiled and host-tested only; it has not been installed on a board. This is distinct from the
+health instrumentation, with fail-closed NVS startup and strict SPEC parsing added in v5, serial NUL rejection in v6, the runtime background-rule selector in v7, and strict selector parsing in v8. V7 passed the [exact-release board evaluation](evidence/v7-evaluation/README.md); v8 differs from it only in rejecting malformed `BGPOLICY` text and has been compiled and host-tested only. This is distinct from the
 unchanged released-v3 binary tested during the [adaptive evaluation](evidence/adaptive-evaluation/evaluation-report.md).
 Only the separate instrumented, tie-fixed candidate received the boundary matrix
 and 30-minute soak. The source publication is not a newly validated release image.
@@ -60,15 +60,39 @@ esp32-sdr record --port PORT --output NEW_PRIVATE_DIR --mode DETPIPE1 \
 
 or pass `background_policy=1` to `run_pipeline()` / `run_detection()`. Every
 summary records the requested and read-back selection and the rule the firmware
-reports. A reference-model simulation of a source present all run (frames in two
-thirds of captures) predicts the rules differ only at moderate strength: for
-bursts about 8 times the floor the legacy rule flags roughly 42% of source-bearing
-captures and the Q16 rule roughly 28%, because the Q16 rule absorbs part of the
-source into its background. Weaker bursts are missed and stronger ones caught by
-both alike. `tests/test_detector_model.py` pins that prediction; it is a model
-result, untested on hardware.
+reports. #### What the board showed
 
-Policy 1 here is the historical *decision rule* running inside v7. It is checked
+The [v7 evaluation](evidence/v7-evaluation/README.md) ran both rules interleaved
+on one image, with a stable stored calibration, twelve temporal pairs per setting.
+Source-on minus source-off candidate windows per second:
+
+| Source power, gain | Rule 1 (legacy) | Rule 2 (Q16) |
+|---|---:|---:|
+| 0 dBm, manual 40 | +176.0 | +290.2 |
+| 0 dBm, manual 60 | +205.0 | +190.5 |
+| 0 dBm, hardware AGC | +223.3 | +243.4 |
+| −20 dBm, all three gains | no reliable source effect under either rule | |
+
+- **The earlier manual-60 gap was not the rule.** Under identical conditions the
+  two rules gave +205 and +190. The +175 against +27 seen across separately flashed
+  images in the adaptive evaluation is therefore attributable to session and
+  calibration differences, not to the background rule.
+- **One setting favored the Q16 rule.** At 0 dBm and manual gain 40 the difference
+  was +114 windows/s (exact sign-flip p = 0.0415), which does not survive a
+  conservative correction across the six settings.
+- **Neither rule retained more packets.** CRC-valid retained packets at 0 dBm were
+  7 under rule 1 and 4 under rule 2 across the three gains, too few to rank them.
+- Local duty was the same within about 0.4 points under both rules at every setting.
+
+A reference-model simulation had predicted the rules would differ only for a source
+present all run at moderate strength, with the legacy rule flagging more (roughly
+42% against 28% of source-bearing captures at 8 times the floor).
+`tests/test_detector_model.py` still pins that model behavior, but **the board data
+do not support it as a description of this setup**: no setting showed a legacy
+advantage, and the one nominal difference went the other way. The simulation's
+burst geometry and noise model are simplifications.
+
+Policy 1 here is the historical *decision rule* running inside v7 and later. It is checked
 line for line against the archived v2 source by host tests, but duty, timing and
 calibration behavior belong to v7, so results are not measurements of the
 optimized-v2 binary.

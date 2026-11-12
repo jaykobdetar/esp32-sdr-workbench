@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Identify the source as `esp32-pipeline-adaptive-q16-v8`. `BGPOLICY` now accepts
+  only the exact text `BGPOLICY 1` or `BGPOLICY 2`. On the v7 board `BGPOLICY1`,
+  `BGPOLICY 4294967297` and `BGPOLICY -4294967295` were all accepted as rule 1.
+- Record the v7 same-image rule comparison in the detector guide. The model
+  prediction of a legacy advantage was not borne out on the board.
+
 - Identify the source as `esp32-pipeline-adaptive-q16-v7`. Add the sticky `BGPOLICY`
   selector so the historical optimized-v2 background rule (1) and the Q16 rule (2,
   default) can be compared on one installed image; host C tests check rule 1 against

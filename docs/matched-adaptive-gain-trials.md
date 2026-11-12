@@ -9,7 +9,7 @@ PYTHONPATH=. .venv/bin/python scripts/nrf_gain_compare.py \
   --rx-port RX_DEVICE --rx-serial EXACT_RX_USB_SERIAL \
   --tx-port TX_DEVICE --tx-serial EXACT_TX_USB_SERIAL \
   --rx-artifact EXACT_LOCAL_APP_BIN --output-directory NEW_PRIVATE_RUN_DIR \
-  --expected-variant esp32-pipeline-adaptive-q16-v7 \
+  --expected-variant esp32-pipeline-adaptive-q16-v8 \
   --expected-revision EXACT_VERSION_REVISION --candidate-count 1 \
   --pairs 4 --manual-gains 40 60 --seed 52840 --power-dbm -20 --milliseconds 1000
 ```

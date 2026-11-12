@@ -1,6 +1,6 @@
 # Independent review fixes
 
-> **Later change (v7).** The current source is `esp32-pipeline-adaptive-q16-v7`. This
+> **Later change (v7).** The source after this document is `esp32-pipeline-adaptive-q16-v7` and later. This
 > document records the v5 and v6 builds and their checks, which are unchanged. One
 > behavior described below was corrected afterwards: on NVS initialization failure
 > v5 and v6 called `ESP_ERROR_CHECK`, which aborts and, under the release panic
