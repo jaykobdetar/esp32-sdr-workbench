@@ -117,10 +117,29 @@ def analyze_run(row, anchors):
         for result in row['receivers']:
             _validate_stream_result(result)
         ordered = sorted(anchors, key=lambda a: a['a_us'])
-        before = [a for a in ordered if a['a_us'] < start][-8:]
-        after = [a for a in ordered if a['a_us'] > end][:8]
+
+        def nearest_pairs(candidates):
+            selected, labels = [], set()
+            for anchor in candidates:
+                label = anchor.get('pair')
+                if label not in labels and len(labels) >= 8:
+                    break
+                labels.add(label)
+                selected.append(anchor)
+            return selected
+
+        # Limit independent capture pairs, not packets: one capture can decode
+        # many packets and must never crowd out independent observations.
+        before = nearest_pairs(reversed([a for a in ordered if a['a_us'] < start]))
+        after = nearest_pairs([a for a in ordered if a['a_us'] > end])
         if not before or not after:
             raise ValueError('Missing bracketing RF anchors')
+        if any('pair' not in anchor for anchor in before + after):
+            raise ValueError('Missing independent capture-pair labels')
+        before_groups = {anchor['pair'] for anchor in before}
+        after_groups = {anchor['pair'] for anchor in after}
+        if len(before_groups) < 3 or len(after_groups) < 3 or before_groups & after_groups:
+            raise ValueError('Three distinct independent capture pairs required on each side')
         selected = before + after
         model = fit_clock(selected)
         # Screening limits, not certified timing uncertainty bounds.
@@ -129,28 +148,65 @@ def analyze_run(row, anchors):
         # Leave out whole capture pairs, not individual packets from one capture.
         groups = {a.get('pair', i) for i, a in enumerate(selected)}
         heldout = []
+        evaluated_folds = 0
         for group in groups:
             train = [a for i, a in enumerate(selected) if a.get('pair', i) != group]
             test = [a for i, a in enumerate(selected) if a.get('pair', i) == group]
             if len(train) < 3:
                 continue
             fitted = fit_clock(train)
+            evaluated_folds += 1
             heldout.extend(abs(to_a(a['b_us'], fitted) - a['a_us']) for a in test)
         model['heldout_max_error_us'] = max(heldout) if heldout else None
-        model['heldout_group_count'] = len(groups)
+        model['independent_capture_pair_count'] = len(groups)
+        model['before_capture_pair_count'] = len(before_groups)
+        model['after_capture_pair_count'] = len(after_groups)
+        model['heldout_evaluated_fold_count'] = evaluated_folds
+        if evaluated_folds < 3:
+            raise ValueError('At least three evaluated independent held-out folds required')
         if heldout and max(heldout) > 20:
             raise ValueError('Held-out clock error exceeds 20 us screen')
         windows = []
+        receiver_windows = [[], []]
         decisions = []
         for k, result in enumerate(row['receivers']):
             scale = 1 + model['relative_drift'] if k else 1
             for r in result['records']:
                 t = to_a(r['trigger_us'], model) if k else r['trigger_us']
-                windows.append((t, t + APERTURE_US / scale))
+                window = (t, t + APERTURE_US / scale)
+                windows.append(window)
+                receiver_windows[k].append(window)
                 if r['flags'] & 2:
                     decisions.append((t, t + (16320 / 16) / scale))
+        sensitivity = []
+        for uncertainty_us in (1, 5, 20):
+            shifted = {}
+            for sign in (-1, 1):
+                offset = sign * uncertainty_us
+                shifted[str(offset)] = coverage(
+                    receiver_windows[0]
+                    + [(a + offset, b + offset) for a, b in receiver_windows[1]],
+                    start,
+                    end,
+                )
+            # Erode both receivers' windows: conservative only under the explicit
+            # assumption that each nominal endpoint error is bounded by this value.
+            eroded = [
+                (a + uncertainty_us, b - uncertainty_us)
+                for a, b in windows
+                if b - a > 2 * uncertainty_us
+            ]
+            sensitivity.append(
+                dict(
+                    assumed_endpoint_error_us=uncertainty_us,
+                    receiver_b_offset_scenarios=shifted,
+                    eroded_union=coverage(eroded, start, end),
+                )
+            )
         return dict(
             status='verified-telemetry',
+            sensitivity=sensitivity,
+            sensitivity_note='Assumption-based scenarios, not confidence bounds. Offset scenarios shift receiver B only; erosion removes the assumed error at both ends of every receiver window. Bracketing anchors cannot rule out nonlinear drift within the run.',
             clock_model=model,
             nominal_union=coverage(windows, start, end),
             nominal_decision_union=coverage(decisions, start, end),
@@ -184,7 +240,7 @@ class Campaign:
         return dict(trigger_us=trigger, transport_crc_valid=True, file=path.name + '.npy'), iq
 
     def anchors(self, needed=3, attempts=40):
-        initial = len(self.report['anchors'])
+        initial_pairs = {a['pair'] for a in self.report['anchors']}
         for _ in range(attempts):
             i = len(self.report['anchor_pairs'])
             self.tx.stop()
@@ -245,9 +301,11 @@ class Campaign:
                 len(self.report['anchors']),
                 flush=True,
             )
-            if len(self.report['anchors']) - initial >= needed:
+            if len({a['pair'] for a in self.report['anchors']} - initial_pairs) >= needed:
                 return
-        raise RuntimeError('Insufficient common CRC-valid RF packets')
+        raise RuntimeError(
+            'Insufficient independent capture pairs with common CRC-valid RF packets'
+        )
 
     def run(self, duration_ms, period_ns, phases, compensate=True):
         self.tx.stop()

@@ -22,8 +22,8 @@ analyze_run, delta_at, fit_clock, to_a = (
 def anchors(offset=123456, drift=23.4e-6):
     origin = 1_000_000
     return [
-        dict(a_us=t, b_us=t + offset + drift * (t - origin))
-        for t in [900000, 950000, 990000, 1020000, 1050000, 1100000]
+        dict(pair=i, a_us=t, b_us=t + offset + drift * (t - origin))
+        for i, t in enumerate([900000, 950000, 990000, 1020000, 1050000, 1100000])
     ]
 
 
@@ -259,3 +259,32 @@ def test_original_wire_crc_recomputed_offline(fault):
     else:
         del result['terminal']
     assert analyze_run(data, anchors())['status'] == 'unverified'
+
+
+@pytest.mark.parametrize('fault', ['missing', 'same_pair', 'overlap'])
+def test_independent_anchor_pairs_required(fault):
+    values = anchors()
+    if fault == 'missing':
+        del values[0]['pair']
+    elif fault == 'same_pair':
+        for a in values[:3]:
+            a['pair'] = 0
+    else:
+        values[3]['pair'] = values[0]['pair']
+    assert analyze_run(row(), values)['status'] == 'unverified'
+
+
+def test_assumption_based_sensitivity_and_evaluated_folds():
+    result = analyze_run(row(), anchors())
+    assert result['clock_model']['heldout_evaluated_fold_count'] == 6
+    assert result['clock_model']['before_capture_pair_count'] == 3
+    assert result['clock_model']['after_capture_pair_count'] == 3
+    nominal = result['nominal_union']['coverage_percent']
+    previous = nominal
+    for scenario in result['sensitivity']:
+        error = scenario['assumed_endpoint_error_us']
+        assert set(scenario['receiver_b_offset_scenarios']) == {str(-error), str(error)}
+        eroded = scenario['eroded_union']['coverage_percent']
+        assert eroded <= previous
+        previous = eroded
+    assert 'not confidence bounds' in result['sensitivity_note']
