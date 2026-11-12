@@ -8,12 +8,19 @@ import json
 import re
 from datetime import datetime, timezone
 
-CURRENT_VARIANT = 'esp32-pipeline-adaptive-q16-v8'
+CURRENT_VARIANT = 'esp32-dual-stream-experimental-v7'
 CALIBRATION_VARIANTS = (
     'esp32-pipeline-adaptive-q16-v4',
     'esp32-pipeline-adaptive-q16-v5',
     'esp32-pipeline-adaptive-q16-v6',
     'esp32-pipeline-adaptive-q16-v7',
+    'esp32-pipeline-adaptive-q16-v8',
+    'esp32-dual-timing-experimental-v1',
+    'esp32-dual-stream-experimental-v2',
+    'esp32-dual-stream-experimental-v3',
+    'esp32-dual-stream-experimental-v4',
+    'esp32-dual-stream-experimental-v5',
+    'esp32-dual-stream-experimental-v6',
     CURRENT_VARIANT,
 )
 ADAPTIVE_VARIANTS = ('esp32-pipeline-adaptive-q16-v3', *CALIBRATION_VARIANTS)

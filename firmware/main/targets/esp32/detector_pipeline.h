@@ -3,6 +3,7 @@
  * No live reads of RF-owned SRAM. DETPIPEGET retrieves the strongest packed copy.
  * Requires acquire_iq_with_work() from accompanying receiver patch. */
 #include "esp_memory_utils.h"
+#include "dual_timing.h"
 
 #include "pipeline_energy3.h"
 #include "detector_retention.h"
@@ -307,6 +308,9 @@ static bool detector_pipeline_command(const char *line) {
         (rate != 0 && rate != 1 && rate != 6) || ratio < 1000 || ratio > 1000000 || retain > 1) {
         reply("ERR pipeline_args\n"); return true;
     }
+    if (dual_armed && (rate != 6 || n != MAX_SAMPLES)) {
+        reply("ERR trace_requires_full_rx16\n"); return true;
+    }
     detpipe_health_begin();
     detpipe_clear();
     det_retained_n = 0;
@@ -353,6 +357,9 @@ static bool detector_pipeline_command(const char *line) {
         detpipe_page_count++; left -= amount;
     }
     }
+    if (!dual_trace_begin()) {
+        heap_caps_free(p.copy); detpipe_clear(); detpipe_health_finish(false); return true;
+    }
     detpipe_health_allocated();
     prepare_rx();
     uint32_t gain_register_start = REG_READ(RX_GAIN);
@@ -360,6 +367,8 @@ static bool detector_pipeline_command(const char *line) {
     reply("DETPIPE1 BEGIN %u %u %u %u %u %u\n", ms, n, rate, ratio, retain, frequency_mhz);
     uint64_t acquisition_us = 0, observed_done_us = 0;
     unsigned captures = 0, status = 0;
+    /* Schedule origin excludes the deliberate pre-run wait from run duration. */
+    while (dual_active && (uint64_t)esp_timer_get_time() + 2000 < dual_armed_deadline) vTaskDelay(1);
     int64_t start = esp_timer_get_time();
     while (esp_timer_get_time() - start < (int64_t)ms * 1000) {
         unsigned observed = 0;
@@ -377,6 +386,7 @@ static bool detector_pipeline_command(const char *line) {
         if(p.pack_failed){status=2;break;}
         if (!ok) { status = 1; break; }
         captures++; observed_done_us += observed;
+        dual_trace_record(capture_trigger_device_us);
         if (!first_trigger_us) first_trigger_us = capture_trigger_device_us;
         last_trigger_us = capture_trigger_device_us;
         t = esp_timer_get_time();
@@ -387,8 +397,9 @@ static bool detector_pipeline_command(const char *line) {
         p.generation = captures; p.observed_us = observed;
         p.trigger_device_us = capture_trigger_device_us;
         p.pending = true; p.ready = false;
-        if ((captures & 31) == 0) vTaskDelay(1);
+        if ((captures & 31) == (dual_active ? dual_yield_phase : 0)) vTaskDelay(1);
     }
+    dual_trace_end();
     detpipe_commit(&p, ratio, retain); /* final successful capture, exactly once */
     uint64_t elapsed = esp_timer_get_time() - start;
     if(p.pack_failed)status=2;

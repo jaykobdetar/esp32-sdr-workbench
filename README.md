@@ -1,5 +1,16 @@
 # ESP32 SDR Research Workbench
 
+> **Local RF Studio redesign:** start `./scripts/launch-studio.sh` for the new task-first interface. Choose Listen, Test a signal, or Compare receivers; advanced controls stay out of the way. See [the first-use guide](docs/rf-studio.md). The previous RF Bench remains available and unchanged in its original checkout. This UI does not claim synchronized or continuous reception.
+
+
+> **Local experimental two-receiver branch, 12 November 2026.** Both bench boards
+> are now running the separately identified dual-timing image, not the historical
+> v2 reference described below. [Measured results](docs/dual-receiver-results-2026-11-12.md)
+> and [reproduction commands](docs/dual-receiver-timing.md): approximately 99.97%
+> nominal combined coverage within tuned acquisition runs, and 96.25–96.26% over
+> two fixed 30-second observations including staggered readouts. Not continuous
+> 100% coverage, packet recall or continuous I/Q recording. Nothing was published.
+
 **A native RF viewer and optimized, burst-aware energy detector for the original ESP32.**
 
 Explore the ESP32 receiver's raw I/Q, inspect spectra and recorded events, and compare honest acquisition duty with end-to-end host coverage. This project builds on [ESPARGOS/esp-sdr](https://github.com/ESPARGOS/esp-sdr), adding a Python/Qt workbench and an experimental guarded acquisition/processing pipeline.
@@ -188,3 +199,10 @@ QT_QPA_PLATFORM=offscreen python -m pytest -q
 ```
 
 Plain `pytest` runs the viewer, evidence and campaign tests in `tests/`, the receiver host tests in `firmware/tests/` and the transmitter host tests in `nrf52840-transmitter/tests/`: **610 tests plus 5 subtests** at the v8 source. The C checks need a host compiler with UndefinedBehaviorSanitizer, and the retention-patch test also needs `git`. [CI](.github/workflows/ci.yml) runs the lint, the format check and all three suites on Python 3.10 and 3.13 for every push and pull request. These software tests require no connected board and are not a replacement for hardware validation: separate [firmware CI](.github/workflows/firmware.yml) compiles ESP32 and nRF52840 source but does not operate hardware. Qt needs the system EGL/XCB libraries even for offscreen runs (`libegl1` on Debian/Ubuntu). Some campaign and analysis sources are deliberately left unformatted; the [script index](scripts/README.md) explains why.
+
+## Shared RF Bench interface
+
+Use `./scripts/launch-lab.sh` (or `esp32-sdr lab`) to control selected receivers
+and finite nRF test transmissions together. It includes overlaid live spectra,
+recording, per-device status, and a common stop control. See the
+[shared-console guide](docs/shared-rf-console.md) for setup, safety and timing limits.
