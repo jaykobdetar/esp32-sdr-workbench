@@ -109,3 +109,16 @@ This pass changed firmware source, so it is identified as `esp32-pipeline-adapti
 The combined suite passed **605 tests plus 5 subtests** on Python 3.10 and 3.13; lint, format and the three offline evidence verifiers passed. CI results for the exact commit, including the pinned-SDK ESP32 compile, are the authority for whether v7 builds.
 
 Before v7 results are used: flash it by the build guide's application-only route, confirm the variant, `BGPOLICY` in `CAPS`, and stack and heap headroom, then run rules 1 and 2 interleaved with the source on and off. Rule 1 inside v7 reproduces the v2 decision rule, not the v2 binary's timing or duty.
+
+## V7 board result and the v8 selector fix, 12 November 2026
+
+The [exact-release v7 evaluation](evidence/v7-evaluation/README.md) installed the v7 image and ran both background rules interleaved on it. Its findings change two things in this record.
+
+- **The same-image comparison answered the open question.** At 0 dBm and manual gain 60 the two rules gave +205.0 and +190.5 source-associated candidate windows per second. The +174.76 against +26.57 seen across separately flashed images in the adaptive evaluation was therefore not caused by the background rule. One setting, 0 dBm at manual gain 40, nominally favored the Q16 rule (+114 windows/s, p = 0.0415, not surviving correction across six settings). Neither rule retained more CRC-valid packets. The reference-model prediction of a legacy advantage, recorded in the previous section's pass, was not borne out; the detector guide now says so.
+- **The evaluation found a defect in the selector added in that pass.** `BGPOLICY1`, `BGPOLICY 4294967297` and `BGPOLICY -4294967295` were all accepted as rule 1, although the protocol document said malformed values are rejected. The parser used `sscanf` with `%u`, which tolerates a missing separator and wraps out-of-range numbers. The host tests of that pass covered `-1`, `0`, `3` and trailing text but not those cases. The Python clients never send such text, and the probes ran after the RF and soak campaign, so no published run was affected.
+
+The source is now `esp32-pipeline-adaptive-q16-v8`. The selector accepts only the exact text `BGPOLICY 1` or `BGPOLICY 2`. The regression test uses the three board-reproduced inputs and seventeen other malformed forms, from both stored rules; it fails against the v7 parser and passes against the fix. **V8 is compiled and host-tested only, and differs from the evaluated v7 image in this parser alone.**
+
+The same `sscanf` pattern remains in older commands, including `PIPEKERNEL`, `PIPEKEEP`, `PIPECOPY`, `ACQOPT`, `CLEAROPT`, `DET1`, `DETPIPE1`, `GAIN MANUAL`, `BANDWIDTH`, `LPF`, `FREQ`, `CAP` and `RXRUN`. They range-check the parsed value, so a wrapped number can be accepted only if it wraps into the valid range. They were left unchanged here because they are long-standing, board-validated paths shared with other targets.
+
+The combined suite passed **610 tests plus 5 subtests** on Python 3.10 and 3.13; lint, format and the four offline evidence verifiers passed.

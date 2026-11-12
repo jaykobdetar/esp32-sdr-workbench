@@ -3,7 +3,7 @@
 This documents the published `firmware/` original-ESP32 command path, not every historical upstream backend. Source authority: `firmware/main/common/burst_commands.h`, `burst_capture.h`, `burst_serial.c`, and `firmware/main/targets/esp32/receiver.c`. Unsupported lab commands are described separately in [diagnostic provenance](diagnostic-provenance.md).
 
 The common wire framing is shared with historical optimized-v2. The current
-`adaptive-q16-v7` source keeps the v3 Q16 background policy as its default and the metadata/crop
+`adaptive-q16-v8` source keeps the v3 Q16 background policy as its default and the metadata/crop
 commands [described below](#adaptive-q16-extension), fixes tie retention and adds
 read-only stored-calibration observation, fail-closed NVS startup, strict SPEC argument validation and whole-line rejection of embedded NUL bytes. V7 adds the [`BGPOLICY` selector](#background-rule-selector-v7), which makes the historical rule available on the same image, and idles instead of rebooting when NVS initialization fails. See the exact-image [evaluation](evidence/adaptive-evaluation/README.md)
 and [v4 smoke limits](review-follow-up.md), rather than treating different builds as interchangeable.
@@ -107,8 +107,10 @@ snapshots and device-monotonic trigger metadata are additive. See
 ### Background-rule selector (v7)
 
 `BGPOLICY <1|2>` chooses the background rule for the next `DET1` or `DETPIPE1`
-run and replies `BGPOLICY <value>`; `BGPOLICY?` reads it. Malformed or other
-values return `ERR background_policy` and change nothing. Firmware that supports
+run and replies `BGPOLICY <value>`; `BGPOLICY?` reads it. Anything other than the
+exact text `BGPOLICY 1` or `BGPOLICY 2` returns `ERR background_policy` and changes
+nothing. This is enforced from v8: the v7 image accepted `BGPOLICY1` and values
+that wrap to 1 in a 32-bit scan, such as `4294967297`, as rule 1. Firmware that supports
 it advertises `BGPOLICY` in `CAPS`.
 
 - **2** (boot default) is the Q16 rule described above.

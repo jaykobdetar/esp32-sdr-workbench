@@ -258,9 +258,11 @@ static bool detector_pipeline_command(const char *line) {
      * that actually ran. Policy 1 is the measured optimized-v2 rule. */
     if (!strcmp(line, "BGPOLICY?")) { reply("BGPOLICY %u\n", detector_background_policy); return true; }
     if (!strncmp(line, "BGPOLICY", 8)) {
-        unsigned policy; char extra;
-        if (sscanf(line, "BGPOLICY %u %c", &policy, &extra) == 1 &&
-            (policy == DETECTOR_BACKGROUND_POLICY_LEGACY || policy == DETECTOR_BACKGROUND_POLICY_Q16)) {
+        /* Exact text only: one space and the single digit 1 or 2. scanf %u
+         * accepted "BGPOLICY1" and wrapped 4294967297 and -4294967295 to 1. */
+        unsigned policy = !strcmp(line, "BGPOLICY 1") ? DETECTOR_BACKGROUND_POLICY_LEGACY :
+                          !strcmp(line, "BGPOLICY 2") ? DETECTOR_BACKGROUND_POLICY_Q16 : 0;
+        if (policy) {
             detector_background_policy = policy; reply("BGPOLICY %u\n", policy);
         } else reply("ERR background_policy\n");
         return true;
