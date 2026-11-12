@@ -32,7 +32,11 @@ static unsigned detector_candidate_slot(const detector_candidate_t *candidates,
     unsigned weakest = 0;
     for (unsigned j = 0; j < capacity; j++) {
         if (!candidates[j].samples) return j;
-        if (candidates[j].score_milli < candidates[weakest].score_milli) weakest = j;
+        /* Preserve earlier captures on equal scores, even after replacements
+         * have made slot order different from generation order. */
+        if (candidates[j].score_milli < candidates[weakest].score_milli ||
+            (candidates[j].score_milli == candidates[weakest].score_milli &&
+             candidates[j].generation > candidates[weakest].generation)) weakest = j;
     }
     return score > candidates[weakest].score_milli ? weakest : capacity;
 }

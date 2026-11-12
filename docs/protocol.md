@@ -111,3 +111,10 @@ capture_us). `DETPIPEGET` returns strongest and `DETPIPEGET <slot>` retrieves an
 occupied slot, using normal CAP20/CRC framing. Crops are bounded to 5120 samples;
 320 µs at 16 MS/s but too short for the known 292 µs frame at 40/80 MS/s.
 Firmware has not been flashed or board-soak validated; no new RF results claimed.
+
+## Optional validation health telemetry
+
+`DETPIPEHEALTH?` reports validation-only heap/stack telemetry when built with
+`DETPIPE_HEALTH=ON`; `CAPS` then advertises `DETPIPEHEALTH`. Default-off builds
+return `{"version":1,"enabled":false}`. See [field definitions and SDK limits](pipeline-health-telemetry.md). This does not change `DETPIPE1` framing or imply
+that an instrumented measurement applies to the default-off release image.

@@ -13,17 +13,21 @@ import time
 from pathlib import Path
 from statistics import mean
 
-from sdr_research.pipeline import run_pipeline
+from sdr_research.pipeline import run_pipeline, run_pipeline_candidates
 from sdr_research.protocol import Radio
 from sdr_research.recording import save_capture
 
 CAUTIONS = [
     'Candidate windows are not packets and this is not a packet-recall estimate.',
     'Hardware AGC changes gain within runs: detector energies are not comparable across gain steps.',
-    'The installed legacy background rule can latch on positives; this tests that firmware only.',
+    'Legacy v2 can latch on positives; v3 uses adaptive background. Compare only explicitly identified images.',
+    'Selectors/gain are restored; frequency/rate/bandwidth remain at the trial configuration.',
     'A small number of temporal blocks at one unmeasured bench placement does not establish calibrated sensitivity.',
     'TX counters bracket host commands, not exact receiver RF windows; retained CRC is transport CRC.',
 ]
+VARIANTS = ('esp32-pipeline-optimized-v2', 'esp32-pipeline-adaptive-q16-v3')
+SELECTORS = ('PIPEKERNEL', 'ACQOPT', 'CLEAROPT', 'PIPECOPY')
+
 TX_KEYS = (
     'frequency_mhz',
     'mode_mbps',
@@ -43,6 +47,10 @@ TX_KEYS = (
 def parser():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--rx-port', required=True)
+    p.add_argument('--rx-serial', help='Required by hardware entry point; exact USB serial')
+    p.add_argument('--expected-variant', choices=VARIANTS, default=VARIANTS[0])
+    p.add_argument('--expected-revision')
+    p.add_argument('--candidate-count', type=int, choices=(1, 3), default=1)
     p.add_argument('--tx-port', required=True)
     p.add_argument('--tx-serial', required=True)
     p.add_argument('--rx-artifact', type=Path, required=True)
@@ -99,6 +107,46 @@ def check_gain(reply, gain):
     return reply
 
 
+def heap(radio):
+    fields = radio.command('DETPIPEMEM?').split()
+    if len(fields) != 3 or fields[0] != 'DETPIPEMEM':
+        raise RuntimeError('Invalid heap reply')
+    free, largest = map(int, fields[1:])
+    if not 0 <= largest <= free:
+        raise RuntimeError('Invalid heap values')
+    return dict(free_bytes=free, largest_bytes=largest)
+
+
+def selectors(radio, names):
+    result = {}
+    for name in names:
+        reply = radio.command(name + '?')
+        fields = reply.split()
+        if len(fields) != 2 or fields[0] != name or not fields[1].isdigit():
+            raise RuntimeError(f'Invalid selector readback: {name}')
+        result[name] = reply
+    return result
+
+
+def usb_identity(port, serial, ports):
+    resolved_port = Path(port).resolve()
+    matches = [
+        p for p in ports if Path(p.device).resolve() == resolved_port and p.serial_number == serial
+    ]
+    if not serial or len(matches) != 1 or matches[0].vid is None or matches[0].pid is None:
+        raise RuntimeError(f'Exact USB identity not found for {port}')
+    p = matches[0]
+    return dict(
+        device=p.device,
+        serial_number=p.serial_number,
+        vid=p.vid,
+        pid=p.pid,
+        location=p.location,
+        manufacturer=p.manufacturer,
+        product=p.product,
+    )
+
+
 def summarize(rows):
     complete = [r for r in rows if r['status'] == 'passed']
     result = {}
@@ -133,8 +181,19 @@ def summarize(rows):
     return result
 
 
-def execute(args, radio, tx, *, pipeline=run_pipeline, saver=save_capture, sleep=time.sleep):
+def execute(
+    args,
+    radio,
+    tx,
+    *,
+    pipeline=run_pipeline,
+    multiple=run_pipeline_candidates,
+    saver=save_capture,
+    sleep=time.sleep,
+):
     conditions = plan(args)
+    if args.candidate_count == 3 and args.expected_variant != VARIANTS[1]:
+        raise ValueError('Three-crop trials require explicit adaptive-v3 variant')
     if not 100 <= args.milliseconds <= 2000:
         raise ValueError('Receiver duration must be 100..2000 ms')
     artifact_hash = hashlib.sha256(args.rx_artifact.read_bytes()).hexdigest()
@@ -142,6 +201,10 @@ def execute(args, radio, tx, *, pipeline=run_pipeline, saver=save_capture, sleep
     out.mkdir(parents=True, exist_ok=False)
     report = {
         'status': 'running',
+        'expected_variant': args.expected_variant,
+        'expected_revision': args.expected_revision,
+        'candidate_count': args.candidate_count,
+        'usb_identity': getattr(args, 'usb_identity', None),
         'cautions': CAUTIONS,
         'geometry': args.geometry,
         'geometry_measured': False,
@@ -161,6 +224,8 @@ def execute(args, radio, tx, *, pipeline=run_pipeline, saver=save_capture, sleep
         'runs': [],
     }
     initial_gain = None
+    initial_selectors = {}
+    baseline = None
 
     def persist():
         tmp = out / 'results.json.tmp'
@@ -171,10 +236,28 @@ def execute(args, radio, tx, *, pipeline=run_pipeline, saver=save_capture, sleep
         report['tx_stop_initial'] = tx.stop()
         report['tx_initial'] = checked_status(tx, False)
         report['device'] = radio.connect()
-        if 'esp32-pipeline-optimized-v2' not in report['device'].get('version', ''):
+        version_text = report['device'].get('version', '').removeprefix('VERSION ')
+        try:
+            version = json.loads(version_text)
+        except json.JSONDecodeError:
+            version = {'firmware_variant': version_text}
+        if (
+            not isinstance(version, dict)
+            or version.get('firmware_variant') != args.expected_variant
+        ):
             raise RuntimeError(
-                'Expected unchanged optimized-v2 receiver firmware; no flash attempted'
+                'Expected unchanged explicitly selected receiver firmware; no flash attempted'
             )
+        if args.expected_revision and version.get('revision') != args.expected_revision:
+            raise RuntimeError('Receiver revision mismatch; no flash attempted')
+        names = SELECTORS + (('PIPEKEEP',) if args.expected_variant == VARIANTS[1] else ())
+        observed_selectors = selectors(radio, names)
+        report['selectors_initial'] = observed_selectors.copy()
+        if observed_selectors.get('PIPEKEEP', 'PIPEKEEP 1') != 'PIPEKEEP 1':
+            raise RuntimeError('Pending external crop selection')
+        initial_selectors = observed_selectors
+        radio.command('DETPIPECLEAR')
+        baseline = report['heap_baseline'] = heap(radio)
         initial_gain = radio.command('GAIN?')
         report['gain_initial'] = initial_gain
         cfg = dict(
@@ -211,13 +294,29 @@ def execute(args, radio, tx, *, pipeline=run_pipeline, saver=save_capture, sleep
             checked_status(tx, False)
             radio.configure(2440, 16000000, 12, condition['gain'], 10)
             row['gain_before'] = check_gain(radio.command('GAIN?'), condition['gain'])
+            for setting in ('PIPEKERNEL 3', 'ACQOPT 3', 'CLEAROPT 1', 'PIPECOPY 1'):
+                radio.command(setting)
+            row['selectors_before'] = selectors(radio, names)
+            expected_selectors = dict(
+                PIPEKERNEL='PIPEKERNEL 3',
+                ACQOPT='ACQOPT 3',
+                CLEAROPT='CLEAROPT 1',
+                PIPECOPY='PIPECOPY 1',
+            )
+            if any(row['selectors_before'][k] != v for k, v in expected_selectors.items()):
+                raise RuntimeError('Trial selector mismatch')
+            if row['selectors_before'].get('PIPEKEEP', 'PIPEKEEP 1') != 'PIPEKEEP 1':
+                raise RuntimeError('One-shot retention selection did not reset')
             radio.command('DETPIPECLEAR')
+            row['heap_before'] = heap(radio)
+            if row['heap_before'] != baseline:
+                raise RuntimeError('Cleared heap drift before run')
             if condition['tx_on']:
                 # Independent finite duration and packet-count ceilings; no continuous mode.
                 row['tx_start'] = tx.start(count=5000, duration_ms=6000)
             sleep(0.1)
             row['tx_before'] = checked_status(tx, condition['tx_on'])
-            summary, capture = pipeline(
+            summary, retained = (multiple if args.candidate_count == 3 else pipeline)(
                 radio,
                 args.milliseconds,
                 16380,
@@ -228,7 +327,16 @@ def execute(args, radio, tx, *, pipeline=run_pipeline, saver=save_capture, sleep
                 optimized=True,
                 copy_option=1,
             )
+            captures = (
+                retained if args.candidate_count == 3 else ([] if retained is None else [retained])
+            )
             row['summary'] = summary
+            row['heap_retained'] = heap(radio)
+            row['selectors_after'] = selectors(radio, names)
+            if row['selectors_after'] != row['selectors_before']:
+                raise RuntimeError('Pipeline selectors were not restored')
+            if args.expected_variant == VARIANTS[1] and summary.get('background_policy') != 2:
+                raise RuntimeError('Adaptive background policy mismatch')
             row['gain_after'] = check_gain(radio.command('GAIN?'), condition['gain'])
             row['tx_after'] = checked_status(tx, condition['tx_on'])
             delta = row['tx_after']['completed'] - row['tx_before']['completed']
@@ -243,8 +351,18 @@ def execute(args, radio, tx, *, pipeline=run_pipeline, saver=save_capture, sleep
             row['tx_stopped'] = checked_status(tx, False)
             if summary['status'] or summary.get('pack_failed', 0) or summary.get('errors', 0):
                 raise RuntimeError('Receiver failed its bounded run')
-            row['retained_transport_crc_valid'] = capture.crc_ok if capture is not None else None
-            if capture is not None:
+            row['retained_count'] = len(captures)
+            row['retained_transport_crc_valid'] = (
+                all(c.crc_ok for c in captures) if captures else None
+            )
+            row['crops'] = []
+            if len(captures) > args.candidate_count:
+                raise RuntimeError('Too many retained crops')
+            if summary.get('retained_event_count', len(captures)) != len(captures):
+                raise RuntimeError('Retained crop count mismatch')
+            if bool(summary.get('retained_samples', bool(captures))) != bool(captures):
+                raise RuntimeError('Retained crop presence mismatch')
+            for candidate, capture in enumerate(captures):
                 if not capture.crc_ok:
                     raise RuntimeError('Retained transport CRC mismatch')
                 capture.metadata['gain_comparison'] = {
@@ -254,9 +372,23 @@ def execute(args, radio, tx, *, pipeline=run_pipeline, saver=save_capture, sleep
                     'cautions': CAUTIONS,
                 }
                 prefix = (
-                    out / f'{index:04d}-{condition["mode"]}-{"on" if condition["tx_on"] else "off"}'
+                    out
+                    / f'{index:04d}-{condition["mode"]}-{"on" if condition["tx_on"] else "off"}-crop-{candidate}'
                 )
-                row['sigmf'] = str(saver(capture, prefix))
+                crop = dict(
+                    index=candidate,
+                    crc_ok=capture.crc_ok,
+                    metadata=capture.metadata.copy(),
+                    sigmf=str(saver(capture, prefix)),
+                )
+                row['crops'].append(crop)
+                if candidate == 0:
+                    row['sigmf'] = crop['sigmf']
+                persist()
+            radio.command('DETPIPECLEAR')
+            row['heap_cleared'] = heap(radio)
+            if row['heap_cleared'] != baseline:
+                raise RuntimeError('Cleared heap drift after run')
             row['candidate_rate_per_local_second'] = (
                 summary['detections'] * 1e6 / summary['wall_elapsed_us']
             )
@@ -274,6 +406,8 @@ def execute(args, radio, tx, *, pipeline=run_pipeline, saver=save_capture, sleep
     except BaseException as exc:
         report['status'] = 'failed'
         report['error'] = repr(exc)
+        if report['runs'] and report['runs'][-1]['status'] == 'running':
+            report['runs'][-1].update(status='failed', error=repr(exc))
         raise
     finally:
         try:
@@ -300,6 +434,25 @@ def execute(args, radio, tx, *, pipeline=run_pipeline, saver=save_capture, sleep
         except Exception as exc:
             report['tx_cleanup_error'] = repr(exc)
             report['status'] = 'failed'
+        if getattr(radio, 'failed', False):
+            report['receiver_cleanup_error'] = (
+                'Transport failed; receiver clear/restoration unverified'
+            )
+            report['status'] = 'failed'
+        if initial_selectors and not getattr(radio, 'failed', False):
+            try:
+                radio.command('DETPIPECLEAR')
+                report['heap_final'] = heap(radio)
+                if baseline is not None and report['heap_final'] != baseline:
+                    raise RuntimeError('Final cleared heap drift')
+                for reply in initial_selectors.values():
+                    radio.command(reply)
+                report['selectors_restored'] = selectors(radio, initial_selectors)
+                if report['selectors_restored'] != initial_selectors:
+                    raise RuntimeError('Selector restoration mismatch')
+            except Exception as exc:
+                report['receiver_cleanup_error'] = repr(exc)
+                report['status'] = 'failed'
         if initial_gain and not getattr(radio, 'failed', False):
             try:
                 fields = initial_gain.split()
@@ -323,6 +476,17 @@ def main():
     from nrf_tx.rf_tx import Transmitter
 
     args = parser().parse_args()
+    from serial.tools import list_ports
+
+    if not args.rx_serial:
+        raise ValueError('--rx-serial is required for hardware execution')
+    if Path(args.rx_port).resolve() == Path(args.tx_port).resolve():
+        raise ValueError('Receiver and source must be distinct USB devices')
+    ports = list(list_ports.comports())
+    args.usb_identity = {
+        'rx': usb_identity(args.rx_port, args.rx_serial, ports),
+        'tx': usb_identity(args.tx_port, args.tx_serial, ports),
+    }
     radio = Radio(args.rx_port)
     try:
         with Transmitter(args.tx_port, serial_number=args.tx_serial) as tx:

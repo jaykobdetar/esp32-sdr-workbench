@@ -6,6 +6,21 @@ install firmware or authorize a new hardware session. Arrange an attended test
 window, confirm the exact devices and RF conditions, and approve any deliberate
 firmware installation before starting.
 
+## Completed evaluation update: 12 November 2026
+
+The [adaptive evaluation](evidence/adaptive-evaluation/evaluation-report.md) now records
+925 pipeline runs and 1,818 saved transport-CRC-valid I/Q files. Released-v3 smoke
+and matched-source tests were separate from the instrumented, tie-fixed candidate's
+boundary matrix, heap/stack screening and 30-minute soak. No retained-packet
+advantage over v2 was demonstrated. Geometry remains unmeasured. Calibration
+changed at an unknown point, so identical calibration cannot be assumed. The
+known-good v2 application was restored and verified; calibration was not rolled back.
+
+The steps below remain a guide for future, separately approved sessions. Completed
+candidate testing is not default-off release-image validation, multi-day endurance,
+calibrated sensitivity or packet recall. The [matched runner](matched-adaptive-gain-trials.md),
+[health telemetry](pipeline-health-telemetry.md) and raw-control runner are now available.
+
 ## What is actually left
 
 The original 19-item list is not simply “16 done, three untouched”:
@@ -18,9 +33,9 @@ The original 19-item list is not simply “16 done, three untouched”:
   require measured placement, controls and repetitions.
 - Item **19 is done as UI documentation**: an actual launcher screenshot shows the
   ADC-endpoint column in explicitly synthetic mode, not new RF performance.
-- Items **13–16 have new source and host/compile checks**, but the new
-  `esp32-pipeline-adaptive-q16-v3` image has not been flashed or board-soak tested.
-  Three-crop retention remains opt-in.
+- Items **13–16 have source and host/compile checks plus the separate evaluation
+  described above**. Only the instrumented, tie-fixed candidate received the soak.
+  A new default-off release image still needs validation. Three crops remain opt-in.
 - CI configuration, packaging and release notes exist. A public tag/release is a
   separate decision; successful publication or CI does not validate RF behavior.
 
@@ -72,6 +87,7 @@ placeholders, not runnable defaults:
 
 ```sh
 export RX_PORT=/dev/serial/by-id/YOUR_VERIFIED_RECEIVER
+export RX_USB_SERIAL=YOUR_EXACT_RECEIVER_USB_SERIAL
 export TX_PORT=/dev/serial/by-id/YOUR_VERIFIED_TRANSMITTER
 export RF_TX_SERIAL=YOUR_16_UPPERCASE_HEX_TRANSMITTER_SERIAL
 export PRIVATE_RUN_ROOT="$HOME/private-sdr-validation"
@@ -183,12 +199,13 @@ does not rule out fragmentation or transient peaks.
 checks the legacy allocation pattern, not a complete three-crop soak. Do not
 present it as proof that all twelve new crop pages work on the board.
 
-**Instrumentation still needed:** no existing command reports task-stack high-
-water mark or the true minimum heap during a run. Add and host-test bounded
-telemetry for these before claiming measured stack margin/transient heap safety.
-Document the pinned SDK's stack-unit convention. Record the instrumentation's
-source/binary identity; instrumentation can affect timing. Define a conservative
-required margin before the test instead of declaring any nonzero margin a pass.
+**Instrumentation now available:** opt-in `DETPIPE_HEALTH=ON` adds
+[`DETPIPEHEALTH?`](pipeline-health-telemetry.md), reporting allocator-tracked local
+heap minima and command-task lifetime free-stack bytes. Per-region heap lows need
+not be simultaneous; this is not an exact instantaneous global minimum or all-task
+stack measurement. The instrumented candidate passed predeclared 8192-byte heap
+and 2048-byte stack screening gates. Record each image identity; default-off release
+builds and instrumented timings must remain separate.
 
 Stage the run length, inspecting logs between stages: 5×1-second single/crop runs,
 then 20 alternating 5-second runs per retention mode, then an attended 30-minute
@@ -224,12 +241,15 @@ The pilot measured candidate windows/local-second OFF→ON of approximately
 had endpoints in its selected buffers. Selection bias, drift and four blocks
 prevent a general ranking. Zero endpoints does not establish analog linearity.
 
-The existing `nrf_gain_compare` runner deliberately accepts **optimized-v2 only**.
-For an explicitly authorized repetition on that unchanged image:
+The `nrf_gain_compare` runner defaults to **optimized-v2, one retained capture**.
+It now supports explicit v3/revision selection and three crops, with identity,
+cleanup and per-crop checks. Run from this repository root after installing this
+checkout into `.venv` with `python -m pip install -e ".[dev]"`. For an authorized repetition on unchanged v2:
 
 ```sh
-python -m nrf_campaigns.nrf_gain_compare \
-  --rx-port "$RX_PORT" --tx-port "$TX_PORT" --tx-serial "$RF_TX_SERIAL" \
+PYTHONPATH=. .venv/bin/python scripts/nrf_gain_compare.py \
+  --rx-port "$RX_PORT" --rx-serial "$RX_USB_SERIAL" \
+  --tx-port "$TX_PORT" --tx-serial "$RF_TX_SERIAL" \
   --rx-artifact /PRIVATE/PATH/TO/VERIFIED_INSTALLED_APPLICATION.bin \
   --output-directory "$PRIVATE_RUN_ROOT/gain-pilot-repeat-01" \
   --pairs 8 --manual-gains 40 60 --milliseconds 1000 --power-dbm -20 \
@@ -241,14 +261,13 @@ sample size. The runner supports even block counts 2–16 and currently labels
 geometry unmeasured; retain a separate measured setup record rather than changing
 that flag after the fact without provenance.
 
-**New-firmware comparison requires additional runner work.** Do not disable its
-variant guard to get it running. Add an explicit expected-image selection, AGC/
-manual settings, retention-count handling, pre/post gain/heap telemetry, and
-per-crop saved references. Preserve finite TX count/time ceilings, exact USB
-identity, STOP/final-state checks, failed-run reporting and cleanup tests. The
-existing receiver-compare runner supports explicit new variant matching for
-manual-gain single-retention tests, but is not already a matched AGC/three-crop
-experiment. Validate the extended plan with fake devices before hardware.
+**New-firmware runner work is complete**, with fake-device regressions and bounded
+hardware results in the evaluation. Use explicit expected variant/revision and
+candidate count as described in [matched adaptive trials](matched-adaptive-gain-trials.md).
+Do not bypass guards or combine single/three retention as if retention budget
+were held fixed. The [raw-control runner](../scripts/nrf_raw_controls.py) supplies
+separate direct CAP20 matched ON/OFF and frequency-offset controls. It does not
+turn power outliers or partial payload matches into verified packets.
 
 ### B2. Design and collect
 

@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Publish the adaptive evaluation with 925 pipeline runs, 1,818 recorded CRC-valid
+  files, separate release/candidate identities and the calibration-change caveat.
+- Fix top-three tie eviction to preserve earlier generations; check all 4,096
+  six-capture score streams and integrated packed retrieval.
+- Add default-off pipeline heap/stack telemetry and tested board/matched/raw-control
+  harnesses. Only the separate instrumented, tie-fixed image received the 30-minute
+  soak; no retained-packet advantage over v2 was established.
+- Publish privacy-reviewed summary evidence and an offline accounting checker.
+
 - Build ESP32 release and historical retention firmware, and nRF52840 firmware in CI.
 - Collect transmitter parser, schedule, stop-control and CRC host checks with pytest.
 - Add weekly latest-dependency compatibility checks, including unpinned Qt smoke tests.
@@ -18,7 +27,7 @@
 - Run 24 matched AGC/manual ON/OFF trials on unchanged installed firmware; publish scrubbed counts and explicit small-sample limits.
 - Replace the README image with a genuine launcher screenshot, clearly labelled synthetic.
 
-No on-board validation of the new adaptive firmware, release tag or published release is implied by this entry.
+The later evaluation is linked above. This source publication creates no release tag, published binary release or newly installed firmware; candidate-soak results do not validate a newly built default-off release image.
 
 ## 0.1.0 (source baseline)
 

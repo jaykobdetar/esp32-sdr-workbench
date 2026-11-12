@@ -12,6 +12,7 @@ Run everything from the repository root. Only the campaign scripts and the multi
 
 | Script | Purpose |
 |---|---|
+| `verify_adaptive_evidence.py` | Recompute adaptive-evaluation summary totals, packet-run endpoints and paired contrasts. Does not decode withheld RF or independently verify acquisition. |
 | `verify_evidence.py` | Recompute the benchmark, soak and GUI headline numbers from `docs/evidence/`. |
 | `verify_nrf_evidence.py` | Recompute the controlled-source totals, duty/rate comparisons, seeded bootstrap intervals, exact pair tests and known-packet CRCs (requires NumPy) from `docs/evidence/nrf-validation/`. |
 
@@ -34,6 +35,9 @@ These drive an ESP32 receiver and the [nRF52840 transmitter](../nrf52840-transmi
 
 | Script | Purpose |
 |---|---|
+| `adaptive_board_validation.py` | Passive acceptance/boundary/soak runner requiring optional health telemetry; never flashes or starts the source. `--plan-only` is offline. |
+| `nrf_gain_compare.py` | Explicit-image, bounded AGC/manual ON/OFF trials with one/three retained captures. |
+| `nrf_raw_controls.py` | Finite direct raw matched ON/OFF and frequency-offset controls with source cleanup checks. |
 | `nrf_rf_campaign.py` | Shared campaign engine and the basic finite ON/OFF experiment. |
 | `nrf_raw_scope.py` | Randomised raw-I/Q contrast sweep, for example across gain indices. |
 | `nrf_receiver_compare.py` | Historical DET1 versus optimized pipeline on one installed image. |

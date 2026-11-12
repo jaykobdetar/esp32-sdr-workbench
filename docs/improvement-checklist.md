@@ -7,7 +7,18 @@ The owner subsequently authorized publishing these changes and a
 [remaining-validation guide](remaining-validation-guide.md). No public tag or
 release is created by this publication.
 
-## Implementation status
+## Later evaluation update
+
+This checklist records the earlier implementation checkpoint. The subsequent
+[adaptive evaluation](evidence/adaptive-evaluation/evaluation-report.md) completed
+released-v3 smoke/matched tests and a separate instrumented, tie-fixed candidate's
+boundary, memory/stack and 30-minute soak checks. Its results supersede the earlier
+unflashed/open-bench status below, not the historical measurements themselves.
+No retained-packet advantage was established; calibration changed at an unknown
+point. The verified v2 application was restored. A new default-off release image
+still requires validation, and no tag or release is created by this publication.
+
+## Implementation status (earlier checkpoint)
 
 | Item | Result |
 |---|---|

@@ -1,0 +1,95 @@
+{
+  "base_commit": "bc6472c8d361c63defb4dec5c5bb86f9bfd564cb",
+  "scope": "Reviewed source/summary publication. Original measured image hashes remain in the report. This manifest is not a claim that a new publication binary was flashed or measured.",
+  "original_report_sha256": "4a784d0708e32ef8634ffb6f939ff1127811094a42ba923584a7ce60ef2f9857",
+  "original_sanitized_results_sha256": "e8b14867c0e15e448b36c8e28f3656e6bf3b6bec95af1e860bafceb9db7cae40",
+  "public_transformations": [
+    "Clarify historical no-publication statements and add public-evidence context",
+    "Remove eight observed_payload_hex and two observed address_hex values; retain numeric measurements and success flags"
+  ],
+  "original_audit_source_sha256": {
+    "properties.c": "1ecebc0a613e91f0eba5f1ebbb1728d5cc8231813f8e513a0fbde068fcf9eb9a",
+    "crop_sensitivity.c": "86ff75d43dbddd51f8d8c535afa1a080aa699bff143a90cfad4a7d32b8fcf4b5",
+    "build_integrated.py": "a6c90bd343c0044ac036bad68131b17452907756d5b57d2f0fd681b22dae8abd",
+    "run.sh": "41dade5cf15285a9dbdb60ac259a47fe7cd0eed5bb741cf54975897cd42f7106"
+  },
+  "audit_adaptations": "Relative checkout/output discovery; current pipeline fixture generation; fixed-tree tie result assertion; no checked-in binaries or private paths. LeakSanitizer explicitly disabled, not passed.",
+  "evidence_files": [
+    {
+      "path": "docs/evidence/adaptive-evaluation/evaluation-report.md",
+      "sha256": "6d00a5daafe6af642e3673ced3e92cad2a42a9718fdfc1253fd44b89c4801c9b"
+    },
+    {
+      "path": "docs/evidence/adaptive-evaluation/evaluation-results.json",
+      "sha256": "4e399acdf84c3d8013ef9a2a425300656729a586e12fb6d0e16f0009c179efc6"
+    },
+    {
+      "path": "docs/evidence/adaptive-evaluation/audit-sources/properties.c",
+      "sha256": "dc96aa5a43706642cc81ccb4ea70ba9e0c4a24b44dfb93f89db7f061d654d817"
+    },
+    {
+      "path": "docs/evidence/adaptive-evaluation/audit-sources/crop_sensitivity.c",
+      "sha256": "86ff75d43dbddd51f8d8c535afa1a080aa699bff143a90cfad4a7d32b8fcf4b5"
+    },
+    {
+      "path": "docs/evidence/adaptive-evaluation/audit-sources/build_integrated.py",
+      "sha256": "e9d42cff6cb1dc9d65d61a2e51cbd69ecc2040dc0ca0299bf81f749c48aa06f8"
+    },
+    {
+      "path": "docs/evidence/adaptive-evaluation/audit-sources/run.sh",
+      "sha256": "c35ff503a9d0feca3dc1dfe65b3ad3f80fb23a03f84b701fd8782a1c96d00714"
+    },
+    {
+      "path": "docs/evidence/adaptive-evaluation/calibration-follow-up.md",
+      "sha256": "5d75f34df179add820cc0a7bd9b0a1828fb00cd5d19687744a5ced4b738f242b"
+    }
+  ],
+  "publication_source_files": [
+    {
+      "path": "firmware/main/CMakeLists.txt",
+      "sha256": "fad8fdf73c983958e35238beb8266c275bb05cabd8a966b65e01e99a007410c8"
+    },
+    {
+      "path": "firmware/main/targets/esp32/detector_pipeline.h",
+      "sha256": "f24e727d51a92f438c4e2bead2021ef4a977bd51d1ee9f2cbdbc8a4f7c2be108"
+    },
+    {
+      "path": "firmware/main/targets/esp32/detector_retention.h",
+      "sha256": "2415505524413d7571ea83e9a1659207b176d86a3334bb2150043fb8b33e8419"
+    },
+    {
+      "path": "firmware/main/targets/esp32/receiver.c",
+      "sha256": "ae0852dac775d8fc30de88d908891d0917ab70913526f0f0afae638d6c7d4b47"
+    },
+    {
+      "path": "firmware/main/targets/esp32/pipeline_health.h",
+      "sha256": "c7f49fc7457911ec2caff5589a13ac45287e380836c7c34ab0e1671bb4c8e36f"
+    },
+    {
+      "path": "firmware/tests/test_adaptive_pipeline_state.py",
+      "sha256": "f7981b1346174337e64091e8a6adf85336486ba7b6edb2e483caecc1ee2ba957"
+    },
+    {
+      "path": "firmware/tests/test_pipeline_health.py",
+      "sha256": "7106acf9ad4050aa8442646f4c233e6ae4967e9848ebbede298a7f07fb0140e5"
+    },
+    {
+      "path": "scripts/adaptive_board_validation.py",
+      "sha256": "81fe9974420fe20631373bbe5b4d6a968e03b2dadb73aba5d6bc6d203bcd7a4a"
+    },
+    {
+      "path": "scripts/nrf_gain_compare.py",
+      "sha256": "05291ca746b2304b3b62f3bb1500110c16afde74eba66f62fc1f7e815349ea9d"
+    },
+    {
+      "path": "scripts/nrf_raw_controls.py",
+      "sha256": "1a8bacf9aff40e1ae50207cdb3d6430eb211e194b3b0746cc7f8171ddae46468"
+    },
+    {
+      "path": "scripts/verify_adaptive_evidence.py",
+      "sha256": "5dfdbab0ad48c68b4cf336283bda3b1a8e5cf8b4b3419be8789a79a498eda749"
+    }
+  ],
+  "source_hash_scope": "Publication snapshot only. Future live source changes need not match these hashes and must not rewrite this historical identity. CI enforces only evidence_files.",
+  "calibration_follow_up_scope": "Separate 12 November 2026 investigation; later smoke observations excluded from original campaign totals. Reviewed finding only; raw snapshots and complete private report withheld."
+}

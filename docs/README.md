@@ -12,6 +12,13 @@ Current work: [19-item improvement checklist](improvement-checklist.md) · [Full
 | [Controlled-source campaign guide](nrf-controlled-source-campaign.md) | How to run new measurements with the nRF52840 transmitter and your own receiver. |
 | [Multi-receiver preparation](multi-receiver-preparation.md) | The finite multi-port coordinator; tested with fake devices and one real receiver only. |
 
+## Latest adaptive evaluation
+
+[Report and public evidence](evidence/adaptive-evaluation/README.md): released-v3
+versus v2, separate instrumented tie-fixed soak, calibration caveat and six source
+review concerns. Supporting guides: [matched trials](matched-adaptive-gain-trials.md)
+and [optional heap/stack telemetry](pipeline-health-telemetry.md).
+
 ## Results and their limits
 
 | Document | Contents |

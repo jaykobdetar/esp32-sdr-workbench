@@ -1,11 +1,13 @@
-# Adaptive detector and bounded candidate crops (unflashed)
+# Adaptive detector and bounded candidate crops
 
-The source variant is **esp32-pipeline-adaptive-q16-v3**. It is not the measured
-`esp32-pipeline-optimized-v2` binary. No hardware measurements, device flashing,
-AGC/manual comparison, packet recall, distance calibration or improved sensitivity
-are established by these changes. Original recovery images and published evidence
-are unchanged. Board heap/stack, CRC, latency and bounded-run soak testing remain
-required before adoption. Compile and host tests are not that validation.
+The source variant remains **esp32-pipeline-adaptive-q16-v3**, now with a tie-retention
+fix and optional default-off health instrumentation. This is distinct from the
+unchanged released-v3 binary tested during the [adaptive evaluation](evidence/adaptive-evaluation/evaluation-report.md).
+Only the separate instrumented, tie-fixed candidate received the boundary matrix
+and 30-minute soak. The source publication is not a newly validated release image.
+No packet-recall, distance calibration, improved sensitivity or retained-packet
+advantage over v2 was established. The verified v2 application was restored; stored
+PHY calibration changed during the campaign with unknown timing/cause.
 
 ## Exact reference and background policy
 
@@ -50,7 +52,7 @@ to use the completed run's policy until its data is cleared/replaced. `PIPEKEEP?
 queries the **pending** setting. `PIPEKEEP 1` explicitly cancels a pending choice.
 
 A maximum of three distinct positive captures are retained by highest score
-(ties keep earlier captures), each cropped to min(floor(N/8)×8,5120) samples.
+(ties keep earlier captures after the published tie fix), each cropped to min(floor(N/8)×8,5120) samples.
 The crop is centered around the first highest-energy 64-sample block and clamped
 to input bounds with an eight-sample-aligned offset. This is a candidate policy,
 not an RF classifier. `DETPIPEGET` retrieves the strongest; `DETPIPEGET 0`, `1`
@@ -62,14 +64,15 @@ At the full capture length, 3×5120×20/8 = **38,400 packed bytes**, below the o
 the immutable raw buffer is unchanged. Allocation/range/alias checks and safe
 failure cleanup remain mandatory. Smaller requested acquisitions may require
 more retention bytes than their legacy single-buffer equivalent. Memory arithmetic
-is verified; actual board fragmentation, task stack high-water mark, runtime copy
-cost and soak behavior are not. Summary buffers also grew and need stack testing.
+is verified. The separate instrumented candidate passed its recorded heap/stack,
+CRC and soak checks, with [SDK-specific limits](pipeline-health-telemetry.md).
+These measurements do not validate every task or a new default-off release binary.
 
 Each 5120-sample crop lasts 320 µs at 16 MS/s, 128 µs at 40 MS/s, or 64 µs at
 80 MS/s. Only the 16 MS/s duration can contain the known 292 µs frame. Peak
 position or boundary truncation can still cut a packet; even at 16 MS/s the crop
-selection **does not guarantee** containment. A synthetic centered-frame test
-checks one successful case, not general packet recall.
+selection **does not guarantee** containment. The independent synthetic alignment sweep in the evaluation report demonstrates
+shape-dependent truncation; it is not general packet recall.
 
 ## Gain and timing semantics
 

@@ -10,6 +10,7 @@
 #include "ascii_frame.h"
 #include "validate_copy_runtime.h"
 #define DETPIPE_ALLOC_CAPS (MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT | MALLOC_CAP_DMA)
+#include "pipeline_health.h"
 #define DETPIPE_PAGE_BYTES 4096u
 #define DETPIPE_MAX_PACKED ((MAX_SAMPLES * 20u + 7u) / 8u)
 #define DETPIPE_MAX_PAGES 12u /* max(10 legacy pages, 3 x 4 crop pages) */
@@ -223,6 +224,7 @@ static unsigned detpipe_validate_copy(void *context, unsigned n) {
 }
 
 static bool detector_pipeline_command(const char *line) {
+    if (!strcmp(line, "DETPIPEHEALTH?")) { detpipe_health_report(); return true; }
     if (!strcmp(line, "PIPEKEEP?")) { reply("PIPEKEEP %u\n", detpipe_keep); return true; }
     if (!strncmp(line, "PIPEKEEP", 8)) {
         unsigned count; char extra;
@@ -291,6 +293,7 @@ static bool detector_pipeline_command(const char *line) {
         (rate != 0 && rate != 1 && rate != 6) || ratio < 1000 || ratio > 1000000 || retain > 1) {
         reply("ERR pipeline_args\n"); return true;
     }
+    detpipe_health_begin();
     detpipe_clear();
     det_retained_n = 0;
     if (det_retained) { heap_caps_free(det_retained); det_retained = NULL; }
@@ -304,6 +307,7 @@ static bool detector_pipeline_command(const char *line) {
     if (!detpipe_safe_buffer(p.copy, bytes)) {
         detpipe_allocation_report("ERR pipeline_memory","raw",0,p.copy,bytes);
         if (p.copy) heap_caps_free(p.copy);
+        detpipe_health_finish(false);
         return true;
     }
     for (unsigned slot = 0; slot < (retain ? detpipe_run_keep : 0); slot++) {
@@ -315,6 +319,7 @@ static bool detector_pipeline_command(const char *line) {
             detpipe_allocation_report("ERR pipeline_memory","page",page,allocation,amount);
             if (allocation) heap_caps_free(allocation);
             heap_caps_free(p.copy); detpipe_clear();
+            detpipe_health_finish(false);
             return true;
         }
         uintptr_t lo = (uintptr_t)allocation, hi = lo + amount - 1;
@@ -327,12 +332,13 @@ static bool detector_pipeline_command(const char *line) {
         if (!disjoint || page >= DETPIPE_MAX_PAGES) {
             /* A corrupted allocator could alias live allocations. Avoid invalid
              * frees and require reset; ordinary allocation failures above clean all. */
-            reply("ERR pipeline_alias\n"); return true;
+            reply("ERR pipeline_alias\n"); detpipe_health_finish(false); return true;
         }
         detpipe_pages[page] = allocation; detpipe_page_sizes[page] = amount;
         detpipe_page_count++; left -= amount;
     }
     }
+    detpipe_health_allocated();
     prepare_rx();
     uint32_t gain_register_start = REG_READ(RX_GAIN);
     uint64_t first_trigger_us = 0, last_trigger_us = 0;
@@ -372,6 +378,7 @@ static bool detector_pipeline_command(const char *line) {
     uint64_t elapsed = esp_timer_get_time() - start;
     if(p.pack_failed)status=2;
     if (p.processed != captures) status = 2; /* internal accounting error fails closed */
+    detpipe_health_drained();
     heap_caps_free(p.copy);
     char candidate_json[900] = "[]";
     if (detpipe_run_keep == 3) {
@@ -386,7 +393,7 @@ static bool detector_pipeline_command(const char *line) {
                 emitted ? "," : "", slot, c->samples, c->offset_samples, c->generation,
                 c->trigger_device_us, c->score_milli, c->capture_us);
             if (written < 0 || (size_t)written >= sizeof(candidate_json) - used) {
-                reply("ERR pipeline_summary\n"); return true;
+                reply("ERR pipeline_summary\n"); detpipe_health_finish(false); return true;
             }
             used += written; emitted++;
         }
@@ -408,10 +415,13 @@ static bool detector_pipeline_command(const char *line) {
         rate == 0 ? 80000000u : rate == 1 ? 40000000u : 16000000u,
         status ? 1u : 0u, p.processed < 16 ? p.processed : 16u,acquisition_option,clear_option,detpipe_copy_option,detpipe_copy_option == 1 && n == MAX_SAMPLES,p.pack_failed, gain_register_start, (uint32_t)REG_READ(RX_GAIN),
         (unsigned)hardware_agc, gain_code, first_trigger_us, last_trigger_us, detpipe_retained_trigger_us, detpipe_retained_generation, detpipe_run_keep, candidate_json);
+    bool health_valid = false;
     if (length > 0 && (size_t)length < sizeof(summary)) {
         size_t framed=ascii_frame_pad(summary,length,sizeof(summary));
-        if(framed)burst_serial_send(summary,framed);else reply("ERR pipeline_frame\n");
+        if(framed)health_valid=burst_serial_send(summary,framed);else reply("ERR pipeline_frame\n");
     }
     else reply("ERR pipeline_summary\n");
+    detpipe_health_finish(health_valid);
+    (void)health_valid;
     return true;
 }

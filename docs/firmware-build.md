@@ -120,9 +120,11 @@ Firmware derivative: GPL-3.0-or-later. ESP-DSP and the retained ESP-IDF-derived 
 The current `firmware/FIRMWARE_VARIANT` is `esp32-pipeline-adaptive-q16-v3`.
 The build example labels the artifact with the source commit; `VERSION?` separately
 embeds this variant. Neither is a performance claim for this source.
-The Q16 adaptation and optional three-crop retention are compile/host tested,
-**not flashed or board-soak validated**. Historical retention CI builds its pinned
-base with the archived patch, not this changed source. Read
-[adaptive detector](adaptive-detector.md) before evaluating the new firmware;
-heap/stack high-water, CRC and timing checks remain necessary. No recovery image
-or installed radio firmware is replaced by a compile-only build.
+The [adaptive evaluation](evidence/adaptive-evaluation/evaluation-report.md) separately
+tested the unchanged released-v3 image and an instrumented, tie-fixed candidate.
+Only the latter received the 30-minute soak. The current source includes that tie
+fix, with `DETPIPE_HEALTH` OFF by default; a newly built default-off binary still
+needs its own release-image validation. Historical retention CI builds its pinned
+base with the archived patch. Read [adaptive detector](adaptive-detector.md) and
+[optional telemetry](pipeline-health-telemetry.md) before evaluating a new image.
+No recovery image or installed radio firmware is replaced by a compile-only build.

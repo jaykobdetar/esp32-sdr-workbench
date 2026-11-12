@@ -1,12 +1,15 @@
 # ESP32 SDR Research Workbench
 
-**Current source versus measured hardware:** the current source builds the experimental
-`esp32-pipeline-adaptive-q16-v3` detector variant. Its new detector behavior is checked offline and by
-compile tests only; it has not been flashed or validated on the board. Published numerical
-RF results apply to the historical optimized-v2 installed image, not this new source.
-Single-candidate retention remains the default pending board checks.
-The [remaining-validation guide](docs/remaining-validation-guide.md) covers the
-three bench workstreams, required equipment, safe recovery and release readiness.
+**Current source versus measured hardware:** the source includes a three-crop tie-retention fix
+and optional, default-off heap/stack telemetry for `esp32-pipeline-adaptive-q16-v3`. The
+[adaptive evaluation](docs/evidence/adaptive-evaluation/evaluation-report.md) separates the
+unchanged released-v3 binary from the instrumented, tie-fixed candidate. Only the latter
+completed the 30-minute soak. The evaluation does **not** establish a retained-packet
+advantage over optimized-v2. Stored PHY calibration changed at an unknown point, which
+confounds sequential RF comparisons. The verified v2 application was restored.
+Single-candidate retention remains the default; this publication creates no new release
+or board installation. The [remaining-validation guide](docs/remaining-validation-guide.md)
+covers the remaining bench work and release-image validation.
 
 **A native RF viewer and optimized, burst-aware energy detector for the original ESP32.**
 
@@ -65,6 +68,22 @@ The [campaign guide](docs/nrf-controlled-source-campaign.md) covers new measurem
 
 The subsequent [matched AGC/manual comparison](docs/matched-gain-comparison.md) completed 24 bounded runs on the unchanged installed firmware at −20 dBm. Candidate rates depended strongly on gain, but four-block variability does not establish packet-detection superiority. Geometry remains unmeasured.
 
+## Adaptive-v3 evaluation: 11–12 November 2026
+
+- **925 pipeline runs, 1,568,533 processed captures and 1,818 saved I/Q files** with recorded valid transport CRCs. Ten passive runs retained no event; those are not CRC failures.
+- The separate instrumented, tie-fixed candidate completed 360 five-second soak runs. Its lowest recorded DMA-capable heap minimum was 30,448 bytes and command-task lifetime free-stack watermark was 2,748 bytes. The unchanged released-v3 binary did not receive that soak.
+- Stronger-source retained full-packet results were 1/8 ON runs for v2 hardware AGC and 0/8 in every other image/retention/gain stratum. Sparse packet recovery does not establish superiority. Energy candidate counts are not received packets.
+- The tie fix preserves earlier generations among equal lowest scores. All 4,096 six-capture score streams agree with stable reference ordering after the fix.
+- Stored PHY calibration differed in 173/1,904 bytes; its original change timing/trigger is unknown. A [separate v2-only follow-up](docs/evidence/adaptive-evaluation/calibration-follow-up.md) reproduced conditional refresh without v3. Calibration still confounds sequential RF comparisons. The restored v2 application was verified, but original calibration bytes were not restored.
+
+[Report, public summaries and provenance](docs/evidence/adaptive-evaluation/README.md).
+Raw I/Q, device identities and flash/NVS bytes remain private. The offline checker
+recomputes public summary arithmetic, not waveform decoding or new hardware observations:
+
+```sh
+python3 scripts/verify_adaptive_evidence.py
+```
+
 ## Quick start: viewer
 
 Python **3.10+** and a desktop environment are required. Linux was tested; other platforms are not hardware-validated by this project.
@@ -117,10 +136,10 @@ Full aperture bounds/sentinels, receiver restoration and immutable-copy ownershi
 - The waterfall advances per displayed capture, not uniform RF time. UART transfer adds substantial gaps.
 - BLE OFF/ON validation was inconclusive in ambient RF; no ground-truth transmitted packet count/timing was available.
 - The detector flags a large and variable share of captures. In the [published runs](docs/evidence/README.md), 5–31% of post-warmup captures were candidate-positive in the manual-gain A/B trials, 6–48% in the soak and 38–47% in the hardware-AGC GUI runs. The [controlled-source trials](docs/controlled-rf-analysis.md) show that part of this responds to a real transmitter: the optimized image flagged about 427–438 candidate windows/s with the known source on, against 193–202/s with it off. The source-off rate is ambient activity plus any false alarms, and no terminated-input run exists to separate the two.
-- The adaptive background only updates on captures that are *not* flagged. A sustained rise in level therefore keeps every later capture positive until the finite run ends and the next run re-warms.
+- Historical optimized-v2 updates its background only on captures that are *not* flagged, so a sustained rise can remain latched until the next run. Adaptive-v3 updates Q16 background on every capture, more slowly on positives. This removes that synthetic latch but does not establish higher packet yield.
 - Energy is measured in ADC units. Under hardware AGC the firmware does not report the gain in use, so energies are not comparable across gain steps; under manual gain index 40 the recorded background was only 2–34 ADC² units, where integer rounding of the background is coarse.
 - Reported dBFS is relative to one full-scale component, so a complex sample can read up to +3 dBFS. Values near or above 0 dBFS, or a flagged ADC-endpoint share, mean the capture is at the converter's rails.
-- The screenshot-session retained captures have Q-component endpoint occupancy of 0.20–12.76%, consistent with a saturation/clipping concern. [Published counts](docs/evidence/gui/clipping-counts.json) do not establish its cause. A later manual gain sweep against the controlled source found gain index 60 usable and up to 10% component clipping at index 80; hardware AGC was not compared with it under matched conditions, and no terminated-input run exists.
+- The screenshot-session retained captures have Q-component endpoint occupancy of 0.20–12.76%, consistent with a saturation/clipping concern. [Published counts](docs/evidence/gui/clipping-counts.json) do not establish its cause. A later manual gain sweep against the controlled source found gain index 60 usable and up to 10% component clipping at index 80; later matched gain and adaptive-image trials are linked above, but neither establishes a general gain ranking; no terminated-input run exists.
 - Undocumented receiver/debug behavior is experimental. Use only on hardware and signals you are authorized to investigate; respect applicable radio/privacy laws.
 
 ## Repository layout
@@ -157,4 +176,4 @@ ruff check . && ruff format --check .
 QT_QPA_PLATFORM=offscreen python -m pytest -q
 ```
 
-Plain `pytest` runs the viewer, evidence and campaign tests in `tests/`, the receiver host tests in `firmware/tests/` and the transmitter host tests in `nrf52840-transmitter/tests/`: **238 tests plus 5 subtests** in all. The C checks need a host compiler with UndefinedBehaviorSanitizer, and the retention-patch test also needs `git`. [CI](.github/workflows/ci.yml) runs the lint, the format check and all three suites on Python 3.10 and 3.13 for every push and pull request. These software tests require no connected board and are not a replacement for hardware validation: CI builds neither the ESP32 nor the nRF52840 firmware. Qt needs the system EGL/XCB libraries even for offscreen runs (`libegl1` on Debian/Ubuntu). Some campaign and analysis sources are deliberately left unformatted; the [script index](scripts/README.md) explains why.
+Plain `pytest` runs the viewer, evidence and campaign tests in `tests/`, the receiver host tests in `firmware/tests/` and the transmitter host tests in `nrf52840-transmitter/tests/`: **445 tests plus 5 subtests** at the evaluation checkpoint, with additional public-evidence checks added for publication. The C checks need a host compiler with UndefinedBehaviorSanitizer, and the retention-patch test also needs `git`. [CI](.github/workflows/ci.yml) runs the lint, the format check and all three suites on Python 3.10 and 3.13 for every push and pull request. These software tests require no connected board and are not a replacement for hardware validation: separate [firmware CI](.github/workflows/firmware.yml) compiles ESP32 and nRF52840 source but does not operate hardware. Qt needs the system EGL/XCB libraries even for offscreen runs (`libegl1` on Debian/Ubuntu). Some campaign and analysis sources are deliberately left unformatted; the [script index](scripts/README.md) explains why.

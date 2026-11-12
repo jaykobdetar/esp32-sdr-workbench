@@ -114,3 +114,9 @@ endif()
 if(IDF_TARGET STREQUAL "esp32h2")
     target_link_options(${COMPONENT_LIB} INTERFACE "-Wl,--wrap=write_gain_mem")
 endif()
+
+# Isolated validation instrumentation. Never enabled by release profiles.
+option(DETPIPE_HEALTH "Build validation-only pipeline heap/stack telemetry" OFF)
+if(DETPIPE_HEALTH)
+    target_compile_definitions(${COMPONENT_LIB} PRIVATE DETPIPE_HEALTH=1)
+endif()

@@ -71,6 +71,11 @@ static void reset(unsigned failure,unsigned allocation_failure){
  detpipe_clear();assert(active_allocations==0);wire_len=0;det_retained_n=0;now=calls=allocs=0;fail_at=failure;alloc_fail=allocation_failure;output[0]=0;reject_at=0;reject_lo=reject_hi=0;guard_fail_at=0;detpipe_keep=detpipe_run_keep=1;detpipe_copy_option=detpipe_kernel=0;
 }
 int main(void){
+#if !DETPIPE_HEALTH
+ assert(detector_pipeline_command("DETPIPEHEALTH?"));
+ assert(strstr(output,"\"enabled\":false"));
+ output[0]=0;
+#endif
  assert(!detpipe_safe_buffer(NULL,1024));
  assert(!detpipe_safe_buffer((void*)0x3ffe8000,1024));
  assert(!detpipe_safe_buffer((void*)0x3ffe7fff,2));
@@ -243,6 +248,57 @@ int main(void){
  assert(detector_pipeline_command("PIPEKEEP 3"));assert(detector_pipeline_command("PIPEKEEP 1"));
  assert(detpipe_keep==1);assert(detector_pipeline_command("PIPEKEEP 2"));
  assert(strstr(output,"ERR pipeline_keep"));assert(detpipe_keep==1);
+
+
+ /* Stable top-three selection: equal scores retain earlier generations. */
+ for(unsigned encoded=0;encoded<4096;encoded++){
+  detector_candidate_t candidates[3]={{0}};
+  unsigned scores[6],order[6]={0,1,2,3,4,5},code=encoded;
+  for(unsigned generation=0;generation<6;generation++){
+   scores[generation]=100+(code%4)*100;code/=4;
+   unsigned slot=detector_candidate_slot(candidates,3,scores[generation]);
+   if(slot<3)candidates[slot]=(detector_candidate_t){.samples=256,
+    .generation=generation+1,.score_milli=scores[generation]};
+  }
+  for(unsigned a=0;a<6;a++)for(unsigned b=a+1;b<6;b++){
+   if(scores[order[b]]>scores[order[a]] ||
+      (scores[order[b]]==scores[order[a]] && order[b]<order[a])){
+    unsigned tmp=order[a];order[a]=order[b];order[b]=tmp;
+   }
+  }
+  unsigned actual=0,expected=0;
+  for(unsigned j=0;j<3;j++){
+   actual|=1u<<(candidates[j].generation-1);expected|=1u<<order[j];
+  }
+  assert(actual==expected);
+ }
+ /* Exercise the same tie replacement through commit, packed retention and GET.
+  * Reset background to a fixed valid reference so equal scores are deliberate. */
+ reset(0,0);assert(detector_pipeline_command("PIPEKEEP 3"));
+ assert(detector_pipeline_command("DETPIPE1 1 256 6 1000 1"));
+ detpipe_state_t ties={.copy=samples,.n=256};
+ for(unsigned generation=17;generation<=20;generation++){
+  unsigned amplitude=generation==20?2:1;
+  for(unsigned j=0;j<256;j++){
+   int value=(j&1)?(int)amplitude:-(int)amplitude;
+   samples[j]=((unsigned)value&1023)|(((unsigned)value&1023)<<10);
+  }
+  ties.background=(detector_background_t){.count=16,.q16=65536};
+  ties.mean=ties.peak=2*amplitude*amplitude;
+  ties.generation=generation;ties.observed_us=1050;
+  ties.trigger_device_us=(generation-1)*1000+1;
+  ties.pending=ties.ready=true;
+  detpipe_commit(&ties,1000,true);
+ }
+ assert(!ties.pack_failed && ties.processed==4 && ties.events==4);
+ assert(detpipe_candidates[0].generation==17 && detpipe_candidates[1].generation==18);
+ assert(detpipe_candidates[2].generation==20 && detpipe_best_slot==2);
+ assert(detpipe_retained_generation==20 && detpipe_retained_trigger_us==19001);
+ assert(detector_candidate_slot(detpipe_candidates,3,2000)==3);
+ wire_len=0;assert(detector_pipeline_command("DETPIPEGET"));
+ uint8_t *tie_payload=memchr(wire,'\n',wire_len);assert(tie_payload);tie_payload++;
+ assert((size_t)(tie_payload-wire)+640==wire_len);
+ assert((tie_payload[0]|((tie_payload[1]&3)<<8))==1022);
 
  reset(0,0);puts("pipeline candidate state, drain, retention, range, allocation-failure tests passed");
 }

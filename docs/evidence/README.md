@@ -2,6 +2,13 @@
 
 This is a curated, privacy-reviewed export of existing research records from 2026-11-10, published on 2026-11-11. No board was queried or flashed and no new RF measurement was performed for this supplement. Local originals were preserved. It contains measured results and explicitly labeled derived checks, not invented serial transcripts.
 
+## Adaptive evaluation supplement
+
+The [adaptive evaluation](adaptive-evaluation/README.md) adds privacy-reviewed
+summaries from the later 11–12 November campaign, with image-separated identities,
+925 pipeline runs, source-audit findings and explicit calibration/decoding limits.
+The source publication performed no new hardware access or firmware installation.
+
 ## New controlled RF campaign supplement
 
 The [11 November controlled nRF52840 validation](nrf-validation/README.md) adds 550 recording summaries, hashes, known test-packet bytes, actual-image ABAB comparisons, the parameter screen and the unadopted retention trial. It has a separate offline verifier and preserves the distinction between UART CRC, known RF packet CRC and unmeasured packet recall. No new device access was performed for publication. Earlier evidence and conclusions below retain their historical scope.

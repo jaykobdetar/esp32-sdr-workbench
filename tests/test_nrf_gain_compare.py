@@ -50,6 +50,9 @@ class RX:
     failed = False
     gain = 40
 
+    def __init__(self):
+        self.settings = dict(PIPEKERNEL=0, ACQOPT=0, CLEAROPT=0, PIPECOPY=0, PIPEKEEP=1)
+
     def connect(self):
         return {'version': 'VERSION esp32-pipeline-optimized-v2'}
 
@@ -57,6 +60,13 @@ class RX:
         self.gain = gain
 
     def command(self, command):
+        if command == 'DETPIPEMEM?':
+            return 'DETPIPEMEM 40000 20000'
+        name = command.split()[0].rstrip('?')
+        if name in self.settings:
+            if not command.endswith('?'):
+                self.settings[name] = int(command.split()[1])
+            return f'{name} {self.settings[name]}'
         if command == 'GAIN?':
             return (
                 f'GAIN MANUAL {self.gain} 0 79 1'
@@ -231,3 +241,223 @@ def test_published_gain_evidence_is_recomputable():
             for p in saved['block_ids']
         ]
         assert exact_sign_flip(contrasts)['two_sided_p'] == saved['two_sided_p'] == 0.25
+
+
+class AdaptiveRX(RX):
+    def connect(self):
+        return {
+            'version': 'VERSION '
+            + json.dumps(dict(firmware_variant=m.VARIANTS[1], revision='test-revision'))
+        }
+
+
+def adaptive_args(tmp_path, count=3):
+    a = args(tmp_path)
+    a.expected_variant = m.VARIANTS[1]
+    a.expected_revision = 'test-revision'
+    a.candidate_count = count
+    return a
+
+
+def test_defaults_still_v2_single(tmp_path):
+    a = args(tmp_path)
+    assert a.expected_variant == m.VARIANTS[0] and a.candidate_count == 1
+    a.candidate_count = 3
+    with pytest.raises(ValueError, match='explicit adaptive'):
+        m.execute(a, RX(), TX())
+
+
+@pytest.mark.parametrize('count', [1, 3])
+@pytest.mark.parametrize('event', [False, True])
+def test_adaptive_crops_and_no_event(tmp_path, count, event):
+    from types import SimpleNamespace
+
+    a, rx, tx = adaptive_args(tmp_path, count), AdaptiveRX(), TX()
+    saved = []
+
+    def run(*args, **kwargs):
+        summary, _ = pipeline()
+        n = count if event else 0
+        summary.update(
+            background_policy=2, retained_event_count=n, retained_samples=100 if n else 0
+        )
+        captures = [
+            SimpleNamespace(crc_ok=True, metadata={'retained_candidate': {'slot': i}})
+            for i in range(n)
+        ]
+        return summary, captures if count == 3 else (captures[0] if captures else None)
+
+    def save(capture, prefix):
+        saved.append(str(prefix))
+        return prefix
+
+    result = m.execute(a, rx, tx, pipeline=run, multiple=run, saver=save, sleep=lambda _: None)
+    assert result['status'] == 'passed'
+    assert len(saved) == (24 * count if event else 0) and len(saved) == len(set(saved))
+    for row in result['runs']:
+        assert row['retained_count'] == (count if event else 0)
+        assert row['retained_transport_crc_valid'] is (True if event else None)
+        assert row['heap_before'] == row['heap_cleared'] == result['heap_final']
+        assert len(row['crops']) == (count if event else 0)
+    assert result['selectors_restored'] == result['selectors_initial']
+    assert not tx.running
+
+
+def test_strict_revision_blocks_source(tmp_path):
+    a, tx = adaptive_args(tmp_path), TX()
+    a.expected_revision = 'different'
+    with pytest.raises(RuntimeError, match='revision mismatch'):
+        m.execute(a, AdaptiveRX(), tx)
+    assert not tx.running and not tx.cfg
+
+
+@pytest.mark.parametrize('failure', ['policy', 'crc', 'count', 'heap', 'selector', 'transport'])
+def test_adaptive_failure_cleanup(tmp_path, failure):
+    from types import SimpleNamespace
+
+    a, rx, tx = adaptive_args(tmp_path), AdaptiveRX(), TX()
+
+    def run(*args, **kwargs):
+        summary, _ = pipeline()
+        summary.update(
+            background_policy=0 if failure == 'policy' else 2,
+            retained_event_count=2 if failure == 'count' else 1,
+            retained_samples=100,
+        )
+        if failure == 'selector':
+            rx.settings['PIPEKEEP'] = 3
+        if failure == 'heap':
+            original = rx.command
+            rx.command = lambda cmd: (
+                'DETPIPEMEM 39999 19999' if cmd == 'DETPIPEMEM?' else original(cmd)
+            )
+        if failure == 'transport':
+            rx.failed = True
+            raise RuntimeError('transport failure')
+        return summary, [SimpleNamespace(crc_ok=failure != 'crc', metadata={})]
+
+    with pytest.raises(RuntimeError):
+        m.execute(a, rx, tx, multiple=run, saver=lambda c, p: p, sleep=lambda _: None)
+    report = json.loads((a.output_directory / 'results.json').read_text())
+    assert report['status'] == 'failed' and not tx.running
+    assert report['runs'][-1]['status'] == 'failed'
+    assert report['tx_final']['running'] is False
+    if failure in ('transport', 'heap'):
+        assert 'receiver_cleanup_error' in report
+    else:
+        assert report['selectors_restored'] == report['selectors_initial']
+
+
+def test_exact_usb_identity():
+    from types import SimpleNamespace
+
+    p = SimpleNamespace(
+        device='/dev/fake',
+        serial_number='exact',
+        vid=1,
+        pid=2,
+        location='fake',
+        manufacturer='fake',
+        product='fake',
+    )
+    assert m.usb_identity('/dev/fake', 'exact', [p])['pid'] == 2
+    for serial, ports in [('wrong', [p]), ('exact', []), ('exact', [p, p])]:
+        with pytest.raises(RuntimeError, match='Exact USB'):
+            m.usb_identity('/dev/fake', serial, ports)
+
+
+def test_pending_selection_not_consumed(tmp_path):
+    a, rx, tx = adaptive_args(tmp_path), AdaptiveRX(), TX()
+    rx.settings['PIPEKEEP'] = 3
+    commands = []
+    original = rx.command
+
+    def record(command):
+        commands.append(command)
+        return original(command)
+
+    rx.command = record
+    with pytest.raises(RuntimeError, match='Pending external'):
+        m.execute(a, rx, tx)
+    assert 'DETPIPECLEAR' not in commands
+    assert rx.settings['PIPEKEEP'] == 3 and not tx.running
+
+
+def test_final_stop_failure_marks_report_failed(tmp_path):
+    class FinalStopFails(TX):
+        def stop(self):
+            # Initial stop, then before/after each of the 24 runs, then final.
+            if self.stops == 49:
+                raise RuntimeError('final STOP unverified')
+            return super().stop()
+
+    a = args(tmp_path)
+    report = m.execute(a, RX(), FinalStopFails(), pipeline=pipeline, sleep=lambda _: None)
+    assert report['status'] == 'failed'
+    assert 'STOP unverified' in report['tx_cleanup_error']
+
+
+def test_save_failure_still_clears_restores_and_stops(tmp_path):
+    from types import SimpleNamespace
+
+    a, rx, tx = adaptive_args(tmp_path), AdaptiveRX(), TX()
+
+    def run(*args, **kwargs):
+        summary, _ = pipeline()
+        summary.update(background_policy=2, retained_samples=100, retained_event_count=1)
+        return summary, [SimpleNamespace(crc_ok=True, metadata={})]
+
+    def fail_save(*args):
+        raise OSError('disk full')
+
+    with pytest.raises(OSError, match='disk full'):
+        m.execute(a, rx, tx, multiple=run, saver=fail_save, sleep=lambda _: None)
+    report = json.loads((a.output_directory / 'results.json').read_text())
+    assert report['status'] == 'failed' and report['heap_final'] == report['heap_baseline']
+    assert report['selectors_initial'] == report['selectors_restored']
+    assert not tx.running
+
+
+def test_usb_identity_accepts_persistent_symlink(tmp_path):
+    from types import SimpleNamespace
+
+    target = tmp_path / 'ttyUSB0'
+    target.touch()
+    alias = tmp_path / 'by-id-receiver'
+    alias.symlink_to(target)
+    port = SimpleNamespace(
+        device=str(target),
+        serial_number='0001',
+        vid=0x10C4,
+        pid=0xEA60,
+        location='fake',
+        manufacturer='fake',
+        product='fake',
+    )
+    identity = m.usb_identity(str(alias), '0001', [port])
+    assert identity['device'] == str(target)
+    assert identity['vid'] == 0x10C4 and identity['pid'] == 0xEA60
+    for serial, ports in [('wrong', [port]), ('0001', [port, port])]:
+        with pytest.raises(RuntimeError, match='Exact USB'):
+            m.usb_identity(str(alias), serial, ports)
+    port.vid = None
+    with pytest.raises(RuntimeError, match='Exact USB'):
+        m.usb_identity(str(alias), '0001', [port])
+
+
+def test_main_rejects_same_device_alias_before_serial_open(tmp_path, monkeypatch):
+    target = tmp_path / 'ttyUSB0'
+    target.touch()
+    alias = tmp_path / 'by-id-receiver'
+    alias.symlink_to(target)
+    a = args(tmp_path)
+    a.rx_port, a.tx_port, a.rx_serial = str(alias), str(target), '0001'
+    monkeypatch.setattr(argparse_parser := m.parser(), 'parse_args', lambda: a)
+    monkeypatch.setattr(m, 'parser', lambda: argparse_parser)
+
+    def forbid_open(*args, **kwargs):
+        raise AssertionError('Radio must not open for device aliases')
+
+    monkeypatch.setattr(m, 'Radio', forbid_open)
+    with pytest.raises(ValueError, match='distinct USB devices'):
+        m.main()
