@@ -253,6 +253,18 @@ static bool detector_pipeline_command(const char *line) {
         if(sscanf(line,"DETPIPEALLOCTEST %u %u %c",&n,&retain,&extra)!=2||n<256||n>MAX_SAMPLES||retain>1){reply("ERR pipeline_alloc_args\n");return true;}
         return detpipe_allocation_test(n,retain);
     }
+    /* Background rule for the next DET1 or DETPIPE1 run. Sticky like PIPEKERNEL,
+     * so clients must set and read it back; every END summary reports the rule
+     * that actually ran. Policy 1 is the measured optimized-v2 rule. */
+    if (!strcmp(line, "BGPOLICY?")) { reply("BGPOLICY %u\n", detector_background_policy); return true; }
+    if (!strncmp(line, "BGPOLICY", 8)) {
+        unsigned policy; char extra;
+        if (sscanf(line, "BGPOLICY %u %c", &policy, &extra) == 1 &&
+            (policy == DETECTOR_BACKGROUND_POLICY_LEGACY || policy == DETECTOR_BACKGROUND_POLICY_Q16)) {
+            detector_background_policy = policy; reply("BGPOLICY %u\n", policy);
+        } else reply("ERR background_policy\n");
+        return true;
+    }
     if (!strcmp(line, "PIPEKERNEL?")) { reply("PIPEKERNEL %u\n", detpipe_kernel); return true; }
     if (!strncmp(line, "PIPEKERNEL", 10)) {
         unsigned kernel; char extra;
@@ -299,7 +311,8 @@ static bool detector_pipeline_command(const char *line) {
     if (det_retained) { heap_caps_free(det_retained); det_retained = NULL; }
     detpipe_run_keep = detpipe_keep;
     detpipe_keep = 1; /* One-shot option: legacy clients cannot inherit crops. */
-    detpipe_state_t p = {.n=n, .kernel=detpipe_kernel, .background={.q16=1}};
+    detpipe_state_t p = {.n=n, .kernel=detpipe_kernel,
+                         .background=detector_background_start(detector_background_policy)};
     size_t bytes = n * sizeof(uint32_t);
     p.copy = heap_caps_malloc(bytes, DETPIPE_ALLOC_CAPS);
     size_t retained_bytes = ((detpipe_run_keep == 3 ? detector_crop_length(n) : n) * 20u + 7u) / 8u;
@@ -402,13 +415,14 @@ static bool detector_pipeline_command(const char *line) {
     char summary[3000];
     int length = snprintf(summary, sizeof(summary),
         "DETPIPE1 END {\"version\":1,\"kernel\":%u,\"status\":%u,\"captures\":%u,\"processed_captures\":%u,"
-        "\"detections\":%u,\"background_policy\":2,\"background_q16\":%" PRIu64 ",\"background_adc2\":%u,\"best_ratio_milli\":%u,"
+        "\"detections\":%u,\"background_policy\":%u,\"background_q16\":%" PRIu64 ",\"background_adc2\":%u,\"best_ratio_milli\":%u,"
         "\"wall_elapsed_us\":%" PRIu64 ",\"completion_observed_us\":%" PRIu64 ","
         "\"acquire_call_us_includes_overlap\":%" PRIu64 ",\"energy_compute_us\":%" PRIu64 ","
         "\"copy_us\":%" PRIu64 ",\"decision_us\":%" PRIu64 ",\"retention_copy_us\":%" PRIu64 ","
         "\"retained_samples\":%u,\"frequency_mhz\":%u,\"total_samples\":%" PRIu64 ","
         "\"analyzed_samples\":%" PRIu64 ",\"sample_rate_hz\":%u,\"errors\":%u,\"warmup_captures\":%u,\"acquisition_option\":%u,\"clear_option\":%u,\"copy_option\":%u,\"fused_active\":%u,\"pack_failed\":%u,\"gain_register_start\":%" PRIu32 ",\"gain_register_end\":%" PRIu32 ",\"hardware_agc\":%u,\"gain_index_requested\":%u,\"first_trigger_device_us\":%" PRIu64 ",\"last_trigger_device_us\":%" PRIu64 ",\"retained_trigger_device_us\":%" PRIu64 ",\"retained_generation\":%u,\"retention_capacity\":%u,\"retained_candidates\":%s}\n",
-        p.kernel, status, captures, p.processed, p.events, p.background.q16, (unsigned)(p.background.q16 / DETECTOR_BACKGROUND_SCALE), p.best_ratio, elapsed,
+        p.kernel, status, captures, p.processed, p.events,
+        detector_background_state_policy(&p.background), p.background.q16, (unsigned)(p.background.q16 / DETECTOR_BACKGROUND_SCALE), p.best_ratio, elapsed,
         observed_done_us, acquisition_us, p.compute_us, p.copy_us, p.commit_us - p.retention_us,
         p.retention_us, detpipe_retained_n, frequency_mhz, (uint64_t)captures*n,
         (uint64_t)p.processed*(n/64)*64,

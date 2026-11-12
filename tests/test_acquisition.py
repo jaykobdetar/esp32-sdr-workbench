@@ -152,7 +152,15 @@ raise SystemExit(main(sys.argv[1:]))
 
 
 @pytest.mark.parametrize(
-    'args', [[], ['--demo'], ['--port', '/fake', '--bits', '8'], ['--port', '/fake', '--runs', '0']]
+    'args',
+    [
+        [],
+        ['--demo'],
+        ['--port', '/fake', '--bits', '8'],
+        ['--port', '/fake', '--runs', '0'],
+        ['--port', '/fake', '--background-policy', '3'],
+        ['--port', '/fake', '--mode', 'raw', '--bits', '8', '--background-policy', '1'],
+    ],
 )
 def test_cli_rejects_unsafe_or_invalid_configuration(tmp_path, args):
     from sdr_research.cli import record
@@ -304,3 +312,42 @@ def test_cli_duration_bounds_starting_new_runs(tmp_path):
     assert proc.returncode == 0, proc.stderr
     document = json.loads(proc.stdout.splitlines()[-1])
     assert document['runs'] > 1 and document['ok']
+
+
+@pytest.mark.parametrize('mode', ['DET1', 'DETPIPE1'])
+@pytest.mark.parametrize('policy', [None, 1, 2])
+def test_recorder_passes_background_policy_only_when_chosen(tmp_path, monkeypatch, mode, policy):
+    chosen = {} if policy is None else {'background_policy': policy}
+    worker = AcquisitionWorker(
+        'fake',
+        settings(mode=mode, det_ms=1, ratio_milli=4000, autosave=False, **chosen),
+        tmp_path,
+    )
+    worker.started_ns = time.monotonic_ns()
+    summary = dict(
+        captures=20,
+        detections=0,
+        sample_rate_hz=16_000_000,
+        total_samples=5120,
+        analyzed_samples=5120,
+        warmup_captures=16,
+        status=0,
+    )
+    seen = []
+
+    def run(*args, **kwargs):
+        seen.append(kwargs)
+        return dict(summary), None
+
+    monkeypatch.setattr(acquisition, 'select_acquisition_policy', lambda *args: {})
+    monkeypatch.setattr(acquisition, 'run_detection', run)
+    monkeypatch.setattr(acquisition, 'run_pipeline', run)
+
+    class Radio:
+        info = {'caps': []}
+
+    worker.detector_run(Radio(), 2440)
+    # Unset leaves the clients' own default (the firmware default) in force.
+    assert [call.get('background_policy', 'absent') for call in seen] == [
+        'absent' if policy is None else policy
+    ]

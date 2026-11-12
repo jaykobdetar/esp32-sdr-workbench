@@ -34,15 +34,16 @@ def test_current_variant_distinguishes_tie_fix_and_calibration_observer():
     from sdr_research.calibration import CURRENT_VARIANT
 
     assert (ROOT / 'FIRMWARE_VARIANT').read_text().strip() == CURRENT_VARIANT
-    assert CURRENT_VARIANT == 'esp32-pipeline-adaptive-q16-v6'
+    assert CURRENT_VARIANT == 'esp32-pipeline-adaptive-q16-v7'
 
 
-def test_calibration_variants_remain_required_for_v4_v5_and_v6():
+def test_calibration_variants_remain_required_for_v4_through_v7():
     from sdr_research.calibration import ADAPTIVE_VARIANTS, CALIBRATION_VARIANTS
 
     assert CALIBRATION_VARIANTS == (
         'esp32-pipeline-adaptive-q16-v4',
         'esp32-pipeline-adaptive-q16-v5',
         'esp32-pipeline-adaptive-q16-v6',
+        'esp32-pipeline-adaptive-q16-v7',
     )
     assert set(CALIBRATION_VARIANTS) < set(ADAPTIVE_VARIANTS)

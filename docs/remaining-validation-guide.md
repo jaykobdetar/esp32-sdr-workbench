@@ -137,7 +137,7 @@ python firmware/tools/build_firmware.py \
   --output "$PRIVATE_RUN_ROOT/artifacts-$REV"
 ```
 
-Confirm embedded variant `esp32-pipeline-adaptive-q16-v6`, actual revision and
+Confirm embedded variant `esp32-pipeline-adaptive-q16-v7`, actual revision and
 hash. Only after the installation gate is satisfied and installation is approved,
 use the build guide's **application-only** route on a compatible existing layout.
 Do not run generic full-chip erase, replace the bootloader/partition table to make
@@ -362,7 +362,7 @@ can collect one condition with explicit new-image identity:
 ```sh
 python -m nrf_campaigns.nrf_receiver_compare \
   --receiver-mode optimized --label geometry01-power-minus40 \
-  --expected-variant esp32-pipeline-adaptive-q16-v6 \
+  --expected-variant esp32-pipeline-adaptive-q16-v7 \
   --rx-port "$RX_PORT" --tx-port "$TX_PORT" \
   --rx-artifact /PRIVATE/PATH/TO/VERIFIED_INSTALLED_APPLICATION.bin \
   --output-directory "$PRIVATE_RUN_ROOT/geometry01-power-minus40" \

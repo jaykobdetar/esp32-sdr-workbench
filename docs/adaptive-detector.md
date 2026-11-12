@@ -1,8 +1,8 @@
 # Adaptive detector and bounded candidate crops
 
-The current source variant is **esp32-pipeline-adaptive-q16-v6**, identifying the
+The current source variant is **esp32-pipeline-adaptive-q16-v7**, identifying the
 tie-retention fix, read-only calibration fingerprint query and optional default-off
-health instrumentation, with fail-closed NVS startup and strict SPEC parsing added in v5 and serial NUL rejection in v6. This is distinct from the
+health instrumentation, with fail-closed NVS startup and strict SPEC parsing added in v5, serial NUL rejection in v6, and the runtime background-rule selector in v7. V7 has been compiled and host-tested only; it has not been installed on a board. This is distinct from the
 unchanged released-v3 binary tested during the [adaptive evaluation](evidence/adaptive-evaluation/evaluation-report.md).
 Only the separate instrumented, tie-fixed candidate received the boundary matrix
 and 30-minute soak. The source publication is not a newly validated release image.
@@ -38,6 +38,40 @@ new warmup and **does not reconstruct** the original online run. The CLI rejects
 mixed frequency/rate/known gain and rejects detector-selected IQ unless
 `--allow-selected` is explicit. Selected buffers are biased; missing capture
 chronology and AGC gain changes prevent candidate recall/false-positive estimates.
+
+### Comparing the two rules on one image
+
+Through v6 the firmware ran policy 2 only, so comparing it with the historical
+rule meant flashing two images in sequence. The adaptive evaluation shows why that
+is weak evidence: the same v2 image gave different source-on minus source-off
+contrasts in different sessions, and the stored PHY calibration changed during the
+campaign. Its largest difference, at manual gain 60 (+174.76 candidate windows/s
+on v2 against +26.57 on v3), therefore cannot be attributed to the rule.
+
+From v7, `BGPOLICY 1` or `BGPOLICY 2` selects the rule per run on the installed
+image ([protocol](protocol.md#background-rule-selector-v7)). Runs can then be
+interleaved (1, 2, 2, 1, ...) within one session, at one calibration state, with
+the source on and off for each. From the host:
+
+```sh
+esp32-sdr record --port PORT --output NEW_PRIVATE_DIR --mode DETPIPE1 \
+  --gain 60 --bandwidth-mhz 12 --run-ms 1000 --runs 1 --background-policy 1
+```
+
+or pass `background_policy=1` to `run_pipeline()` / `run_detection()`. Every
+summary records the requested and read-back selection and the rule the firmware
+reports. A reference-model simulation of a source present all run (frames in two
+thirds of captures) predicts the rules differ only at moderate strength: for
+bursts about 8 times the floor the legacy rule flags roughly 42% of source-bearing
+captures and the Q16 rule roughly 28%, because the Q16 rule absorbs part of the
+source into its background. Weaker bursts are missed and stronger ones caught by
+both alike. `tests/test_detector_model.py` pins that prediction; it is a model
+result, untested on hardware.
+
+Policy 1 here is the historical *decision rule* running inside v7. It is checked
+line for line against the archived v2 source by host tests, but duty, timing and
+calibration behavior belong to v7, so results are not measurements of the
+optimized-v2 binary.
 
 ## Multiple candidate retention, explicitly opt-in
 

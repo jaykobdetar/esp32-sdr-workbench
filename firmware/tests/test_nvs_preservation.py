@@ -30,10 +30,14 @@ typedef int wifi_init_config_t;
 #define WIFI_INIT_CONFIG_DEFAULT() 0
 #define RX_GAIN 0
 #define BIT(n) (1u<<(n))
-static unsigned gain_max, init_calls, erase_calls, radio_calls, serial_calls;
+static unsigned gain_max, init_calls, erase_calls, radio_calls, serial_calls, idle_delays;
 static int init_result, fatal_error;
-static unsigned char storage[32];
+/* The failure path must idle forever. Let it repeat its notice three times, then
+ * leave the otherwise endless loop so the test can inspect what happened. */
+#define pdMS_TO_TICKS(ms) (ms)
 static jmp_buf halted;
+static void vTaskDelay(unsigned ticks){assert(ticks==5000);if(++idle_delays==3)longjmp(halted,2);}
+static unsigned char storage[32];
 static void esp_log_level_set(const char*a,int b){(void)a;(void)b;}
 static int nvs_flash_init(void){init_calls++;return init_result;}
 /* An erase would irreversibly destroy this mock calibration/settings image. */
@@ -60,9 +64,10 @@ int main(void){
  unsigned char expected[32];memset(expected,0x42,sizeof(expected));
  for(volatile unsigned i=0;i<sizeof(failures)/sizeof(failures[0]);i++){
   memcpy(storage,expected,sizeof(storage));init_calls=erase_calls=radio_calls=serial_calls=0;
-  init_result=failures[i];fatal_error=0;
+  init_result=failures[i];fatal_error=0;idle_delays=0;
   if(!setjmp(halted)){app_main();assert(!"Startup must fail closed");}
-  assert(fatal_error==init_result && init_calls==1 && erase_calls==0);
+  /* It idles and repeats the notice; it never aborts, which would reboot in a loop. */
+  assert(idle_delays==3 && fatal_error==0 && init_calls==1 && erase_calls==0);
   assert(radio_calls==0 && serial_calls==0 && !memcmp(storage,expected,sizeof(storage)));
  }
  init_result=0;init_calls=erase_calls=radio_calls=serial_calls=0;
@@ -89,4 +94,7 @@ int main(void){
         ],
         check=True,
     )
-    subprocess.run([str(tmp_path / 'test')], check=True)
+    result = subprocess.run([str(tmp_path / 'test')], check=True, capture_output=True, text=True)
+    # Three injected failures, each repeating the notice three times before the mock stops it.
+    notices = [line for line in result.stdout.splitlines() if line.startswith('ERR nvs_init ')]
+    assert len(notices) == 9 and all('storage_preserved' in line for line in notices)

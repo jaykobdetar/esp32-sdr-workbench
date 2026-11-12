@@ -39,7 +39,7 @@ static bool detector_command(const char *line) {
     unsigned retained_generation = 0;
     reply("DET1 BEGIN %u %u %u %u %u %u\n", ms, n, rate, ratio, retain, frequency_mhz);
     unsigned captures = 0, events = 0, best_ratio = 0, status = 0;
-    detector_background_t background = {.q16=1};
+    detector_background_t background = detector_background_start(detector_background_policy);
     uint64_t trigger_us = 0, acquisition_us = 0, analysis_us = 0, retain_us = 0;
     int64_t start = esp_timer_get_time();
     while (esp_timer_get_time() - start < (int64_t)ms * 1000) {
@@ -76,12 +76,12 @@ static bool detector_command(const char *line) {
     char summary[1600];
     int length = snprintf(summary, sizeof(summary),
         "DET1 END {\"version\":1,\"status\":%u,\"captures\":%u,\"detections\":%u,"
-        "\"background_policy\":2,\"background_q16\":%" PRIu64 ",\"background_adc2\":%u,\"best_ratio_milli\":%u,\"wall_elapsed_us\":%" PRIu64 ","
+        "\"background_policy\":%u,\"background_q16\":%" PRIu64 ",\"background_adc2\":%u,\"best_ratio_milli\":%u,\"wall_elapsed_us\":%" PRIu64 ","
         "\"trigger_to_done_us\":%" PRIu64 ",\"acquire_call_us\":%" PRIu64 ","
         "\"processing_us\":%" PRIu64 ",\"retention_copy_us\":%" PRIu64 ","
         "\"retained_samples\":%u,\"frequency_mhz\":%u,\"total_samples\":%" PRIu64 ","
         "\"analyzed_samples\":%" PRIu64 ",\"sample_rate_hz\":%u,\"errors\":%u,\"warmup_captures\":%u,\"acquisition_option\":%u,\"clear_option\":%u,\"gain_register_start\":%" PRIu32 ",\"gain_register_end\":%" PRIu32 ",\"hardware_agc\":%u,\"gain_index_requested\":%u,\"first_trigger_device_us\":%" PRIu64 ",\"last_trigger_device_us\":%" PRIu64 ",\"retained_trigger_device_us\":%" PRIu64 ",\"retained_generation\":%u}\n",
-        status, captures, events, background.q16, (unsigned)(background.q16 / DETECTOR_BACKGROUND_SCALE), best_ratio, elapsed, trigger_us, acquisition_us,
+        status, captures, events, detector_background_state_policy(&background), background.q16, (unsigned)(background.q16 / DETECTOR_BACKGROUND_SCALE), best_ratio, elapsed, trigger_us, acquisition_us,
         analysis_us - retain_us, retain_us, det_retained_n, frequency_mhz,
         (uint64_t)captures * n, (uint64_t)captures * (n / 64) * 64,
         rate == 0 ? 80000000u : rate == 1 ? 40000000u : 16000000u,

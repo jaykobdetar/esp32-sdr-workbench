@@ -1,5 +1,13 @@
 # Independent review fixes
 
+> **Later change (v7).** The current source is `esp32-pipeline-adaptive-q16-v7`. This
+> document records the v5 and v6 builds and their checks, which are unchanged. One
+> behavior described below was corrected afterwards: on NVS initialization failure
+> v5 and v6 called `ESP_ERROR_CHECK`, which aborts and, under the release panic
+> configuration, reboots immediately and repeats. Storage was preserved, but the
+> device did not stop. V7 idles and repeats an `ERR nvs_init` notice every five
+> seconds instead. See the [validation record](validation.md).
+
 The combined source identifies as `esp32-pipeline-adaptive-q16-v6`, distinct from
 previously measured v2, v3, v4 and intermediate v5 applications. No public release or tag is implied.
 The detector and single-candidate default are unchanged from v4. Three-crop mode

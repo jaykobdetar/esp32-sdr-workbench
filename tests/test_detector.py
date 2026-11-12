@@ -125,3 +125,51 @@ def test_malformed_duty_fields_rejected(updates):
     with pytest.raises(ProtocolError):
         run_detection(r, retain=False)
     assert r.failed
+
+
+class PolicyRadio(Radio):
+    """DET1 firmware with the sticky background-rule selector."""
+
+    def __init__(self, reported):
+        super().__init__(
+            dict(
+                background_policy=reported,
+                background_q16=2 * 65536,
+                background_adc2=2,
+                gain_register_start=1,
+                gain_register_end=1,
+                hardware_agc=0,
+                gain_index_requested=40,
+                first_trigger_device_us=10,
+                last_trigger_device_us=20,
+                retained_trigger_device_us=0,
+                retained_generation=0,
+            )
+        )
+        self.info = {'caps': ['BGPOLICY', 'DET1']}
+        self.calls = []
+        self.stored = 2
+
+    def command(self, s):
+        self.calls.append(s)
+        if s == 'BGPOLICY?':
+            return f'BGPOLICY {self.stored}'
+        if s.startswith('BGPOLICY '):
+            self.stored = int(s.split()[1])
+            return s
+        return super().command(s)
+
+
+def test_det1_selects_legacy_rule_before_the_run_and_records_it():
+    r = PolicyRadio(reported=1)
+    s, _ = run_detection(r, retain=False, background_policy=1)
+    assert r.calls[:3] == ['BGPOLICY 1', 'BGPOLICY?', 'DETINFO?']
+    assert s['background_policy'] == 1
+    assert s['background_policy_selection'] == dict(requested=1, returned=1, supported=True)
+
+
+def test_det1_rejects_a_summary_reporting_a_different_rule():
+    r = PolicyRadio(reported=2)
+    with pytest.raises(ProtocolError, match='does not match'):
+        run_detection(r, retain=False, background_policy=1)
+    assert r.failed

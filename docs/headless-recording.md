@@ -42,6 +42,12 @@ uptime and crop offsets are kept in capture metadata, not relabelled as exact UT
 errors stop acquisition rather than silently dropping recordings. Synthetic recordings are
 marked in SigMF metadata. Detector performance is never simulated.
 
+`--background-policy 1|2` selects the detector background rule on firmware that
+advertises `BGPOLICY` (v7 and later): 1 is the historical optimized-v2 rule, 2 the
+Q16 rule. Without the option the recorder selects the firmware default, 2, and
+never inherits an earlier client's choice. Older firmware has one fixed rule and
+refuses an explicit request. See [comparing the two rules](adaptive-detector.md#comparing-the-two-rules-on-one-image).
+
 ## Atomic run summaries
 
 A `.det1.json` or `.detpipe1.json` file appears only after retained-IQ recording completes or

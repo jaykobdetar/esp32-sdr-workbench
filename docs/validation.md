@@ -96,3 +96,16 @@ success alone is not grounds to remove the production pin without review.
 ## Subsequent 19-item improvement pass
 
 The [checklist](improvement-checklist.md) separates implemented software from remaining board/physical checks. All three firmware variants compile locally, but the new adaptive-Q16 image was not flashed. A separate [24-run matched AGC/manual trial](matched-gain-comparison.md) used unchanged installed optimized-v2 firmware, fixed −20 dBm source power and unmeasured bench geometry. Its transmitter was stopped and prior settings restored. The new launcher screenshot is explicitly synthetic UI evidence. At initial local completion, the new CI/schedule files had not yet been published or run. The owner then authorized publication with the [remaining-validation guide](remaining-validation-guide.md); remote results must be checked for the exact published commit.
+
+## Rule selector and startup idle: v7 source, 12 November 2026
+
+This pass changed firmware source, so it is identified as `esp32-pipeline-adaptive-q16-v7`. **It was compiled and host-tested only. Nothing was installed on a board, and no hardware number in this record describes v7.**
+
+- **Selectable background rule.** `BGPOLICY 1|2` chooses the rule for the next DET1 or DETPIPE1 run; 2, the Q16 rule, remains the boot default. Rule 1 is the historical optimized-v2 rule. Host C tests under UndefinedBehaviorSanitizer step it alongside lines quoted from the archived v2 source and alongside the Python reference model over the same inputs, and all three agree exactly. Every END summary reports the rule that ran. The Python clients set the rule, read it back and verify the summary; without an explicit choice they select 2, so a legacy selection left by an earlier client is never inherited.
+- **Why.** The adaptive evaluation could not separate the effect of the new rule from session drift and the calibration change, because the two rules lived in different images run in sequence. With the selector, runs under both rules can be interleaved within one session on one image.
+- **Startup failure idles.** On NVS initialization failure v5 and v6 called `ESP_ERROR_CHECK`, which aborts; the archived release configuration reboots on panic with no delay, so the device would have restarted repeatedly. V7 repeats an `ERR nvs_init` notice every five seconds and does nothing else. Storage is preserved in both versions. The path is exercised by host fault injection only.
+- **Documentation.** The README's status paragraph became a table of images and their board evidence.
+
+The combined suite passed **605 tests plus 5 subtests** on Python 3.10 and 3.13; lint, format and the three offline evidence verifiers passed. CI results for the exact commit, including the pinned-SDK ESP32 compile, are the authority for whether v7 builds.
+
+Before v7 results are used: flash it by the build guide's application-only route, confirm the variant, `BGPOLICY` in `CAPS`, and stack and heap headroom, then run rules 1 and 2 interleaved with the source on and off. Rule 1 inside v7 reproduces the v2 decision rule, not the v2 binary's timing or duty.

@@ -3,9 +3,9 @@
 This documents the published `firmware/` original-ESP32 command path, not every historical upstream backend. Source authority: `firmware/main/common/burst_commands.h`, `burst_capture.h`, `burst_serial.c`, and `firmware/main/targets/esp32/receiver.c`. Unsupported lab commands are described separately in [diagnostic provenance](diagnostic-provenance.md).
 
 The common wire framing is shared with historical optimized-v2. The current
-`adaptive-q16-v6` source retains the v3 background policy and metadata/crop
+`adaptive-q16-v7` source keeps the v3 Q16 background policy as its default and the metadata/crop
 commands [described below](#adaptive-q16-extension), fixes tie retention and adds
-read-only stored-calibration observation, fail-closed NVS startup, strict SPEC argument validation and whole-line rejection of embedded NUL bytes. See the exact-image [evaluation](evidence/adaptive-evaluation/README.md)
+read-only stored-calibration observation, fail-closed NVS startup, strict SPEC argument validation and whole-line rejection of embedded NUL bytes. V7 adds the [`BGPOLICY` selector](#background-rule-selector-v7), which makes the historical rule available on the same image, and idles instead of rebooting when NVS initialization fails. See the exact-image [evaluation](evidence/adaptive-evaluation/README.md)
 and [v4 smoke limits](review-follow-up.md), rather than treating different builds as interchangeable.
 
 ## Transport and discovery
@@ -95,7 +95,7 @@ Read back selectors. Acquisition timing includes overlapped prior-buffer work, s
 
 ## Adaptive-q16 extension
 
-Current source adds `background_policy: 2` and `background_q16` to DET1/DETPIPE1
+Current source adds `background_policy` (2 unless [selected otherwise](#background-rule-selector-v7)) and `background_q16` to DET1/DETPIPE1
 END summaries while preserving their version-1 framing. Policy 2 keeps 16 warmup
 captures, then compares peak energy with the previous Q16 background and adapts
 on every capture: weight 1/256 for positives and 1/64 for negatives, with a
@@ -103,6 +103,27 @@ on every capture: weight 1/256 for positives and 1/64 for negatives, with a
 policy, not the measured optimized-v2 binary. Raw gain-register start/end
 snapshots and device-monotonic trigger metadata are additive. See
 [adaptive detector semantics and limits](adaptive-detector.md).
+
+### Background-rule selector (v7)
+
+`BGPOLICY <1|2>` chooses the background rule for the next `DET1` or `DETPIPE1`
+run and replies `BGPOLICY <value>`; `BGPOLICY?` reads it. Malformed or other
+values return `ERR background_policy` and change nothing. Firmware that supports
+it advertises `BGPOLICY` in `CAPS`.
+
+- **2** (boot default) is the Q16 rule described above.
+- **1** is the [historical optimized-v2 rule](#historical-optimized-v2-decision-rule-policy-1):
+  a whole-ADC² background with a floor of one that adapts on negative captures only.
+  Host C tests check it against the archived v2 source line for line. Its
+  `background_q16` is always a whole multiple of 65536.
+
+The selection is **sticky until changed or reboot**, like `PIPEKERNEL`, so set it
+and read it back before every run; `sdr_research` does this and never inherits an
+earlier client's choice. Each END summary's `background_policy` reports the rule
+that actually ran, and the gain and trigger telemetry is the same under both.
+The purpose is a same-image comparison of the two rules. Policy 1 on this image is
+the v2 *decision rule*, not the measured optimized-v2 binary: timing, layout and
+the rest of the firmware differ.
 
 `PIPEKEEP 3` selects one-shot three-crop retention for the next valid DETPIPE1;
 `PIPEKEEP 1` cancels it and `PIPEKEEP?` reads pending selection. Default remains

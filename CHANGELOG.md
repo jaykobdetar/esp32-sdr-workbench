@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Identify the source as `esp32-pipeline-adaptive-q16-v7`. Add the sticky `BGPOLICY`
+  selector so the historical optimized-v2 background rule (1) and the Q16 rule (2,
+  default) can be compared on one installed image; host C tests check rule 1 against
+  the archived v2 source. Clients set and read back the rule and verify the summary.
+- Idle with a repeated `ERR nvs_init` notice when NVS initialization fails. V5/v6
+  aborted, which reboots in a loop under the release panic configuration.
+- Add `esp32-sdr record --background-policy` and `background_policy=` on the
+  DET1 and pipeline clients. V7 is compiled and host-tested only, not board-tested.
+
 - Identify final safety fixes as `esp32-pipeline-adaptive-q16-v6`; preserve the
   earlier v4 and intermediate v5 build identities and historical measurements.
 - Reject embedded NUL at the serial line boundary and require final passed raw-control

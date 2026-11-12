@@ -93,8 +93,15 @@ def validate_run_summary(
     return summary
 
 
+# 1 = legacy rule of the measured optimized-v2 image; 2 = Q16 rule (firmware default).
+BACKGROUND_POLICIES = (1, 2)
+
+
 def validate_policy_telemetry(summary: dict[str, Any]) -> None:
-    """Policy 2 adds an all-or-nothing gain/timing telemetry contract.
+    """Firmware that reports background_policy adds an all-or-nothing telemetry contract.
+
+    Policy 2 is the Q16 rule. Policy 1 is the selectable legacy rule, whose
+    background is always a whole number of ADC^2 units with a floor of one.
 
     Device microseconds are unsynchronized monotonic uptime, sampled immediately
     before the dump-trigger register write. They are neither UTC nor calibrated
@@ -120,13 +127,17 @@ def validate_policy_telemetry(summary: dict[str, Any]) -> None:
     for key, maximum in limits.items():
         if type(summary.get(key)) is not int or not 0 <= summary[key] <= maximum:
             raise ProtocolError(f'Invalid detector telemetry: {key}')
-    if summary['background_policy'] != 2:
+    if summary['background_policy'] not in BACKGROUND_POLICIES:
         raise ProtocolError('Unsupported detector background_policy')
     if (
         not summary['background_q16']
         or summary['background_adc2'] != summary['background_q16'] // 65536
     ):
         raise ProtocolError('Inconsistent detector background_q16')
+    if summary['background_policy'] == 1 and (
+        summary['background_q16'] % 65536 or not summary['background_adc2']
+    ):
+        raise ProtocolError('Legacy background must be a whole number of ADC^2 units')
     first = summary['first_trigger_device_us']
     last = summary['last_trigger_device_us']
     retained = summary['retained_trigger_device_us']
@@ -148,7 +159,10 @@ def validate_policy_telemetry(summary: dict[str, Any]) -> None:
 
 def retained_trigger_metadata(summary: dict[str, Any]) -> dict[str, Any]:
     """Return extra device-timing metadata without relabeling host UTC timestamps."""
-    if summary.get('background_policy') != 2 or not summary['retained_samples']:
+    if (
+        summary.get('background_policy') not in BACKGROUND_POLICIES
+        or not summary['retained_samples']
+    ):
         return {}
     return {
         'trigger_device_us': summary['retained_trigger_device_us'],
@@ -162,8 +176,8 @@ def retained_trigger_metadata(summary: dict[str, Any]) -> dict[str, Any]:
 
 def validate_candidates(summary: dict[str, Any], *, samples: int, crop_samples: int) -> None:
     """Check explicitly requested three-crop telemetry before reading any payload."""
-    if summary.get('background_policy') != 2:
-        raise ProtocolError('Candidate retention requires policy 2 telemetry')
+    if summary.get('background_policy') not in BACKGROUND_POLICIES:
+        raise ProtocolError('Candidate retention requires background-policy telemetry')
     candidates = summary.get('retained_candidates')
     if type(summary.get('retention_capacity')) is not int or summary['retention_capacity'] != 3:
         raise ProtocolError('Pipeline retention_capacity mismatch')

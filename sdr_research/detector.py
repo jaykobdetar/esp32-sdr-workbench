@@ -9,6 +9,7 @@ import zlib
 from datetime import datetime, timezone
 from typing import Any
 
+from .pipeline import check_background_summary, select_background_policy
 from .protocol import RATES, Capture, ProtocolError, Radio, decode_iq
 from .summary_validation import retained_trigger_metadata, validate_run_summary
 
@@ -20,6 +21,7 @@ def run_detection(
     rate_hz: int = 16_000_000,
     ratio_milli: int = 4000,
     retain: bool = True,
+    background_policy: int | None = None,
 ) -> tuple[dict[str, Any], Capture | None]:
     if (
         not 1 <= milliseconds <= 5000
@@ -30,6 +32,7 @@ def run_detection(
     if rate_hz not in (16_000_000, 40_000_000, 80_000_000):
         raise ValueError('Unsupported rate')
     transaction_start = time.monotonic_ns()
+    background_selection = select_background_policy(radio, background_policy)
     info = radio.command('DETINFO?')
     if info != 'DETINFO 1 5000 16 64':
         raise ProtocolError(f'Unsupported experimental detector version: {info}')
@@ -56,6 +59,8 @@ def run_detection(
         summary = validate_run_summary(
             summary, samples=samples, rate_hz=rate_hz, frequency_mhz=frequency, retain=retain
         )
+        check_background_summary(summary, background_selection)
+        summary['background_policy_selection'] = background_selection
         count = summary['captures']
         summary['host_elapsed_us'] = (time.monotonic_ns() - start) / 1000
         summary['host_request_timestamp'] = stamp
