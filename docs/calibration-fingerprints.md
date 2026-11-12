@@ -1,6 +1,6 @@
 # Stored calibration fingerprints
 
-Current original-ESP32 firmware identifies as `esp32-pipeline-adaptive-q16-v6`.
+Current original-ESP32 firmware identifies as `esp32-pipeline-adaptive-q16-v7`.
 The read-only query was introduced in v4.
 It advertises `CALHASH` and answers `CALHASH?` with a single JSON record containing
 schema version 1, algorithm `sha256`, `bytes` (1904 for the pinned SDK), the digest

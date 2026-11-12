@@ -1,17 +1,5 @@
 # ESP32 SDR Research Workbench
 
-**Current source versus measured hardware:** v6 adds fail-closed NVS startup, strict SPEC parsing and whole-line NUL rejection to the three-crop tie-retention fix and read-only calibration fingerprinting
-and optional, default-off heap/stack telemetry for `esp32-pipeline-adaptive-q16-v6`. The
-[adaptive evaluation](docs/evidence/adaptive-evaluation/evaluation-report.md) separates the
-unchanged released-v3 binary from the instrumented, tie-fixed candidate. Only the latter
-completed the 30-minute soak. The evaluation does **not** establish a retained-packet
-advantage over optimized-v2. Stored PHY calibration changed at an unknown point, which
-confounds sequential RF comparisons. The verified v2 application was restored.
-Single-candidate retention remains the default. A subsequent, identified v4 build
-passed a [bounded passive smoke check](docs/review-follow-up.md); it was then replaced
-with the verified v2 application. V4 has no new soak or RF-performance validation. The [calibration guide](docs/calibration-fingerprints.md) describes future boundary logging; [measured-v2 source provenance](docs/measured-v2-source.md) identifies the historical source snapshot. The [remaining-validation guide](docs/remaining-validation-guide.md)
-covers the remaining bench work and release-image validation. The [independent review fixes](docs/safety-review-fixes.md) record the exact v5/v6 builds, software checks and bounded hardware-validation limits.
-
 **A native RF viewer and optimized, burst-aware energy detector for the original ESP32.**
 
 Explore the ESP32 receiver's raw I/Q, inspect spectra and recorded events, and compare honest acquisition duty with end-to-end host coverage. This project builds on [ESPARGOS/esp-sdr](https://github.com/ESPARGOS/esp-sdr), adding a Python/Qt workbench and an experimental guarded acquisition/processing pipeline.
@@ -21,6 +9,21 @@ Explore the ESP32 receiver's raw I/Q, inspect spectra and recorded events, and c
 ![Documented launcher in explicitly simulated mode, with the ADC-endpoint column](docs/viewer-launcher-demo.png)
 
 *Actual `scripts/launch.sh --demo` window, captured on 11 November 2026 with the launcher's dark palette and the ADC-endpoint event column. The checked SIMULATED demo control, device names and status label identify synthetic raw I/Q. This screenshot demonstrates the UI, not receiver performance or new RF evidence. The historical hardware screenshot remains archived as `docs/viewer-hardware.png`.*
+
+## Firmware status
+
+Every measured number in this README belongs to **optimized-v2**, which is also the image installed on the test board. Later images change the detector and add safety fixes, but none has shown a retained-packet advantage over v2.
+
+| Image | What it adds | Evidence from the board |
+|---|---|---|
+| `optimized-v2` | The measured reference ([tagged source](docs/measured-v2-source.md)) | Benchmark, soak and controlled-source campaigns below |
+| `adaptive-q16-v3`, released | Q16 background rule, optional three-crop retention, gain and trigger telemetry | Matched source-on/off trials against v2 at two source powers; in the stronger set, one verified packet on v2 against none on v3 ([evaluation](docs/evidence/adaptive-evaluation/evaluation-report.md)) |
+| `adaptive-q16-v3`, instrumented | Tie-retention fix and heap/stack telemetry | Boundary matrix and a 30-minute soak (same evaluation) |
+| `adaptive-q16-v4` | Tie fix in the release source, read-only calibration fingerprint | Short passive smoke check ([follow-up](docs/review-follow-up.md)) |
+| `adaptive-q16-v5`, `v6` | NVS preserved on startup failure, strict `SPEC` parsing, NUL rejection | Short passive smoke checks ([review fixes](docs/safety-review-fixes.md)) |
+| `adaptive-q16-v7` (current source) | [Selectable background rule](docs/adaptive-detector.md#comparing-the-two-rules-on-one-image); idles instead of rebooting on NVS failure | **None.** Compiled in CI and host-tested only |
+
+Two cautions apply to every comparison between images: they were run in sequence, and the stored PHY calibration changed at an unknown point during the v3 evaluation. V7's rule selector exists so the old and new background rules can be compared within one session on one image. The [remaining-validation guide](docs/remaining-validation-guide.md) covers the outstanding bench work, and the [calibration guide](docs/calibration-fingerprints.md) the boundary logging for future campaigns.
 
 ## What you get
 
@@ -183,4 +186,4 @@ ruff check . && ruff format --check .
 QT_QPA_PLATFORM=offscreen python -m pytest -q
 ```
 
-Plain `pytest` runs the viewer, evidence and campaign tests in `tests/`, the receiver host tests in `firmware/tests/` and the transmitter host tests in `nrf52840-transmitter/tests/`: **445 tests plus 5 subtests** at the evaluation checkpoint, with additional public-evidence checks added for publication. The C checks need a host compiler with UndefinedBehaviorSanitizer, and the retention-patch test also needs `git`. [CI](.github/workflows/ci.yml) runs the lint, the format check and all three suites on Python 3.10 and 3.13 for every push and pull request. These software tests require no connected board and are not a replacement for hardware validation: separate [firmware CI](.github/workflows/firmware.yml) compiles ESP32 and nRF52840 source but does not operate hardware. Qt needs the system EGL/XCB libraries even for offscreen runs (`libegl1` on Debian/Ubuntu). Some campaign and analysis sources are deliberately left unformatted; the [script index](scripts/README.md) explains why.
+Plain `pytest` runs the viewer, evidence and campaign tests in `tests/`, the receiver host tests in `firmware/tests/` and the transmitter host tests in `nrf52840-transmitter/tests/`: **605 tests plus 5 subtests** at the v7 source. The C checks need a host compiler with UndefinedBehaviorSanitizer, and the retention-patch test also needs `git`. [CI](.github/workflows/ci.yml) runs the lint, the format check and all three suites on Python 3.10 and 3.13 for every push and pull request. These software tests require no connected board and are not a replacement for hardware validation: separate [firmware CI](.github/workflows/firmware.yml) compiles ESP32 and nRF52840 source but does not operate hardware. Qt needs the system EGL/XCB libraries even for offscreen runs (`libegl1` on Debian/Ubuntu). Some campaign and analysis sources are deliberately left unformatted; the [script index](scripts/README.md) explains why.

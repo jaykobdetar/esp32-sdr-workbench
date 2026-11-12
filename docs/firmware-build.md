@@ -1,6 +1,6 @@
 # Build the original-ESP32 firmware
 
-Current source is **`esp32-pipeline-adaptive-q16-v6`**. V5 added fail-closed NVS startup and strict SPEC parsing to v4. V6 also rejects embedded NUL at the shared serial line boundary.
+Current source is **`esp32-pipeline-adaptive-q16-v7`**. V5 added fail-closed NVS startup and strict SPEC parsing to v4. V6 also rejects embedded NUL at the shared serial line boundary. V7 adds the runtime [background-rule selector](protocol.md#background-rule-selector-v7) and idles, instead of rebooting, when NVS initialization fails. V7 is compiled in CI and host-tested; it has not been installed on a board.
 See the [review fixes and validation limits](safety-review-fixes.md).
 The earlier identified v4 build passed a [bounded passive smoke check](review-follow-up.md),
 not a soak or RF-performance validation.
@@ -128,7 +128,7 @@ Firmware derivative: GPL-3.0-or-later. ESP-DSP and the retained ESP-IDF-derived 
 
 ## Current adaptive source versus historical measurements
 
-The current `firmware/FIRMWARE_VARIANT` is `esp32-pipeline-adaptive-q16-v6`.
+The current `firmware/FIRMWARE_VARIANT` is `esp32-pipeline-adaptive-q16-v7`.
 The build example labels the artifact with the source commit; `VERSION?` separately
 embeds this variant. Neither is a performance claim for this source.
 The [adaptive evaluation](evidence/adaptive-evaluation/evaluation-report.md) separately
