@@ -315,6 +315,7 @@ class Radio:
                             span=span,
                             ffts=ffts,
                             flags=flags,
+                            gain=gain,
                             drops=drops,
                             multiplier=mult,
                             power_codes=list(body[28:]),

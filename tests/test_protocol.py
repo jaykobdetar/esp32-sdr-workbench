@@ -90,9 +90,9 @@ def capture_bytes(payload, samples, crc=None):
     return f'DATA {samples} {crc:08x} 17\n'.encode() + payload
 
 
-def spectrum_frame(*, seq=3, bins=256, multiplier=2, corrupt_crc=False):
+def spectrum_frame(*, seq=3, bins=256, multiplier=2, gain=40, corrupt_crc=False):
     body = b'SPC1' + struct.pack(
-        '<IQIHBBHBB', seq, 123456, bins * 2, 2, 9, 40, 0, bins.bit_length() - 1, multiplier
+        '<IQIHBBHBB', seq, 123456, bins * 2, 2, 9, gain, 0, bins.bit_length() - 1, multiplier
     )
     body += bytes(range(256)) * (bins // 256)
     crc = zlib.crc32(body) ^ int(corrupt_crc)
@@ -195,6 +195,7 @@ def test_spectrum_frames_stats_and_end(make_radio, chunk_size):
     assert frame['span'] == 512
     assert frame['ffts'] == 2
     assert frame['flags'] == 9
+    assert frame['gain'] == 40
     assert frame['power_codes'] == list(range(256))
     assert result['stats'][0]['coverage_permille'] == 25
     assert result['stats'][0]['ffts_per_second'] == 3200
@@ -375,3 +376,10 @@ def test_sigmf_rejects_unsupported_datatype_before_reading_payload(tmp_path, dat
     # There is intentionally no data file: unsupported data must not be interpreted.
     with pytest.raises(ValueError, match='cf32_le'):
         load_capture(path)
+
+
+@pytest.mark.parametrize('gain', [0, 40, 79, 255])
+def test_spectrum_preserves_wire_gain_independent_of_requested_settings(make_radio, gain):
+    radio, _ = make_radio(START + spectrum_frame(gain=gain) + END)
+    radio.settings['gain'] = 12
+    assert radio.spectrum_run()['frames'][0]['gain'] == gain

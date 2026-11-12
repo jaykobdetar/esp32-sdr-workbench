@@ -42,8 +42,6 @@ def save_capture(capture: Capture, path_without_suffix: str | Path) -> Path:
     meta = Path(str(base) + '.sigmf-meta')
     if data.exists() or meta.exists():
         raise FileExistsError(f'Recording exists: {base}')
-    with data.open('xb') as f:
-        np.asarray(capture.iq, dtype='<c8').tofile(f)
     doc = {
         'global': {
             'core:datatype': 'cf32_le',
@@ -72,12 +70,34 @@ def save_capture(capture: Capture, path_without_suffix: str | Path) -> Path:
         ],
         'annotations': [],
     }
-    try:
-        with meta.open('x') as f:
-            json.dump(doc, f, indent=2)
-    except Exception:
-        data.unlink()
-        raise
+    # Stage both files on the destination filesystem before exposing either name.
+    # Hard links publish complete files without replacing a concurrent writer's files.
+    # Metadata is the commit marker: readers must discover recordings through it.
+    with tempfile.TemporaryDirectory(prefix=f'.{base.name}.', dir=base.parent) as staging:
+        staged_data = Path(staging) / data.name
+        staged_meta = Path(staging) / meta.name
+        with staged_data.open('xb') as output:
+            np.asarray(capture.iq, dtype='<c8').tofile(output)
+            output.flush()
+            os.fsync(output.fileno())
+        with staged_meta.open('x') as output:
+            json.dump(doc, output, indent=2)
+            output.flush()
+            os.fsync(output.fileno())
+        os.link(staged_data, data)
+        try:
+            os.link(staged_meta, meta)
+        except BaseException:
+            # Only roll back our published inode, not an observed replacement.
+            # lstat avoids following symlinks; the directory must be trusted.
+            try:
+                ours = staged_data.stat()
+                published = data.lstat()
+                if (ours.st_dev, ours.st_ino) == (published.st_dev, published.st_ino):
+                    data.unlink()
+            except FileNotFoundError:
+                pass
+            raise
     return meta
 
 
