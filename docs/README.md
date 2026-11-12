@@ -12,6 +12,9 @@ Current work: [19-item improvement checklist](improvement-checklist.md) · [Full
 | [Controlled-source campaign guide](nrf-controlled-source-campaign.md) | How to run new measurements with the nRF52840 transmitter and your own receiver. |
 | [Multi-receiver preparation](multi-receiver-preparation.md) | The finite multi-port coordinator; tested with fake devices and one real receiver only. |
 
+[Calibration fingerprints](calibration-fingerprints.md) documents private read-only boundary logging.
+[Measured-v2 source](measured-v2-source.md) records the retrospective tag provenance.
+
 ## Latest adaptive evaluation
 
 [Report and public evidence](evidence/adaptive-evaluation/README.md): released-v3

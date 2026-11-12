@@ -461,3 +461,42 @@ def test_main_rejects_same_device_alias_before_serial_open(tmp_path, monkeypatch
     monkeypatch.setattr(m, 'Radio', forbid_open)
     with pytest.raises(ValueError, match='distinct USB devices'):
         m.main()
+
+
+@pytest.mark.parametrize('missing', [False, True])
+def test_v4_calibration_boundary_logging_and_preflight(tmp_path, missing):
+    class CurrentRX(AdaptiveRX):
+        def connect(self):
+            info = super().connect()
+            info['version'] = 'VERSION ' + json.dumps(
+                dict(firmware_variant=m.CURRENT_VARIANT, revision='test-revision')
+            )
+            info['caps'] = [] if missing else ['CALHASH']
+            return info
+
+        def command(self, cmd):
+            if cmd == 'CALHASH?':
+                assert tx.running is False
+                return 'CALHASH ' + json.dumps(
+                    dict(version=1, algorithm='sha256', bytes=1904, sha256='a' * 64, device_us=100)
+                )
+            return super().command(cmd)
+
+    a, tx, rx = adaptive_args(tmp_path, 1), TX(), CurrentRX()
+    a.expected_variant = m.CURRENT_VARIANT
+
+    def run(*args, **kw):
+        summary, capture = pipeline()
+        summary['background_policy'] = 2
+        return summary, capture
+
+    if missing:
+        with pytest.raises(RuntimeError, match='capability missing'):
+            m.execute(a, rx, tx, pipeline=run, sleep=lambda _: None)
+        assert not tx.running and not tx.cfg
+    else:
+        report = m.execute(a, rx, tx, pipeline=run, sleep=lambda _: None)
+        assert report['status'] == 'passed'
+        assert len(report['calibration_observations']) == 50
+        assert report['calibration_observations'][0]['boundary'] == 'stage_start'
+        assert report['calibration_observations'][-1]['boundary'] == 'stage_end'

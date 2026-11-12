@@ -13,6 +13,7 @@ import time
 from pathlib import Path
 from statistics import mean
 
+from sdr_research.calibration import ADAPTIVE_VARIANTS, CURRENT_VARIANT, record_calibration
 from sdr_research.pipeline import run_pipeline, run_pipeline_candidates
 from sdr_research.protocol import Radio
 from sdr_research.recording import save_capture
@@ -25,7 +26,7 @@ CAUTIONS = [
     'A small number of temporal blocks at one unmeasured bench placement does not establish calibrated sensitivity.',
     'TX counters bracket host commands, not exact receiver RF windows; retained CRC is transport CRC.',
 ]
-VARIANTS = ('esp32-pipeline-optimized-v2', 'esp32-pipeline-adaptive-q16-v3')
+VARIANTS = ('esp32-pipeline-optimized-v2', *ADAPTIVE_VARIANTS)
 SELECTORS = ('PIPEKERNEL', 'ACQOPT', 'CLEAROPT', 'PIPECOPY')
 
 TX_KEYS = (
@@ -192,13 +193,13 @@ def execute(
     sleep=time.sleep,
 ):
     conditions = plan(args)
-    if args.candidate_count == 3 and args.expected_variant != VARIANTS[1]:
-        raise ValueError('Three-crop trials require explicit adaptive-v3 variant')
+    if args.candidate_count == 3 and args.expected_variant not in ADAPTIVE_VARIANTS:
+        raise ValueError('Three-crop trials require explicit adaptive variant')
     if not 100 <= args.milliseconds <= 2000:
         raise ValueError('Receiver duration must be 100..2000 ms')
     artifact_hash = hashlib.sha256(args.rx_artifact.read_bytes()).hexdigest()
     out = args.output_directory
-    out.mkdir(parents=True, exist_ok=False)
+    out.mkdir(parents=True, exist_ok=False, mode=0o700)
     report = {
         'status': 'running',
         'expected_variant': args.expected_variant,
@@ -232,6 +233,16 @@ def execute(
         tmp.write_text(json.dumps(report, indent=2))
         tmp.replace(out / 'results.json')
 
+    def fingerprint(boundary):
+        record_calibration(
+            report,
+            radio,
+            report['device'],
+            boundary,
+            required=args.expected_variant == CURRENT_VARIANT,
+        )
+        persist()
+
     try:
         report['tx_stop_initial'] = tx.stop()
         report['tx_initial'] = checked_status(tx, False)
@@ -250,7 +261,8 @@ def execute(
             )
         if args.expected_revision and version.get('revision') != args.expected_revision:
             raise RuntimeError('Receiver revision mismatch; no flash attempted')
-        names = SELECTORS + (('PIPEKEEP',) if args.expected_variant == VARIANTS[1] else ())
+        fingerprint('stage_start')
+        names = SELECTORS + (('PIPEKEEP',) if args.expected_variant in ADAPTIVE_VARIANTS else ())
         observed_selectors = selectors(radio, names)
         report['selectors_initial'] = observed_selectors.copy()
         if observed_selectors.get('PIPEKEEP', 'PIPEKEEP 1') != 'PIPEKEEP 1':
@@ -311,6 +323,7 @@ def execute(
             row['heap_before'] = heap(radio)
             if row['heap_before'] != baseline:
                 raise RuntimeError('Cleared heap drift before run')
+            fingerprint(f'run_{index}_before')
             if condition['tx_on']:
                 # Independent finite duration and packet-count ceilings; no continuous mode.
                 row['tx_start'] = tx.start(count=5000, duration_ms=6000)
@@ -335,7 +348,7 @@ def execute(
             row['selectors_after'] = selectors(radio, names)
             if row['selectors_after'] != row['selectors_before']:
                 raise RuntimeError('Pipeline selectors were not restored')
-            if args.expected_variant == VARIANTS[1] and summary.get('background_policy') != 2:
+            if args.expected_variant in ADAPTIVE_VARIANTS and summary.get('background_policy') != 2:
                 raise RuntimeError('Adaptive background policy mismatch')
             row['gain_after'] = check_gain(radio.command('GAIN?'), condition['gain'])
             row['tx_after'] = checked_status(tx, condition['tx_on'])
@@ -349,6 +362,7 @@ def execute(
                 raise RuntimeError('Unexpected transmitter completed-counter delta')
             tx.stop()
             row['tx_stopped'] = checked_status(tx, False)
+            fingerprint(f'run_{index}_after')
             if summary['status'] or summary.get('pack_failed', 0) or summary.get('errors', 0):
                 raise RuntimeError('Receiver failed its bounded run')
             row['retained_count'] = len(captures)
@@ -466,6 +480,12 @@ def execute(
                 report['receiver_final_version'] = radio.command('VERSION?')
             except Exception as exc:
                 report['receiver_cleanup_error'] = repr(exc)
+                report['status'] = 'failed'
+        if 'device' in report:
+            try:
+                fingerprint('stage_end')
+            except Exception as exc:
+                report['calibration_cleanup_error'] = type(exc).__name__
                 report['status'] = 'failed'
         report['comparison'] = summarize(report['runs'])
         persist()

@@ -1,7 +1,8 @@
 # Adaptive detector and bounded candidate crops
 
-The source variant remains **esp32-pipeline-adaptive-q16-v3**, now with a tie-retention
-fix and optional default-off health instrumentation. This is distinct from the
+The current source variant is **esp32-pipeline-adaptive-q16-v4**, identifying the
+tie-retention fix, read-only calibration fingerprint query and optional default-off
+health instrumentation. This is distinct from the
 unchanged released-v3 binary tested during the [adaptive evaluation](evidence/adaptive-evaluation/evaluation-report.md).
 Only the separate instrumented, tie-fixed candidate received the boundary matrix
 and 30-minute soak. The source publication is not a newly validated release image.
@@ -89,3 +90,23 @@ only nominal timing. Gain snapshots do not capture every AGC transition or prove
 which analog gain was active during every capture. The host request UTC timestamp
 is preserved separately. Packet-recall measurement still needs source schedules,
 calibrated timing and complete coverage information.
+
+## Research status of three crops
+
+Keep single full-capture retention as the default. Three-crop mode remains an
+opt-in experiment, not a recommended packet-recovery improvement. The recorded
+synthetic sweep fully contained a 4,672-sample burst in only 57/1,464 aligned
+placements (3.893%) for uniform, first-block or last-block emphasized energy,
+versus all placements with center-block emphasis. This is energy-shape-dependent
+synthetic containment, not measured RF packet recall.
+
+In the sequential stronger-source trial, mean nominal duty was 61.20% for v3
+single versus 59.88% for v3 three. Mean accumulated retention-copy time per run
+was 5.347 ms versus 25.304 ms (about 4.7 times), not a fixed cost per crop.
+Replacement activity and other confounders prevent treating this as an isolated
+causal benchmark. No retained full-packet advantage was established.
+
+No further crop optimization or expanded three-crop RF campaign is warranted
+without a new packet-linked design and predeclared containment objective. Preserve
+the existing implementation/tests for reproducibility rather than silently
+changing or deleting the experiment. See the [original evaluation](evidence/adaptive-evaluation/evaluation-report.md).

@@ -28,3 +28,10 @@ def test_truthful_optional_variant():
             pass
         else:
             raise AssertionError('Invalid variant accepted')
+
+
+def test_current_variant_distinguishes_tie_fix_and_calibration_observer():
+    from sdr_research.calibration import CURRENT_VARIANT
+
+    assert (ROOT / 'FIRMWARE_VARIANT').read_text().strip() == CURRENT_VARIANT
+    assert CURRENT_VARIANT == 'esp32-pipeline-adaptive-q16-v4'

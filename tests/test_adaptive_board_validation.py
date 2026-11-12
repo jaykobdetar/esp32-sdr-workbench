@@ -39,7 +39,7 @@ class RX:
     def connect(self):
         return dict(
             version='VERSION ' + json.dumps(dict(revision='test', firmware_variant=m.VARIANT)),
-            caps=['PIPEKEEP'],
+            caps=['PIPEKEEP', 'CALHASH'],
             transport='TRANSPORT UART 1000000',
         )
 
@@ -48,6 +48,16 @@ class RX:
 
     def command(self, cmd):
         self.commands.append(cmd)
+        if cmd == 'CALHASH?':
+            return 'CALHASH ' + json.dumps(
+                dict(
+                    version=1,
+                    algorithm='sha256',
+                    bytes=1904,
+                    sha256='a' * 64,
+                    device_us=100 + self.run_id,
+                )
+            )
         if cmd == 'VERSION?':
             return self.connect()['version']
         if cmd == 'GAIN?':
@@ -127,6 +137,8 @@ def test_passed_completion_and_cleanup(tmp_path):
     a, rx, tx = args(tmp_path), RX(), TX()
     report = m.execute(a, rx, tx, single=pipeline, multiple=multiple)
     assert report['status'] == 'passed'
+    assert len(report['calibration_observations']) == 82
+    assert report['calibration_observations'][-1]['boundary'] == 'stage_end'
     assert report['completed_runs'] == report['planned_runs'] == 40
     assert tx.stops == 2 and rx.gain is None
     assert rx.selectors == dict(PIPEKEEP=1, PIPEKERNEL=0, ACQOPT=0, CLEAROPT=0, PIPECOPY=0)

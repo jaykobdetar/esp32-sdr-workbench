@@ -244,8 +244,10 @@ static bool capture(unsigned n, unsigned rate, unsigned format) {
 #include "ascii_frame.h"
 #include "detector_pipeline.h"
 #include "pipeline_acquisition_options.h"
+#include "calibration_hash.h"
 
 static void command(char *line) {
+    if (calibration_hash_command(line)) return;
     if (pipeline_acquisition_options_command(line)) return;
     if (detector_pipeline_command(line)) return;
     if (!strncmp(line, "DET1 ", 5)) detpipe_clear();
@@ -261,7 +263,7 @@ static void command(char *line) {
     char extra;
     if (!strcmp(line, "CAPS"))
         reply(
-            "CAPS " DETPIPE_HEALTH_CAPABILITY "PIPEKEEP PIPECOPY ACQOPT CLEAROPT PIPEKERNEL DET1 VERSION GPIO SPEC SPECN SPECCAPS SPECSTAT DCT "
+            "CAPS CALHASH " DETPIPE_HEALTH_CAPABILITY "PIPEKEEP PIPECOPY ACQOPT CLEAROPT PIPEKERNEL DET1 VERSION GPIO SPEC SPECN SPECCAPS SPECSTAT DCT "
 #if !CONFIG_ESP_SDR_CP2102_VIEWER_COMPAT
             "UARTBAUD "
 #endif

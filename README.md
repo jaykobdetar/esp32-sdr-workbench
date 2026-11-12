@@ -1,14 +1,14 @@
 # ESP32 SDR Research Workbench
 
-**Current source versus measured hardware:** the source includes a three-crop tie-retention fix
-and optional, default-off heap/stack telemetry for `esp32-pipeline-adaptive-q16-v3`. The
+**Current source versus measured hardware:** v4 identifies the three-crop tie-retention fix and read-only calibration fingerprinting
+and optional, default-off heap/stack telemetry for `esp32-pipeline-adaptive-q16-v4`. The
 [adaptive evaluation](docs/evidence/adaptive-evaluation/evaluation-report.md) separates the
 unchanged released-v3 binary from the instrumented, tie-fixed candidate. Only the latter
 completed the 30-minute soak. The evaluation does **not** establish a retained-packet
 advantage over optimized-v2. Stored PHY calibration changed at an unknown point, which
 confounds sequential RF comparisons. The verified v2 application was restored.
 Single-candidate retention remains the default; this publication creates no new release
-or board installation. The [remaining-validation guide](docs/remaining-validation-guide.md)
+or board installation. The [calibration guide](docs/calibration-fingerprints.md) describes future boundary logging; [measured-v2 source provenance](docs/measured-v2-source.md) identifies the historical source snapshot. The [remaining-validation guide](docs/remaining-validation-guide.md)
 covers the remaining bench work and release-image validation.
 
 **A native RF viewer and optimized, burst-aware energy detector for the original ESP32.**

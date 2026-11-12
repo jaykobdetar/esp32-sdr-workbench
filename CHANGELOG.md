@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Identify corrected source as `esp32-pipeline-adaptive-q16-v4`, distinct from
+  both historically tested v3 binaries. Preserve their evidence unchanged.
+- Add read-only stored-PHY SHA-256 observations at campaign stage/run boundaries,
+  explicit legacy unsupported/error records and private-output guidance.
+- Prepare a local measured-v2 source tag with checked archive correspondence and
+  original unknown-Git-revision/rebuild caveats. No public release is created.
+- Document three-crop containment/copy-cost limitations; keep single retention
+  the default and avoid further optimization without a packet-linked redesign.
+
+
 - Publish the adaptive evaluation with 925 pipeline runs, 1,818 recorded CRC-valid
   files, separate release/candidate identities and the calibration-change caveat.
 - Fix top-three tie eviction to preserve earlier generations; check all 4,096

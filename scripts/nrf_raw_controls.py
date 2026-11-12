@@ -12,6 +12,7 @@ import random
 import time
 from pathlib import Path
 
+from sdr_research.calibration import ADAPTIVE_VARIANTS, CURRENT_VARIANT, record_calibration
 from sdr_research.protocol import Radio
 from sdr_research.recording import atomic_write_json, save_capture
 
@@ -154,6 +155,16 @@ def execute(args, radio, tx, *, saver=save_capture, sleep=time.sleep):
     def persist():
         atomic_write_json(out / 'results.json', report)
 
+    def fingerprint(boundary):
+        record_calibration(
+            report,
+            radio,
+            report['device'],
+            boundary,
+            required=version['firmware_variant'] == CURRENT_VARIANT,
+        )
+        persist()
+
     def stop_status():
         tx.stop()
         return checked_status(tx, False)
@@ -175,7 +186,10 @@ def execute(args, radio, tx, *, saver=save_capture, sleep=time.sleep):
             raise RuntimeError('Receiver variant mismatch')
         if args.expected_revision and version.get('revision') != args.expected_revision:
             raise RuntimeError('Receiver revision mismatch')
-        names = SELECTORS + (('PIPEKEEP',) if version['firmware_variant'] == VARIANTS[1] else ())
+        fingerprint('stage_start')
+        names = SELECTORS + (
+            ('PIPEKEEP',) if version['firmware_variant'] in ADAPTIVE_VARIANTS else ()
+        )
         report['selectors_initial'] = initial_selectors = selectors(radio, names)
         report['gain_initial'] = initial_gain = radio.command('GAIN?')
         gain_value(initial_gain)
@@ -200,6 +214,7 @@ def execute(args, radio, tx, *, saver=save_capture, sleep=time.sleep):
                 row['selectors_before'] = selectors(radio, names)
                 if row['selectors_before'] != initial_selectors:
                     raise RuntimeError('Receiver selector drift')
+                fingerprint(f'run_{row["index"]}_before')
                 if row['tx_on']:
                     row['tx_start'] = tx.start(count=5000, duration_ms=6000)
                 sleep(0.1)
@@ -245,6 +260,7 @@ def execute(args, radio, tx, *, saver=save_capture, sleep=time.sleep):
             finally:
                 try:
                     row['tx_post_stop'] = stop_status()
+                    fingerprint(f'run_{row["index"]}_after')
                 except Exception as exc:
                     row.update(status='failed', stop_error=repr(exc))
                     raise
@@ -288,6 +304,11 @@ def execute(args, radio, tx, *, saver=save_capture, sleep=time.sleep):
                         report['receiver_restored_' + label] = operation()
                     except Exception as exc:
                         cleanup_errors.append(label + ': ' + repr(exc))
+        if connected and isinstance(version, dict) and version.get('firmware_variant') in VARIANTS:
+            try:
+                fingerprint('stage_end')
+            except Exception as exc:
+                cleanup_errors.append('Calibration observation: ' + type(exc).__name__)
         report['cleanup_errors'] = cleanup_errors
         if cleanup_errors:
             report['status'] = 'failed'

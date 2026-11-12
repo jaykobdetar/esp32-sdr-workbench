@@ -13,11 +13,12 @@ import json
 from pathlib import Path
 
 from scripts.nrf_gain_compare import check_gain, checked_status
+from sdr_research.calibration import CURRENT_VARIANT, record_calibration
 from sdr_research.pipeline import run_pipeline, run_pipeline_candidates
 from sdr_research.protocol import Radio
 from sdr_research.recording import atomic_write_json, save_capture
 
-VARIANT = 'esp32-pipeline-adaptive-q16-v3'
+VARIANT = CURRENT_VARIANT
 SELECTORS = ('PIPEKEEP', 'PIPEKERNEL', 'ACQOPT', 'CLEAROPT', 'PIPECOPY')
 
 
@@ -115,7 +116,7 @@ def execute(
         raise ValueError('Do not reduce the declared conservative evaluation margins')
     artifact_hash = hashlib.sha256(args.rx_artifact.read_bytes()).hexdigest()
     out = args.output_directory
-    out.mkdir(parents=True, exist_ok=False)
+    out.mkdir(parents=True, exist_ok=False, mode=0o700)
     report = dict(
         status='running',
         stage=args.stage,
@@ -141,6 +142,10 @@ def execute(
     def persist():
         atomic_write_json(out / 'results.json', report)
 
+    def fingerprint(boundary):
+        record_calibration(report, radio, report['device'], boundary, required=True)
+        persist()
+
     def stopped():
         tx.stop()
         return checked_status(tx, False)
@@ -156,6 +161,7 @@ def execute(
             raise RuntimeError('Unexpected receiver image variant/revision')
         if 'PIPEKEEP' not in info.get('caps', []) or '1000000' not in info.get('transport', ''):
             raise RuntimeError('Required pipeline or UART transport missing')
+        fingerprint('stage_start')
         initial_gain = radio.command('GAIN?')
         report['gain_initial'] = initial_gain
         for name in SELECTORS:
@@ -191,6 +197,7 @@ def execute(
             row['heap_before'] = heap(radio)
             if row['heap_before'] != baseline:
                 raise RuntimeError('Post-clear heap drift or fragmentation')
+            fingerprint(f'run_{index}_before')
             kwargs = dict(condition, ratio_milli=4000, retain=True)
             keep = kwargs.pop('candidate_count')
             summary, captures = (multiple if keep == 3 else single)(radio, **kwargs)
@@ -217,6 +224,7 @@ def execute(
             row['heap_cleared'] = heap(radio)
             if row['heap_cleared'] != baseline:
                 raise RuntimeError('Heap leak/fragmentation after clear')
+            fingerprint(f'run_{index}_after')
             row['tx_after'] = checked_status(tx, False)
             if row['tx_after']['completed'] != row['tx_before']['completed']:
                 raise RuntimeError('Transmitter completed RF while expected stopped')
@@ -259,6 +267,12 @@ def execute(
                 'Framing uncertain; no further receiver commands attempted'
             )
             report['status'] = 'failed'
+        if 'device' in report:
+            try:
+                fingerprint('stage_end')
+            except Exception as exc:
+                report['calibration_cleanup_error'] = type(exc).__name__
+                report['status'] = 'failed'
         report['completed_runs'] = sum(row['status'] == 'passed' for row in report['runs'])
         report['planned_runs'] = len(conditions)
         persist()

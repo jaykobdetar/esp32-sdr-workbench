@@ -118,3 +118,11 @@ Firmware has not been flashed or board-soak validated; no new RF results claimed
 `DETPIPE_HEALTH=ON`; `CAPS` then advertises `DETPIPEHEALTH`. Default-off builds
 return `{"version":1,"enabled":false}`. See [field definitions and SDK limits](pipeline-health-telemetry.md). This does not change `DETPIPE1` framing or imply
 that an instrumented measurement applies to the default-off release image.
+
+## Stored calibration fingerprint (original ESP32 v4)
+
+`CAPS` includes `CALHASH`; `CALHASH?` reads the stored PHY blob and returns
+`CALHASH {"version":1,"algorithm":"sha256","bytes":1904,"sha256":"<64 lowercase hex>","device_us":123}`.
+No NVS writes, reset, calibration request or raw-byte disclosure occurs. Missing
+records, wrong size, read/allocation failures return `ERR calhash_*`. Older images
+do not advertise this command. See [privacy, timing and interpretation limits](calibration-fingerprints.md).

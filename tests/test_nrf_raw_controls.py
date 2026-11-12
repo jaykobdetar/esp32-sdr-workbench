@@ -323,3 +323,28 @@ def test_invalid_seed_rejected_before_io(tmp_path, seed):
     with pytest.raises(ValueError, match='Seed'):
         m.execute(a, object(), object())
     assert not a.output_directory.exists()
+
+
+def test_v4_calibration_records_query_only_with_source_stopped(tmp_path):
+    class CurrentRX(RX):
+        def __init__(self):
+            super().__init__()
+            self.variant = m.CURRENT_VARIANT
+
+        def connect(self):
+            return dict(super().connect(), caps=['CALHASH'])
+
+        def command(self, cmd):
+            if cmd == 'CALHASH?':
+                assert tx.running is False
+                return 'CALHASH ' + json.dumps(
+                    dict(version=1, algorithm='sha256', bytes=1904, sha256='b' * 64, device_us=100)
+                )
+            return super().command(cmd)
+
+    a, tx, rx = args(tmp_path), TX(), CurrentRX()
+    a.expected_variant = m.CURRENT_VARIANT
+    report = m.execute(a, rx, tx, saver=lambda c, p: p, sleep=lambda _: None)
+    assert report['status'] == 'passed'
+    assert len(report['calibration_observations']) == 26
+    assert report['calibration_observations'][-1]['boundary'] == 'stage_end'
