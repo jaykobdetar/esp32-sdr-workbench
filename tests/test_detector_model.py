@@ -29,6 +29,9 @@ int main(void) {
     unsigned n, ratio, score;
     char mode;
     detector_background_t background = {0};
+    /* Historical optimized-v2 state, stepped by the lines quoted from its source. */
+    unsigned captures = 0, background_v2 = 1;
+    uint64_t warm_total = 0;
     while(scanf(" %c", &mode) == 1) {
         if(mode == 'e') {
             if(scanf("%u", &n) != 1 || n > 16380) return 1;
@@ -41,6 +44,30 @@ int main(void) {
             if(scanf("%" SCNu32 " %" SCNu32 " %u",&mean,&peak,&ratio)!=3) return 4;
             bool event = detector_background_step(&background,mean,peak,ratio,&score);
             printf("%u %u %" PRIu64 "\n",event,score,background.q16);
+        } else if(mode == 'p') {
+            if(scanf("%u",&n)!=1) return 6;
+            background = detector_background_start(n);
+            captures = 0; background_v2 = 1; warm_total = 0;
+        } else if(mode == 'h') {
+            if(scanf("%" SCNu32 " %" SCNu32 " %u",&mean,&peak,&ratio)!=3) return 7;
+            unsigned event = 0, v2_score = 0;
+            unsigned background = background_v2;
+            captures++;
+            if (captures <= 16) {
+                warm_total += mean;
+                background = warm_total / captures;
+                if (!background) background = 1;
+            } else if ((uint64_t)peak * 1000 > (uint64_t)background * ratio) {
+                event = 1;
+                unsigned score = (uint64_t)peak * 1000 / background;
+                v2_score = score;
+            } else {
+                v2_score = (uint64_t)peak * 1000 / background;
+                background = ((uint64_t)background * 63 + mean + 32) / 64;
+                if (!background) background = 1;
+            }
+            background_v2 = background;
+            printf("%u %u %" PRIu64 "\n",event,v2_score,(uint64_t)background_v2 * 65536);
         } else return 5;
     }
     return 0;
@@ -252,3 +279,114 @@ int main(void) {
         check=True,
     )
     subprocess.run([str(binary)], check=True)
+
+
+HISTORICAL_RULE_LINES = (
+    'if (captures <= 16) {',
+    'warm_total += mean;',
+    'background = warm_total / captures;',
+    'if (!background) background = 1;',
+    '} else if ((uint64_t)peak * 1000 > (uint64_t)background * ratio) {',
+    'unsigned score = (uint64_t)peak * 1000 / background;',
+    'background = ((uint64_t)background * 63 + mean + 32) / 64;',
+)
+
+
+def legacy_cases():
+    rng = random.Random(4471)
+    cases = [(0, 0, 4000)] * 16 + [(0, 1, 4000)]
+    cases += [(2, 2, 4000)] * 400 + [(34, 34, 4000)] * 400 + [(3, 20, 4000)] * 50
+    cases += [(524288, 524288, 1000000)] * 5 + [(1, 524288, 1000)] * 5
+    cases += [
+        (mean := rng.randrange(524289), rng.randrange(mean, 524289), rng.randrange(1000, 1000001))
+        for _ in range(500)
+    ]
+    return cases
+
+
+def test_legacy_policy_matches_model_and_the_measured_v2_rule(reference_binary):
+    """Selectable policy 1 must be the optimized-v2 rule, not an approximation of it."""
+    cases = legacy_cases()
+
+    def run(mode):
+        result = subprocess.run(
+            [str(reference_binary)],
+            input='p 1\n' + ''.join(f'{mode} {a} {b} {r}\n' for a, b, r in cases),
+            text=True,
+            capture_output=True,
+            check=True,
+        )
+        return [tuple(map(int, line.split())) for line in result.stdout.splitlines()]
+
+    selectable, historical = run('b'), run('h')
+    model = Background(policy=1)
+    expected = []
+    for mean, peak, ratio in cases:
+        event, score = model.step(mean, peak, ratio)
+        expected.append((int(event), score, model.background_q16))
+    assert selectable == expected
+    assert selectable == historical
+    assert all(q16 % SCALE == 0 and q16 >= SCALE for _, _, q16 in selectable)
+    # The harness steps the historical state with lines quoted from the archived v2 source.
+    fixture = ROOT / 'tests/fixtures/retention-base/firmware/main/targets/esp32'
+    v2_source = (fixture / 'detector_experiment.h').read_text()
+    harness = Path(__file__).read_text()
+    for line in HISTORICAL_RULE_LINES:
+        assert line in v2_source and line in harness.split('HISTORICAL_RULE_LINES')[0], line
+
+
+def test_policy_start_selects_rule_and_zero_state_stays_policy_two(reference_binary):
+    """Latch contrast on one sustained level step: legacy never recovers, Q16 does."""
+    cases = [(20, 27, 4000)] * 100 + [(200, 270, 4000)] * 400
+
+    def events(prefix):
+        result = subprocess.run(
+            [str(reference_binary)],
+            input=prefix + ''.join(f'b {a} {b} {r}\n' for a, b, r in cases),
+            text=True,
+            capture_output=True,
+            check=True,
+        )
+        return [int(line.split()[0]) for line in result.stdout.splitlines()]
+
+    legacy, q16, zero_state = events('p 1\n'), events('p 2\n'), events('')
+    assert zero_state == q16
+    assert sum(legacy[100:]) == 400  # latched for the rest of the run
+    assert 0 < sum(q16[100:]) < 150 and not any(q16[300:])
+
+
+def persistent_source_flag_rate(policy, strength, runs=20, captures=600):
+    """Share of source-bearing captures flagged when a periodic source is on all run.
+
+    Model of the controlled-source geometry: a frame lands in about two thirds of
+    captures and fills about 28.5% of one, so a burst `strength` times the floor
+    raises that capture's mean by 0.285 * strength and its peak block by strength.
+    """
+    floor, hits, total = 400, 0, 0
+    for run in range(runs):
+        rng = random.Random(1000 * run + 7)
+        model = Background(policy=policy)
+        for index in range(captures):
+            burst = rng.random() < 0.66
+            jitter = rng.uniform(0.93, 1.07)
+            mean = floor * jitter * (1 + 0.285 * strength if burst else 1)
+            peak = floor * jitter * (1 + strength if burst else 1.35)
+            positive, _ = model.step(int(mean), int(peak), 4000)
+            if index >= 16 and burst:
+                total += 1
+                hits += positive
+    return 100 * hits / total
+
+
+def test_model_prediction_rules_differ_only_for_a_moderate_persistent_source():
+    """Documented, hardware-untested prediction behind the same-image comparison."""
+    # Weak bursts are missed and strong bursts caught by both rules alike.
+    for strength in (3, 5):
+        assert persistent_source_flag_rate(1, strength) == 0
+        assert persistent_source_flag_rate(2, strength) == 0
+    for strength in (20, 50):
+        legacy = persistent_source_flag_rate(1, strength)
+        assert legacy > 95 and abs(legacy - persistent_source_flag_rate(2, strength)) < 1
+    # In between, the Q16 rule absorbs part of the source into its background.
+    legacy, q16 = persistent_source_flag_rate(1, 8), persistent_source_flag_rate(2, 8)
+    assert 35 < legacy < 50 and 20 < q16 < 35 and legacy - q16 > 8

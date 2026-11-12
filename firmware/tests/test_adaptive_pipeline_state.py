@@ -69,6 +69,7 @@ static bool acquire_iq_with_validation(unsigned n,unsigned s,unsigned c,unsigned
 static void reset(unsigned failure,unsigned allocation_failure){
  if(det_retained){heap_caps_free(det_retained);det_retained=NULL;}
  detpipe_clear();assert(active_allocations==0);wire_len=0;det_retained_n=0;now=calls=allocs=0;fail_at=failure;alloc_fail=allocation_failure;output[0]=0;reject_at=0;reject_lo=reject_hi=0;guard_fail_at=0;detpipe_keep=detpipe_run_keep=1;detpipe_copy_option=detpipe_kernel=0;
+ detector_background_policy=DETECTOR_BACKGROUND_POLICY;
 }
 int main(void){
 #if !DETPIPE_HEALTH
@@ -83,6 +84,29 @@ int main(void){
  assert(!detpipe_safe_buffer((void*)(UINTPTR_MAX-2),8));
  assert(detpipe_safe_buffer((void*)0x3ffe7000,1024));
  assert(detpipe_safe_buffer((void*)0x3fff8000,1024));
+ /* Background-rule selector: default 2, strict arguments, sticky across runs,
+  * and every summary reports the rule that actually ran. */
+ reset(0,0);assert(detector_pipeline_command("BGPOLICY?"));assert(!strcmp(output,"BGPOLICY 2\n"));
+ const char *bad_policy[]={"BGPOLICY","BGPOLICY 0","BGPOLICY 3","BGPOLICY 1 x","BGPOLICY -1","BGPOLICY two"};
+ for(unsigned k=0;k<sizeof(bad_policy)/sizeof(bad_policy[0]);k++){
+  output[0]=0;assert(detector_pipeline_command(bad_policy[k]));
+  assert(!strcmp(output,"ERR background_policy\n"));assert(detector_background_policy==2);
+ }
+ output[0]=0;assert(detector_pipeline_command("DETPIPE1 20 256 6 4000 1"));
+ assert(strstr(output,"\"background_policy\":2,"));
+ reset(0,0);assert(detector_pipeline_command("BGPOLICY 1"));assert(!strcmp(output,"BGPOLICY 1\n"));
+ for(unsigned run=0;run<2;run++){
+  /* Alternating +/-1 codes give block energy 2, so the whole-unit legacy
+   * background is exactly 2 and its Q16 field a whole multiple of 65536. */
+  output[0]=0;calls=0;assert(detector_pipeline_command("DETPIPE1 20 256 6 4000 1"));
+  assert(strstr(output,"\"detections\":4,\"background_policy\":1,\"background_q16\":131072,\"background_adc2\":2,"));
+  output[0]=0;assert(detector_pipeline_command("BGPOLICY?"));assert(!strcmp(output,"BGPOLICY 1\n"));
+ }
+ output[0]=0;assert(detector_pipeline_command("BGPOLICY 2"));assert(!strcmp(output,"BGPOLICY 2\n"));
+ output[0]=0;calls=0;assert(detector_pipeline_command("DETPIPE1 20 256 6 4000 1"));
+ assert(strstr(output,"\"detections\":4,\"background_policy\":2,"));
+ /* The Q16 rule adapted on its four positives, so it no longer equals 2.0. */
+ assert(!strstr(output,"\"background_q16\":131072,"));
  for(unsigned count=1;count<=20;count++){
   reset(0,0);char cmd[80];snprintf(cmd,sizeof(cmd),"DETPIPE1 %u 256 6 4000 1",count);
   assert(detector_pipeline_command(cmd));

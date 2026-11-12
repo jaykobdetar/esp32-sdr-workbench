@@ -9,7 +9,11 @@ from typing import Any
 
 from sdr_research.protocol import RATES, Capture, ProtocolError, Radio, decode_iq
 
-from .summary_validation import retained_trigger_metadata, validate_run_summary
+from .summary_validation import (
+    BACKGROUND_POLICIES,
+    retained_trigger_metadata,
+    validate_run_summary,
+)
 
 
 def run_pipeline(
@@ -23,6 +27,7 @@ def run_pipeline(
     optimized: bool = False,
     copy_option: int | None = None,
     candidate_count: int = 1,
+    background_policy: int | None = None,
 ) -> tuple[dict[str, Any], Capture | None]:
     if any(type(v) is not int for v in (milliseconds, samples, rate_hz, ratio_milli)):
         raise ValueError('Integer request fields required')
@@ -44,10 +49,12 @@ def run_pipeline(
         raise ValueError('copy_option must be None, 0 or 1')
     if type(candidate_count) is not int or candidate_count not in (1, 3):
         raise ValueError('candidate_count must be 1 or 3')
+    check_background_policy(background_policy)
     frequency = radio.settings['frequency_mhz']
     total_start = time.monotonic_ns()
     copy_policy = select_copy_policy(radio, copy_option)
     policies = select_acquisition_policy(radio, optimized)
+    background_selection = select_background_policy(radio, background_policy)
     if radio.command(f'PIPEKERNEL {kernel}') != f'PIPEKERNEL {kernel}':
         raise ProtocolError('Pipeline kernel selection failed')
     if optimized and radio.command('PIPEKERNEL?') != f'PIPEKERNEL {kernel}':
@@ -113,6 +120,8 @@ def run_pipeline(
                 raise ProtocolError(
                     'Pipeline copy_option/fused_active summary mismatch or missing field'
                 )
+        check_background_summary(summary, background_selection)
+        summary['background_policy_selection'] = background_selection
         count = summary['captures']
         summary['errors_received'] = errors
         summary['host_request_timestamp'] = stamp
@@ -212,6 +221,53 @@ def select_acquisition_policy(
     return policies
 
 
+def check_background_policy(policy: int | None) -> None:
+    if policy is not None and (type(policy) is not int or policy not in BACKGROUND_POLICIES):
+        raise ValueError('background_policy must be None, 1 (legacy) or 2 (Q16)')
+
+
+def select_background_policy(radio: Radio, policy: int | None) -> dict[str, int | bool | None]:
+    """Choose the detector background rule for the next DET1 or DETPIPE1 run.
+
+    The firmware selector is sticky, so it is always set and read back where it
+    exists: None selects the firmware default (2, the Q16 rule) and can never
+    inherit a legacy selection left by an earlier client. Firmware without the
+    BGPOLICY capability has one fixed rule; None leaves it unprobed, and an
+    explicit request is refused instead of being silently ignored.
+    """
+    check_background_policy(policy)
+    # DET1 clients historically needed no capability list; treat a missing one as none.
+    supported = 'BGPOLICY' in (getattr(radio, 'info', None) or {}).get('caps', [])
+    selection = {'requested': policy, 'returned': None, 'supported': supported}
+    if not supported:
+        if policy is not None:
+            raise ProtocolError('BGPOLICY capability required for an explicit background policy')
+        return selection
+    value = 2 if policy is None else policy
+    try:
+        expected = f'BGPOLICY {value}'
+        if radio.command(expected) != expected:
+            raise ProtocolError('BGPOLICY selection failed')
+        if radio.command('BGPOLICY?') != expected:
+            raise ProtocolError('BGPOLICY readback mismatch')
+        selection['returned'] = value
+        return selection
+    except Exception:
+        radio.failed = True
+        raise
+
+
+def check_background_summary(
+    summary: dict[str, Any], selection: dict[str, int | bool | None]
+) -> None:
+    """The END summary must report the rule that was selected and read back."""
+    if (
+        selection['returned'] is not None
+        and summary.get('background_policy') != selection['returned']
+    ):
+        raise ProtocolError('Summary background_policy does not match the selected rule')
+
+
 def select_copy_policy(radio: Radio, copy_option: int | None) -> dict[str, int | bool | None]:
     """None deliberately preserves legacy experiment behavior without probing."""
     policy = {
@@ -246,6 +302,7 @@ def run_pipeline_candidates(
     kernel: int = 0,
     optimized: bool = False,
     copy_option: int | None = None,
+    background_policy: int | None = None,
 ) -> tuple[dict[str, Any], list[Capture]]:
     """Opt in to three bounded crops; return strongest first, then remaining slots.
 
@@ -265,6 +322,7 @@ def run_pipeline_candidates(
         optimized,
         copy_option,
         candidate_count=3,
+        background_policy=background_policy,
     )
     if strongest is None:
         summary['retained_event_count'] = 0

@@ -223,3 +223,32 @@ def test_policy2_empty_run():
     value['first_trigger_device_us'] = 1
     with pytest.raises(ProtocolError):
         validate(value)
+
+
+@pytest.mark.parametrize('pipeline', [False, True])
+def test_legacy_policy1_accepted_with_whole_unit_background(pipeline):
+    from sdr_research.summary_validation import retained_trigger_metadata
+
+    value = summary(pipeline)
+    value.update(telemetry())
+    value.update(background_policy=1, background_q16=3 * 65536, background_adc2=3)
+    validate(value, pipeline)
+    # The legacy rule carries the same gain/timing telemetry as the Q16 rule.
+    assert retained_trigger_metadata(value)['retained_generation'] == 18
+
+
+@pytest.mark.parametrize(
+    'updates',
+    [
+        dict(background_policy=0),
+        dict(background_policy=1, background_q16=65536 + 1, background_adc2=1),  # fractional
+        dict(background_policy=1, background_q16=1, background_adc2=0),  # below the legacy floor
+        dict(background_policy=1, background_q16=2 * 65536, background_adc2=1),  # inconsistent
+    ],
+)
+def test_rejects_unknown_policy_and_non_legacy_shaped_background(updates):
+    value = summary()
+    value.update(telemetry())
+    value.update(updates)
+    with pytest.raises(ProtocolError):
+        validate(value)

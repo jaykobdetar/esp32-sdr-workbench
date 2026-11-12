@@ -110,6 +110,12 @@ class AcquisitionWorker(threading.Thread):
         s = self.settings
         mode = s.get('mode', 'DET1')
         multiple = s.get('candidate_count', 1) == 3
+        # Passed only when chosen, so the clients' own default (the firmware default) applies.
+        policy = (
+            {'background_policy': s['background_policy']}
+            if s.get('background_policy') is not None
+            else {}
+        )
         if mode == 'DETPIPE1':
             pipeline = run_pipeline_candidates if multiple else run_pipeline
             summary, retained = pipeline(
@@ -122,6 +128,7 @@ class AcquisitionWorker(threading.Thread):
                 kernel=3,
                 optimized=True,
                 copy_option=1 if 'PIPECOPY' in radio.info.get('caps', []) else None,
+                **policy,
             )
             captures = retained if multiple else ([retained] if retained is not None else [])
             capture = captures[0] if captures else None
@@ -136,6 +143,7 @@ class AcquisitionWorker(threading.Thread):
                 rate_hz=s['rate_hz'],
                 ratio_milli=s['ratio_milli'],
                 retain=True,
+                **policy,
             )
             summary['acquisition_policies'] = policies
             captures = [capture] if capture is not None else []

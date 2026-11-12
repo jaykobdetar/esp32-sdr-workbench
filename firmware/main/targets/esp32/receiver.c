@@ -263,7 +263,7 @@ static void command(char *line) {
     char extra;
     if (!strcmp(line, "CAPS"))
         reply(
-            "CAPS CALHASH " DETPIPE_HEALTH_CAPABILITY "PIPEKEEP PIPECOPY ACQOPT CLEAROPT PIPEKERNEL DET1 VERSION GPIO SPEC SPECN SPECCAPS SPECSTAT DCT "
+            "CAPS BGPOLICY CALHASH " DETPIPE_HEALTH_CAPABILITY "PIPEKEEP PIPECOPY ACQOPT CLEAROPT PIPEKERNEL DET1 VERSION GPIO SPEC SPECN SPECCAPS SPECSTAT DCT "
 #if !CONFIG_ESP_SDR_CP2102_VIEWER_COMPAT
             "UARTBAUD "
 #endif
@@ -308,9 +308,14 @@ void app_main(void) {
      * initialization; recovery requires a separately reviewed backup/migration. */
     esp_err_t e = nvs_flash_init();
     if (e != ESP_OK) {
-        printf("NVS init failed (%d); storage preserved. Stop and review a private backup/migration before recovery.\n", (int)e);
-        ESP_ERROR_CHECK(e);
-        return;
+        /* Idle instead of aborting: an abort reboots immediately under the
+         * release panic configuration and would repeat this failure in a loop.
+         * Repeat the notice so a host that connects later still sees it. */
+        for (;;) {
+            printf("ERR nvs_init %d storage_preserved; review a private backup/migration before recovery\n", (int)e);
+            fflush(stdout);
+            vTaskDelay(pdMS_TO_TICKS(5000));
+        }
     }
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();

@@ -66,6 +66,14 @@ def record(argv: list[str] | None = None) -> int:
         default=1,
         help='Opt in to three candidate crops (DETPIPE1 with PIPEKEEP only)',
     )
+    parser.add_argument(
+        '--background-policy',
+        type=int,
+        choices=(1, 2),
+        default=None,
+        help='Detector background rule (needs BGPOLICY firmware): 1 = legacy optimized-v2 rule, '
+        '2 = Q16 rule. Default: the firmware default, 2.',
+    )
     parser.add_argument('--runs', type=positive_int, help='Maximum finite runs or raw bursts')
     parser.add_argument(
         '--duration-s',
@@ -82,6 +90,8 @@ def record(argv: list[str] | None = None) -> int:
         parser.error('--demo requires --mode raw; detector performance is not simulated')
     if args.candidate_count != 1 and args.mode != 'DETPIPE1':
         parser.error('--candidate-count 3 requires --mode DETPIPE1')
+    if args.background_policy is not None and args.mode not in DETECTOR_MODES:
+        parser.error('--background-policy requires a detector mode')
     if args.mode in DETECTOR_MODES and args.bits != 10:
         parser.error('detector modes require --bits 10')
     if args.mode in DETECTOR_MODES and args.gain is None:
@@ -91,6 +101,7 @@ def record(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
     settings = dict(
+        background_policy=args.background_policy,
         candidate_count=args.candidate_count,
         mode=args.mode,
         det_ms=args.run_ms,
