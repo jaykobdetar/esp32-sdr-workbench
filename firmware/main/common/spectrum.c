@@ -8,6 +8,7 @@
 #include "spectrum_stats.h"
 #include "esp_cpu.h"
 #include "burst_serial.h"
+#include "burst_parse.h"
 #include "dsps_fft2r.h"
 #include "esp_rom_crc.h"
 #include "esp_timer.h"
@@ -176,10 +177,12 @@ bool spectrum_command(const char *line, unsigned frequency_mhz, spectrum_acquire
         return true;
     }
     if (strncmp(line, "SPEC ", 5)) return false;
-    unsigned ms, stride, units, det, rate, n, stats = 0;
-    char extra;
-    int fields =
-        sscanf(line, "SPEC %u %u %u %u %u %u %u %c", &ms, &stride, &units, &det, &rate, &n, &stats, &extra);
+    /* Parse the whole command before touching receiver state. In particular,
+     * malformed optional stats must not be mistaken for an omitted field. */
+    unsigned args[7] = {0};
+    int fields = burst_parse_uints(line + 5, args, 7);
+    unsigned ms = args[0], stride = args[1], units = args[2], det = args[3],
+             rate = args[4], n = args[5], stats = args[6];
     if ((fields != 6 && fields != 7) || stats > 1 || ms > 86400000u || stride != 1 || !units || units > 8 ||
         det > 1 || !rate_hz(rate) || n < 256 || n > MAX_FFT || (n & (n - 1))) {
         send_text("ERR spec_args\n");
