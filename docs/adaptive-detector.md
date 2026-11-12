@@ -1,8 +1,8 @@
 # Adaptive detector and bounded candidate crops
 
-The current source variant is **esp32-pipeline-adaptive-q16-v5**, identifying the
+The current source variant is **esp32-pipeline-adaptive-q16-v6**, identifying the
 tie-retention fix, read-only calibration fingerprint query and optional default-off
-health instrumentation, with fail-closed NVS startup and strict SPEC parsing added in v5. This is distinct from the
+health instrumentation, with fail-closed NVS startup and strict SPEC parsing added in v5 and serial NUL rejection in v6. This is distinct from the
 unchanged released-v3 binary tested during the [adaptive evaluation](evidence/adaptive-evaluation/evaluation-report.md).
 Only the separate instrumented, tie-fixed candidate received the boundary matrix
 and 30-minute soak. The source publication is not a newly validated release image.

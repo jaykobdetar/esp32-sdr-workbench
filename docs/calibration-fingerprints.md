@@ -1,6 +1,6 @@
 # Stored calibration fingerprints
 
-Current original-ESP32 firmware identifies as `esp32-pipeline-adaptive-q16-v5`.
+Current original-ESP32 firmware identifies as `esp32-pipeline-adaptive-q16-v6`.
 The read-only query was introduced in v4.
 It advertises `CALHASH` and answers `CALHASH?` with a single JSON record containing
 schema version 1, algorithm `sha256`, `bytes` (1904 for the pinned SDK), the digest
@@ -24,7 +24,7 @@ host UTC timestamp and boundary name. Valid observations include the stored hash
 byte count, device clock, and whether the hash changed or the clock regressed
 since the preceding valid observation. No observation repairs or restores data.
 
-V4 and v5 trials require this capability and fail if the observation is missing
+V4, v5 and v6 trials require this capability and fail if the observation is missing
 or malformed. Supported-query errors fail the campaign; cleanup still stops the
 source and restores available receiver settings. A broken receiver connection is
 recorded as unavailable without sending another command. Historical v2/v3 images

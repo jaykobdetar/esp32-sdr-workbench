@@ -733,6 +733,7 @@ include docs/spec-argument-validation.md
 include docs/safety-review-fixes.md
 include firmware/tests/test_nvs_preservation.py
 include firmware/tests/test_spectrum_arguments.py
+include firmware/tests/test_serial_command_boundary.py
 include scripts/analyze_nrf_iq_v2.py
 include scripts/nrf_analysis_v2.py
 include scripts/summarize_nrf_retention_v2.py

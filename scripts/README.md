@@ -19,14 +19,21 @@ Run everything from the repository root. Only the campaign scripts and the multi
 ## Analyse recordings you hold locally (offline)
 
 These need the original recordings or campaign reports, which are not published.
+Use the v2 tools for new analysis; see [supported input and completeness rules](../docs/offline-rf-analysis-v2.md).
+The unsuffixed analyzer and screen/retention summaries are frozen historical tools,
+not current general-purpose entry points: they retain missing-run selection bias,
+legacy-only metadata handling and default-payload assumptions.
 
 | Script | Purpose |
 |---|---|
 | `count_sigmf_endpoints.py` | Count ADC endpoint codes in one SigMF recording. |
-| `analyze_nrf_iq.py` | Diagnose recordings and search them for the known Nordic test frames. |
+| `analyze_nrf_iq_v2.py` | Diagnose supported campaign/raw-control/gain recordings; reject unsupported custom payloads. |
+| `analyze_nrf_iq.py` | Historical reproduction only; retains documented metadata/payload limitations. |
 | `compare_nrf_abab.py` | Run-level historical versus optimized comparison of an ABAB campaign. |
-| `summarize_nrf_screen.py` | Summarise a parameter-screen campaign. |
-| `summarize_nrf_retention.py` | Paired summary of a retention-policy trial. |
+| `summarize_nrf_screen_v2.py` | Summarise complete run manifests, including no-event runs. |
+| `summarize_nrf_screen.py` | Historical reproduction only; retained-only denominators are unsuitable for new inference. |
+| `summarize_nrf_retention_v2.py` | Paired summary with complete run denominators and missing-analysis checks. |
+| `summarize_nrf_retention.py` | Historical reproduction only; may omit pairs lacking retained IQ. |
 | `evaluate_nrf_retention.py` | Offline proxy for retention policies on saved raw buffers; not a firmware replay. |
 
 ## Run a controlled-source campaign (opens hardware)

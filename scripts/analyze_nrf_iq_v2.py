@@ -28,20 +28,60 @@ def data_name(value):
     return name + '.sigmf-data'
 
 
+def completed_raw_run(path, meta, raw):
+    report_path = path.parent / 'results.json'
+    if not report_path.exists():
+        raise ValueError(f'raw_source_control requires results.json: {path}')
+    report = read(report_path)
+    matches = [
+        row
+        for row in report.get('runs', [])
+        if row.get('sigmf') and data_name(row['sigmf']) == path.name
+    ]
+    if (
+        report.get('status') != 'passed'
+        or len(matches) != 1
+        or matches[0].get('status') != 'passed'
+    ):
+        raise ValueError(f'Missing, ambiguous or incomplete raw run/report for {path}')
+    run = dict(matches[0])
+    condition = raw['condition']
+    if type(run.get('index')) is not int or str(run['index']) != run_key(path.name):
+        raise ValueError(f'Raw run key mismatch: {path}')
+    required = ('index', 'pair', 'kind', 'rx_frequency_mhz', 'tx_on', 'transport_crc_valid')
+    if (
+        any(field not in condition for field in required)
+        or condition['transport_crc_valid'] is not True
+    ):
+        raise ValueError(f'Incomplete raw capture condition: {path}')
+    for field, value in condition.items():
+        # Metadata is intentionally saved before the final stop/fingerprint checks.
+        if field != 'status' and (field not in run or run[field] != value):
+            raise ValueError(f'Raw metadata/run mismatch for {field}: {path}')
+    config = raw.get('source_configuration')
+    if not isinstance(config, dict) or not config or config != report.get('source_configuration'):
+        raise ValueError(f'Raw source configuration mismatch: {path}')
+    for field in ('device', 'local_reference_artifact_sha256'):
+        if raw.get(field) != report.get(field):
+            raise ValueError(f'Raw provenance mismatch for {field}: {path}')
+    if meta['captures'][0]['core:frequency'] != run['rx_frequency_mhz'] * 1e6:
+        raise ValueError(f'Raw recording frequency mismatch: {path}')
+    run.update(mode='raw', frequency_mhz=run['rx_frequency_mhz'], source_configuration=config)
+    return run
+
+
 def source(path, meta):
     md = meta['global'].get('sdr_research:metadata', {})
     key = run_key(path.name)
     runpath = path.parent / f'{int(key):04d}-run.json'
-    if runpath.exists():
+    if 'raw_source_control' in md:
+        if runpath.exists():
+            raise ValueError(f'Unexpected legacy manifest for raw_source_control: {runpath}')
+        run = completed_raw_run(path, meta, md['raw_source_control'])
+    elif runpath.exists():
         run = read(runpath)
         if run.get('status') != 'passed' or str(run['index']) != key:
             raise ValueError(f'Run not complete or key mismatch: {runpath}')
-    elif 'raw_source_control' in md:
-        raw = md['raw_source_control']
-        run = dict(raw['condition'])
-        run['mode'] = 'raw'
-        run['frequency_mhz'] = run['rx_frequency_mhz']
-        run['source_configuration'] = raw['source_configuration']
     elif 'gain_comparison' in md:
         report_path = path.parent / 'results.json'
         if not report_path.exists():

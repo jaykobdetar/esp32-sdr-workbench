@@ -128,12 +128,27 @@ def iq_fixture(root, metadata, filename='0000-raw-on'):
 
 def test_current_raw_metadata_and_custom_payload_rejected(tmp_path):
     raw = dict(
-        condition=dict(tx_on=True, rx_frequency_mhz=2440),
+        condition=dict(
+            index=0,
+            pair=0,
+            kind='matched',
+            tx_on=True,
+            rx_frequency_mhz=2440,
+            transport_crc_valid=True,
+            status='running',
+        ),
         source_configuration=dict(mode_mbps=2, payload_len=64),
     )
-    iq_fixture(tmp_path, dict(raw_source_control=raw))
+    path = iq_fixture(tmp_path, dict(raw_source_control=raw))
+    report = dict(
+        status='passed',
+        source_configuration=raw['source_configuration'],
+        runs=[dict(raw['condition'], status='passed', sigmf=str(path))],
+    )
+    (tmp_path / 'results.json').write_text(json.dumps(report))
     assert len(analyzer.analyze(tmp_path, 500000)['records']) == 1
     raw['source_configuration']['payload_hex'] = 'deadbeef'
+    (tmp_path / 'results.json').write_text(json.dumps(report))
     iq_fixture(tmp_path, dict(raw_source_control=raw))
     with pytest.raises(ValueError, match='Unsupported custom payload'):
         analyzer.analyze(tmp_path, 500000)
@@ -210,3 +225,95 @@ def test_analyzer_cli_failure_has_no_success_artifact(tmp_path):
     assert result.returncode != 0
     assert 'No SigMF' in result.stderr
     assert not output.exists()
+
+
+def raw_campaign(tmp_path, fail_stop=False):
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        'raw_completion_fakes', Path(__file__).with_name('test_nrf_raw_controls.py')
+    )
+    fakes = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(fakes)
+
+    class TX(fakes.TX):
+        def start(self, **kwargs):
+            super().start(**kwargs)
+            return self.status()
+
+        def stop(self):
+            if fail_stop and self.stops == 2:
+                self.stops += 1
+                raise RuntimeError('Injected post-capture stop failure')
+            return super().stop()
+
+    args = fakes.args(tmp_path)
+    if fail_stop:
+        with pytest.raises(RuntimeError, match='post-capture stop failure'):
+            fakes.m.execute(args, fakes.RX(), TX(), sleep=lambda _: None)
+    else:
+        fakes.m.execute(args, fakes.RX(), TX(), sleep=lambda _: None)
+    return args.output_directory
+
+
+@pytest.mark.parametrize('fail_stop', [False, True])
+def test_actual_raw_campaign_completion(tmp_path, fail_stop):
+    directory = raw_campaign(tmp_path, fail_stop)
+    paths = sorted(directory.glob('*.sigmf-data'))
+    assert paths
+    if fail_stop:
+        with pytest.raises(ValueError, match='incomplete raw run/report'):
+            analyzer.analyze(directory, 500000)
+    else:
+        # Validate every actual saved input without repeating expensive DSP here.
+        for path in paths:
+            run, _, _, _ = analyzer.source(path, analyzer.read(path.with_suffix('.sigmf-meta')))
+            assert run['status'] == 'passed' and run['mode'] == 'raw'
+
+
+@pytest.mark.parametrize(
+    'mutation',
+    [
+        'missing',
+        'failed',
+        'duplicate',
+        'key',
+        'condition',
+        'source',
+        'device',
+        'artifact',
+        'frequency',
+        'legacy',
+    ],
+)
+def test_raw_completion_provenance_mismatch(tmp_path, mutation):
+    directory = raw_campaign(tmp_path)
+    path = sorted(directory.glob('*.sigmf-data'))[0]
+    meta = analyzer.read(path.with_suffix('.sigmf-meta'))
+    reportpath = directory / 'results.json'
+    report = analyzer.read(reportpath)
+    row = next(row for row in report['runs'] if analyzer.data_name(row['sigmf']) == path.name)
+    if mutation == 'missing':
+        reportpath.unlink()
+    elif mutation == 'failed':
+        row['status'] = 'failed'
+    elif mutation == 'duplicate':
+        report['runs'].append(dict(row))
+    elif mutation == 'key':
+        row['index'] = 99
+    elif mutation == 'condition':
+        row['tx_on'] = not row['tx_on']
+    elif mutation == 'source':
+        report['source_configuration']['payload_len'] = 32
+    elif mutation == 'device':
+        report['device'] = {}
+    elif mutation == 'artifact':
+        report['local_reference_artifact_sha256'] = '0' * 64
+    elif mutation == 'frequency':
+        meta['captures'][0]['core:frequency'] += 1
+    elif mutation == 'legacy':
+        (directory / f'{int(analyzer.run_key(path.name)):04d}-run.json').write_text(json.dumps(row))
+    if mutation != 'missing':
+        reportpath.write_text(json.dumps(report))
+    with pytest.raises(ValueError):
+        analyzer.source(path, meta)

@@ -145,6 +145,12 @@ int burst_serial_poll_line(char *line, size_t capacity) {
             char ch;
             if (read_port(port, &ch, 1) != 1) break;
             input[port].last_byte = now;
+            /* A C string must never hide bytes after an embedded terminator.
+             * Reuse the invalid/overflow state to discard the whole line. */
+            if (ch == '\0') {
+                input[port].overflow = true;
+                continue;
+            }
             if (ch == '\r') continue;
             if (ch != '\n') {
                 if (input[port].used < COMMAND_SIZE - 1)

@@ -3,9 +3,9 @@
 This documents the published `firmware/` original-ESP32 command path, not every historical upstream backend. Source authority: `firmware/main/common/burst_commands.h`, `burst_capture.h`, `burst_serial.c`, and `firmware/main/targets/esp32/receiver.c`. Unsupported lab commands are described separately in [diagnostic provenance](diagnostic-provenance.md).
 
 The common wire framing is shared with historical optimized-v2. The current
-`adaptive-q16-v5` source retains the v3 background policy and metadata/crop
+`adaptive-q16-v6` source retains the v3 background policy and metadata/crop
 commands [described below](#adaptive-q16-extension), fixes tie retention and adds
-read-only stored-calibration observation, fail-closed NVS startup and strict SPEC argument validation. See the exact-image [evaluation](evidence/adaptive-evaluation/README.md)
+read-only stored-calibration observation, fail-closed NVS startup, strict SPEC argument validation and whole-line rejection of embedded NUL bytes. See the exact-image [evaluation](evidence/adaptive-evaluation/README.md)
 and [v4 smoke limits](review-follow-up.md), rather than treating different builds as interchangeable.
 
 ## Transport and discovery

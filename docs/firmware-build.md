@@ -1,6 +1,6 @@
 # Build the original-ESP32 firmware
 
-Current source is **`esp32-pipeline-adaptive-q16-v5`**. V5 adds fail-closed NVS startup and strict SPEC parsing to the earlier v4 source.
+Current source is **`esp32-pipeline-adaptive-q16-v6`**. V5 added fail-closed NVS startup and strict SPEC parsing to v4. V6 also rejects embedded NUL at the shared serial line boundary.
 See the [review fixes and validation limits](safety-review-fixes.md).
 The earlier identified v4 build passed a [bounded passive smoke check](review-follow-up.md),
 not a soak or RF-performance validation.
@@ -40,7 +40,7 @@ python firmware/tools/build_firmware.py \
 
 Use a fresh output directory for each build: the exporter refuses to overwrite an existing profile. Build outputs and export manifests are deliberately outside the repository. `firmware/sdkconfig.defaults.esp32` is the authoritative source configuration; generated sdkconfig is local output. No credentials, device calibration/NVS or complete flash images are needed to compile. Do not publish your device flash/NVS backups.
 
-`VERSION?` embeds the actual source revision (or `unknown` without Git), UTC build time, target and `firmware_variant` read from `firmware/FIRMWARE_VARIANT` (currently `esp32-pipeline-adaptive-q16-v5`). The variant is a truthful source-family identifier, not a replacement for the Git revision. Rebuilding changes timestamps and may change layout; do not equate an arbitrary rebuild with an already measured binary.
+`VERSION?` embeds the actual source revision (or `unknown` without Git), UTC build time, target and `firmware_variant` read from `firmware/FIRMWARE_VARIANT` (currently `esp32-pipeline-adaptive-q16-v6`). The variant is a truthful source-family identifier, not a replacement for the Git revision. Rebuilding changes timestamps and may change layout; do not equate an arbitrary rebuild with an already measured binary.
 
 ## Manual flashing: backup first, then choose the correct path
 
@@ -128,7 +128,7 @@ Firmware derivative: GPL-3.0-or-later. ESP-DSP and the retained ESP-IDF-derived 
 
 ## Current adaptive source versus historical measurements
 
-The current `firmware/FIRMWARE_VARIANT` is `esp32-pipeline-adaptive-q16-v5`.
+The current `firmware/FIRMWARE_VARIANT` is `esp32-pipeline-adaptive-q16-v6`.
 The build example labels the artifact with the source commit; `VERSION?` separately
 embeds this variant. Neither is a performance claim for this source.
 The [adaptive evaluation](evidence/adaptive-evaluation/evaluation-report.md) separately

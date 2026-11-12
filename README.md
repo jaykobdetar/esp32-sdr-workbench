@@ -1,7 +1,7 @@
 # ESP32 SDR Research Workbench
 
-**Current source versus measured hardware:** v5 adds fail-closed NVS startup and strict SPEC parsing to the three-crop tie-retention fix and read-only calibration fingerprinting
-and optional, default-off heap/stack telemetry for `esp32-pipeline-adaptive-q16-v5`. The
+**Current source versus measured hardware:** v6 adds fail-closed NVS startup, strict SPEC parsing and whole-line NUL rejection to the three-crop tie-retention fix and read-only calibration fingerprinting
+and optional, default-off heap/stack telemetry for `esp32-pipeline-adaptive-q16-v6`. The
 [adaptive evaluation](docs/evidence/adaptive-evaluation/evaluation-report.md) separates the
 unchanged released-v3 binary from the instrumented, tie-fixed candidate. Only the latter
 completed the 30-minute soak. The evaluation does **not** establish a retained-packet
@@ -71,7 +71,7 @@ The new [nRF52840 transmitter and guarded application updater](nrf52840-transmit
 python3 scripts/verify_nrf_evidence.py
 ```
 
-The [campaign guide](docs/nrf-controlled-source-campaign.md) covers new measurements using explicit device ports and your own verified receiver binary. The [offline analyzer](scripts/analyze_nrf_iq.py) works on privately held originals; the public summary alone cannot replay RF demodulation. The [multi-receiver coordinator](docs/multi-receiver-preparation.md) has fake-device tests and a historical one-receiver health check, not a two-receiver experiment.
+The [campaign guide](docs/nrf-controlled-source-campaign.md) covers new measurements using explicit device ports and your own verified receiver binary. The [current offline analyzer](scripts/analyze_nrf_iq_v2.py) works on privately held originals, with [manifest-first summaries and explicit input limits](docs/offline-rf-analysis-v2.md); the public summary alone cannot replay RF demodulation. The frozen analyzer and summaries without a `_v2` suffix are for historical reproduction only; they retain the documented missing-run and metadata limitations. The [multi-receiver coordinator](docs/multi-receiver-preparation.md) has fake-device tests and a historical one-receiver health check, not a two-receiver experiment.
 
 The subsequent [matched AGC/manual comparison](docs/matched-gain-comparison.md) completed 24 bounded runs on the unchanged installed firmware at −20 dBm. Candidate rates depended strongly on gain, but four-block variability does not establish packet-detection superiority. Geometry remains unmeasured.
 

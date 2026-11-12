@@ -2,8 +2,10 @@
 
 ## Unreleased
 
-- Identify combined safety fixes as `esp32-pipeline-adaptive-q16-v5`; preserve the
-  earlier v4 build identity and historical measurements.
+- Identify final safety fixes as `esp32-pipeline-adaptive-q16-v6`; preserve the
+  earlier v4 and intermediate v5 build identities and historical measurements.
+- Reject embedded NUL at the serial line boundary and require final passed raw-control
+  reports before analyzing current raw captures.
 - Preserve NVS on initialization failure and reject malformed SPEC arguments.
 - Freeze validated UF2 bytes, keep recovery files private outside installed packages,
   and distinguish version/health observations from exact image verification.

@@ -45,8 +45,13 @@ analysis count. Inspect those denominators before comparing results.
 ## Supported inputs and explicit limits
 
 The v2 analyzer supports the original `controlled_source` metadata and passed
-campaign manifests, current `raw_source_control` metadata with source configuration,
-and `gain_comparison` metadata joined to a passed run in adjacent `results.json`.
+campaign manifests, and current `raw_source_control` / `gain_comparison` metadata
+joined to passed runs in adjacent `results.json`. Raw controls require a passed
+campaign report as well, matching capture filename, index, conditions, source
+configuration, receiver identity/reference hash and recording frequency. Embedded
+raw metadata is saved while the run is still running, so it alone cannot prove
+that later source-stop and calibration checks passed. Conflicting legacy manifests
+are rejected rather than allowed to bypass the current raw-report checks.
 Gain inputs require that report because the metadata alone does not establish the
 transmitter configuration. Multiple gain crops are analyzed separately, not treated
 as independent experimental runs by the screen/retention summarizers.

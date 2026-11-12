@@ -38,3 +38,14 @@ command regression as expected.
 These are command-boundary host tests, not real ESP-IDF builds, hardware tests,
 transport timing tests, or successful RF/FFT acquisition validation. No firmware
 was flashed and no RF operation was performed.
+
+
+## Serial framing follow-up
+
+The shared serial line reader also rejects an entire line containing an embedded
+NUL byte. Without this boundary check, a C-string parser could see a valid prefix
+and never see the malformed suffix. The existing invalid-line response is
+`ERR command_length`; no command handler is called, and the next complete valid
+line remains usable. Raw-byte UART tests link the production serial and spectrum
+code at `-O0` and `-O2` under UBSan, covering NUL before optional/extra tokens,
+a leading NUL, ordinary trailing garbage, and subsequent valid CRLF input.

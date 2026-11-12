@@ -2,9 +2,19 @@
 
 **Publication scope:** This report describes the completed local experiment. Paths under `records/`, firmware artifact directories and recovery directories below are archival provenance labels, not public download links. The [public evidence](evidence/nrf-validation/README.md) contains scrubbed numeric exports and known test-packet bytes; raw I/Q, flash backups and binaries are withheld. This publication did not repeat hardware measurements or change the devices. Historical test counts below are not the current public-checkout test count.
 
-## Reproduce (offline only)
+## New analysis versus historical reproduction
 
-From the repository root, run `.venv/bin/python scripts/analyze_nrf_iq.py records/nrf-first` or replace the input directory with another completed campaign. Each invocation creates a new timestamped analysis directory, never overwrites prior results, and reads only existing SigMF IQ/metadata and run JSON. Outputs are `analysis.json` (metrics, hypotheses, SHA-256 input hashes) and `diagnostics.svg` (per-record time-domain power, Welch spectrum, phase discriminator). Numpy is the only dependency. Campaigns still running produce a snapshot rather than a final dataset. Do not interpret missing files as failures.
+For new work use `scripts/analyze_nrf_iq_v2.py` and the v2 screen/retention
+summaries described in [offline RF analysis v2](offline-rf-analysis-v2.md).
+They validate supported current metadata, include complete no-event run manifests
+in denominators, keep missing analysis unknown, and reject custom payload patterns.
+The original tools below are frozen to reproduce archived results. They retain
+legacy metadata handling and default-payload assumptions; the old screen/retention
+summaries may exclude runs without retained IQ. Do not use them for new inference.
+
+## Reproduce historical inputs (offline only)
+
+From the repository root, run `.venv/bin/python scripts/analyze_nrf_iq.py records/nrf-first` using the matching historical input dataset. Each invocation creates a new timestamped analysis directory, never overwrites prior results, and reads only existing SigMF IQ/metadata and run JSON. Outputs are `analysis.json` (metrics, hypotheses, SHA-256 input hashes) and `diagnostics.svg` (per-record time-domain power, Welch spectrum, phase discriminator). Numpy is the only dependency. Campaigns still running produce a snapshot rather than a final dataset. Do not interpret missing files as failures.
 
 ## Signal contract and limitations
 
