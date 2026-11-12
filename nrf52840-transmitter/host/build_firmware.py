@@ -39,6 +39,20 @@ def vendor_state():
     return result
 
 
+def require_source_checkout(parser):
+    """Fail before writing anything when invoked from an installed host-only wheel."""
+    required = ('dependencies.json', 'firmware/Makefile', 'host/make_uf2.py')
+    if not all((ROOT / name).is_file() for name in required) or not (ROOT.parent / '.git').exists():
+        parser.error(
+            'Firmware packaging requires the project Git checkout and pinned vendor '
+            'dependencies, not an installed wheel or extracted source archive. '
+            'From the checkout run: python nrf52840-transmitter/host/build_firmware.py '
+            '--version VERSION. See nrf52840-transmitter/README.md and '
+            'nrf52840-transmitter/THIRD_PARTY.md for dependency setup. '
+            'Use --dry-run for a host-only plan.'
+        )
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--version', required=True)
@@ -53,6 +67,7 @@ def main():
     if a.dry_run:
         print(json.dumps({'version': a.version, 'flashing': False, 'mode': 'plan'}))
         return
+    require_source_checkout(p)
     with (ROOT / '.firmware-build.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         vendors = vendor_state()
