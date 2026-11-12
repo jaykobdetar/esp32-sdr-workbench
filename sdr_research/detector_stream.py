@@ -15,6 +15,7 @@ from threading import Event
 from typing import Any
 
 from .protocol import ProtocolError, Radio
+from .stream_snapshots import SnapshotAssembler
 
 WIRE = struct.Struct('<4sIQIIIIIIII')
 MAGIC = b'DSV1'
@@ -84,6 +85,9 @@ def run_stream(
     stop: Event | None = None,
     on_record: Callable[[dict[str, int]], None] | None = None,
     keep_records: bool = True,
+    snapshot_every: int = 0,
+    snapshot_phase: int = 0,
+    on_snapshot: Callable[[dict[str, Any]], None] | None = None,
 ) -> dict[str, Any]:
     """One persistent, bounded, no-retention run. Stop is explicit and cooperative.
 
@@ -104,7 +108,24 @@ def run_stream(
         raise ValueError('DSTREAM arguments outside supported limits')
     if 'DSTREAM' not in radio.info.get('caps', []):
         raise ProtocolError('Receiver lacks experimental DSTREAM firmware')
+    if (
+        type(snapshot_every) is not int
+        or type(snapshot_phase) is not int
+        or not (
+            (snapshot_every == 0 and snapshot_phase == 0)
+            or (1024 <= snapshot_every <= 1_000_000 and 0 <= snapshot_phase < snapshot_every)
+        )
+    ):
+        raise ValueError('Invalid sparse snapshot interval/phase')
+    if snapshot_every and 'DSTREAMIQ' not in radio.info.get('caps', []):
+        raise ProtocolError('Receiver lacks sparse snapshot firmware')
+    assembler = SnapshotAssembler() if snapshot_every else None
+    recent = {}
     requested = f'DSTREAM {start_us} {milliseconds} {period_ns} {yield_phase} {ratio_milli}'
+    if assembler:
+        requested = (
+            requested.replace('DSTREAM ', 'DSTREAMIQ ', 1) + f' {snapshot_every} {snapshot_phase}'
+        )
     records = []
     count, events, first, last, stopped = 0, 0, 0, 0, False
     deadline = time.monotonic() + milliseconds / 1000 + 10
@@ -112,19 +133,34 @@ def run_stream(
     try:
         begin = radio.command(requested)
         fields = begin.split()
-        if len(fields) != 10 or fields[:3] != ['DSTREAM', 'BEGIN', '1']:
+        if len(fields) != (12 if assembler is not None else 10) or fields[:3] != [
+            'DSTREAM',
+            'BEGIN',
+            '1',
+        ]:
             radio.failed = True
             raise ProtocolError('Invalid stream BEGIN')
         if list(map(int, fields[3:8])) != list(values):
             radio.failed = True
             raise ProtocolError('Stream BEGIN does not match request')
+        if assembler is not None and list(map(int, fields[10:])) != [
+            snapshot_every,
+            snapshot_phase,
+        ]:
+            raise ProtocolError('Snapshot BEGIN does not match request')
         while True:
             if stop and stop.is_set() and not stopped:
                 radio.serial.write(b'STOP\n')
                 radio.serial.flush()
                 stopped = True
             # At least one frame per second even at the slowest supported period.
-            record = decode_record(radio._read(WIRE.size, min(deadline, time.monotonic() + 7)))
+            frame = radio._read(WIRE.size, min(deadline, time.monotonic() + 7))
+            if assembler is not None and frame[:4] in (b'DSI1', b'DSQ1'):
+                snapshot = assembler.feed(frame, recent)
+                if snapshot is not None and on_snapshot:
+                    on_snapshot(snapshot)
+                continue
+            record = decode_record(frame)
             if record['flags'] == END:
                 terminal = record
                 break
@@ -138,6 +174,9 @@ def run_stream(
             if not first:
                 first = record['trigger_us']
             last = record['trigger_us']
+            if assembler is not None:
+                recent[count] = record
+                recent.pop(count - 4096, None)
             if keep_records:
                 records.append(record)
             if on_record:
@@ -161,6 +200,13 @@ def run_stream(
             or summary['max_late_us'] != terminal['peak_adc2']
         ):
             raise ProtocolError('Stream final counters do not agree')
+        if assembler is not None:
+            if (
+                assembler.pending
+                or summary.get('iq_sent') != assembler.completed
+                or summary.get('iq_produced') != assembler.completed
+            ):
+                raise ProtocolError('Incomplete sparse snapshot stream')
         if summary['status'] not in (0, 3):
             raise ProtocolError(f'Stream failed with status {summary["status"]}')
     except BaseException:
@@ -180,6 +226,7 @@ def run_stream(
         host_elapsed_s=time.monotonic() - started_host,
         stop_requested=stopped,
         nominal_aperture_us=APERTURE_US,
-        retention=False,
+        retention=bool(snapshot_every),
+        snapshots_received=assembler.completed if assembler else 0,
         timing_note='Device trigger plus nominal N/fs, not calibrated RF aperture or packet recall.',
     )

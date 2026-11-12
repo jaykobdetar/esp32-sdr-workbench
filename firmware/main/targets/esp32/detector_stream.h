@@ -22,10 +22,15 @@ static void dstream_enqueue(dstream_record_t record) {
     dstream_queue[(dstream_head + dstream_count) % DSTREAM_QUEUE] = record;
     dstream_count++;
 }
+#include "detector_stream_iq.h"
 static void dstream_pump(void) {
     /* A fixed two-record budget can recover transient backlog. All writes
      * remain FIFO-nonblocking; stop immediately when no progress is possible. */
-    unsigned budget = 96;
+    unsigned budget = dstream_iq.every ? 128 : 96;
+    if (dstream_iq.cursor) {
+        unsigned sent=dstream_iq_send(budget); budget-=sent;
+        if(dstream_iq.cursor) return;
+    }
     while (dstream_count && budget) {
         const uint8_t *p = (const uint8_t *)&dstream_queue[dstream_head];
         unsigned remaining = 48 - dstream_cursor;
@@ -39,8 +44,18 @@ static void dstream_pump(void) {
             dstream_cursor = 0; dstream_count--;
         }
     }
+    if (budget && !dstream_count) dstream_iq_send(budget);
 }
 static bool dstream_drain(void) {
+    if (dstream_iq.every) {
+        int64_t until=esp_timer_get_time()+2000000;
+        while(dstream_count || dstream_iq.busy) {
+            dstream_pump();
+            if(esp_timer_get_time()>until) return false;
+            vTaskDelay(1);
+        }
+        return true;
+    }
     while (dstream_count) {
         const uint8_t *p = (const uint8_t *)&dstream_queue[dstream_head];
         if (!burst_serial_send(p + dstream_cursor, 48 - dstream_cursor)) return false;
@@ -61,6 +76,7 @@ static void dstream_commit(detpipe_state_t *p, unsigned ratio) {
         .background=(uint32_t)(p->background.q16 >> 16), .events=p->events,
         .flags=(positive ? 1u : 0u) | (p->processed > 16 ? 2u : 0u),
         .observed_us=p->observed_us, .gain=dstream_gain});
+    dstream_iq_snapshot(p);
     p->commit_us += esp_timer_get_time() - t;
     p->pending=p->ready=false;
 }
@@ -102,12 +118,14 @@ static void dstream_smart_yield(dstream_yield_t *y) {
 static bool detector_stream_command(const char *line) {
     if (!strcmp(line, "DSTREAM?")) { reply("DSTREAM 1 600000 16380 16000000 48\n"); return true; }
     if (strncmp(line, "DSTREAM", 7)) return false;
-    uint64_t a[5], now=esp_timer_get_time();
+    bool iq=!strncmp(line,"DSTREAMIQ ",10);
+    uint64_t a[7]={0}, now=esp_timer_get_time();
     /* deadline_us duration_ms period_ns yield_phase ratio_milli. Duration=0
      * deliberately forbidden in first experimental release (10-minute cap). */
-    if (!dual_arguments(line+7,a,5) || a[0]<now+10000 || a[0]>now+5000000 ||
+    if (!dual_arguments(line+(iq?9:7),a,iq?7:5) || a[0]<now+10000 || a[0]>now+5000000 ||
         a[1]<1 || a[1]>600000 || a[2]<1600000 || a[2]>10000000 ||
-        a[3]>32 || a[4]<1000 || a[4]>1000000 || dual_armed) {
+        a[3]>32 || a[4]<1000 || a[4]>1000000 || dual_armed ||
+        (iq && (a[5]<1024 || a[5]>1000000 || a[6]>=a[5]))) {
         reply("ERR stream_args\n"); return true;
     }
     dual_trace_end();
@@ -124,6 +142,13 @@ static bool detector_stream_command(const char *line) {
         if (p.copy) heap_caps_free(p.copy);
         reply("ERR stream_memory\n"); return true;
     }
+    memset(&dstream_iq,0,sizeof(dstream_iq));
+    int allocated=iq?dstream_iq_allocate(p.copy):1;
+    if(allocated<0) {reply("ERR stream_iq_alias_reset_required\n");return true;}
+    if(!allocated) {
+        heap_caps_free(p.copy);detpipe_clear();reply("ERR stream_iq_memory\n");return true;
+    }
+    dstream_iq.every=a[5];dstream_iq.phase=a[6];
     dstream_head=dstream_count=dstream_cursor=0;dstream_overflow=false;
     unsigned old_acq=acquisition_option,old_clear=clear_option;
     acquisition_option=3;clear_option=1;
@@ -132,7 +157,9 @@ static bool detector_stream_command(const char *line) {
     if(a[3]==32) {vTaskDelay(1);dstream_tick_observe(&yielding);}
     unsigned min_heap=heap_caps_get_free_size(DETPIPE_ALLOC_CAPS);
     unsigned min_stack=uxTaskGetStackHighWaterMark(NULL),status=0,captures=0;
-    reply("DSTREAM BEGIN 1 %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %u %u\n",
+    if(iq) reply("DSTREAM BEGIN 1 %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %u %u %" PRIu64 " %" PRIu64 "\n",
+        a[0],a[1],a[2],a[3],a[4],frequency_mhz,detector_background_policy,a[5],a[6]);
+    else reply("DSTREAM BEGIN 1 %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %u %u\n",
         a[0],a[1],a[2],a[3],a[4],frequency_mhz,detector_background_policy);
     dual_period=a[2]/1000;dual_period_ns=a[2];dual_fraction_ns=0;
     dual_next=a[0];dual_late=dual_skipped=0;
@@ -152,6 +179,7 @@ static bool detector_stream_command(const char *line) {
         dstream_gain=REG_READ(RX_GAIN);
         dstream_pump();
         if (dstream_overflow) {status=2;break;}
+        if(dstream_iq.errors) {status=4;break;}
         if (burst_serial_stop_requested()) {status=3;break;}
         if(a[3]==32) dstream_smart_yield(&yielding);
         else if ((captures&31u)==a[3]) vTaskDelay(1);
@@ -166,6 +194,7 @@ static bool detector_stream_command(const char *line) {
     dstream_commit(&p,a[4]);
     deferred_reply=false;
     if (dstream_overflow && !status) status=2;
+    if(dstream_iq.errors) status=4;
     /* Consume fragments of the stop line before announcing completion.
      * Never drain input after END: that could swallow the next host command. */
     burst_serial_stop_requested();
@@ -175,7 +204,7 @@ static bool detector_stream_command(const char *line) {
         .mean=status,.peak=dual_late,.background=dual_skipped,.events=p.events,
         .flags=DSTREAM_END,.observed_us=(uint32_t)(ended-a[0]),.gain=REG_READ(RX_GAIN)});
     if (delivered) delivered=dstream_drain();
-    heap_caps_free(p.copy);acquisition_option=old_acq;clear_option=old_clear;
+    heap_caps_free(p.copy);detpipe_clear();acquisition_option=old_acq;clear_option=old_clear;
     if (delivered) {
         char summary[768];
         int n=snprintf(summary,sizeof(summary),
@@ -183,9 +212,9 @@ static bool detector_stream_command(const char *line) {
             "\"first_trigger_us\":%" PRIu64 ",\"last_trigger_us\":%" PRIu64 ","
             "\"end_us\":%" PRIu64 ",\"max_late_us\":%u,\"skipped\":%u,"
             "\"overflow\":%u,\"min_heap\":%u,\"min_stack\":%u,\"compute_us\":%" PRIu64 ","
-            "\"copy_us\":%" PRIu64 ",\"decision_us\":%" PRIu64 ",\"smart_yields\":%u,\"forced_yields\":%u,\"retained\":0}\n",
+            "\"copy_us\":%" PRIu64 ",\"decision_us\":%" PRIu64 ",\"smart_yields\":%u,\"forced_yields\":%u,\"retained\":0,\"iq_produced\":%u,\"iq_sent\":%u,\"iq_busy_skips\":%u}\n",
             status,captures,p.processed,p.events,first,last,ended,dual_late,dual_skipped,
-            (unsigned)dstream_overflow,min_heap,min_stack,p.compute_us,p.copy_us,p.commit_us,yielding.yielded,yielding.forced);
+            (unsigned)dstream_overflow,min_heap,min_stack,p.compute_us,p.copy_us,p.commit_us,yielding.yielded,yielding.forced,dstream_iq.produced,dstream_iq.sent,dstream_iq.skipped);
         if(n>0 && (unsigned)n<sizeof(summary)) {
             size_t length=ascii_frame_pad(summary,n,sizeof(summary));
             /* Empirical workaround for observed post-stream summary truncation.
