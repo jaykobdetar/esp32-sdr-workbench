@@ -239,8 +239,8 @@ def test_empty_failed_run_has_zero_boundaries():
 def test_cooperative_idle_phase_requires_explicit_capability():
     radio, _, _ = fake_radio()
     with pytest.raises(ProtocolError, match='cooperative-idle'):
-        run_stream(radio, start_us=START, yield_phase=34)
+        run_stream(radio, start_us=START, yield_phase=33)
     radio.command.assert_not_called()
     radio.info['caps'].append('DSTREAMIDLE')
     radio.command.return_value = f'DSTREAM BEGIN 1 {START} 30000 1875000 33 4000 2440 2'
-    assert run_stream(radio, start_us=START, yield_phase=34)['summary']['captures'] == 18
+    assert run_stream(radio, start_us=START, yield_phase=33)['summary']['captures'] == 18
