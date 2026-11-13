@@ -65,6 +65,11 @@
       "file": "sparse6-overlap1840.json.gz",
       "sha256": "73f57e600c1a1c96f5af76627ad750a0578d6f75ab781b9ccc2f19a36c36b848",
       "bytes": 1446759
+    },
+    {
+      "file": "sparse6-overlap1840-long.json.gz",
+      "sha256": "c8b2afe51ed6a08bbd6852be8251d6bd1e7dd5870bf009a94e3126e46e26b7d6",
+      "bytes": 5722149
     }
   ],
   "derived_files": [
@@ -75,8 +80,8 @@
     },
     {
       "file": "summary.json",
-      "sha256": "e6ed37dc278f69f37fed1ca2cd31958c29673104e123e7269fd38f9f115e9a66",
-      "bytes": 376683
+      "sha256": "1eb8df8e908538e92daeca5bb6183726a11214a6fdd2a0146a0c2748b005c53f",
+      "bytes": 399813
     },
     {
       "file": "sparse5-screening.json",

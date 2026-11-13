@@ -8935,6 +8935,556 @@
           ]
         }
       ]
+    },
+    {
+      "campaign": "sparse6-overlap1840-long",
+      "source": {
+        "profile": "esp32",
+        "version": "4215aedd40e954ffa107681cedffadb0356cbec2",
+        "idf_commit": "25fe69f946311abdaf9ad56591f25fedbc20ac98",
+        "variant": "esp32-dual-sparse-iq-experimental-v6",
+        "application_sha256": "e17231679f6125b3d0ff65bb1ac7b27706a4a4a20c8ffc57f711d99f665a90f3"
+      },
+      "collection_status": "passed",
+      "final_cleanup_record_present": true,
+      "runs": [
+        {
+          "index": 0,
+          "source_on": null,
+          "duration_ms": 120000,
+          "analysis": {
+            "status": "verified-telemetry",
+            "sensitivity": [
+              {
+                "assumed_endpoint_error_us": 1,
+                "receiver_b_offset_scenarios": {
+                  "-1": {
+                    "coverage_percent": 99.99472774846686,
+                    "covered_us": 119993673.29816023,
+                    "duration_us": 120000000,
+                    "gap_count": 118,
+                    "max_gap_us": 131.8265032581985
+                  },
+                  "1": {
+                    "coverage_percent": 99.99487327315614,
+                    "covered_us": 119993847.92778738,
+                    "duration_us": 120000000,
+                    "gap_count": 118,
+                    "max_gap_us": 129.8265032581985
+                  }
+                },
+                "eroded_union": {
+                  "coverage_percent": 99.99460362721639,
+                  "covered_us": 119993524.35265967,
+                  "duration_us": 120000000,
+                  "gap_count": 119,
+                  "max_gap_us": 132.8265032581985
+                }
+              },
+              {
+                "assumed_endpoint_error_us": 5,
+                "receiver_b_offset_scenarios": {
+                  "-5": {
+                    "coverage_percent": 99.9944191809965,
+                    "covered_us": 119993303.01719579,
+                    "duration_us": 120000000,
+                    "gap_count": 123,
+                    "max_gap_us": 135.8265032581985
+                  },
+                  "5": {
+                    "coverage_percent": 99.99515849215008,
+                    "covered_us": 119994190.1905801,
+                    "duration_us": 120000000,
+                    "gap_count": 115,
+                    "max_gap_us": 125.8265032581985
+                  }
+                },
+                "eroded_union": {
+                  "coverage_percent": 99.99376390898068,
+                  "covered_us": 119992516.69077682,
+                  "duration_us": 120000000,
+                  "gap_count": 132,
+                  "max_gap_us": 140.8265032581985
+                }
+              },
+              {
+                "assumed_endpoint_error_us": 20,
+                "receiver_b_offset_scenarios": {
+                  "-20": {
+                    "coverage_percent": 99.99304591447711,
+                    "covered_us": 119991655.09737253,
+                    "duration_us": 120000000,
+                    "gap_count": 151,
+                    "max_gap_us": 150.8265032581985
+                  },
+                  "20": {
+                    "coverage_percent": 99.99611722190757,
+                    "covered_us": 119995340.66628908,
+                    "duration_us": 120000000,
+                    "gap_count": 108,
+                    "max_gap_us": 118.10650876164436
+                  }
+                },
+                "eroded_union": {
+                  "coverage_percent": 99.9895927861722,
+                  "covered_us": 119987511.34340665,
+                  "duration_us": 120000000,
+                  "gap_count": 212,
+                  "max_gap_us": 170.8265032581985
+                }
+              }
+            ],
+            "sensitivity_note": "Assumption-based scenarios, not confidence bounds. Offset scenarios shift receiver B only; erosion removes the assumed error at both ends of every receiver window. Bracketing anchors cannot rule out nonlinear drift within the run.",
+            "clock_model": {
+              "origin_a_us": 90495180.87053572,
+              "offset_b_minus_a_us": -2084932.9508928559,
+              "relative_drift": -2.2240591055399967e-05,
+              "anchor_count": 14,
+              "span_us": 268194279.0,
+              "max_residual_us": 1.8796010816004127,
+              "rms_residual_us": 0.7712124625997562,
+              "heldout_max_error_us": 2.0537427365779877,
+              "independent_capture_pair_count": 14,
+              "before_capture_pair_count": 8,
+              "after_capture_pair_count": 6,
+              "heldout_evaluated_fold_count": 14
+            },
+            "nominal_union": {
+              "coverage_percent": 99.99480077315614,
+              "covered_us": 119993760.92778738,
+              "duration_us": 120000000,
+              "gap_count": 118,
+              "max_gap_us": 130.8265032581985
+            },
+            "nominal_completion_inclusive_union": {
+              "coverage_percent": 99.99223800148997,
+              "covered_us": 119997028.94706419,
+              "duration_us": 120006343.83768481,
+              "gap_count": 121,
+              "max_gap_us": 1443.2820994406939,
+              "start_a_us": 11310000,
+              "end_a_us": 131316343.83768481,
+              "boundary": "Requested receiver-A start through the later device terminal timestamp, with receiver-B terminal mapped into receiver-A time.",
+              "includes": "Acquisition and final snapshot/telemetry drain before terminal creation.",
+              "excludes": "External RF-anchor calibration, host pre-arm time, terminal frame transmission and trailing ASCII summary output.",
+              "note": "Nominal aperture union, not packet recall or a complete host-session measurement. Compare only with matching time boundaries."
+            },
+            "receiver_host_elapsed_s": [
+              120.267341690982,
+              120.27184907498304
+            ],
+            "host_elapsed_note": "Independent host call elapsed durations only; these are not synchronized RF windows and cannot define a precise combined coverage union.",
+            "requested_window_a_us": [
+              11310000,
+              131310000
+            ],
+            "nominal_full_burst_opportunities": [
+              {
+                "burst_duration_us": 50,
+                "start_window_us": [
+                  11310000,
+                  131309950
+                ],
+                "opportunity_percent": 99.987067936723,
+                "eligible_start_time_us": 119984431.53053363,
+                "denominator_us": 119999950,
+                "max_ineligible_start_gap_us": 180.8265032581985,
+                "ineligible_start_gap_count": 406,
+                "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+              },
+              {
+                "burst_duration_us": 100,
+                "start_window_us": [
+                  11310000,
+                  131309900
+                ],
+                "opportunity_percent": 99.94394586929003,
+                "eligible_start_time_us": 119932635.09920217,
+                "denominator_us": 119999900,
+                "max_ineligible_start_gap_us": 230.8265032581985,
+                "ineligible_start_gap_count": 14872,
+                "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+              },
+              {
+                "burst_duration_us": 250,
+                "start_window_us": [
+                  11310000,
+                  131309750
+                ],
+                "opportunity_percent": 84.10277150174426,
+                "eligible_start_time_us": 100923115.54516436,
+                "denominator_us": 119999750,
+                "max_ineligible_start_gap_us": 380.8265032581985,
+                "ineligible_start_gap_count": 130366,
+                "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+              },
+              {
+                "burst_duration_us": 500,
+                "start_window_us": [
+                  11310000,
+                  131309500
+                ],
+                "opportunity_percent": 56.93066341639954,
+                "eligible_start_time_us": 68316511.44636236,
+                "denominator_us": 119999500,
+                "max_ineligible_start_gap_us": 630.8265032581985,
+                "ineligible_start_gap_count": 130435,
+                "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+              }
+            ],
+            "nominal_decision_union": {
+              "coverage_percent": 99.96990809956435,
+              "covered_us": 119963889.71947722,
+              "duration_us": 120000000,
+              "gap_count": 125,
+              "max_gap_us": 29441
+            },
+            "note": "Nominal trigger+N/fs, not calibrated RF aperture or packet recall. Residual and held-out errors are empirical, not certified bounds."
+          },
+          "stored_calibration_unchanged_since_previous_boundary": [
+            true,
+            true
+          ],
+          "receivers": [
+            {
+              "status": 0,
+              "captures": 65218,
+              "processed": 65218,
+              "events": 15559,
+              "first_trigger_us": 11310017,
+              "last_trigger_us": 131309281,
+              "end_us": 131311748,
+              "max_late_us": 235,
+              "skipped": 0,
+              "overflow": 0,
+              "min_heap": 68252,
+              "min_stack": 2924,
+              "compute_us": 56036130,
+              "copy_us": 30315479,
+              "decision_us": 330356,
+              "smart_yields": 0,
+              "forced_yields": 0,
+              "setup_max_us": 344,
+              "yield_delay_max_us": 0,
+              "estimated_wake_late_max_us": 0,
+              "yield_guard_max_us": 0,
+              "idle_handshakes": 2038,
+              "idle_observed": 2038,
+              "idle_fallbacks": 0,
+              "idle_attempts_max": 1,
+              "idle_latency_max_us": 208,
+              "retained": 0,
+              "iq_produced": 0,
+              "iq_sent": 0,
+              "iq_busy_skips": 0,
+              "iq_pack_us": 0,
+              "iq_crc_us": 0
+            },
+            {
+              "status": 0,
+              "captures": 65220,
+              "processed": 65220,
+              "events": 15758,
+              "first_trigger_us": 9227766,
+              "last_trigger_us": 129228036,
+              "end_us": 129230503,
+              "max_late_us": 202,
+              "skipped": 0,
+              "overflow": 0,
+              "min_heap": 67088,
+              "min_stack": 2924,
+              "compute_us": 55871300,
+              "copy_us": 30242661,
+              "decision_us": 331245,
+              "smart_yields": 0,
+              "forced_yields": 0,
+              "setup_max_us": 342,
+              "yield_delay_max_us": 0,
+              "estimated_wake_late_max_us": 0,
+              "yield_guard_max_us": 0,
+              "idle_handshakes": 2038,
+              "idle_observed": 2038,
+              "idle_fallbacks": 0,
+              "idle_attempts_max": 1,
+              "idle_latency_max_us": 87,
+              "retained": 0,
+              "iq_produced": 0,
+              "iq_sent": 0,
+              "iq_busy_skips": 0,
+              "iq_pack_us": 0,
+              "iq_crc_us": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "source_on": null,
+          "duration_ms": 120000,
+          "analysis": {
+            "status": "verified-telemetry",
+            "sensitivity": [
+              {
+                "assumed_endpoint_error_us": 1,
+                "receiver_b_offset_scenarios": {
+                  "-1": {
+                    "coverage_percent": 99.99188629623266,
+                    "covered_us": 119990263.5554792,
+                    "duration_us": 120000000,
+                    "gap_count": 169,
+                    "max_gap_us": 141.4551219344139
+                  },
+                  "1": {
+                    "coverage_percent": 99.99206930912831,
+                    "covered_us": 119990483.17095399,
+                    "duration_us": 120000000,
+                    "gap_count": 170,
+                    "max_gap_us": 139.4551219344139
+                  }
+                },
+                "eroded_union": {
+                  "coverage_percent": 99.99169331692838,
+                  "covered_us": 119990031.98031405,
+                  "duration_us": 120000000,
+                  "gap_count": 175,
+                  "max_gap_us": 142.4551219344139
+                }
+              },
+              {
+                "assumed_endpoint_error_us": 5,
+                "receiver_b_offset_scenarios": {
+                  "-5": {
+                    "coverage_percent": 99.99149729895379,
+                    "covered_us": 119989796.75874454,
+                    "duration_us": 120000000,
+                    "gap_count": 173,
+                    "max_gap_us": 145.4551219344139
+                  },
+                  "5": {
+                    "coverage_percent": 99.99242438593238,
+                    "covered_us": 119990909.26311886,
+                    "duration_us": 120000000,
+                    "gap_count": 167,
+                    "max_gap_us": 135.4551219344139
+                  }
+                },
+                "eroded_union": {
+                  "coverage_percent": 99.99050418490572,
+                  "covered_us": 119988605.02188686,
+                  "duration_us": 120000000,
+                  "gap_count": 185,
+                  "max_gap_us": 150.4551219344139
+                }
+              },
+              {
+                "assumed_endpoint_error_us": 20,
+                "receiver_b_offset_scenarios": {
+                  "-20": {
+                    "coverage_percent": 99.98983985523778,
+                    "covered_us": 119987807.82628533,
+                    "duration_us": 120000000,
+                    "gap_count": 187,
+                    "max_gap_us": 160.4551219344139
+                  },
+                  "20": {
+                    "coverage_percent": 99.99355824703028,
+                    "covered_us": 119992269.89643633,
+                    "duration_us": 120000000,
+                    "gap_count": 154,
+                    "max_gap_us": 124.15924024581909
+                  }
+                },
+                "eroded_union": {
+                  "coverage_percent": 99.98468342479124,
+                  "covered_us": 119981620.1097495,
+                  "duration_us": 120000000,
+                  "gap_count": 372,
+                  "max_gap_us": 180.4551219344139
+                }
+              }
+            ],
+            "sensitivity_note": "Assumption-based scenarios, not confidence bounds. Offset scenarios shift receiver B only; erosion removes the assumed error at both ends of every receiver window. Bracketing anchors cannot rule out nonlinear drift within the run.",
+            "clock_model": {
+              "origin_a_us": 113897355.22727273,
+              "offset_b_minus_a_us": -2085453.4829545447,
+              "relative_drift": -2.2240093128304514e-05,
+              "anchor_count": 11,
+              "span_us": 266006839.0625,
+              "max_residual_us": 1.8369050698820502,
+              "rms_residual_us": 0.8443346883792472,
+              "heldout_max_error_us": 2.029330253601074,
+              "independent_capture_pair_count": 11,
+              "before_capture_pair_count": 8,
+              "after_capture_pair_count": 3,
+              "heldout_evaluated_fold_count": 11
+            },
+            "nominal_union": {
+              "coverage_percent": 99.99197847579498,
+              "covered_us": 119990374.17095399,
+              "duration_us": 120000000,
+              "gap_count": 170,
+              "max_gap_us": 140.4551219344139
+            },
+            "nominal_completion_inclusive_union": {
+              "coverage_percent": 99.98945584764745,
+              "covered_us": 119993639.52839684,
+              "duration_us": 120006293.17478183,
+              "gap_count": 173,
+              "max_gap_us": 1395.281031191349,
+              "start_a_us": 140864000,
+              "end_a_us": 260870293.17478183,
+              "boundary": "Requested receiver-A start through the later device terminal timestamp, with receiver-B terminal mapped into receiver-A time.",
+              "includes": "Acquisition and final snapshot/telemetry drain before terminal creation.",
+              "excludes": "External RF-anchor calibration, host pre-arm time, terminal frame transmission and trailing ASCII summary output.",
+              "note": "Nominal aperture union, not packet recall or a complete host-session measurement. Compare only with matching time boundaries."
+            },
+            "receiver_host_elapsed_s": [
+              120.26823578900076,
+              120.27282285600086
+            ],
+            "host_elapsed_note": "Independent host call elapsed durations only; these are not synchronized RF windows and cannot define a precise combined coverage union.",
+            "requested_window_a_us": [
+              140864000,
+              260864000
+            ],
+            "nominal_full_burst_opportunities": [
+              {
+                "burst_duration_us": 50,
+                "start_window_us": [
+                  140864000,
+                  260863950
+                ],
+                "opportunity_percent": 99.98038745372176,
+                "eligible_start_time_us": 119976414.95427239,
+                "denominator_us": 119999950,
+                "max_ineligible_start_gap_us": 190.4551219344139,
+                "ineligible_start_gap_count": 648,
+                "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+              },
+              {
+                "burst_duration_us": 100,
+                "start_window_us": [
+                  140864000,
+                  260863900
+                ],
+                "opportunity_percent": 99.87045861769045,
+                "eligible_start_time_us": 119844450.47076991,
+                "denominator_us": 119999900,
+                "max_ineligible_start_gap_us": 240.4551219344139,
+                "ineligible_start_gap_count": 46066,
+                "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+              },
+              {
+                "burst_duration_us": 250,
+                "start_window_us": [
+                  140864000,
+                  260863750
+                ],
+                "opportunity_percent": 84.10150071963635,
+                "eligible_start_time_us": 100921590.60981181,
+                "denominator_us": 119999750,
+                "max_ineligible_start_gap_us": 390.4551219344139,
+                "ineligible_start_gap_count": 130333,
+                "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+              },
+              {
+                "burst_duration_us": 500,
+                "start_window_us": [
+                  140864000,
+                  260863500
+                ],
+                "opportunity_percent": 56.930663388210355,
+                "eligible_start_time_us": 68316511.41253549,
+                "denominator_us": 119999500,
+                "max_ineligible_start_gap_us": 640.4551219344139,
+                "ineligible_start_gap_count": 130435,
+                "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+              }
+            ],
+            "nominal_decision_union": {
+              "coverage_percent": 99.96691907975192,
+              "covered_us": 119960302.8957023,
+              "duration_us": 120000000,
+              "gap_count": 176,
+              "max_gap_us": 29441
+            },
+            "note": "Nominal trigger+N/fs, not calibrated RF aperture or packet recall. Residual and held-out errors are empirical, not certified bounds."
+          },
+          "stored_calibration_unchanged_since_previous_boundary": [
+            true,
+            true
+          ],
+          "receivers": [
+            {
+              "status": 0,
+              "captures": 65218,
+              "processed": 65218,
+              "events": 16780,
+              "first_trigger_us": 140864017,
+              "last_trigger_us": 260863281,
+              "end_us": 260865700,
+              "max_late_us": 239,
+              "skipped": 0,
+              "overflow": 0,
+              "min_heap": 68252,
+              "min_stack": 2924,
+              "compute_us": 55910181,
+              "copy_us": 30384764,
+              "decision_us": 329800,
+              "smart_yields": 0,
+              "forced_yields": 0,
+              "setup_max_us": 343,
+              "yield_delay_max_us": 0,
+              "estimated_wake_late_max_us": 0,
+              "yield_guard_max_us": 0,
+              "idle_handshakes": 2038,
+              "idle_observed": 2038,
+              "idle_fallbacks": 0,
+              "idle_attempts_max": 1,
+              "idle_latency_max_us": 51,
+              "retained": 0,
+              "iq_produced": 0,
+              "iq_sent": 0,
+              "iq_busy_skips": 0,
+              "iq_pack_us": 0,
+              "iq_crc_us": 0
+            },
+            {
+              "status": 0,
+              "captures": 65220,
+              "processed": 65220,
+              "events": 17456,
+              "first_trigger_us": 138778882,
+              "last_trigger_us": 258779152,
+              "end_us": 258781571,
+              "max_late_us": 211,
+              "skipped": 0,
+              "overflow": 0,
+              "min_heap": 67088,
+              "min_stack": 2924,
+              "compute_us": 55750359,
+              "copy_us": 30331214,
+              "decision_us": 330385,
+              "smart_yields": 0,
+              "forced_yields": 0,
+              "setup_max_us": 343,
+              "yield_delay_max_us": 0,
+              "estimated_wake_late_max_us": 0,
+              "yield_guard_max_us": 0,
+              "idle_handshakes": 2038,
+              "idle_observed": 2038,
+              "idle_fallbacks": 0,
+              "idle_attempts_max": 1,
+              "idle_latency_max_us": 52,
+              "retained": 0,
+              "iq_produced": 0,
+              "iq_sent": 0,
+              "iq_busy_skips": 0,
+              "iq_pack_us": 0,
+              "iq_crc_us": 0
+            }
+          ]
+        }
+      ]
     }
   ]
 }

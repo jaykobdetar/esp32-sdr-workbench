@@ -75,6 +75,7 @@ readout/restart behavior. Do not directly compare it with a requested-window
 | `sparse5-onoff` | 2 × 30 s | 99.492–99.515% | 97.493–97.517% | 851–921 µs | 97.830–97.881% |
 | `sparse6-onoff` | 4 × 30 s | 99.920–99.936% | 97.902–97.921% | 386–610 µs | 98.399–98.424% |
 | `sparse6-overlap1840` | 2 × 30 s | 99.993–99.994% | 99.988–99.989% | 107–119 µs | 99.922–99.950% |
+| `sparse6-overlap1840-long` | 2 × 120 s | 99.992–99.995% | 99.989–99.992% | 131–140 µs | 99.870–99.944% |
 
 Both sparse-v4 data sets actually used a **1.875 ms** period. The repeat was
 renamed to correct an initial filename; the saved configuration is authoritative.
@@ -115,6 +116,7 @@ packet, retained I/Q, or a decoded packet.
 | `sparse5-onoff` | 99.384–99.407% |
 | `sparse6-onoff` | 99.818–99.835% |
 | `sparse6-overlap1840` | 99.894–99.895% |
+| `sparse6-overlap1840-long` | 99.967–99.970% |
 
 ### Measured source identities
 
@@ -142,6 +144,7 @@ tests returned status 3. These are bounded screening results, not lifetime
 stability, a long-duration soak, or packet-decoding counts.
 
 <!-- END-LATER-CANDIDATES -->
+
 
 
 
@@ -304,6 +307,20 @@ Two short 30-second no-I/Q v6 runs at 1.840 ms measured requested-window union
 opportunity 99.922–99.950%. Gaps of 107–119 µs still remained. Decision-valid union
 was lower, 99.894–99.895%, because that metric removes warmup and the unused
 sample tail. This is a promising overlap tradeoff, not a new validated default:
-it has not undergone the longer timing, sparse-recording or UI soak tests at
-this period. The preferred setting remains 1.875 ms. Results must not be
+the longer timing replication below still leaves gaps, and sparse-recording
+and UI soak tests have not been performed at this period. The preferred setting remains 1.875 ms. Results must not be
 cherry-picked into a claim of 100% or combined packet recall.
+
+### Longer overlap replication
+
+The final two 120-second no-I/Q runs at 1.840 ms reproduced the high nominal
+full-100-µs-burst opportunity: 99.94395% and 99.87046%. Requested-window union
+was 99.99480% and 99.99198%; decision-valid union was 99.96991% and 99.96692%.
+Both receivers reported zero skipped scheduling slots, but measured nominal
+gaps of 131 and 140 µs remained. Zero skipped slots is not zero blind time.
+
+This strengthens the evidence for this particular timing/overlap tradeoff, not
+for continuous I/Q, packet recall, or detection of arbitrary short packets.
+The 1.840 ms setting has not had the 30-minute sparse-I/Q UI soak or controlled
+packet-retention tests performed at 1.875 ms. Therefore the Studio default stays
+at 1.875 ms; these longer no-I/Q results do not replace its recording validation.
