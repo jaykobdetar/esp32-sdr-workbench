@@ -72,6 +72,7 @@ readout/restart behavior. Do not directly compare it with a requested-window
 | `sparse5-wake1875` | 2 × 60 s | 99.965–99.967% | 99.962–99.965% | 259–265 µs | 98.355–98.385% |
 | `sparse5-wake1800` | 2 × 60 s | 99.132–99.927% | 99.129–99.924% | 312–929 µs | 98.660–99.669% |
 | `sparse5-onoff` | 2 × 30 s | 99.492–99.515% | 97.493–97.517% | 851–921 µs | 97.830–97.881% |
+| `sparse6-onoff` | 4 × 30 s | 99.920–99.936% | 97.902–97.921% | 386–610 µs | 98.399–98.424% |
 
 Both sparse-v4 data sets actually used a **1.875 ms** period. The repeat was
 renamed to correct an initial filename; the saved configuration is authoritative.
@@ -109,6 +110,7 @@ packet, retained I/Q, or a decoded packet.
 | `sparse5-wake1875` | 99.912–99.915% |
 | `sparse5-wake1800` | 99.070–99.873% |
 | `sparse5-onoff` | 99.384–99.407% |
+| `sparse6-onoff` | 99.818–99.835% |
 
 ### Measured source identities
 
@@ -124,6 +126,7 @@ commit must not inherit measurements from an earlier binary.
 | `esp32-dual-sparse-iq-experimental-v3` | `bf1421d51614443828756f26219c9e83fa5cf4a6` | `b12373208611e557` |
 | `esp32-dual-sparse-iq-experimental-v4` | `4fe0fcdfa8f6c028b807c1a8c6574fa9d82b4241` | `d7c8036ccc187cdc` |
 | `esp32-dual-sparse-iq-experimental-v5` | `1bf6c58edfaede75ee8f4c9be295255c5334111e` | `a400a6339e7ee6c7` |
+| `esp32-dual-sparse-iq-experimental-v6` | `4215aedd40e954ffa107681cedffadb0356cbec2` | `e17231679f6125b3` |
 
 ### Bounded v5 transport and memory screening
 
@@ -135,6 +138,7 @@ tests returned status 3. These are bounded screening results, not lifetime
 stability, a long-duration soak, or packet-decoding counts.
 
 <!-- END-LATER-CANDIDATES -->
+
 
 ## Actual known-packet evidence
 
@@ -150,6 +154,12 @@ incidental RF samples, raw recordings and device identifiers are excluded.
 | Sparse v1, ON run 3 | 8 + 8 | 3 | 5 | 8 |
 | Sparse v3, ON run 0 | 15 + 16 | 8 | 10 | 18 |
 | Sparse v3, OFF run 1 | 15 + 16 | 0 | 0 | 0 |
+| Sparse v5, ON run 0 (interrupted campaign) | 15 + 16 | 8 | 10 | 18 |
+| Sparse v5, OFF run 1 (interrupted campaign) | 15 + 16 | 0 | 0 | 0 |
+| Sparse v6, ON run 0 | 15 + 16 | 8 | 10 | 18 |
+| Sparse v6, OFF run 1 | 15 + 16 | 0 | 0 | 0 |
+| Sparse v6, OFF run 2 | 15 + 16 | 0 | 0 | 0 |
+| Sparse v6, ON run 3 | 15 + 16 | 9 | 11 | 20 |
 
 Deduplication is **within one transmitter START only**. Sequence numbers can be
 reused in another run and must not be merged across runs. In these ON runs the
@@ -222,3 +232,29 @@ seen in v5's screening. This is a bounded scheduling observation, not proof of
 100% reception or general performance superiority. The exact tested v6 application
 hash and original build commit are retained; the integration commit has identical
 firmware source but is not substituted for the build identity.
+
+### Final v6 controlled comparison
+
+The four complete 30-second v6 runs reached 99.920–99.936% requested-window
+nominal union, but only 97.902–97.921% through completion including final data
+drain. The largest nominal gap was 386–610 µs. This is not continuous reception.
+The two transmitter-on runs recovered 18 and 20 distinct known, radio-CRC-valid
+packets across the receivers, versus 8/10 and 9/11 individually. Neither off run
+matched a known packet. This demonstrates useful sparse-recording diversity in
+these runs, not a statistically established improvement over prior candidates.
+
+Stored calibration identity (hash, byte count, algorithm and version, excluding
+the changing query timestamp) was unchanged at every sampled v6 stage boundary
+on both receivers. Public summaries retain equality booleans only. Boundary
+checks do not prove that calibration was unchanged at every instant, and no
+private calibration hashes are published.
+
+### Physical RF Studio session image
+
+![RF Studio with two physical receivers](../../rf-studio-hardware.png)
+
+This image is the actual Qt interface rendered offscreen while connected to both
+physical receivers in a receive-only, memory-only session. It is not synthetic
+data, but it is also not a screenshot of the desktop launcher. The displayed
+combined spectrum averages compatible powers asynchronously; it does not combine
+I/Q phases or demonstrate the timing campaign's coverage.

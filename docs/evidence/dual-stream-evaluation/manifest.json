@@ -50,18 +50,23 @@
       "file": "sparse4-idle1875-repeat.json.gz",
       "sha256": "148754902dc385f195832a03df27f38ecaf3470e7563f41239d0d1a063550899",
       "bytes": 2121103
+    },
+    {
+      "file": "sparse6-onoff.json.gz",
+      "sha256": "eac61a5375273a0cbd2db1905118e2faaf29167668779d73e2dba4cea00e2306",
+      "bytes": 2954835
     }
   ],
   "derived_files": [
     {
       "file": "packet-proof.json",
-      "sha256": "337637b503ed194feb35ae0e6de1f1c70244b7821504b50f3ca149dd4dd64f78",
-      "bytes": 50097
+      "sha256": "385deefa38acd17d96eec50ce12025d7f07217c68059623e113924320c224f0d",
+      "bytes": 84115
     },
     {
       "file": "summary.json",
-      "sha256": "fa4391bd7d79462299365b1f59767e991cdd4b0f7158ba2a3bde5c476f848d42",
-      "bytes": 281827
+      "sha256": "637f7176739552582a8c6f1036a6a355eb305519ce74be8156dfdc3b00164b0a",
+      "bytes": 330507
     },
     {
       "file": "sparse5-screening.json",
