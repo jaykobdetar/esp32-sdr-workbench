@@ -96,6 +96,7 @@ static unsigned dstream_validate(void *context, unsigned n) {
     return bad;
 }
 #include "dstream_idle.h"
+#include "dstream_idle_wake.h"
 /* Experimental tick-aware yielding: preserve watchdog/idle servicing while
  * preferring a tick that fits inside the next scheduled acquisition gap.
  * Always force a yield after at most 64 captures, even when no fit is found. */
@@ -147,7 +148,7 @@ static bool detector_stream_command(const char *line) {
      * deliberately forbidden in first experimental release (10-minute cap). */
     if (!dual_arguments(line+(iq?9:7),a,iq?7:5) || a[0]<now+10000 || a[0]>now+5000000 ||
         a[1]<1 || a[1]>600000 || a[2]<1600000 || a[2]>10000000 ||
-        a[3]>33 || a[4]<1000 || a[4]>1000000 || dual_armed ||
+        a[3]>34 || a[4]<1000 || a[4]>1000000 || dual_armed ||
         (iq && (a[5]<1024 || a[5]>1000000 || a[6]>=a[5]))) {
         reply("ERR stream_args\n"); return true;
     }
@@ -172,7 +173,8 @@ static bool detector_stream_command(const char *line) {
         heap_caps_free(p.copy);detpipe_clear();reply("ERR stream_iq_memory\n");return true;
     }
     dstream_idle_t idle={0};
-    if(a[3]==33 && !dstream_idle_begin(&idle)) {
+    if((a[3]==33 && !dstream_idle_begin(&idle)) ||
+       (a[3]==34 && !dstream_wake_begin(&idle))) {
         heap_caps_free(p.copy);detpipe_clear();reply("ERR stream_idle_hook\n");return true;
     }
     dstream_iq.every=a[5];dstream_iq.phase=a[6];
@@ -209,7 +211,8 @@ static bool detector_stream_command(const char *line) {
         if (dstream_overflow) {status=2;break;}
         if(dstream_iq.errors) {status=4;break;}
         if (burst_serial_stop_requested()) {status=3;break;}
-        if(a[3]==33) dstream_idle_service(&idle);
+        if(a[3]==34) dstream_wake_service(&idle);
+        else if(a[3]==33) dstream_idle_service(&idle);
         else if(a[3]==32) dstream_smart_yield(&yielding);
         else if ((captures&31u)==a[3]) vTaskDelay(1);
         if (!(captures&127u)) {
@@ -219,7 +222,8 @@ static bool detector_stream_command(const char *line) {
             if (stack<min_stack) min_stack=stack;
         }
     }
-    dstream_idle_end(&idle);
+    if(a[3]==34) dstream_wake_end(&idle);
+    else dstream_idle_end(&idle);
     dual_trace_end();
     dstream_commit(&p,a[4]);
     deferred_reply=false;

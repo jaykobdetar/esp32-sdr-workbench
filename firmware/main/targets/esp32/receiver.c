@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/semphr.h"
 #include "esp_freertos_hooks.h"
 #include "burst_serial.h"
 #include "burst_gpio.h"
@@ -284,7 +285,7 @@ static void command(char *line) {
     char extra;
     if (!strcmp(line, "CAPS"))
         reply(
-            "CAPS DSTREAMIDLE DSTREAMIQ DSTREAM DUALTIMING BGPOLICY CALHASH " DETPIPE_HEALTH_CAPABILITY "PIPEKEEP PIPECOPY ACQOPT CLEAROPT PIPEKERNEL DET1 VERSION GPIO SPEC SPECN SPECCAPS SPECSTAT DCT "
+            "CAPS DSTREAMIDLEWAKE DSTREAMIDLE DSTREAMIQ DSTREAM DUALTIMING BGPOLICY CALHASH " DETPIPE_HEALTH_CAPABILITY "PIPEKEEP PIPECOPY ACQOPT CLEAROPT PIPEKERNEL DET1 VERSION GPIO SPEC SPECN SPECCAPS SPECSTAT DCT "
 #if !CONFIG_ESP_SDR_CP2102_VIEWER_COMPAT
             "UARTBAUD "
 #endif

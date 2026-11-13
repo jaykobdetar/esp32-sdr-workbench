@@ -256,3 +256,77 @@ int main(void) {
 }
 """,
     )
+
+
+def test_idle_semaphore_wake_static_lifetime_and_timeout(tmp_path):
+    helper = (HEADERS / 'dstream_idle_wake.h').read_text().replace('#pragma once', '')
+    compile_run(
+        tmp_path,
+        r"""
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <assert.h>
+typedef struct {unsigned token;} StaticSemaphore_t;
+typedef StaticSemaphore_t *SemaphoreHandle_t;
+typedef int BaseType_t;
+#define pdTRUE 1
+#define ESP_OK 0
+typedef struct {
+ bool registered; unsigned core,since,handshakes,observed,fallbacks,attempts_max;
+ uint64_t latency_max_us;
+} dstream_idle_t;
+static unsigned creates, registrations, removals, delays, mode;
+static int64_t now;
+static bool (*hook)(void);
+static unsigned xPortGetCoreID(void) {return 0;}
+static int esp_register_freertos_idle_hook_for_cpu(bool (*h)(void),unsigned c) {
+ assert(c==0);if(mode==9)return -1;hook=h;registrations++;return 0;
+}
+static void esp_deregister_freertos_idle_hook_for_cpu(bool (*h)(void),unsigned c) {
+ assert(c==0 && hook==h);removals++;hook=NULL;
+}
+static SemaphoreHandle_t xSemaphoreCreateBinaryStatic(StaticSemaphore_t *s) {
+ creates++;s->token=0;return s;
+}
+static int xSemaphoreGive(SemaphoreHandle_t s) {assert(!s->token);s->token=1;return pdTRUE;}
+static int xSemaphoreTake(SemaphoreHandle_t s,unsigned ticks) {
+ if(s->token){s->token=0;return pdTRUE;}
+ if(!ticks)return 0;
+ assert(ticks==2);
+ if(mode==0){now+=25;assert(!hook());assert(s->token);s->token=0;return pdTRUE;}
+ now+=2000;return 0;
+}
+static int64_t esp_timer_get_time(void) {return now;}
+static void vTaskDelay(unsigned t) {assert(t==1);delays++;now+=1000;}
+"""
+        + helper
+        + r"""
+int main(void) {
+ dstream_idle_t s={0};assert(dstream_wake_begin(&s));
+ assert(creates==1 && registrations==1 && hook());
+ for(unsigned i=0;i<31;i++)dstream_wake_service(&s);
+ assert(!s.handshakes);
+ /* Even a stale success token must be drained, not counted as idle work. */
+ dstream_wake_sem->token=1;
+ dstream_wake_service(&s);
+ assert(s.handshakes==1 && s.observed==1 && !s.fallbacks);
+ assert(!dstream_wake_armed && s.latency_max_us==25 && hook());
+ mode=1;s.since=31;dstream_wake_service(&s);
+ assert(s.fallbacks==1 && delays==1 && !dstream_wake_armed);
+ assert(s.latency_max_us==3000 && s.attempts_max==1);
+ SemaphoreHandle_t original=dstream_wake_sem;
+ dstream_wake_end(&s);assert(removals==1 && !s.registered);
+ /* A callback suspended inside give may later resume; static object survives.
+    Begin drains any old token without recreating or deleting that object. */
+ original->token=1;mode=0;s=(dstream_idle_t){0};assert(dstream_wake_begin(&s));
+ assert(creates==1 && original==dstream_wake_sem && !original->token);
+ dstream_wake_counter=UINT32_MAX;s.since=31;dstream_wake_service(&s);
+ assert(s.observed==1 && dstream_wake_counter==0);
+ dstream_wake_end(&s);dstream_wake_end(&s);assert(removals==2);
+ mode=9;s=(dstream_idle_t){0};assert(!dstream_wake_begin(&s));
+ dstream_wake_end(&s);assert(removals==2 && creates==1);
+ return 0;
+}
+""",
+    )
