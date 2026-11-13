@@ -33,7 +33,12 @@ def verify_file(path: Path) -> dict:
         analyses.append(dict(index=row['index'], analysis=analysis))
     if not analyses:
         raise ValueError('Evidence contains no trials')
-    return dict(source=document['source'], trials=analyses)
+    return dict(
+        source=document['source'],
+        collection_status=document.get('collection_status', 'not recorded in this archive'),
+        final_cleanup_record_present=document.get('final_cleanup_record_present'),
+        trials=analyses,
+    )
 
 
 def verify_directory(directory: Path) -> dict:
@@ -55,8 +60,27 @@ def verify_directory(directory: Path) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('directory', type=Path)
+    parser.add_argument(
+        '--full-details', action='store_true', help='Include all modeled gap intervals'
+    )
     args = parser.parse_args()
-    print(json.dumps(verify_directory(args.directory), indent=2))
+    results = verify_directory(args.directory)
+    if not args.full_details:
+        for dataset in results.values():
+            for trial in dataset['trials']:
+                analysis = trial.pop('analysis')
+                trial.update(
+                    requested_coverage_percent=analysis['nominal_union']['coverage_percent'],
+                    completion_inclusive_coverage_percent=analysis[
+                        'nominal_completion_inclusive_union'
+                    ]['coverage_percent'],
+                    decision_valid_coverage_percent=analysis['nominal_decision_union'][
+                        'coverage_percent'
+                    ],
+                    largest_requested_gap_us=analysis['nominal_union']['max_gap_us'],
+                    note=analysis['note'],
+                )
+    print(json.dumps(results, indent=2))
 
 
 if __name__ == '__main__':

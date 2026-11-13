@@ -1222,6 +1222,600 @@
         "unique_union": 0,
         "shared": 0
       }
+    },
+    {
+      "run_id": "sparse5-onoff/run-0",
+      "source": {
+        "profile": "esp32",
+        "version": "1bf6c58edfaede75ee8f4c9be295255c5334111e",
+        "idf_commit": "25fe69f946311abdaf9ad56591f25fedbc20ac98",
+        "variant": "esp32-dual-sparse-iq-experimental-v5",
+        "application_sha256": "a400a6339e7ee6c7843d4dd61bdb7c853742cdf7c029e7717b6059d02335e2bf"
+      },
+      "source_on": true,
+      "recording_counts": [
+        15,
+        16
+      ],
+      "recordings": [
+        {
+          "receiver": 0,
+          "generation": 1024,
+          "packets": [
+            {
+              "sequence": 2414,
+              "length": 16,
+              "observed_payload_hex": "524654586e090000767778797a7b7c7d",
+              "expected_payload_hex": "524654586e090000767778797a7b7c7d",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "b520",
+              "crc_received_msb_first": "b520",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 0,
+          "generation": 2048,
+          "packets": [
+            {
+              "sequence": 4335,
+              "length": 16,
+              "observed_payload_hex": "52465458ef100000f7f8f9fafbfcfdfe",
+              "expected_payload_hex": "52465458ef100000f7f8f9fafbfcfdfe",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "9a66",
+              "crc_received_msb_first": "9a66",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 0,
+          "generation": 3072,
+          "packets": [
+            {
+              "sequence": 6256,
+              "length": 16,
+              "observed_payload_hex": "524654587018000078797a7b7c7d7e7f",
+              "expected_payload_hex": "524654587018000078797a7b7c7d7e7f",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "c9b8",
+              "crc_received_msb_first": "c9b8",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 0,
+          "generation": 4096,
+          "packets": [
+            {
+              "sequence": 8178,
+              "length": 16,
+              "observed_payload_hex": "52465458f21f0000fafbfcfdfeff0001",
+              "expected_payload_hex": "52465458f21f0000fafbfcfdfeff0001",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "8b89",
+              "crc_received_msb_first": "8b89",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 0,
+          "generation": 5120,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 6144,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 7168,
+          "packets": [
+            {
+              "sequence": 13943,
+              "length": 16,
+              "observed_payload_hex": "52465458773600007f80818283848586",
+              "expected_payload_hex": "52465458773600007f80818283848586",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "165e",
+              "crc_received_msb_first": "165e",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 0,
+          "generation": 8192,
+          "packets": [
+            {
+              "sequence": 15860,
+              "length": 16,
+              "observed_payload_hex": "52465458f43d0000fcfdfeff00010203",
+              "expected_payload_hex": "52465458f43d0000fcfdfeff00010203",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "4f8b",
+              "crc_received_msb_first": "4f8b",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 0,
+          "generation": 9216,
+          "packets": [
+            {
+              "sequence": 17784,
+              "length": 16,
+              "observed_payload_hex": "52465458784500008081828384858687",
+              "expected_payload_hex": "52465458784500008081828384858687",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "3d70",
+              "crc_received_msb_first": "3d70",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 0,
+          "generation": 10240,
+          "packets": [
+            {
+              "sequence": 19711,
+              "length": 16,
+              "observed_payload_hex": "52465458ff4c00000708090a0b0c0d0e",
+              "expected_payload_hex": "52465458ff4c00000708090a0b0c0d0e",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "966b",
+              "crc_received_msb_first": "966b",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 0,
+          "generation": 11264,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 12288,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 13312,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 14336,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 15360,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 512,
+          "packets": [
+            {
+              "sequence": 1453,
+              "length": 16,
+              "observed_payload_hex": "52465458ad050000b5b6b7b8b9babbbc",
+              "expected_payload_hex": "52465458ad050000b5b6b7b8b9babbbc",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "b560",
+              "crc_received_msb_first": "b560",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 1,
+          "generation": 1536,
+          "packets": [
+            {
+              "sequence": 3375,
+              "length": 16,
+              "observed_payload_hex": "524654582f0d00003738393a3b3c3d3e",
+              "expected_payload_hex": "524654582f0d00003738393a3b3c3d3e",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "dce3",
+              "crc_received_msb_first": "dce3",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 1,
+          "generation": 2560,
+          "packets": [
+            {
+              "sequence": 5299,
+              "length": 16,
+              "observed_payload_hex": "52465458b3140000bbbcbdbebfc0c1c2",
+              "expected_payload_hex": "52465458b3140000bbbcbdbebfc0c1c2",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "9c7b",
+              "crc_received_msb_first": "9c7b",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 1,
+          "generation": 3584,
+          "packets": [
+            {
+              "sequence": 7220,
+              "length": 16,
+              "observed_payload_hex": "52465458341c00003c3d3e3f40414243",
+              "expected_payload_hex": "52465458341c00003c3d3e3f40414243",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "6714",
+              "crc_received_msb_first": "6714",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 1,
+          "generation": 4608,
+          "packets": [
+            {
+              "sequence": 9142,
+              "length": 16,
+              "observed_payload_hex": "52465458b6230000bebfc0c1c2c3c4c5",
+              "expected_payload_hex": "52465458b6230000bebfc0c1c2c3c4c5",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "2297",
+              "crc_received_msb_first": "2297",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 1,
+          "generation": 5632,
+          "packets": [
+            {
+              "sequence": 11062,
+              "length": 16,
+              "observed_payload_hex": "52465458362b00003e3f404142434445",
+              "expected_payload_hex": "52465458362b00003e3f404142434445",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "0608",
+              "crc_received_msb_first": "0608",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 1,
+          "generation": 6656,
+          "packets": [
+            {
+              "sequence": 12983,
+              "length": 16,
+              "observed_payload_hex": "52465458b7320000bfc0c1c2c3c4c5c6",
+              "expected_payload_hex": "52465458b7320000bfc0c1c2c3c4c5c6",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "1bc6",
+              "crc_received_msb_first": "1bc6",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 1,
+          "generation": 7680,
+          "packets": [
+            {
+              "sequence": 14903,
+              "length": 16,
+              "observed_payload_hex": "52465458373a00003f40414243444546",
+              "expected_payload_hex": "52465458373a00003f40414243444546",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "3f59",
+              "crc_received_msb_first": "3f59",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 1,
+          "generation": 8704,
+          "packets": [
+            {
+              "sequence": 16823,
+              "length": 16,
+              "observed_payload_hex": "52465458b7410000bfc0c1c2c3c4c5c6",
+              "expected_payload_hex": "52465458b7410000bfc0c1c2c3c4c5c6",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "85c3",
+              "crc_received_msb_first": "85c3",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 1,
+          "generation": 9728,
+          "packets": [
+            {
+              "sequence": 18750,
+              "length": 16,
+              "observed_payload_hex": "524654583e490000464748494a4b4c4d",
+              "expected_payload_hex": "524654583e490000464748494a4b4c4d",
+              "address_hex": "efcdab89c3",
+              "crc_computed": "7577",
+              "crc_received_msb_first": "7577",
+              "full_known_payload_match": true,
+              "address_verified": true,
+              "crc_verified": true
+            }
+          ]
+        },
+        {
+          "receiver": 1,
+          "generation": 10752,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 11776,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 12800,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 13824,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 14848,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 15872,
+          "packets": []
+        }
+      ],
+      "counts": {
+        "per_receiver_unique": [
+          8,
+          10
+        ],
+        "unique_union": 18,
+        "shared": 0
+      }
+    },
+    {
+      "run_id": "sparse5-onoff/run-1",
+      "source": {
+        "profile": "esp32",
+        "version": "1bf6c58edfaede75ee8f4c9be295255c5334111e",
+        "idf_commit": "25fe69f946311abdaf9ad56591f25fedbc20ac98",
+        "variant": "esp32-dual-sparse-iq-experimental-v5",
+        "application_sha256": "a400a6339e7ee6c7843d4dd61bdb7c853742cdf7c029e7717b6059d02335e2bf"
+      },
+      "source_on": false,
+      "recording_counts": [
+        15,
+        16
+      ],
+      "recordings": [
+        {
+          "receiver": 0,
+          "generation": 1024,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 2048,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 3072,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 4096,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 5120,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 6144,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 7168,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 8192,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 9216,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 10240,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 11264,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 12288,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 13312,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 14336,
+          "packets": []
+        },
+        {
+          "receiver": 0,
+          "generation": 15360,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 512,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 1536,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 2560,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 3584,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 4608,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 5632,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 6656,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 7680,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 8704,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 9728,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 10752,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 11776,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 12800,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 13824,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 14848,
+          "packets": []
+        },
+        {
+          "receiver": 1,
+          "generation": 15872,
+          "packets": []
+        }
+      ],
+      "counts": {
+        "per_receiver_unique": [
+          0,
+          0
+        ],
+        "unique_union": 0,
+        "shared": 0
+      }
     }
   ]
 }

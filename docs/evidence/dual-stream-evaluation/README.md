@@ -62,6 +62,80 @@ The old finite-run result around 96.25% had different timing boundaries and
 readout/restart behavior. Do not directly compare it with a requested-window
 99.75% figure or describe that as an equal-duration end-to-end improvement.
 
+<!-- LATER-CANDIDATES -->
+## Later candidate measurements
+
+| Data set | Runs | Requested-window union | Completion-inclusive union | Largest requested-window gap | 100 µs full-burst opportunity |
+|---|---:|---:|---:|---:|---:|
+| `sparse4-idle1875` | 3 × 30 s | 98.970–99.740% | 98.963–99.730% | 596–788 µs | 97.078–98.036% |
+| `sparse4-idle1875-repeat` | 3 × 30 s | 98.977–99.573% | 98.969–99.563% | 717–1112 µs | 97.086–97.826% |
+| `sparse5-wake1875` | 2 × 60 s | 99.965–99.967% | 99.962–99.965% | 259–265 µs | 98.355–98.385% |
+| `sparse5-wake1800` | 2 × 60 s | 99.132–99.927% | 99.129–99.924% | 312–929 µs | 98.660–99.669% |
+| `sparse5-onoff` | 2 × 30 s | 99.492–99.515% | 97.493–97.517% | 851–921 µs | 97.830–97.881% |
+
+Both sparse-v4 data sets actually used a **1.875 ms** period. The repeat was
+renamed to correct an initial filename; the saved configuration is authoritative.
+V4’s idle-hook handshake alone did not establish a stable improvement. V5 used
+the separately capability-gated wake-assisted selector (phase 34). Its shorter
+1.800 ms trial was variable, so the best individual result is not a consistency
+or superiority claim.
+
+**`sparse5-onoff` was interrupted after two complete recorded runs.** Its campaign
+status is explicitly `interrupted`, not successful. The two saved rows have
+complete CRC-checked telemetry, bracketing anchors and independently rechecked
+saved snapshots, and are reported only as completed per-run evidence. Offline
+recovery of their recordings found 18 distinct verified packets in the ON row
+(8 from A, 10 from B) and none in the OFF row; each row has 15 + 16 recordings.
+This equals the v3 ON union in a different schedule, not proof that v5 is better.
+The original campaign has no final-cleanup record. A separate later recovery
+check found both receivers responsive and the transmitter healthy and stopped.
+
+### Decision-valid interval union
+
+The detector’s first 16 captures are warmup, and its block kernel uses 16,320
+of the 16,380 samples. The following requested-window union excludes warmup
+and that unused tail. “Decision-valid” does not mean energy-positive, a detected
+packet, retained I/Q, or a decoded packet.
+
+| Data set | Nominal decision-valid union |
+|---|---:|
+| `campaign-r7` | 99.858–99.867% |
+| `campaign-r7-1800` | 99.512–99.578% |
+| `sparse1-onoff` | 99.649–99.658% |
+| `sparse2-guard-timing` | 99.624–99.632% |
+| `sparse3-onoff` | 98.717–98.741% |
+| `sparse4-idle1875` | 98.854–99.632% |
+| `sparse4-idle1875-repeat` | 98.860–99.463% |
+| `sparse5-wake1875` | 99.912–99.915% |
+| `sparse5-wake1800` | 99.070–99.873% |
+| `sparse5-onoff` | 99.384–99.407% |
+
+### Measured source identities
+
+Application hashes below are prefixes for scanning; [summary.json](summary.json)
+contains the full SHA-256 and pinned ESP-IDF commit. A source tree at a later
+commit must not inherit measurements from an earlier binary.
+
+| Firmware variant suffix | Build-source commit | Application SHA-256 prefix |
+|---|---|---|
+| `esp32-dual-stream-experimental-v7` | `39eb09a94b5fad8f97294dd9b2d9cfbc285525a6` | `10d2a338e7f59934` |
+| `esp32-dual-sparse-iq-experimental-v1` | `0c9841e9d324bb42ca0f0b5ba9b4ec209bb49a2c` | `fa9de0081f188ef5` |
+| `esp32-dual-sparse-iq-experimental-v2` | `38af18b74b0e46a6189dc10aee954c19d883e61a` | `78de65ab275c3602` |
+| `esp32-dual-sparse-iq-experimental-v3` | `bf1421d51614443828756f26219c9e83fa5cf4a6` | `b12373208611e557` |
+| `esp32-dual-sparse-iq-experimental-v4` | `4fe0fcdfa8f6c028b807c1a8c6574fa9d82b4241` | `d7c8036ccc187cdc` |
+| `esp32-dual-sparse-iq-experimental-v5` | `1bf6c58edfaede75ee8f4c9be295255c5334111e` | `a400a6339e7ee6c7` |
+
+### Bounded v5 transport and memory screening
+
+[sparse5-screening.json](sparse5-screening.json) preserves sanitized summaries
+for 12 paired four-second runs: **51,143 captures and 72 complete sparse buffers**
+passed the screening script’s transport checks. The lowest reported free local
+heap was 26,224 bytes and stack headroom was 2,924 bytes. Both cooperative STOP
+tests returned status 3. These are bounded screening results, not lifetime
+stability, a long-duration soak, or packet-decoding counts.
+
+<!-- END-LATER-CANDIDATES -->
+
 ## Actual known-packet evidence
 
 [packet-proof.json](packet-proof.json) contains only complete, known generated
@@ -136,3 +210,15 @@ cryptographic attestation of the measurement hardware or clock model.
 Firmware images and flash backups are not part of this evidence. Preserve each
 board's recovery image and verify its partition layout before flashing; identical
 USB serial labels do not imply identical application offsets.
+
+### Bounded v6 transport screening
+
+[sparse6-screening.json](sparse6-screening.json) records 12 paired four-second
+runs with 51,216 captures and 72 complete sparse buffers passing transport checks,
+plus successful cooperative STOP tests. Lowest reported free local heap was
+26,044 bytes and stack headroom was 2,924 bytes. In this short screening, the
+reported skipped-slot count was zero rather than the three per receiver/run
+seen in v5's screening. This is a bounded scheduling observation, not proof of
+100% reception or general performance superiority. The exact tested v6 application
+hash and original build commit are retained; the integration commit has identical
+firmware source but is not substituted for the build identity.
