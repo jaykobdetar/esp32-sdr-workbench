@@ -16,7 +16,8 @@ class SnapshotAssembler:
     unless a caller explicitly saves it. Never infer full-time raw coverage.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, expected_frequency_mhz: int | None = None) -> None:
+        self.expected_frequency_mhz = expected_frequency_mhz
         self.pending: dict[str, Any] | None = None
         self.completed = 0
         self.last_generation = 0
@@ -37,6 +38,10 @@ class SnapshotAssembler:
                 or size != 40950
                 or reserved != 0
                 or not 2300 <= frequency <= 2600
+                or (
+                    self.expected_frequency_mhz is not None
+                    and frequency != self.expected_frequency_mhz
+                )
             ):
                 raise ProtocolError('Invalid sparse snapshot metadata')
             if r is None or (

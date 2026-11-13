@@ -147,6 +147,18 @@ def run_stream(
         if list(map(int, fields[3:8])) != list(values):
             radio.failed = True
             raise ProtocolError('Stream BEGIN does not match request')
+        try:
+            frequency, policy = map(int, fields[8:10])
+        except ValueError as error:
+            raise ProtocolError('Invalid stream frequency/policy echo') from error
+        if not 2300 <= frequency <= 2600 or policy not in (1, 2):
+            raise ProtocolError('Invalid stream frequency/policy echo')
+        settings = getattr(radio, 'settings', {})
+        expected_frequency = settings.get('frequency_mhz')
+        if expected_frequency is not None and frequency != expected_frequency:
+            raise ProtocolError('Stream frequency does not match configured receiver')
+        if assembler is not None:
+            assembler.expected_frequency_mhz = frequency
         if assembler is not None and list(map(int, fields[10:])) != [
             snapshot_every,
             snapshot_phase,

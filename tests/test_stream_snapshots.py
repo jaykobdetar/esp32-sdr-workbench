@@ -92,7 +92,8 @@ def test_reject_invalid_snapshots(failure):
                 a.feed(chunks[-1], records)
 
 
-def test_stream_integration_callback_and_final_count():
+@pytest.mark.parametrize('frequency', [2440, 2441])
+def test_stream_integration_callback_and_final_count(frequency):
     from test_detector_stream_client import START, fake_radio, set_summary
 
     from sdr_research.detector_stream import run_stream
@@ -105,14 +106,33 @@ def test_stream_integration_callback_and_final_count():
     meta = framed(
         meta[:8] + struct.pack('<Q', trigger) + meta[16:28] + struct.pack('<I', 40) + meta[32:44]
     )
+    meta = framed(meta[:36] + struct.pack('<I', frequency) + meta[40:44])
     frames[-1:-1] = [meta, *chunks]
     radio._read.side_effect = frames
     summary.update(iq_produced=1, iq_sent=1, iq_busy_skips=0)
     set_summary(radio, summary)
     received = []
+    if frequency != 2440:
+        with pytest.raises(ProtocolError, match='metadata'):
+            run_stream(radio, start_us=START, snapshot_every=1024, on_snapshot=received.append)
+        assert radio.failed and not received
+        return
     result = run_stream(
         radio, start_us=START, snapshot_every=1024, on_snapshot=received.append, keep_records=False
     )
     assert result['snapshots_received'] == 1 and not result['records']
     assert received[0]['payload'] == payload
     assert radio.command.call_args.args[0].startswith('DSTREAMIQ ')
+
+
+def test_snapshot_frequency_must_match_begin():
+    _, records, meta, _ = fixture_frames()
+    assembler = SnapshotAssembler(expected_frequency_mhz=2441)
+    with pytest.raises(ProtocolError, match='metadata'):
+        assembler.feed(meta, records)
+
+
+def test_snapshot_frequency_matching_begin_is_accepted():
+    _, records, meta, _ = fixture_frames()
+    assembler = SnapshotAssembler(expected_frequency_mhz=2440)
+    assert assembler.feed(meta, records) is None

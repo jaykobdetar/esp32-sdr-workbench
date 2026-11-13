@@ -35,6 +35,7 @@ def fake_radio(count=18, status=0):
     radio = Mock()
     radio.failed = False
     radio.info = {'caps': ['DSTREAM']}
+    radio.settings = {'frequency_mhz': 2440}
     radio.command.return_value = f'DSTREAM BEGIN 1 {START} 30000 1875000 0 4000 2440 2'
     frames = [
         record(i, flags=0 if i <= 16 else 3, events=max(0, i - 16)) for i in range(1, count + 1)
@@ -254,3 +255,19 @@ def test_idle_wakeup_phase_requires_explicit_capability():
     radio.info['caps'].append('DSTREAMIDLEWAKE')
     radio.command.return_value = f'DSTREAM BEGIN 1 {START} 30000 1875000 34 4000 2440 2'
     assert run_stream(radio, start_us=START, yield_phase=34)['summary']['captures'] == 18
+
+
+@pytest.mark.parametrize('echo', ['2441 2', '2299 2', '2601 2', '2440 0', '2440 3', 'oops 2'])
+def test_reject_frequency_or_policy_echo(echo):
+    radio, _, _ = fake_radio()
+    radio.command.return_value = radio.command.return_value.rsplit(' ', 2)[0] + ' ' + echo
+    with pytest.raises(ProtocolError):
+        run_stream(radio, start_us=START)
+    assert_failed(radio)
+    radio._read.assert_not_called()
+
+
+def test_unconfigured_radio_accepts_valid_frequency_echo():
+    radio, _, _ = fake_radio()
+    radio.settings = {}
+    assert run_stream(radio, start_us=START)['transport_crc_valid']
