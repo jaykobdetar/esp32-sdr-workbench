@@ -32,7 +32,7 @@ def test_actual_dstream_queue_partial_writes_wrap_and_overflow(tmp_path):
     ]
     helpers = helpers.replace(
         '#include "detector_stream_iq.h"',
-        'static struct {unsigned every,cursor;bool busy;} dstream_iq;\nstatic unsigned dstream_iq_send(unsigned n){(void)n;return 0;}\nstatic int64_t esp_timer_get_time(void){return 0;}\nstatic void vTaskDelay(unsigned n){(void)n;}',
+        'static struct {unsigned every,cursor;bool busy;} dstream_iq;\nstatic unsigned dstream_iq_send(unsigned n){(void)n;return 0;}\nstatic void dstream_iq_crc_step(void){}\nstatic int64_t esp_timer_get_time(void){return 0;}\nstatic void vTaskDelay(unsigned n){(void)n;}',
     )
     compile_run(
         tmp_path,

@@ -66,6 +66,31 @@ reports `iq_produced`, `iq_sent`, and `iq_busy_skips`. STOP is cooperative; boun
 final readout can delay completion. The terminal timestamp includes this drain.
 
 Full packing and CRC add periodic CPU cost and can create missed deadlines; they
-are counted in decision time and reflected in timestamp gaps. Each full snapshot
+are reflected in timestamp gaps; v6 reports their CPU time separately and overlaps
+part of that work with acquisition. Each full snapshot
 requires 1464 frames including metadata (70272 wire bytes), not merely 40950 UART
 bytes. Timing traffic and USB stalls may extend delivery. Heap headroom, timing regressions, STOP latency, transmitter payload recovery and multi-minute stability must be assessed for each measured binary on **both board layouts**. Passing one candidate’s tests does not validate a later candidate. Do not substitute its numbers for the earlier no-retention runs.
+
+## v6 prototype: overlap packing and bounded CRC work
+
+The v6 experiment keeps the same packer and wire format, but packs a selected
+**previous, fully validated CPU-owned copy** in the acquisition-wait callback,
+after its energy calculation. It never reads the current RF-owned sample aperture.
+Packed pages are checked to lie outside that aperture during allocation and remain
+immutable while CRC calculation and delivery are pending. No second raw buffer is
+allocated. Default no-snapshot mode remains unchanged.
+
+CRC processing is limited to 2048 packed bytes per later wait callback. The new
+snapshot is not CRC-scanned in the callback that packs it. Metadata is gated on
+both complete CRC calculation and commitment of its matching timing record; UART
+transmission remains outside the wait callback. Busy selections are counted once
+per capture generation. The final capture, including STOP or acquisition failure,
+is packed after RF ownership is restored if no wait callback processed it; final
+CRC work then completes in bounded chunks inside the existing two-second drain.
+
+`iq_pack_us` and `iq_crc_us` separately report cumulative CPU time. Some packing
+may exceed the RF waiting window; overlap does not make that CPU cost disappear.
+This is a scheduling experiment, not an assurance that snapshot-induced gaps or
+missed slots vanish. Bit-exact packing, incremental CRC, metadata readiness,
+partial writes, STOP draining and failure handling have software tests; board
+performance and long-duration stability require fresh validation of this variant.

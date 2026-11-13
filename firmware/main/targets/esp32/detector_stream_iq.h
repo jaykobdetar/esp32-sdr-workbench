@@ -3,7 +3,10 @@
  * the last framed chunk is sent. Only the previous, CPU-owned copy is read. */
 typedef struct {
     unsigned every,phase,produced,sent,skipped,errors,offset,cursor;
-    bool busy,metadata;
+    bool busy,metadata,crc_ready,timing_committed;
+    unsigned crc_offset,last_attempt;
+    uint32_t packed_crc;
+    uint64_t pack_us,crc_us;
     uint32_t generation;
     uint8_t frame[48];
 } dstream_iq_t;
@@ -34,17 +37,44 @@ static void dstream_iq_crc(void) {
     memcpy(dstream_iq.frame+44,&crc,4);
 }
 static void dstream_iq_snapshot(detpipe_state_t *p) {
-    if(!dstream_iq.every || p->generation%dstream_iq.every!=dstream_iq.phase) return;
+    if(!dstream_iq.every || !p->pending || p->generation==dstream_iq.last_attempt ||
+        p->generation%dstream_iq.every!=dstream_iq.phase) return;
+    dstream_iq.last_attempt=p->generation;
     if(dstream_iq.busy) {dstream_iq.skipped++;return;}
-    if(!detpipe_pack(p->copy,p->n)) {dstream_iq.errors++;return;}
+    int64_t started=esp_timer_get_time();
+    bool packed=detpipe_pack(p->copy,p->n);
+    dstream_iq.pack_us+=(uint64_t)(esp_timer_get_time()-started);
+    if(!packed) {dstream_iq.errors++;return;}
     uint32_t words[12]={UINT32_C(0x31495344),p->generation,
         (uint32_t)p->trigger_device_us,(uint32_t)(p->trigger_device_us>>32),
-        p->n,DETPIPE_MAX_PACKED,detpipe_crc(),dstream_gain,p->observed_us,
+        p->n,DETPIPE_MAX_PACKED,0,dstream_gain,p->observed_us,
         frequency_mhz,0,0};
-    memcpy(dstream_iq.frame,words,48);dstream_iq_crc();
+    memcpy(dstream_iq.frame,words,48);
+    dstream_iq.packed_crc=0;dstream_iq.crc_offset=0;
+    dstream_iq.crc_ready=false;dstream_iq.timing_committed=false;
     dstream_iq.generation=p->generation;dstream_iq.offset=0;
     dstream_iq.cursor=0;dstream_iq.metadata=true;dstream_iq.busy=true;
     dstream_iq.produced++;
+}
+/* At most 2048 bytes per acquisition callback, no allocation/IO/registers.
+ * Reads immutable packed pages only; pages were RF-aperture checked at setup. */
+static void dstream_iq_crc_step(void) {
+    if(!dstream_iq.busy || dstream_iq.crc_ready) return;
+    int64_t started=esp_timer_get_time();
+    unsigned budget=2048;
+    while(budget && dstream_iq.crc_offset<DETPIPE_MAX_PACKED) {
+        unsigned page=dstream_iq.crc_offset/DETPIPE_PAGE_BYTES;
+        unsigned offset=dstream_iq.crc_offset%DETPIPE_PAGE_BYTES;
+        unsigned n=detpipe_page_sizes[page]-offset;
+        if(n>budget) n=budget;
+        dstream_iq.packed_crc=esp_rom_crc32_le(dstream_iq.packed_crc,detpipe_pages[page]+offset,n);
+        dstream_iq.crc_offset+=n;budget-=n;
+    }
+    if(dstream_iq.crc_offset==DETPIPE_MAX_PACKED) {
+        memcpy(dstream_iq.frame+24,&dstream_iq.packed_crc,4);
+        dstream_iq_crc();dstream_iq.crc_ready=true;
+    }
+    dstream_iq.crc_us+=(uint64_t)(esp_timer_get_time()-started);
 }
 static void dstream_iq_chunk(void) {
     memset(dstream_iq.frame,0,48);
@@ -59,7 +89,7 @@ static void dstream_iq_chunk(void) {
     dstream_iq_crc();
 }
 static unsigned dstream_iq_send(unsigned budget) {
-    if(!dstream_iq.busy) return 0;
+    if(!dstream_iq.busy || !dstream_iq.crc_ready || !dstream_iq.timing_committed) return 0;
     unsigned left=48-dstream_iq.cursor;
     unsigned n=burst_serial_try_send(dstream_iq.frame+dstream_iq.cursor,left<budget?left:budget);
     dstream_iq.cursor+=n;

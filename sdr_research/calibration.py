@@ -8,7 +8,7 @@ import json
 import re
 from datetime import datetime, timezone
 
-CURRENT_VARIANT = 'esp32-dual-sparse-iq-experimental-v5'
+CURRENT_VARIANT = 'esp32-dual-sparse-iq-experimental-v6'
 CALIBRATION_VARIANTS = (
     'esp32-pipeline-adaptive-q16-v4',
     'esp32-pipeline-adaptive-q16-v5',
@@ -26,6 +26,7 @@ CALIBRATION_VARIANTS = (
     'esp32-dual-sparse-iq-experimental-v2',
     'esp32-dual-sparse-iq-experimental-v3',
     'esp32-dual-sparse-iq-experimental-v4',
+    'esp32-dual-sparse-iq-experimental-v5',
     CURRENT_VARIANT,
 )
 ADAPTIVE_VARIANTS = ('esp32-pipeline-adaptive-q16-v3', *CALIBRATION_VARIANTS)

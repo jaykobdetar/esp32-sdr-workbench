@@ -56,6 +56,9 @@ static bool dstream_drain(void) {
     if (dstream_iq.every) {
         int64_t until=esp_timer_get_time()+2000000;
         while(dstream_count || dstream_iq.busy) {
+            /* Acquisition is over; finish any final snapshot CRC in bounded
+             * chunks before delivery, including the last capture on STOP. */
+            dstream_iq_crc_step();
             dstream_pump();
             if(esp_timer_get_time()>until) return false;
             vTaskDelay(1);
@@ -82,9 +85,19 @@ static void dstream_commit(detpipe_state_t *p, unsigned ratio) {
         .background=(uint32_t)(p->background.q16 >> 16), .events=p->events,
         .flags=(positive ? 1u : 0u) | (p->processed > 16 ? 2u : 0u),
         .observed_us=p->observed_us, .gain=dstream_gain});
-    dstream_iq_snapshot(p);
+    dstream_iq_snapshot(p); /* final/failed-acquisition fallback, CPU ownership restored */
+    if(dstream_iq.busy && dstream_iq.generation==p->generation)
+        dstream_iq.timing_committed=true;
     p->commit_us += esp_timer_get_time() - t;
     p->pending=p->ready=false;
+}
+/* Previous validated CPU copy and allocated packed pages only. Never samples,
+ * UART, allocations, radio registers or I2C while dump SRAM belongs to RF. */
+static void dstream_during_wait(void *context) {
+    detpipe_state_t *p=context;
+    detpipe_compute(p);
+    dstream_iq_crc_step();
+    dstream_iq_snapshot(p);
 }
 typedef struct { detpipe_state_t *p; unsigned ratio; } dstream_validation_t;
 static unsigned dstream_validate(void *context, unsigned n) {
@@ -199,7 +212,7 @@ static bool detector_stream_command(const char *line) {
         unsigned observed=0;
         dstream_validation_t validation={&p,(unsigned)a[4]};
         bool ok=acquire_iq_with_validation(MAX_SAMPLES,0,0,&observed,
-            detpipe_compute,&p,dstream_validate,&validation);
+            dstream_during_wait,&p,dstream_validate,&validation);
         if (!ok) {status=1;break;}
         captures++;
         if (!first) first=capture_trigger_device_us;
@@ -246,9 +259,9 @@ static bool detector_stream_command(const char *line) {
             "\"first_trigger_us\":%" PRIu64 ",\"last_trigger_us\":%" PRIu64 ","
             "\"end_us\":%" PRIu64 ",\"max_late_us\":%u,\"skipped\":%u,"
             "\"overflow\":%u,\"min_heap\":%u,\"min_stack\":%u,\"compute_us\":%" PRIu64 ","
-            "\"copy_us\":%" PRIu64 ",\"decision_us\":%" PRIu64 ",\"smart_yields\":%u,\"forced_yields\":%u,\"setup_max_us\":%" PRIu64 ",\"yield_delay_max_us\":%" PRIu64 ",\"estimated_wake_late_max_us\":%" PRIu64 ",\"yield_guard_max_us\":%" PRIu64 ",\"idle_handshakes\":%u,\"idle_observed\":%u,\"idle_fallbacks\":%u,\"idle_attempts_max\":%u,\"idle_latency_max_us\":%" PRIu64 ",\"retained\":0,\"iq_produced\":%u,\"iq_sent\":%u,\"iq_busy_skips\":%u}\n",
+            "\"copy_us\":%" PRIu64 ",\"decision_us\":%" PRIu64 ",\"smart_yields\":%u,\"forced_yields\":%u,\"setup_max_us\":%" PRIu64 ",\"yield_delay_max_us\":%" PRIu64 ",\"estimated_wake_late_max_us\":%" PRIu64 ",\"yield_guard_max_us\":%" PRIu64 ",\"idle_handshakes\":%u,\"idle_observed\":%u,\"idle_fallbacks\":%u,\"idle_attempts_max\":%u,\"idle_latency_max_us\":%" PRIu64 ",\"retained\":0,\"iq_produced\":%u,\"iq_sent\":%u,\"iq_busy_skips\":%u,\"iq_pack_us\":%" PRIu64 ",\"iq_crc_us\":%" PRIu64 "}\n",
             status,captures,p.processed,p.events,first,last,ended,dual_late,dual_skipped,
-            (unsigned)dstream_overflow,min_heap,min_stack,p.compute_us,p.copy_us,p.commit_us,yielding.yielded,yielding.forced,capture_pretrigger_max_us,yielding.max_delay_us,yielding.max_estimated_wake_late_us,yielding.max_guard_us,idle.handshakes,idle.observed,idle.fallbacks,idle.attempts_max,idle.latency_max_us,dstream_iq.produced,dstream_iq.sent,dstream_iq.skipped);
+            (unsigned)dstream_overflow,min_heap,min_stack,p.compute_us,p.copy_us,p.commit_us,yielding.yielded,yielding.forced,capture_pretrigger_max_us,yielding.max_delay_us,yielding.max_estimated_wake_late_us,yielding.max_guard_us,idle.handshakes,idle.observed,idle.fallbacks,idle.attempts_max,idle.latency_max_us,dstream_iq.produced,dstream_iq.sent,dstream_iq.skipped,dstream_iq.pack_us,dstream_iq.crc_us);
         if(n>0 && (unsigned)n<sizeof(summary)) {
             size_t length=ascii_frame_pad(summary,n,sizeof(summary));
             /* Empirical workaround for observed post-stream summary truncation.
