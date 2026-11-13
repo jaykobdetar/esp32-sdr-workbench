@@ -77,6 +77,11 @@
       "file": "sparse6-screening.json",
       "sha256": "c35d272bd25237e108b743bed621b62cfcf694053a8a7d4abe7610d330e7fb1e",
       "bytes": 28840
+    },
+    {
+      "file": "studio-soak-v6.json",
+      "sha256": "34f4131a611a5442a132eff73d84e99860b427c83d7e947052295df044f7aec8",
+      "bytes": 255195
     }
   ]
 }

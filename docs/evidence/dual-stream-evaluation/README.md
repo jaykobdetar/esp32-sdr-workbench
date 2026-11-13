@@ -258,3 +258,25 @@ physical receivers in a receive-only, memory-only session. It is not synthetic
 data, but it is also not a screenshot of the desktop launcher. The displayed
 combined spectrum averages compatible powers asynchronously; it does not combine
 I/Q phases or demonstrate the timing campaign's coverage.
+
+### Thirty-minute physical UI/control soak
+
+[studio-soak-v6.json](studio-soak-v6.json) preserves sanitized checkpoints and
+final session results from the actual Qt application with two physical receivers.
+The receive-only, no-save session ran for the requested 1,800 seconds, including
+two 600-second chunk restarts per receiver. Receiver 1 reported 959,792 captures
+and Receiver 2 reported 959,756; each delivered 357 sparse buffers to memory.
+Both finished without reported receiver or cleanup errors. A subsequent
+10-second repeat delivered two more sparse buffers per receiver, then normal
+window close stopped all receiver threads. The session output path remained
+absent. Separate audit records and this screenshot were deliberately saved by
+the test harness; they are not session recording output.
+
+During the warmed portion of the soak, sampled RSS ranged from 160,672 to
+163,088 KiB. The repeat session was higher, 172,872–172,996 KiB, so this is not a
+claim of zero growth across repeated sessions or a lifetime memory guarantee.
+This bounded test checks UI, transport, chunk restart, no-save and shutdown
+behavior. It does not align the independent receivers or measure combined
+coverage, packet recall, sensitivity, or decoding success. The evidence pins
+observed host source-file hashes and commit separately from the v6 firmware
+build identity above.
