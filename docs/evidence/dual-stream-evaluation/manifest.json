@@ -1,0 +1,42 @@
+{
+  "schema": "dual-stream-evidence-manifest-v1",
+  "timing_files": [
+    {
+      "file": "campaign-r7.json.gz",
+      "sha256": "ee79e38360560ad62548d46ba3ed1706582ed510723729179808008018d13150",
+      "bytes": 2106379
+    },
+    {
+      "file": "campaign-r7-1800.json.gz",
+      "sha256": "768efe0d456b7b9d2a735ef01807142f9ea2c479de4e770867f9f6cedc20145b",
+      "bytes": 4319120
+    },
+    {
+      "file": "sparse1-onoff.json.gz",
+      "sha256": "52d9e1557845a257f2ce4d6973428eb85f28a2e96ea002cb9b51cd84e36c7e65",
+      "bytes": 2922993
+    },
+    {
+      "file": "sparse2-guard-timing.json.gz",
+      "sha256": "6e9f7932e52038854d3c28e6d19b54e91b3a092d93cd420a591872fa1fc72327",
+      "bytes": 2810392
+    },
+    {
+      "file": "sparse3-onoff.json.gz",
+      "sha256": "36f32a1f65044d1edc14c0a61c8e83f7147fe9864c333b85fea29efab2bf0b62",
+      "bytes": 1439112
+    }
+  ],
+  "derived_files": [
+    {
+      "file": "packet-proof.json",
+      "sha256": "70f90dc00a181a3b89f90a244e03e1cad50099409db99ad00deb1a4c85a2f701",
+      "bytes": 33583
+    },
+    {
+      "file": "summary.json",
+      "sha256": "2f08329c3976ec61198de627fddc9565de888a52b72cd9a7e509322a8b986bab",
+      "bytes": 146893
+    }
+  ]
+}
