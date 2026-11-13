@@ -34,7 +34,7 @@ def test_current_variant_distinguishes_tie_fix_and_calibration_observer():
     from sdr_research.calibration import CURRENT_VARIANT
 
     assert (ROOT / 'FIRMWARE_VARIANT').read_text().strip() == CURRENT_VARIANT
-    assert CURRENT_VARIANT == 'esp32-dual-sparse-iq-experimental-v1'
+    assert CURRENT_VARIANT == 'esp32-dual-sparse-iq-experimental-v2'
 
 
 def test_calibration_variants_remain_required_for_v4_through_v8():
@@ -54,5 +54,6 @@ def test_calibration_variants_remain_required_for_v4_through_v8():
         'esp32-dual-stream-experimental-v6',
         'esp32-dual-stream-experimental-v7',
         'esp32-dual-sparse-iq-experimental-v1',
+        'esp32-dual-sparse-iq-experimental-v2',
     )
     assert set(CALIBRATION_VARIANTS) < set(ADAPTIVE_VARIANTS)

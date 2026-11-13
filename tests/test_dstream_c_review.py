@@ -135,12 +135,14 @@ static TickType_t tick;
 static int64_t now_us;
 static uint64_t dual_next;
 static unsigned delays;
+static uint64_t capture_pretrigger_max_us;
+static unsigned delay_us;
 static bool changing;
 static TickType_t xTaskGetTickCount(void) {
     TickType_t result=tick; if(changing)tick++; return result;
 }
 static int64_t esp_timer_get_time(void) { return now_us; }
-static void vTaskDelay(unsigned n) { assert(n==1); delays++; }
+static void vTaskDelay(unsigned n) { assert(n==1); delays++;now_us+=delay_us; }
 """
         + helper
         + r"""
@@ -184,6 +186,19 @@ int main(void) {
     y.since=15;dual_next=(uint64_t)now_us+1081;
     dstream_smart_yield(&y);
     assert(delays==3 && y.forced==0 && y.yielded==1 && y.since==0);
+    /* Learned setup guard rejects a gap that tick-only 80 us would accept. */
+    tick=10;now_us=10000;capture_pretrigger_max_us=300;
+    y=(dstream_yield_t){.origin_us=0,.since=15};dual_next=11200;
+    unsigned previous=delays;dstream_smart_yield(&y);
+    assert(delays==previous && y.max_guard_us==380);
+    y.since=15;dual_next=12000;delay_us=1250;
+    dstream_smart_yield(&y);
+    assert(delays==previous+1 && y.max_delay_us==1250);
+    assert(y.max_estimated_wake_late_us==250);
+    /* Next decision includes observed overshoot as well as setup. */
+    tick=11;now_us=11250;y.since=15;delay_us=0;dual_next=12500;
+    dstream_smart_yield(&y);
+    assert(y.max_guard_us==630 && delays==previous+1);
     return 0;
 }
 """,

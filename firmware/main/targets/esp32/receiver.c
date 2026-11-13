@@ -49,6 +49,8 @@ static bool hardware_agc = true;
 /* Device monotonic microseconds sampled immediately before the dump trigger
  * register write. Not a calibrated RF arrival timestamp or host clock. */
 static uint64_t capture_trigger_device_us;
+/* Setup excludes dual_wait_trigger scheduling wait. Reset for each DSTREAM. */
+static uint64_t capture_pretrigger_max_us;
 static unsigned frequency_mhz = 2412;
 /* Original ESP32 BBTOP RX filter: registers 1/2, seven-bit capacitor DAC.
  * Preserve bit 7 and restore PHY calibration before any retune or transfer. */
@@ -118,6 +120,7 @@ static bool acquire_iq_with_validation(unsigned n, unsigned source, unsigned clo
         reply("ERR args\n");
         return false;
     }
+    int64_t setup_start = esp_timer_get_time();
     if (rx_recalibration_stale()) prepare_rx();
     REG_WRITE(DUMP_CTRL, 0);
     if (!clear_option) {
@@ -136,6 +139,8 @@ static bool acquire_iq_with_validation(unsigned n, unsigned source, unsigned clo
     REG_WRITE(DUMP_BYTES, 0x03020100); /* Four distinct bytes, as in mac_init. */
     uint32_t ctrl = n | (source << 20) | ((clock == 0) << 16) | ((clock == 2) << 15);
     REG_WRITE(DUMP_CTRL, ctrl | BIT(31));
+    uint64_t setup_us = (uint64_t)(esp_timer_get_time() - setup_start);
+    if (setup_us > capture_pretrigger_max_us) capture_pretrigger_max_us = setup_us;
     dual_wait_trigger();
     int64_t start = esp_timer_get_time();
     capture_trigger_device_us = (uint64_t)start;
