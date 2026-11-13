@@ -81,8 +81,10 @@ python -m nrf_campaigns.dual_stream_campaign \
   --port /dev/serial/by-path/VERIFIED_RECEIVER_B \
   --tx-serial VERIFIED_TRANSMITTER_SERIAL \
   --output ./private-dual-campaign \
-  --seconds 30 --trials 3
+  --seconds 30 --trials 3 --period-ns 1875000 --phases 34,34
 ```
+
+This example selects the experimental idle-wakeup scheduler (`34`) measured in the later candidates. It requires both receivers to advertise `DSTREAMIDLEWAKE`; unsupported selectors are rejected, not silently substituted. Older streaming firmware can explicitly use `--phases 32,32` for tick-aware yielding. Omitting `--phases` selects the original fixed phase `0,0`, not the later measured scheduler.
 
 This prints a dry-run plan. Add `--run` to operate the devices. The source emits
 bounded known test packets at 2440 MHz only for RF clock alignment; it is stopped
