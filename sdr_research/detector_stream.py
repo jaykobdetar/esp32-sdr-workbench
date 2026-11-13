@@ -102,10 +102,12 @@ def run_stream(
         start_us > 0
         and 1 <= milliseconds <= 600_000
         and 1_600_000 <= period_ns <= 10_000_000
-        and 0 <= yield_phase <= 33
+        and 0 <= yield_phase <= 34
         and 1000 <= ratio_milli <= 1_000_000
     ):
         raise ValueError('DSTREAM arguments outside supported limits')
+    if yield_phase == 34 and 'DSTREAMIDLEWAKE' not in radio.info.get('caps', []):
+        raise ProtocolError('Receiver lacks idle-wakeup stream firmware')
     if yield_phase == 33 and 'DSTREAMIDLE' not in radio.info.get('caps', []):
         raise ProtocolError('Receiver lacks cooperative-idle stream firmware')
     if 'DSTREAM' not in radio.info.get('caps', []):

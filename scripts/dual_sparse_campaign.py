@@ -201,7 +201,7 @@ def main():
     p.add_argument('--trials', type=int, default=1)
     p.add_argument('--period-ns', type=int, default=1875000)
     p.add_argument('--snapshot-every', type=int, default=1024)
-    p.add_argument('--yield-phase', type=int, choices=range(34), default=32)
+    p.add_argument('--yield-phase', type=int, choices=range(35), default=32)
     p.add_argument('--power-dbm', type=int, choices=[-40, -20, -16, -12, -8, -4, 0], default=-4)
     p.add_argument('--gain', type=int, default=60)
     args = p.parse_args()

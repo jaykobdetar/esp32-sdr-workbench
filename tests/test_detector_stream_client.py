@@ -179,7 +179,7 @@ def test_read_timeout_stops_device():
     [
         {'milliseconds': 0},
         {'period_ns': 1},
-        {'yield_phase': 34},
+        {'yield_phase': 35},
         {'ratio_milli': True},
         {'start_us': -1},
     ],
@@ -244,3 +244,13 @@ def test_cooperative_idle_phase_requires_explicit_capability():
     radio.info['caps'].append('DSTREAMIDLE')
     radio.command.return_value = f'DSTREAM BEGIN 1 {START} 30000 1875000 33 4000 2440 2'
     assert run_stream(radio, start_us=START, yield_phase=33)['summary']['captures'] == 18
+
+
+def test_idle_wakeup_phase_requires_explicit_capability():
+    radio, _, _ = fake_radio()
+    with pytest.raises(ProtocolError, match='idle-wakeup'):
+        run_stream(radio, start_us=START, yield_phase=34)
+    radio.command.assert_not_called()
+    radio.info['caps'].append('DSTREAMIDLEWAKE')
+    radio.command.return_value = f'DSTREAM BEGIN 1 {START} 30000 1875000 34 4000 2440 2'
+    assert run_stream(radio, start_us=START, yield_phase=34)['summary']['captures'] == 18
