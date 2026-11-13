@@ -67,12 +67,14 @@ readout/restart behavior. Do not directly compare it with a requested-window
 
 | Data set | Runs | Requested-window union | Completion-inclusive union | Largest requested-window gap | 100 µs full-burst opportunity |
 |---|---:|---:|---:|---:|---:|
+| `sparse6-long-timing` | 2 × 120 s | 99.987–99.987% | 99.985–99.985% | 146–151 µs | 98.396–98.429% |
 | `sparse4-idle1875` | 3 × 30 s | 98.970–99.740% | 98.963–99.730% | 596–788 µs | 97.078–98.036% |
 | `sparse4-idle1875-repeat` | 3 × 30 s | 98.977–99.573% | 98.969–99.563% | 717–1112 µs | 97.086–97.826% |
 | `sparse5-wake1875` | 2 × 60 s | 99.965–99.967% | 99.962–99.965% | 259–265 µs | 98.355–98.385% |
 | `sparse5-wake1800` | 2 × 60 s | 99.132–99.927% | 99.129–99.924% | 312–929 µs | 98.660–99.669% |
 | `sparse5-onoff` | 2 × 30 s | 99.492–99.515% | 97.493–97.517% | 851–921 µs | 97.830–97.881% |
 | `sparse6-onoff` | 4 × 30 s | 99.920–99.936% | 97.902–97.921% | 386–610 µs | 98.399–98.424% |
+| `sparse6-overlap1840` | 2 × 30 s | 99.993–99.994% | 99.988–99.989% | 107–119 µs | 99.922–99.950% |
 
 Both sparse-v4 data sets actually used a **1.875 ms** period. The repeat was
 renamed to correct an initial filename; the saved configuration is authoritative.
@@ -100,6 +102,7 @@ packet, retained I/Q, or a decoded packet.
 
 | Data set | Nominal decision-valid union |
 |---|---:|
+| `sparse6-long-timing` | 99.961–99.961% |
 | `campaign-r7` | 99.858–99.867% |
 | `campaign-r7-1800` | 99.512–99.578% |
 | `sparse1-onoff` | 99.649–99.658% |
@@ -111,6 +114,7 @@ packet, retained I/Q, or a decoded packet.
 | `sparse5-wake1800` | 99.070–99.873% |
 | `sparse5-onoff` | 99.384–99.407% |
 | `sparse6-onoff` | 99.818–99.835% |
+| `sparse6-overlap1840` | 99.894–99.895% |
 
 ### Measured source identities
 
@@ -120,13 +124,13 @@ commit must not inherit measurements from an earlier binary.
 
 | Firmware variant suffix | Build-source commit | Application SHA-256 prefix |
 |---|---|---|
+| `esp32-dual-sparse-iq-experimental-v6` | `4215aedd40e954ffa107681cedffadb0356cbec2` | `e17231679f6125b3` |
 | `esp32-dual-stream-experimental-v7` | `39eb09a94b5fad8f97294dd9b2d9cfbc285525a6` | `10d2a338e7f59934` |
 | `esp32-dual-sparse-iq-experimental-v1` | `0c9841e9d324bb42ca0f0b5ba9b4ec209bb49a2c` | `fa9de0081f188ef5` |
 | `esp32-dual-sparse-iq-experimental-v2` | `38af18b74b0e46a6189dc10aee954c19d883e61a` | `78de65ab275c3602` |
 | `esp32-dual-sparse-iq-experimental-v3` | `bf1421d51614443828756f26219c9e83fa5cf4a6` | `b12373208611e557` |
 | `esp32-dual-sparse-iq-experimental-v4` | `4fe0fcdfa8f6c028b807c1a8c6574fa9d82b4241` | `d7c8036ccc187cdc` |
 | `esp32-dual-sparse-iq-experimental-v5` | `1bf6c58edfaede75ee8f4c9be295255c5334111e` | `a400a6339e7ee6c7` |
-| `esp32-dual-sparse-iq-experimental-v6` | `4215aedd40e954ffa107681cedffadb0356cbec2` | `e17231679f6125b3` |
 
 ### Bounded v5 transport and memory screening
 
@@ -138,6 +142,8 @@ tests returned status 3. These are bounded screening results, not lifetime
 stability, a long-duration soak, or packet-decoding counts.
 
 <!-- END-LATER-CANDIDATES -->
+
+
 
 
 ## Actual known-packet evidence
@@ -280,3 +286,24 @@ behavior. It does not align the independent receivers or measure combined
 coverage, packet recall, sensitivity, or decoding success. The evidence pins
 observed host source-file hashes and commit separately from the v6 firmware
 build identity above.
+
+### Longer no-I/Q timing check
+
+Two 120-second v6 runs at the preferred 1.875 ms period measured requested-window
+nominal union of 99.98660% and 99.98675%, with largest gaps of 146 and 151 µs.
+Completion-inclusive union was approximately 99.985%, decision-valid union
+99.961%, and 100 µs full-burst opportunity 98.396–98.429%. These runs deliberately
+transferred no sparse I/Q snapshots: they extend the timing check, not the
+recording-throughput or packet-decoding evidence. The remaining gaps preclude
+claiming consistent 100% capture, even under the nominal timestamp model.
+
+### Final overlap tradeoff experiment
+
+Two short 30-second no-I/Q v6 runs at 1.840 ms measured requested-window union
+99.993–99.994%, completion-inclusive union 99.988–99.989%, and 100 µs full-burst
+opportunity 99.922–99.950%. Gaps of 107–119 µs still remained. Decision-valid union
+was lower, 99.894–99.895%, because that metric removes warmup and the unused
+sample tail. This is a promising overlap tradeoff, not a new validated default:
+it has not undergone the longer timing, sparse-recording or UI soak tests at
+this period. The preferred setting remains 1.875 ms. Results must not be
+cherry-picked into a claim of 100% or combined packet recall.

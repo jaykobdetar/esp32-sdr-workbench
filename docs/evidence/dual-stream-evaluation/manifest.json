@@ -55,6 +55,16 @@
       "file": "sparse6-onoff.json.gz",
       "sha256": "eac61a5375273a0cbd2db1905118e2faaf29167668779d73e2dba4cea00e2306",
       "bytes": 2954835
+    },
+    {
+      "file": "sparse6-long-timing.json.gz",
+      "sha256": "271c255c0b2d453af6377cca1553c8d411e66ca2a7c616f34ef7dab1ec7883c8",
+      "bytes": 5571819
+    },
+    {
+      "file": "sparse6-overlap1840.json.gz",
+      "sha256": "73f57e600c1a1c96f5af76627ad750a0578d6f75ab781b9ccc2f19a36c36b848",
+      "bytes": 1446759
     }
   ],
   "derived_files": [
@@ -65,8 +75,8 @@
     },
     {
       "file": "summary.json",
-      "sha256": "637f7176739552582a8c6f1036a6a355eb305519ce74be8156dfdc3b00164b0a",
-      "bytes": 330507
+      "sha256": "e6ed37dc278f69f37fed1ca2cd31958c29673104e123e7269fd38f9f115e9a66",
+      "bytes": 376683
     },
     {
       "file": "sparse5-screening.json",
