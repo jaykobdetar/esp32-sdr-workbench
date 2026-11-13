@@ -186,19 +186,72 @@ int main(void) {
     y.since=15;dual_next=(uint64_t)now_us+1081;
     dstream_smart_yield(&y);
     assert(delays==3 && y.forced==0 && y.yielded==1 && y.since==0);
-    /* Learned setup guard rejects a gap that tick-only 80 us would accept. */
+    /* Rejected adaptive guard does not ratchet historical phase32. */
     tick=10;now_us=10000;capture_pretrigger_max_us=300;
-    y=(dstream_yield_t){.origin_us=0,.since=15};dual_next=11200;
+    y=(dstream_yield_t){.origin_us=0,.since=15};dual_next=11200;delay_us=1250;
     unsigned previous=delays;dstream_smart_yield(&y);
-    assert(delays==previous && y.max_guard_us==380);
-    y.since=15;dual_next=12000;delay_us=1250;
-    dstream_smart_yield(&y);
-    assert(delays==previous+1 && y.max_delay_us==1250);
-    assert(y.max_estimated_wake_late_us==250);
-    /* Next decision includes observed overshoot as well as setup. */
-    tick=11;now_us=11250;y.since=15;delay_us=0;dual_next=12500;
-    dstream_smart_yield(&y);
-    assert(y.max_guard_us==630 && delays==previous+1);
+    assert(delays==previous+1 && y.max_guard_us==80);
+    assert(y.max_delay_us==1250 && y.max_estimated_wake_late_us==250);
+    return 0;
+}
+""",
+    )
+
+
+def test_idle_handshake_requires_hook_and_restores_priority(tmp_path):
+    helper = (HEADERS / 'dstream_idle.h').read_text().replace('#pragma once', '')
+    compile_run(
+        tmp_path,
+        r"""
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <assert.h>
+typedef unsigned UBaseType_t;
+#define ESP_OK 0
+#define tskIDLE_PRIORITY 0
+static unsigned priority=5, yields, delays, registered, removed, mode;
+static int64_t now;
+static bool (*hook)(void);
+static unsigned xPortGetCoreID(void) {return 0;}
+static int esp_register_freertos_idle_hook_for_cpu(bool (*h)(void),unsigned c) {
+    assert(c==0);if(mode==9)return -1;hook=h;registered++;return 0;
+}
+static void esp_deregister_freertos_idle_hook_for_cpu(bool (*h)(void),unsigned c) {
+    assert(c==0 && h==hook);removed++;hook=NULL;
+}
+static int64_t esp_timer_get_time(void) {return now;}
+static unsigned uxTaskPriorityGet(void *t) {(void)t;return priority;}
+static void vTaskPrioritySet(void *t,unsigned p) {(void)t;priority=p;}
+static void vTaskDelay(unsigned ticks) {assert(ticks==1 && priority==5);delays++;now+=1000;}
+static void taskYIELD(void) {
+    assert(priority==0);yields++;now+=mode==2?1000:10;
+    /* First yield merely returns from idle's pre-hook yield. Only second
+       scheduling turn reaches the registered callback. */
+    if(mode==0 && yields%2==0) assert(!hook());
+}
+"""
+        + helper
+        + r"""
+int main(void) {
+    dstream_idle_t s={0};
+    assert(dstream_idle_begin(&s) && registered==1);
+    assert(hook()); /* Outside handshake normal WFI remains allowed. */
+    for(unsigned i=0;i<31;i++)dstream_idle_service(&s);
+    assert(!yields && !s.handshakes);
+    dstream_idle_service(&s);
+    assert(yields==2 && s.observed==1 && !s.fallbacks && s.attempts_max==2);
+    assert(priority==5 && !dstream_idle_active && hook());
+    mode=1;s.since=31;unsigned previous=yields;dstream_idle_service(&s);
+    assert(yields-previous==8 && s.fallbacks==1 && delays==1);
+    assert(priority==5 && !dstream_idle_active);
+    mode=2;s.since=31;previous=yields;dstream_idle_service(&s);
+    assert(yields-previous==2 && s.fallbacks==2 && delays==2);
+    assert(s.latency_max_us==3000); /* Time cap plus bounded requested delay. */
+    dstream_idle_end(&s);assert(removed==1 && !s.registered && !hook);
+    dstream_idle_end(&s);assert(removed==1);
+    mode=9;s=(dstream_idle_t){0};assert(!dstream_idle_begin(&s));
+    dstream_idle_end(&s);assert(removed==1 && !dstream_idle_active);
     return 0;
 }
 """,

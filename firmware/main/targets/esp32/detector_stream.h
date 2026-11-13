@@ -95,6 +95,7 @@ static unsigned dstream_validate(void *context, unsigned n) {
     v->p->copy_us += esp_timer_get_time()-t;
     return bad;
 }
+#include "dstream_idle.h"
 /* Experimental tick-aware yielding: preserve watchdog/idle servicing while
  * preferring a tick that fits inside the next scheduled acquisition gap.
  * Always force a yield after at most 64 captures, even when no fit is found. */
@@ -116,10 +117,9 @@ static void dstream_smart_yield(dstream_yield_t *y) {
     TickType_t tick=xTaskGetTickCount();
     bool fit=false;
     int64_t next_tick=0;
-    /* Empirical maxima, not certified jitter bounds. Include next acquisition
-     * setup, observed wake overshoot, and 80 us bookkeeping margin. Forced
-     * watchdog service remains mandatory even when no safe fit is predicted. */
-    uint64_t guard=capture_pretrigger_max_us+y->max_estimated_wake_late_us+80;
+    /* Historical phase32 fit heuristic restored: adaptive max-based guard
+     * regressed measured coverage. Diagnostics remain; neither is a guarantee. */
+    uint64_t guard=80;
     if (guard>y->max_guard_us) y->max_guard_us=guard;
     if (y->origin_us!=INT64_MAX && tick>=y->tick) {
         next_tick=((int64_t)tick+1)*portTICK_PERIOD_MS*1000+y->origin_us;
@@ -147,7 +147,7 @@ static bool detector_stream_command(const char *line) {
      * deliberately forbidden in first experimental release (10-minute cap). */
     if (!dual_arguments(line+(iq?9:7),a,iq?7:5) || a[0]<now+10000 || a[0]>now+5000000 ||
         a[1]<1 || a[1]>600000 || a[2]<1600000 || a[2]>10000000 ||
-        a[3]>32 || a[4]<1000 || a[4]>1000000 || dual_armed ||
+        a[3]>33 || a[4]<1000 || a[4]>1000000 || dual_armed ||
         (iq && (a[5]<1024 || a[5]>1000000 || a[6]>=a[5]))) {
         reply("ERR stream_args\n"); return true;
     }
@@ -170,6 +170,10 @@ static bool detector_stream_command(const char *line) {
     if(allocated<0) {reply("ERR stream_iq_alias_reset_required\n");return true;}
     if(!allocated) {
         heap_caps_free(p.copy);detpipe_clear();reply("ERR stream_iq_memory\n");return true;
+    }
+    dstream_idle_t idle={0};
+    if(a[3]==33 && !dstream_idle_begin(&idle)) {
+        heap_caps_free(p.copy);detpipe_clear();reply("ERR stream_idle_hook\n");return true;
     }
     dstream_iq.every=a[5];dstream_iq.phase=a[6];
     dstream_head=dstream_count=dstream_cursor=0;dstream_overflow=false;
@@ -205,7 +209,8 @@ static bool detector_stream_command(const char *line) {
         if (dstream_overflow) {status=2;break;}
         if(dstream_iq.errors) {status=4;break;}
         if (burst_serial_stop_requested()) {status=3;break;}
-        if(a[3]==32) dstream_smart_yield(&yielding);
+        if(a[3]==33) dstream_idle_service(&idle);
+        else if(a[3]==32) dstream_smart_yield(&yielding);
         else if ((captures&31u)==a[3]) vTaskDelay(1);
         if (!(captures&127u)) {
             unsigned heap=heap_caps_get_free_size(DETPIPE_ALLOC_CAPS);
@@ -214,6 +219,7 @@ static bool detector_stream_command(const char *line) {
             if (stack<min_stack) min_stack=stack;
         }
     }
+    dstream_idle_end(&idle);
     dual_trace_end();
     dstream_commit(&p,a[4]);
     deferred_reply=false;
@@ -230,15 +236,15 @@ static bool detector_stream_command(const char *line) {
     if (delivered) delivered=dstream_drain();
     heap_caps_free(p.copy);detpipe_clear();acquisition_option=old_acq;clear_option=old_clear;
     if (delivered) {
-        char summary[768];
+        char summary[1024];
         int n=snprintf(summary,sizeof(summary),
             "DSTREAM END {\"status\":%u,\"captures\":%u,\"processed\":%u,\"events\":%u,"
             "\"first_trigger_us\":%" PRIu64 ",\"last_trigger_us\":%" PRIu64 ","
             "\"end_us\":%" PRIu64 ",\"max_late_us\":%u,\"skipped\":%u,"
             "\"overflow\":%u,\"min_heap\":%u,\"min_stack\":%u,\"compute_us\":%" PRIu64 ","
-            "\"copy_us\":%" PRIu64 ",\"decision_us\":%" PRIu64 ",\"smart_yields\":%u,\"forced_yields\":%u,\"setup_max_us\":%" PRIu64 ",\"yield_delay_max_us\":%" PRIu64 ",\"estimated_wake_late_max_us\":%" PRIu64 ",\"yield_guard_max_us\":%" PRIu64 ",\"retained\":0,\"iq_produced\":%u,\"iq_sent\":%u,\"iq_busy_skips\":%u}\n",
+            "\"copy_us\":%" PRIu64 ",\"decision_us\":%" PRIu64 ",\"smart_yields\":%u,\"forced_yields\":%u,\"setup_max_us\":%" PRIu64 ",\"yield_delay_max_us\":%" PRIu64 ",\"estimated_wake_late_max_us\":%" PRIu64 ",\"yield_guard_max_us\":%" PRIu64 ",\"idle_handshakes\":%u,\"idle_observed\":%u,\"idle_fallbacks\":%u,\"idle_attempts_max\":%u,\"idle_latency_max_us\":%" PRIu64 ",\"retained\":0,\"iq_produced\":%u,\"iq_sent\":%u,\"iq_busy_skips\":%u}\n",
             status,captures,p.processed,p.events,first,last,ended,dual_late,dual_skipped,
-            (unsigned)dstream_overflow,min_heap,min_stack,p.compute_us,p.copy_us,p.commit_us,yielding.yielded,yielding.forced,capture_pretrigger_max_us,yielding.max_delay_us,yielding.max_estimated_wake_late_us,yielding.max_guard_us,dstream_iq.produced,dstream_iq.sent,dstream_iq.skipped);
+            (unsigned)dstream_overflow,min_heap,min_stack,p.compute_us,p.copy_us,p.commit_us,yielding.yielded,yielding.forced,capture_pretrigger_max_us,yielding.max_delay_us,yielding.max_estimated_wake_late_us,yielding.max_guard_us,idle.handshakes,idle.observed,idle.fallbacks,idle.attempts_max,idle.latency_max_us,dstream_iq.produced,dstream_iq.sent,dstream_iq.skipped);
         if(n>0 && (unsigned)n<sizeof(summary)) {
             size_t length=ascii_frame_pad(summary,n,sizeof(summary));
             /* Empirical workaround for observed post-stream summary truncation.
