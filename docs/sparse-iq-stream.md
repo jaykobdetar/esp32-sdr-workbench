@@ -1,10 +1,8 @@
 # Experimental sparse full I/Q during persistent telemetry
 
-**Software prototype, not hardware validated.** This mode does not provide a
-continuous waveform, coherent receiver combining, calibrated RF apertures, or a
-packet-recall measurement. The existing no-retention `DSTREAM` command remains
-available. This prototype identifies itself as
-`esp32-dual-sparse-iq-experimental-v1` and advertises `DSTREAMIQ`.
+**Experimental and build-specific.** This mode does not provide a continuous waveform, coherent receiver combining, calibrated RF apertures, or a packet-recall measurement. Intermediate candidates have separate hardware evidence in the [streaming evaluation index](evidence/dual-stream-evaluation/README.md); those results must not be assigned automatically to the current source. Check `firmware/FIRMWARE_VARIANT` and the device's `VERSION?` reply against the measured build identity. The existing no-retention `DSTREAM` command remains available; sparse-capable firmware additionally advertises `DSTREAMIQ`.
+
+RF Studio exposes this mode explicitly under Advanced. See the [UI guide](rf-studio.md#experimental-persistent-telemetry--sparse-iq) for bounded sessions, no-save operation and independent receiver timing, and the [combined-receiver guide](continuous-dual-receivers.md) for the separate RF-aligned campaign.
 
 ## Command and host API
 
@@ -70,7 +68,4 @@ final readout can delay completion. The terminal timestamp includes this drain.
 Full packing and CRC add periodic CPU cost and can create missed deadlines; they
 are counted in decision time and reflected in timestamp gaps. Each full snapshot
 requires 1464 frames including metadata (70272 wire bytes), not merely 40950 UART
-bytes. Timing traffic and USB stalls may extend delivery. Heap headroom, timing
-regressions, STOP latency, transmitter payload recovery, and multi-minute
-stability must be measured on **both board layouts** before treating this mode
-as validated. Do not substitute its numbers for the earlier no-retention runs.
+bytes. Timing traffic and USB stalls may extend delivery. Heap headroom, timing regressions, STOP latency, transmitter payload recovery and multi-minute stability must be assessed for each measured binary on **both board layouts**. Passing one candidate’s tests does not validate a later candidate. Do not substitute its numbers for the earlier no-retention runs.

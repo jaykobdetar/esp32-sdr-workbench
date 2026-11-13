@@ -48,7 +48,7 @@ Each record includes:
 - Transport CRC.
 
 A candidate is an energy-positive acquisition window, **not a unique packet**.
-This mode does not deliver raw I/Q or decode packet payloads.
+This no-retention mode does not deliver raw I/Q or decode packet payloads. The separate [DSTREAMIQ extension](sparse-iq-stream.md) adds sparse full snapshots, not continuous raw samples.
 
 ## 3. Measuring combined coverage
 
@@ -71,8 +71,7 @@ reported gap-free nominal trial alone would not establish 100% packet capture.
 
 ## Running a bounded experiment
 
-Install the project and its transmitter extras as described in the main setup
-instructions. Identify receivers by verified USB location, especially when their
+Install the project as described in the [main setup instructions](../README.md#quick-start-rf-studio). The base installation includes the transmitter host package; no separate transmitter extra is required. Identify receivers by verified USB location, especially when their
 USB serial labels are identical. Firmware installation is a separate reviewed
 step: this campaign never flashes devices.
 
@@ -105,3 +104,7 @@ the verified application region. No command in RF Studio flashes automatically.
 If a stream loses framing, STOP is requested and that connection is marked failed.
 Reconnect before another command. A failed run is not filled in by interpolation.
 The transmitter and receivers remain independently operable.
+
+## Evidence and source identity
+
+Use the [streaming evaluation index](evidence/dual-stream-evaluation/README.md) for accepted measurements, unsuccessful candidates, binary identities and caveats. The [RF Studio guide](rf-studio.md) explains the interactive controls. Studio streams start independently; they do not perform the RF-clock alignment and staggered scheduling of this explicit campaign. No current installation state or performance result should be inferred from the source branch name.

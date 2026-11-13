@@ -1,17 +1,17 @@
 # RF Studio: a simpler way to use the radios
 
-Launch the redesigned interface:
+From the installed repository checkout, launch the interface:
 
 ```sh
-~/esp32-rf-studio/scripts/launch-studio.sh
+./scripts/launch-studio.sh
 ```
 
-The earlier RF Bench in `~/esp32-sdr-console` is unchanged. This is a new interface, not a firmware update. No firmware is flashed by the launcher or by a session.
+The earlier RF Bench remains available through `./scripts/launch-lab.sh`; the original viewer uses `./scripts/launch.sh`. This is a new interface, not a firmware update. No firmware is flashed by the launcher or by a session.
 
 ## First session
 
 1. Plug in the receivers. **Rescan USB** finds them without sending commands. Receiver numbers follow USB discovery; the USB location shown on each card distinguishes bridges with identical serial labels. A detected USB bridge is not yet a firmware health check.
-2. Leave **Listen** selected. Both receivers are selected by default. The transmitter is not opened in this mode.
+2. Leave **Listen** selected. Detected receivers are selected by default. The transmitter is not opened in this mode.
 3. Choose a shared frequency and session length (or **Until I stop** for receive-only use), then **Start listening**. The app connects and verifies the receiver capabilities, opens **Watch live**, and stops at the selected deadline or when you press Stop.
 4. Use **Inspect latest capture** for I/Q, power and FFT detail. **Recordings** contains past sessions; double-click a saved capture to inspect it.
 
@@ -21,7 +21,7 @@ Use **Explore with simulated data** to learn the layout without opening any seri
 
 - **Listen:** receive only, with one or more radios. It does not query or control an independently running transmitter.
 - **Test a signal:** select the transmitter explicitly. Its packets use the same frequency as the receivers and start only after receivers return data. Default: 2 Mbps, 16-byte known packets, every 2 ms, −20 dBm. **Customize test packets** exposes rate, length and interval. Transmitter tasks remain finite (maximum 60 seconds); until-stopped mode is receive-only. A finite session stops the transmitter, verifies STOP, and restores its original packet configuration.
-- **Compare receivers:** show two or more receivers side by side, without transmitting. To compare them under a known source, use **Test a signal** with both receivers selected.
+- **Compare receivers:** select two or more receivers without transmitting, then choose Combined, Individual or Both views. To compare them under a known source, use **Test a signal** with both receivers selected.
 
 **Stop all devices** stops this session's selected devices. Closing the window normally also waits for cleanup. Do not force-kill the app during transmission. A failed STOP is shown as **Session needs attention**, never as success. If communication is lost, the transmitter's finite-duration run still has a configured endpoint, but an unconfirmed stop must not be treated as verified.
 
@@ -47,11 +47,11 @@ Custom payloads, hopping experiments, statistically controlled ON/OFF campaigns 
 - No radios: reconnect, rescan, or explore simulation.
 - Could not connect: close other radio applications, check USB connections, and retry. No automatic flashing is attempted.
 - No retained data: wait for the detector window, inspect the advanced settings, or choose raw I/Q mode. The last plot's age helps distinguish an old capture from fresh data.
-- Session needs attention: read the plain-language result and optional diagnostic log. The session folder retains failure details. Do not assume transmission stopped when STOP is unconfirmed.
+- Session needs attention: read the plain-language result and optional diagnostic log. When saving is enabled, the session folder retains failure details; memory-only sessions keep them only in the live result and diagnostic log. Do not assume transmission stopped when STOP is unconfirmed.
 
 ## Validation of this redesign
 
-The new UI was exercised with two physical ESP32 receivers and one nRF52840 transmitter, with no firmware changes:
+The initial UI/control checks below used two physical ESP32 receivers and one nRF52840 transmitter without flashing during those checks. They are historical checks of the ordinary modes, not validation of every later experimental stream binary:
 
 - Five-second raw-I/Q test: both receivers delivered 14 captures; the transmitter completed 2,500 packets, reported zero radio errors, and confirmed stopped.
 - Five-second detector-mode comparison: both receivers delivered retained captures and ended without acquisition errors.
@@ -81,7 +81,7 @@ The memory-only mode was also verified on both physical receivers: 902 and 901 d
 
 The live view starts with **Combined**, a noncoherent diversity spectrum. **Individual** restores the separate receiver views, and **Both** shows them together (scroll if needed). Capture inspection always opens an actual individual receiver buffer, never fabricated combined I/Q.
 
-The combined display averages FFT **linear power**, then converts back to dBFS. Opposite I/Q phases therefore cannot cancel as they would in a naive sample sum. Only transport-CRC-valid, finite samples from the same frequency, sample rate and ADC format are eligible; the newest valid buffer defines the compatibility group. Inputs older than two seconds by local arrival time are excluded. This freshness test is not a proof of simultaneous RF acquisition. Samples exceeding 1% ADC endpoints are excluded when a cleaner receiver exists; if all are clipped, a clearly labeled least-clipped single-receiver fallback is used. The UI lists contributors and exclusions.
+The combined display averages FFT **linear power**, then converts back to dBFS. Opposite I/Q phases therefore cannot cancel as they would in a naive sample sum. Only transport-CRC-valid, finite samples from the same frequency, sample rate and ADC format are eligible; the newest valid buffer defines the compatibility group. Ordinary-mode inputs older than two seconds by local arrival time are excluded; sparse stream snapshots use the explicitly labeled eight-second limit described below. This freshness test is not a proof of simultaneous RF acquisition. Samples exceeding 1% ADC endpoints are excluded when a cleaner receiver exists; if all are clipped, a clearly labeled least-clipped single-receiver fallback is used. The UI lists contributors and exclusions.
 
 This can provide one easier-to-read power view, but is **not** a phase-coherent receiver, calibrated combined RF amplitude, continuous I/Q waveform, coverage measurement, or proof of improved packet recovery. Independent gain and calibration differences remain. Averaging asynchronous bursts may dilute a transient seen by only one receiver. Preserve individual views for diagnosis. After Stop, the last combined result is explicitly marked as stopped; no new samples are implied.
 
@@ -96,3 +96,5 @@ This mode keeps detector telemetry running while periodically transferring a com
 No-save mode creates no output path. With recording enabled, a separate bounded queue writes both sparse captures and chunk summaries without filesystem calls on the acquisition thread; a full queue or writer error fails the session instead of silently discarding I/Q. Only per-chunk summaries and sparse snapshots are saved, not every telemetry record. The in-memory rendering queues remain bounded.
 
 Sparse recording shutdown waits at most five seconds for the writer. If a filesystem operation remains blocked, radio cleanup can finish and the session reports incomplete recording; the daemon writer may finish that in-flight operation later, but it will not start further queued writes. No-save does not start this writer.
+
+For the experimental stream design, see [combined-receiver concepts](continuous-dual-receivers.md) and the [sparse-I/Q protocol](sparse-iq-stream.md). [Build-specific evaluation evidence](evidence/dual-stream-evaluation/README.md) distinguishes intermediate candidates and timing models from the current source. Do not transfer a result from one binary to another.
