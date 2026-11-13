@@ -192,3 +192,22 @@ def test_summary_write_error_is_visible(setup, monkeypatch):
     w.run()
     assert 'summary disk full' in str(w.error)
     assert radios[0].closed
+
+
+def test_idle_wake_phase_requires_advertised_capability(setup, monkeypatch):
+    module, w, radios = setup
+
+    def connect(self):
+        self.info['caps'].append('DSTREAMIDLEWAKE')
+        return self.info
+
+    monkeypatch.setattr(FakeRadio, 'connect', connect)
+
+    def run(radio, **kw):
+        assert kw['yield_phase'] == 34
+        kw['stop'].set()
+        return {'summary': {}, 'records': []}
+
+    monkeypatch.setattr(module, 'run_stream', run)
+    w.run()
+    assert w.error is None and radios[0].closed

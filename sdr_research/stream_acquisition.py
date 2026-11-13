@@ -35,6 +35,7 @@ class StreamAcquisitionWorker(AcquisitionWorker):
         writer_abort = threading.Event()
         latest = None
         last_emit = 0.0
+        yield_phase = 32
         self.started_ns = time.monotonic_ns()
         s = self.settings
 
@@ -110,6 +111,7 @@ class StreamAcquisitionWorker(AcquisitionWorker):
             metadata = {k: v for k, v in item.items() if k != 'payload'}
             metadata.update(
                 sparse_iq=True,
+                stream_yield_phase=yield_phase,
                 device=self.port,
                 timestamp_reference='host completed snapshot arrival; trigger_us is independent device uptime, not synchronized RF time',
             )
@@ -150,6 +152,11 @@ class StreamAcquisitionWorker(AcquisitionWorker):
                 bits=10,
             )
             select_background_policy(radio, s.get('background_policy'))
+            yield_phase = 34 if 'DSTREAMIDLEWAKE' in radio.info.get('caps', []) else 32
+            self.notice(
+                'state',
+                f'Experimental stream yield phase {yield_phase}; independent receiver scheduling',
+            )
             if s['autosave']:
                 writer = threading.Thread(target=write_loop, name='Sparse IQ recorder', daemon=True)
                 writer.start()
@@ -165,7 +172,7 @@ class StreamAcquisitionWorker(AcquisitionWorker):
                     start_us=start,
                     milliseconds=600000,
                     period_ns=1875000,
-                    yield_phase=32,
+                    yield_phase=yield_phase,
                     ratio_milli=s['ratio_milli'],
                     stop=self.stop_requested,
                     on_record=record,
