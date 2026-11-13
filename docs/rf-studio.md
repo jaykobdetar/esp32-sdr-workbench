@@ -1,10 +1,12 @@
 # RF Studio: a simpler way to use the radios
 
-From the installed repository checkout, launch the interface:
+After installing the package, launch the interface (including from an installed wheel):
 
 ```sh
-./scripts/launch-studio.sh
+esp32-sdr studio
 ```
+
+Use `esp32-sdr studio --demo` for simulated data. From a source checkout, `./scripts/launch-studio.sh` remains available.
 
 The earlier RF Bench remains available through `./scripts/launch-lab.sh`; the original viewer uses `./scripts/launch.sh`. This is a new interface, not a firmware update. No firmware is flashed by the launcher or by a session.
 
@@ -37,6 +39,8 @@ Use **Explore with simulated data** to learn the layout without opening any seri
 ## Advanced controls
 
 The default screen deliberately hides low-level tuning. **Show advanced radio settings** exposes raw/DETPIPE1/DET1 modes, sample rate, manual or automatic gain, bandwidth, sample count, detector window, background ratio and optional firmware policy. The hardware capability checks reject unsupported settings instead of guessing. AGC plus detector mode displays a warning because energy values are not comparable across gain changes.
+
+**Background-rule defaults differ by entry point.** RF Bench’s session defaults and the dual-stream/sparse-I/Q campaigns select rule 1 (legacy). RF Studio and the headless recorder start with the firmware default, rule 2 (adaptive Q16). Choosing “Firmware default” explicitly selects rule 2 on firmware with `BGPOLICY`; it does not inherit a previous client’s sticky selection. Stream BEGIN replies are checked against the selected/read-back rule. Record the rule when comparing results.
 
 The default recording destination is `~/rf-studio-recordings`. Each session gets its own timestamped folder with an atomic `session.json` and per-receiver files. These contain local device information and raw RF: keep them private unless reviewed and sanitized. Turning off **Save session and captures** uses memory only: no session directory, summary or raw files are written. The displayed result disappears when the app closes. History can open older RF Bench session folders too.
 

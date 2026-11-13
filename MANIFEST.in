@@ -741,6 +741,51 @@ include scripts/summarize_nrf_screen_v2.py
 include tests/test_nrf_analysis_v2.py
 include tests/test_recording.py
 
+# RF Studio, experimental streams, and their public offline verification.
+include docs/continuous-dual-receivers.md
+include docs/dual-receiver-results-2026-11-12.md
+include docs/dual-receiver-timing.md
+include docs/dual-sparse-campaign.md
+include docs/evidence/dual-stream-evaluation/README.md
+include docs/evidence/dual-stream-evaluation/campaign-r7-1800.json.gz
+include docs/evidence/dual-stream-evaluation/campaign-r7.json.gz
+include docs/evidence/dual-stream-evaluation/manifest.json
+include docs/evidence/dual-stream-evaluation/packet-proof.json
+include docs/evidence/dual-stream-evaluation/sparse1-onoff.json.gz
+include docs/evidence/dual-stream-evaluation/sparse2-guard-timing.json.gz
+include docs/evidence/dual-stream-evaluation/sparse3-onoff.json.gz
+include docs/evidence/dual-stream-evaluation/sparse4-idle1875-repeat.json.gz
+include docs/evidence/dual-stream-evaluation/sparse4-idle1875.json.gz
+include docs/evidence/dual-stream-evaluation/sparse5-onoff.json.gz
+include docs/evidence/dual-stream-evaluation/sparse5-screening.json
+include docs/evidence/dual-stream-evaluation/sparse5-wake1800.json.gz
+include docs/evidence/dual-stream-evaluation/sparse5-wake1875.json.gz
+include docs/evidence/dual-stream-evaluation/sparse6-long-timing.json.gz
+include docs/evidence/dual-stream-evaluation/sparse6-onoff.json.gz
+include docs/evidence/dual-stream-evaluation/sparse6-overlap1840-long.json.gz
+include docs/evidence/dual-stream-evaluation/sparse6-overlap1840.json.gz
+include docs/evidence/dual-stream-evaluation/sparse6-screening.json
+include docs/evidence/dual-stream-evaluation/studio-soak-v6.json
+include docs/evidence/dual-stream-evaluation/summary.json
+include docs/pr4-review-follow-up.md
+include docs/rf-studio-hardware.png
+include docs/rf-studio.md
+include docs/shared-rf-console.md
+include docs/sparse-iq-stream.md
+include firmware/main/targets/esp32/detector_stream.h
+include firmware/main/targets/esp32/detector_stream_iq.h
+include firmware/main/targets/esp32/dstream_idle.h
+include firmware/main/targets/esp32/dstream_idle_wake.h
+include firmware/main/targets/esp32/dual_timing.h
+include firmware/main/targets/esp32/dual_timing_commands.h
+include firmware/main/targets/esp32/receiver_caps.h
+include firmware/tests/test_capture_scheduling.py
+include firmware/tests/test_dual_timing_state.py
+include firmware/tests/test_receiver_caps.py
+include scripts/launch-lab.sh
+include scripts/launch-studio.sh
+include tests/test_stream_distribution.py
+
 # Defense in depth for setuptools' automatic inclusions and future additions.
 global-exclude *.py[cod] *.sigmf-data *.sigmf-meta *.bin *.elf *.hex *.uf2 *.map
 global-exclude .env .env.*

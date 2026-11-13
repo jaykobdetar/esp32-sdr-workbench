@@ -51,7 +51,7 @@ static bool hardware_agc = true;
 /* Device monotonic microseconds sampled immediately before the dump trigger
  * register write. Not a calibrated RF arrival timestamp or host clock. */
 static uint64_t capture_trigger_device_us;
-/* Setup excludes dual_wait_trigger scheduling wait. Reset for each DSTREAM. */
+/* Setup excludes coarse/fine scheduling waits. Reset for each DSTREAM. */
 static uint64_t capture_pretrigger_max_us;
 static unsigned frequency_mhz = 2412;
 /* Original ESP32 BBTOP RX filter: registers 1/2, seven-bit capacitor DAC.
@@ -122,6 +122,9 @@ static bool acquire_iq_with_validation(unsigned n, unsigned source, unsigned clo
         reply("ERR args\n");
         return false;
     }
+    /* Every caller (TIMEDCAP, TRACE and both streams) waits cooperatively
+     * before changing ADC/filter state or lending the aperture to the MAC. */
+    dual_wait_prepare();
     int64_t setup_start = esp_timer_get_time();
     if (rx_recalibration_stale()) prepare_rx();
     REG_WRITE(DUMP_CTRL, 0);
@@ -265,6 +268,7 @@ static bool capture(unsigned n, unsigned rate, unsigned format) {
 
 #include "dual_timing_commands.h"
 #include "detector_stream.h"
+#include "receiver_caps.h"
 
 static void command(char *line) {
     if (detector_stream_command(line)) return;
@@ -284,12 +288,7 @@ static void command(char *line) {
     unsigned n;
     char extra;
     if (!strcmp(line, "CAPS"))
-        reply(
-            "CAPS DSTREAMIDLEWAKE DSTREAMIDLE DSTREAMIQ DSTREAM DUALTIMING BGPOLICY CALHASH " DETPIPE_HEALTH_CAPABILITY "PIPEKEEP PIPECOPY ACQOPT CLEAROPT PIPEKERNEL DET1 VERSION GPIO SPEC SPECN SPECCAPS SPECSTAT DCT "
-#if !CONFIG_ESP_SDR_CP2102_VIEWER_COMPAT
-            "UARTBAUD "
-#endif
-            "RXLIMITS SERIALLEASE TUNEEXT RX40 RX16 LPFANA GAIN HWAGC IQ8\n");
+        burst_serial_send(receiver_caps, sizeof(receiver_caps) - 1);
     else if (sscanf(line, "BANDWIDTH %u %c", &n, &extra) == 1 &&
              (!n || (n >= RX_BANDWIDTH_MIN && n <= RX_BANDWIDTH_MAX))) {
         rx_filter = rx_bandwidth_dcap(n);

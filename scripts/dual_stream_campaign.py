@@ -412,6 +412,7 @@ class Campaign:
                 milliseconds=duration_ms,
                 period_ns=periods[k],
                 yield_phase=phases[k],
+                expected_background_policy=1,
                 stop=stop,
             )
             for k, (r, d) in enumerate(zip(self.radios, [a, b], strict=True))

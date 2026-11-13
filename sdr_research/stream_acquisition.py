@@ -151,7 +151,7 @@ class StreamAcquisitionWorker(AcquisitionWorker):
                 gain=s['gain'],
                 bits=10,
             )
-            select_background_policy(radio, s.get('background_policy'))
+            background = select_background_policy(radio, s.get('background_policy'))
             yield_phase = 34 if 'DSTREAMIDLEWAKE' in radio.info.get('caps', []) else 32
             self.notice(
                 'state',
@@ -174,6 +174,7 @@ class StreamAcquisitionWorker(AcquisitionWorker):
                     period_ns=1875000,
                     yield_phase=yield_phase,
                     ratio_milli=s['ratio_milli'],
+                    expected_background_policy=background['returned'],
                     stop=self.stop_requested,
                     on_record=record,
                     keep_records=False,

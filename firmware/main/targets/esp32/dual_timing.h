@@ -15,6 +15,14 @@ static inline void dual_advance(unsigned slots) {
     dual_next += dual_period_ns ? ns / 1000 : (uint64_t)slots * dual_period;
     dual_fraction_ns = dual_period_ns ? ns % 1000 : 0;
 }
+/* Call before acquisition setup, while the CPU still owns capture SRAM.
+ * Centralized at acquire_iq_with_validation so no scheduled caller can omit it. */
+static inline void dual_wait_prepare(void) {
+    if (!dual_next) return;
+    while ((uint64_t)esp_timer_get_time() + 2000 < dual_next) vTaskDelay(1);
+}
+/* RF owns capture SRAM here. Never yield or call idle services in this wait;
+ * only the final <=2 ms (less acquisition setup time) is left to busy-wait. */
 static inline void dual_wait_trigger(void) {
     if (!dual_next) return;
     uint64_t now = esp_timer_get_time();
@@ -25,7 +33,6 @@ static inline void dual_wait_trigger(void) {
         dual_advance(skipped);
         dual_skipped += skipped;
     }
-    while ((now = esp_timer_get_time()) + 2000 < dual_next) vTaskDelay(1);
     while ((now = esp_timer_get_time()) < dual_next) {}
     unsigned late = now > dual_next ? now - dual_next : 0;
     if (late > dual_late) dual_late = late;

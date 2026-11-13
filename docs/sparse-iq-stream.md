@@ -94,3 +94,28 @@ This is a scheduling experiment, not an assurance that snapshot-induced gaps or
 missed slots vanish. Bit-exact packing, incremental CRC, metadata readiness,
 partial writes, STOP draining and failure handling have software tests; board
 performance and long-duration stability require fresh validation of this variant.
+
+## v7 review follow-up: acquisition ownership and complete capabilities
+
+The v7 source keeps v6's wire format and snapshot pipeline. A common pre-acquisition
+wait now performs the cooperative part of every scheduled delay before ADC/filter
+changes or capture-SRAM handoff. The final trigger wait never calls `vTaskDelay`.
+This applies to `TIMEDCAP`, trace acquisition, `DSTREAM`, and `DSTREAMIQ`, including
+the first deadline and every long-period capture. Setup telemetry excludes that
+coarse wait. Host C tests execute the actual acquisition function with ownership-
+checking register stubs; those tests are not a hardware timing guarantee.
+
+`CAPS` is sent directly from its compiler-sized constant rather than the 256-byte
+`reply()` buffer. Tests compile and run all CP2102/health capability combinations,
+including the previously truncated combination.
+
+The host can verify `expected_background_policy` against BEGIN; application and
+campaign callers pass their verified/selected rule. It also reads an optional
+post-summary `ERR` for a failing acquisition, bounded to one second. Missing error
+text does not make a failed run valid. The installed Studio launcher is now
+`esp32-sdr studio`.
+
+Larger snapshot chunks remain a separate protocol/performance experiment: changing
+48-byte framing here would break compatibility and invalidate existing transport
+and measured-binary evidence. The current 70,272-byte snapshot wire cost is explicit
+above. No v6 coverage or throughput figure is claimed for this new v7 binary.

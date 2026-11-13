@@ -1,6 +1,19 @@
 # Build the original-ESP32 firmware
 
-Current source is **`esp32-pipeline-adaptive-q16-v8`**. V5 added fail-closed NVS startup and strict SPEC parsing to v4. V6 also rejects embedded NUL at the shared serial line boundary. V7 adds the runtime [background-rule selector](protocol.md#background-rule-selector-v7) and idles, instead of rebooting, when NVS initialization fails. V7 passed the [exact-release board evaluation](evidence/v7-evaluation/README.md), including a 30-minute soak. Packet-retention superiority was not established. V8 fixes the malformed-selector parsing issue that evaluation found, and is otherwise identical; it is compiled in CI and host-tested, not board-tested.
+Current source is **`esp32-dual-sparse-iq-experimental-v7`**, the experimental
+streaming firmware in this draft PR, not the historical adaptive v8 release.
+The build below selects this current source by default. Its v7 review follow-up
+moves cooperative scheduled waiting before acquisition setup and sends the full
+capability line without the 255-byte formatting limit. See
+[sparse I/Q](sparse-iq-stream.md) and the [review follow-up](pr4-review-follow-up.md).
+The earlier v6 measurements do not establish v7 timing or performance.
+
+The pre-stream adaptive-v8 source is preserved at commit
+`2c06109317d0ad13af5f0273f5ca12e5befc2e0d` (the PR's current `main` base). To build
+that source instead, use a separate detached worktree at that commit. This PR
+does not tag, merge, rewrite history, or move historical evidence to LFS/releases.
+
+Historical adaptive lineage: V5 added fail-closed NVS startup and strict SPEC parsing to v4. V6 also rejects embedded NUL at the shared serial line boundary. V7 adds the runtime [background-rule selector](protocol.md#background-rule-selector-v7) and idles, instead of rebooting, when NVS initialization fails. V7 passed the [exact-release board evaluation](evidence/v7-evaluation/README.md), including a 30-minute soak. Packet-retention superiority was not established. V8 fixes the malformed-selector parsing issue that evaluation found, and is otherwise identical; it is compiled in CI and host-tested, not board-tested.
 See the [review fixes and validation limits](safety-review-fixes.md).
 The earlier identified v4 build passed a [bounded passive smoke check](review-follow-up.md),
 not a soak or RF-performance validation.
@@ -40,7 +53,7 @@ python firmware/tools/build_firmware.py \
 
 Use a fresh output directory for each build: the exporter refuses to overwrite an existing profile. Build outputs and export manifests are deliberately outside the repository. `firmware/sdkconfig.defaults.esp32` is the authoritative source configuration; generated sdkconfig is local output. No credentials, device calibration/NVS or complete flash images are needed to compile. Do not publish your device flash/NVS backups.
 
-`VERSION?` embeds the actual source revision (or `unknown` without Git), UTC build time, target and `firmware_variant` read from `firmware/FIRMWARE_VARIANT` (currently `esp32-pipeline-adaptive-q16-v8`). The variant is a truthful source-family identifier, not a replacement for the Git revision. Rebuilding changes timestamps and may change layout; do not equate an arbitrary rebuild with an already measured binary.
+`VERSION?` embeds the actual source revision (or `unknown` without Git), UTC build time, target and `firmware_variant` read from `firmware/FIRMWARE_VARIANT` (currently `esp32-dual-sparse-iq-experimental-v7`). The variant is a truthful source-family identifier, not a replacement for the Git revision. Rebuilding changes timestamps and may change layout; do not equate an arbitrary rebuild with an already measured binary.
 
 ## Manual flashing: backup first, then choose the correct path
 
@@ -112,8 +125,7 @@ A host C compiler with UndefinedBehaviorSanitizer is needed for C arithmetic/gua
 
 Original-ESP32 startup now fails before radio initialization on **any** NVS-init
 error, including full/incompatible storage. It prints a preservation/recovery
-message and enters the SDK fatal-error path (which may reboot according to its
-configuration). It never erases NVS as an automatic repair. Do not bypass the
+message and idles without starting the radio or rebooting. It never erases NVS as an automatic repair. Do not bypass the
 failure with an erase: retain a private backup and review the matching firmware
 and a specific migration/recovery procedure first. This error path is checked
 with host fault injection, not by corrupting device calibration on hardware.
@@ -128,12 +140,12 @@ Firmware derivative: GPL-3.0-or-later. ESP-DSP and the retained ESP-IDF-derived 
 
 ## Current adaptive source versus historical measurements
 
-The current `firmware/FIRMWARE_VARIANT` is `esp32-pipeline-adaptive-q16-v8`.
+The current `firmware/FIRMWARE_VARIANT` is `esp32-dual-sparse-iq-experimental-v7`.
 The build example labels the artifact with the source commit; `VERSION?` separately
 embeds this variant. Neither is a performance claim for this source.
 The [adaptive evaluation](evidence/adaptive-evaluation/evaluation-report.md) separately
 tested the unchanged released-v3 image and an instrumented, tie-fixed candidate.
-Only the latter received the 30-minute soak. The current source includes that tie
+Only the latter received the 30-minute soak. The historical adaptive-v8 source includes that tie
 fix, with `DETPIPE_HEALTH` OFF by default; a newly built default-off binary still
 needs its own release-image validation. Historical retention CI builds its pinned
 base with the archived patch. Read [adaptive detector](adaptive-detector.md) and

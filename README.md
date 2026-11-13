@@ -1,6 +1,6 @@
 # ESP32 SDR Research Workbench
 
-**RF Studio** provides a task-first interface for ESP32 receivers and an nRF52840 test transmitter. Start with `./scripts/launch-studio.sh` after the installation below. Choose Listen, Test a signal, or Compare receivers; advanced controls stay out of the way.
+**RF Studio** provides a task-first interface for ESP32 receivers and an nRF52840 test transmitter. Start with `esp32-sdr studio` after the installation below (or `./scripts/launch-studio.sh` from a source checkout). Choose Listen, Test a signal, or Compare receivers; advanced controls stay out of the way.
 
 - **Combined / Individual / Both:** one noncoherent power spectrum or separate receiver views, with explicit contributor and freshness labels.
 - **Paste settings / ask an LLM:** copy a schema-aware prompt, paste JSON, then validate and apply. Importing settings never starts hardware.

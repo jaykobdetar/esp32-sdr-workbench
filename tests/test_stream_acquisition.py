@@ -33,7 +33,7 @@ def setup(monkeypatch, tmp_path):
 
     monkeypatch.setattr(module, 'Radio', radio)
     monkeypatch.setattr(module, 'clock_probe', lambda *args, **kwargs: {'offset_us': 1000})
-    monkeypatch.setattr(module, 'select_background_policy', lambda *args: None)
+    monkeypatch.setattr(module, 'select_background_policy', lambda *args: {'returned': 1})
     settings = default_receiver_settings() | {'mode': 'DSTREAMIQ', 'autosave': False}
     worker = StreamAcquisitionWorker('fake', settings, tmp_path / 'output')
     return module, worker, radios
@@ -58,6 +58,7 @@ def test_no_save_sparse_capture_and_stop(setup, monkeypatch):
     def run(radio, **kw):
         assert kw['keep_records'] is False and kw['milliseconds'] == 600000
         assert kw['yield_phase'] == 32 and kw['snapshot_every'] == 2667
+        assert kw['expected_background_policy'] == 1
         kw['on_record']({'flags': 1})
         kw['on_snapshot'](snapshot())
         kw['stop'].set()

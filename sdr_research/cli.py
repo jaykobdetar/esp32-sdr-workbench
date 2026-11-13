@@ -171,6 +171,10 @@ def _print_notices(worker: object) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
+    if args and args[0] == 'studio':
+        from .studio_gui import main as studio_main
+
+        return studio_main(args[1:])
     if args and args[0] == 'lab':
         from .lab_gui import main as lab_main
 

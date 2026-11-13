@@ -82,6 +82,7 @@ def run_stream(
     period_ns: int = 1_875_000,
     yield_phase: int = 0,
     ratio_milli: int = 4000,
+    expected_background_policy: int | None = None,
     stop: Event | None = None,
     on_record: Callable[[dict[str, int]], None] | None = None,
     keep_records: bool = True,
@@ -94,7 +95,13 @@ def run_stream(
     Callbacks must not access the radio. Slow callbacks risk USB receive loss;
     firmware never blocks acquisition to wait for the host. CRC and sequence
     checks make any loss a failed measurement, never silently 100% coverage.
+    Pass the selected/read-back background policy to verify BEGIN. None means
+    unknown (not a request to change the sticky firmware policy).
     """
+    if expected_background_policy is not None and (
+        type(expected_background_policy) is not int or expected_background_policy not in (1, 2)
+    ):
+        raise ValueError('expected_background_policy must be None, 1 or 2')
     values = (start_us, milliseconds, period_ns, yield_phase, ratio_milli)
     if any(type(x) is not int for x in values):
         raise ValueError('DSTREAM parameters must be integers')
@@ -153,6 +160,8 @@ def run_stream(
             raise ProtocolError('Invalid stream frequency/policy echo') from error
         if not 2300 <= frequency <= 2600 or policy not in (1, 2):
             raise ProtocolError('Invalid stream frequency/policy echo')
+        if expected_background_policy is not None and policy != expected_background_policy:
+            raise ProtocolError('Stream background policy does not match selected rule')
         settings = getattr(radio, 'settings', {})
         expected_frequency = settings.get('frequency_mhz')
         if expected_frequency is not None and frequency != expected_frequency:
@@ -201,6 +210,18 @@ def run_stream(
         if not line.startswith('DSTREAM END '):
             raise ProtocolError('Missing stream END summary')
         summary = json.loads(line[12:])
+        detail = ''
+        if terminal['mean_adc2'] not in (0, 3):
+            # Older firmware sends an optional deferred ERR after END. Read only
+            # on failure, with a short bound: overflow/snapshot errors need not
+            # have a diagnostic. Missing or malformed text cannot mask failure.
+            try:
+                diagnostic = radio._line(time.monotonic() + 1)
+            except (TimeoutError, OSError, ProtocolError):
+                pass
+            else:
+                if diagnostic.startswith('ERR '):
+                    detail = f': {diagnostic}'
         if (
             summary['captures'] != count
             or summary['processed'] != count
@@ -215,16 +236,16 @@ def run_stream(
             or summary['skipped'] != terminal['background_adc2']
             or summary['max_late_us'] != terminal['peak_adc2']
         ):
-            raise ProtocolError('Stream final counters do not agree')
+            raise ProtocolError(f'Stream final counters do not agree{detail}')
         if assembler is not None:
             if (
                 assembler.pending
                 or summary.get('iq_sent') != assembler.completed
                 or summary.get('iq_produced') != assembler.completed
             ):
-                raise ProtocolError('Incomplete sparse snapshot stream')
+                raise ProtocolError(f'Incomplete sparse snapshot stream{detail}')
         if summary['status'] not in (0, 3):
-            raise ProtocolError(f'Stream failed with status {summary["status"]}')
+            raise ProtocolError(f'Stream failed with status {summary["status"]}{detail}')
     except BaseException:
         # No further commands except stop: framing may already be uncertain.
         try:

@@ -10,9 +10,15 @@ import argparse
 import gzip
 import hashlib
 import json
+import sys
 from pathlib import Path
 
-from .dual_stream_campaign import analyze_run
+if __package__:
+    from .dual_stream_campaign import analyze_run
+else:
+    # Direct source-checkout execution needs a package context for campaign imports.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from scripts.dual_stream_campaign import analyze_run
 
 MAX_DECOMPRESSED = 256 * 1024 * 1024
 

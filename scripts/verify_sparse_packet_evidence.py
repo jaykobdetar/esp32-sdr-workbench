@@ -10,7 +10,10 @@ import argparse
 import json
 from pathlib import Path
 
-from .verify_nrf_evidence import verify_packet
+if __package__:
+    from .verify_nrf_evidence import verify_packet
+else:
+    from verify_nrf_evidence import verify_packet
 
 
 def verify(document: dict) -> dict:

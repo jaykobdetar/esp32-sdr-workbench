@@ -151,6 +151,7 @@ class SparseCampaign(Campaign):
                         milliseconds=duration_ms,
                         period_ns=periods[k],
                         yield_phase=yield_phase,
+                        expected_background_policy=1,
                         stop=stop,
                         snapshot_every=every,
                         snapshot_phase=row['snapshot_phases'][k],

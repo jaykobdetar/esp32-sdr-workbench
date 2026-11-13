@@ -271,3 +271,63 @@ def test_unconfigured_radio_accepts_valid_frequency_echo():
     radio, _, _ = fake_radio()
     radio.settings = {}
     assert run_stream(radio, start_us=START)['transport_crc_valid']
+
+
+@pytest.mark.parametrize('selected,echoed', [(1, 2), (2, 1)])
+def test_reject_valid_but_unselected_policy(selected, echoed):
+    radio, _, _ = fake_radio()
+    radio.command.return_value = radio.command.return_value.rsplit(' ', 1)[0] + f' {echoed}'
+    with pytest.raises(ProtocolError, match='background policy does not match'):
+        run_stream(radio, start_us=START, expected_background_policy=selected)
+    assert_failed(radio)
+    radio._read.assert_not_called()
+
+
+@pytest.mark.parametrize('policy', [1, 2])
+def test_accept_selected_policy(policy):
+    radio, _, _ = fake_radio()
+    radio.command.return_value = radio.command.return_value.rsplit(' ', 1)[0] + f' {policy}'
+    assert run_stream(radio, start_us=START, expected_background_policy=policy)[
+        'transport_crc_valid'
+    ]
+    radio._line.assert_called_once()  # Successful streams never wait for optional ERR text.
+
+
+@pytest.mark.parametrize('policy', [True, False, 0, 3, '1'])
+def test_invalid_expected_policy_never_starts(policy):
+    radio, _, _ = fake_radio()
+    with pytest.raises(ValueError, match='expected_background_policy'):
+        run_stream(radio, start_us=START, expected_background_policy=policy)
+    radio.command.assert_not_called()
+
+
+@pytest.mark.parametrize('diagnostic', ['ERR capture_timeout', 'ERR capture_memory 17'])
+def test_deferred_firmware_diagnostic_is_reported(diagnostic):
+    radio, _, summary = fake_radio(status=1)
+    radio._line.side_effect = ['DSTREAM END ' + json.dumps(summary), diagnostic]
+    with pytest.raises(ProtocolError, match=f'status 1: {diagnostic}'):
+        run_stream(radio, start_us=START)
+    assert_failed(radio)
+    assert radio._line.call_count == 2
+
+
+@pytest.mark.parametrize(
+    'diagnostic', [TimeoutError('missing'), ProtocolError('bad ASCII'), OSError('unplugged'), 'OK']
+)
+def test_missing_or_bad_deferred_diagnostic_preserves_stream_error(diagnostic):
+    radio, _, summary = fake_radio(status=1)
+    radio._line.side_effect = ['DSTREAM END ' + json.dumps(summary), diagnostic]
+    with pytest.raises(ProtocolError, match='Stream failed with status 1'):
+        run_stream(radio, start_us=START)
+    assert_failed(radio)
+    # The optional diagnostic deadline is shorter than the five-second END deadline.
+    assert radio._line.call_args_list[1].args[0] < radio._line.call_args_list[0].args[0]
+
+
+def test_overflow_diagnostic_does_not_bypass_counter_validation():
+    radio, _, summary = fake_radio(status=2)
+    summary['overflow'] = 1
+    radio._line.side_effect = ['DSTREAM END ' + json.dumps(summary), 'ERR queue_overflow']
+    with pytest.raises(ProtocolError, match='counters do not agree: ERR queue_overflow'):
+        run_stream(radio, start_us=START)
+    assert_failed(radio)
