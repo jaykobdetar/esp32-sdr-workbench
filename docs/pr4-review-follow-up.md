@@ -69,3 +69,28 @@ results. No v6 coverage, packet count, or throughput result is reassigned to v7.
 Device identities, flash backups, calibration fingerprints and incidental RF stay
 private. Application-only validation must preserve each board's different layout
 and protected regions; it must not rewrite bootloader, partition table or NVS.
+
+### Review-fix validation result
+
+- 1,022 host tests plus 5 subtests passed; Ruff lint and formatting passed.
+- The pinned SDK compiled the normal v7 image and the combined `UARTBAUD` +
+  `DETPIPEHEALTH` configuration. The latter contains the complete 259-byte CAPS
+  line, including its newline. The four host capability-combination tests pass.
+- An isolated source archive contains all new public resources and no unexpected
+  files; private-file exclusion sentinels stayed excluded. Ten extracted-archive
+  checks passed. An isolated wheel loaded nine Studio/stream/campaign/verifier
+  modules and its `esp32-sdr studio --help` entrypoint exited successfully.
+- CI exposed one host-C extraction-test portability issue: its old end marker
+  accidentally included the new adjacent helper. The test now extracts only the
+  intended function and treats implicit function declarations as errors even on
+  older local compilers. This follow-up does not change production firmware.
+
+**The new v7 image was not installed or board-tested.** Both pre-install full-flash
+backups were retained privately. The installer stopped before any flash write
+because rebooting the existing v6 firmware changed stored NVS, including the
+stable stored-PHY SHA-256 on both boards (not just the observation timestamp).
+All observed flash differences were confined to NVS. The exact boot-time cause
+has not been established, so no calibration restore, forced installation, or
+further reset was attempted. Both original v6 applications were responsive and
+the transmitter was verified stopped. No claim is made that calibration remained
+unchanged across those reboots. Fresh v7 hardware validation remains outstanding.
