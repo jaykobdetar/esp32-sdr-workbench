@@ -106,7 +106,7 @@ def decode_saved(directory: Path, row: dict) -> dict:
 
 
 class SparseCampaign(Campaign):
-    def run_sparse(self, duration_ms, period_ns, every, source_on, trial):
+    def run_sparse(self, duration_ms, period_ns, every, source_on, trial, yield_phase=32):
         self.tx.stop()
         model = fit_clock(self.report['anchors'][-24:])
         clock = clock_probe(self.radios[0])
@@ -125,7 +125,7 @@ class SparseCampaign(Campaign):
             scheduled_b_us=b,
             duration_ms=duration_ms,
             periods_ns=periods,
-            yield_phases=[32, 32],
+            yield_phases=[yield_phase, yield_phase],
             snapshot_every=every,
             snapshot_phases=[0, every // 2],
             clock_prediction=model,
@@ -150,7 +150,7 @@ class SparseCampaign(Campaign):
                         start_us=deadline,
                         milliseconds=duration_ms,
                         period_ns=periods[k],
-                        yield_phase=32,
+                        yield_phase=yield_phase,
                         stop=stop,
                         snapshot_every=every,
                         snapshot_phase=row['snapshot_phases'][k],
@@ -201,6 +201,7 @@ def main():
     p.add_argument('--trials', type=int, default=1)
     p.add_argument('--period-ns', type=int, default=1875000)
     p.add_argument('--snapshot-every', type=int, default=1024)
+    p.add_argument('--yield-phase', type=int, choices=range(34), default=32)
     p.add_argument('--power-dbm', type=int, choices=[-40, -20, -16, -12, -8, -4, 0], default=-4)
     p.add_argument('--gain', type=int, default=60)
     args = p.parse_args()
@@ -220,6 +221,7 @@ def main():
                     seconds=args.seconds,
                     trials=args.trials,
                     snapshot_every=args.snapshot_every,
+                    yield_phase=args.yield_phase,
                     order='alternating ON/OFF within each pair',
                     transmitter=dict(
                         frequency_mhz=2440,
@@ -245,6 +247,7 @@ def main():
             trials=args.trials,
             period_ns=args.period_ns,
             snapshot_every=args.snapshot_every,
+            yield_phase=args.yield_phase,
             gain=args.gain,
             frequency_mhz=2440,
             sample_rate_hz=16000000,
@@ -299,6 +302,7 @@ def main():
                         args.snapshot_every,
                         source_on,
                         trial,
+                        args.yield_phase,
                     )
                     campaign.anchors(needed=3, attempts=60)
                     row = report['runs'][-1]
