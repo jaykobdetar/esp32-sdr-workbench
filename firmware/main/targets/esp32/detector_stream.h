@@ -44,7 +44,13 @@ static void dstream_pump(void) {
             dstream_cursor = 0; dstream_count--;
         }
     }
-    if (budget && !dstream_count) dstream_iq_send(budget);
+    /* Use the remaining bounded budget, not just one sparse frame. Timing
+     * has priority at every boundary; this command task is the sole writer. */
+    while (budget && !dstream_count && dstream_iq.busy) {
+        unsigned sent=dstream_iq_send(budget);
+        if(!sent) break; /* FIFO full: no spinning and no acquisition stall. */
+        budget-=sent;
+    }
 }
 static bool dstream_drain(void) {
     if (dstream_iq.every) {

@@ -66,7 +66,21 @@ int main(void){
  for(unsigned j=0;j<w[3];j++)assert(wire[at+16+j]==(offset+j)%251);
  offset+=w[3];}
  assert(offset==40950 && timing==1);
- pack_fail=true;p.generation=2048;dstream_iq_snapshot(&p);assert(dstream_iq.errors==1 && !dstream_iq.busy);
+ /* Saturated UART: spend the whole bounded 128-byte budget across frames. */
+ used=0;p.generation=2048;dstream_iq_snapshot(&p);
+ budget=1000;dstream_pump();assert(used==128 && dstream_iq.cursor==32);
+ dstream_enqueue((dstream_record_t){.sequence=2});
+ budget=1000;dstream_pump();assert(used==256 && dstream_iq.cursor==16);
+ uint32_t magic;memcpy(&magic,wire+144,4);assert(magic==0x31565344);
+ /* No progress must preserve exact cursor/state and return immediately. */
+ budget=0;dstream_pump();assert(used==256 && dstream_iq.cursor==16);
+ budget=32;dstream_pump();assert(used==288 && dstream_iq.cursor==0);
+ budget=0;dstream_pump();assert(used==288 && dstream_iq.cursor==0);
+ budget=1;dstream_pump();assert(used==289 && dstream_iq.cursor==1);
+ while(dstream_iq.busy || dstream_count){unsigned before=used;budget=1000;dstream_pump();assert(used-before<=128);}
+ assert(dstream_iq.sent==2 && used==48*(1464+1));
+ for(unsigned at=0;at<used;at+=48){uint32_t crc;memcpy(&crc,wire+at+44,4);assert(crc==esp_rom_crc32_le(0,wire+at,44));}
+ pack_fail=true;p.generation=3072;dstream_iq_snapshot(&p);assert(dstream_iq.errors==1 && !dstream_iq.busy);
  for(unsigned j=0;j<detpipe_page_count;j++)free(detpipe_pages[j]);
  return 0;}
 """,
