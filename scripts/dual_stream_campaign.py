@@ -385,8 +385,8 @@ def main():
     phases = list(map(int, args.phases.split(',')))
     if len(args.port) != 2 or len({str(Path(x).resolve()) for x in args.port}) != 2:
         p.error('Two distinct verified ports required')
-    if len(phases) != 2 or any(not 0 <= x <= 32 for x in phases):
-        p.error('Two phases in 0..32 required')
+    if len(phases) != 2 or any(not 0 <= x <= 33 for x in phases):
+        p.error('Two phases in 0..33 required')
     if not 1 <= args.seconds <= 600 or not 1 <= args.trials <= 20:
         p.error('Seconds 1..600, trials 1..20')
     if not 1600000 <= args.period_ns <= 10000000:

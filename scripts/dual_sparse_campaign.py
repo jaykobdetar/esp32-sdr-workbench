@@ -210,8 +210,8 @@ def main():
         p.error('Seconds 1..55 and trials 1..10 required')
     if not 1600000 <= args.period_ns <= 10000000 or not 1024 <= args.snapshot_every <= 1000000:
         p.error('Period or sparse interval outside supported limits')
-    if not 0 <= args.gain <= 127:
-        p.error('Manual gain must be 0..127')
+    if not 0 <= args.gain <= 81:
+        p.error('Manual gain must be 0..81')
     if not args.run:
         print(
             json.dumps(
@@ -240,6 +240,29 @@ def main():
     with Transmitter(serial_number=args.tx_serial) as tx, ThreadPoolExecutor(2) as pool:
         campaign = SparseCampaign(radios, tx, pool, args.output)
         report = campaign.report
+        report['configuration'] = dict(
+            seconds=args.seconds,
+            trials=args.trials,
+            period_ns=args.period_ns,
+            snapshot_every=args.snapshot_every,
+            gain=args.gain,
+            frequency_mhz=2440,
+            sample_rate_hz=16000000,
+            samples=16380,
+            bits=10,
+            bandwidth_mhz=12,
+            background_policy=1,
+            transmitter_power_dbm=args.power_dbm,
+            transmitter_mode_mbps=2,
+            transmitter_payload_bytes=16,
+            transmitter_interval_us=1000,
+            transmitter_jitter_us=113,
+            order='ON/OFF then OFF/ON, alternating by trial',
+        )
+        report['completion_note'] = (
+            'Complete means collection and offline decoding completed. '
+            'Each timing result has its own verified/unverified status; none is a packet-recall claim.'
+        )
         try:
             tx.stop()
             report['devices'] = [r.connect() for r in radios]

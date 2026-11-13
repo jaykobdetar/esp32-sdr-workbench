@@ -179,7 +179,7 @@ def test_read_timeout_stops_device():
     [
         {'milliseconds': 0},
         {'period_ns': 1},
-        {'yield_phase': 33},
+        {'yield_phase': 34},
         {'ratio_milli': True},
         {'start_us': -1},
     ],
@@ -234,3 +234,13 @@ def test_empty_failed_run_has_zero_boundaries():
     with pytest.raises(ProtocolError, match='status 1'):
         run_stream(radio, start_us=START)
     assert_failed(radio)
+
+
+def test_cooperative_idle_phase_requires_explicit_capability():
+    radio, _, _ = fake_radio()
+    with pytest.raises(ProtocolError, match='cooperative-idle'):
+        run_stream(radio, start_us=START, yield_phase=34)
+    radio.command.assert_not_called()
+    radio.info['caps'].append('DSTREAMIDLE')
+    radio.command.return_value = f'DSTREAM BEGIN 1 {START} 30000 1875000 33 4000 2440 2'
+    assert run_stream(radio, start_us=START, yield_phase=34)['summary']['captures'] == 18

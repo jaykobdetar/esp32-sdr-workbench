@@ -39,7 +39,7 @@ def test_reject_bad_record(damage):
         dict(milliseconds=0),
         dict(milliseconds=600001),
         dict(period_ns=1599999),
-        dict(yield_phase=33),
+        dict(yield_phase=34),
         dict(start_us=True),
     ],
 )
