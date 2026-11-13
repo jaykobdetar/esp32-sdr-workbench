@@ -254,12 +254,42 @@ def analyze_run(row, anchors):
                     eroded_union=coverage(eroded, start, end),
                 )
             )
+        completion_end = max(
+            row['receivers'][0]['terminal']['trigger_us'],
+            to_a(row['receivers'][1]['terminal']['trigger_us'], model),
+        )
+        if not np.isfinite(completion_end) or completion_end <= start:
+            raise ValueError('Invalid device completion observation window')
+        completion_union = coverage(windows, start, completion_end)
+        completion_union.update(
+            start_a_us=start,
+            end_a_us=completion_end,
+            boundary='Requested receiver-A start through the later device terminal timestamp, with receiver-B terminal mapped into receiver-A time.',
+            includes='Acquisition and final snapshot/telemetry drain before terminal creation.',
+            excludes='External RF-anchor calibration, host pre-arm time, terminal frame transmission and trailing ASCII summary output.',
+            note='Nominal aperture union, not packet recall or a complete host-session measurement. Compare only with matching time boundaries.',
+        )
+        host_elapsed = []
+        for result in row['receivers']:
+            elapsed = result.get('host_elapsed_s')
+            if (
+                isinstance(elapsed, bool)
+                or not isinstance(elapsed, (int, float))
+                or not np.isfinite(elapsed)
+                or elapsed < 0
+            ):
+                elapsed = None
+            host_elapsed.append(elapsed)
         return dict(
             status='verified-telemetry',
             sensitivity=sensitivity,
             sensitivity_note='Assumption-based scenarios, not confidence bounds. Offset scenarios shift receiver B only; erosion removes the assumed error at both ends of every receiver window. Bracketing anchors cannot rule out nonlinear drift within the run.',
             clock_model=model,
             nominal_union=coverage(windows, start, end),
+            nominal_completion_inclusive_union=completion_union,
+            receiver_host_elapsed_s=host_elapsed,
+            host_elapsed_note='Independent host call elapsed durations only; these are not synchronized RF windows and cannot define a precise combined coverage union.',
+            requested_window_a_us=[start, end],
             nominal_full_burst_opportunities=[
                 full_burst_opportunity(windows, start, end, duration)
                 for duration in (50, 100, 250, 500)
