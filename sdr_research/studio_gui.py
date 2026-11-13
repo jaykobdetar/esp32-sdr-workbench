@@ -148,7 +148,8 @@ class CombinedView(ReceiverView):
         self.water.setLabel('left', 'Display update')
 
     def update_inputs(self, inputs: dict) -> None:
-        result = combine_spectra(inputs, time.monotonic())
+        sparse = bool(inputs) and all(c.metadata.get('sparse_iq') for c, _ in inputs.values())
+        result = combine_spectra(inputs, time.monotonic(), max_age_s=8.0 if sparse else 2.0)
         self.status.setText(
             f'Oldest input {result.max_age_s:.1f}s'
             if result.contributors
@@ -159,7 +160,8 @@ class CombinedView(ReceiverView):
         )
         excluded = '; '.join(f'{name}: {reason}' for name, reason in result.excluded.items())
         self.health.setText(
-            'Noncoherent, asynchronous power display. Not continuous I/Q, calibrated RF power or packet recall.'
+            ('Sparse snapshot display (8s freshness limit). ' if sparse else '')
+            + 'Noncoherent, asynchronous power display. Not continuous I/Q, calibrated RF power or packet recall.'
             + ('\nExcluded: ' + excluded if excluded else '')
             + (
                 '\nAll usable inputs have possible clipping.'
@@ -404,6 +406,7 @@ class StudioWindow(W.QMainWindow):
                 ('Live spectrum · raw I/Q', 'raw'),
                 ('Event detector · optimized pipeline', 'DETPIPE1'),
                 ('Event detector · DET1', 'DET1'),
+                ('Experimental persistent telemetry + sparse I/Q', 'DSTREAMIQ'),
             ]
         )
         self.rate = combo(
@@ -748,8 +751,15 @@ class StudioWindow(W.QMainWindow):
             )
         mode = 'raw' if demo else self.mode.currentData()
         detector = mode != 'raw'
+        streaming = mode == 'DSTREAMIQ'
+        if streaming:
+            self.rate.setCurrentIndex(self.rate.findData(16000000))
+            self.samples.setValue(16380)
+        self.rate.setEnabled(not streaming)
+        self.samples.setEnabled(not streaming)
         for control in (self.run_ms, self.ratio, self.policy):
             control.setEnabled(detector)
+        self.run_ms.setEnabled(detector and not streaming)
         self.mode.setEnabled(not demo)
         agc = self.gain_mode.currentData() == 'agc'
         self.gain.setEnabled(not agc)
@@ -758,6 +768,11 @@ class StudioWindow(W.QMainWindow):
             if detector and agc
             else ''
         )
+        if streaming:
+            self.agc_note.setText(
+                self.agc_note.text()
+                + '\nExperimental: independent telemetry streams; sparse I/Q roughly every5s, fixed16MS/s. No clock alignment or continuous I/Q;600s restarts introduce gaps.'
+            )
         seconds = self.duration.currentData()
         verb = (
             'Start test signal'
@@ -867,7 +882,7 @@ class StudioWindow(W.QMainWindow):
         self.update_display_mode()
         self.live_title.setText('Simulated session' if demo else TASKS[task][0])
         self.live_hint.setText(
-            f'{self.frequency.value()} MHz · {self.duration.currentText()} · {"synthetic data, no hardware" if demo else "independent burst receivers"}'
+            f'{self.frequency.value()} MHz · {self.duration.currentText()} · {"synthetic data, no hardware" if demo else ("independent sparse I/Q · experimental, not continuous" if self.mode.currentData() == "DSTREAMIQ" else "independent burst receivers")}'
         )
         self.banner.setText('Connecting receivers…')
         self.tx_status.setText(
@@ -912,8 +927,9 @@ class StudioWindow(W.QMainWindow):
             capture, _, stats = frames.pop()
             frames.clear()
             if capture is not None:
+                if self.latest.get(name) is not capture:
+                    self.arrivals[name] = time.monotonic()
                 self.latest[name] = capture
-                self.arrivals[name] = time.monotonic()
             self.views[name].update_capture(capture, stats)
         if self.combined and self.finished_session is not session:
             self.combined.update_inputs(

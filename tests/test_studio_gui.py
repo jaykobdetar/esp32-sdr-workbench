@@ -244,3 +244,18 @@ def test_combined_individual_both_views(window, app):
     assert all(v.isVisible() for v in w.views.values())
     w.display_mode.setCurrentIndex(2)
     assert w.combined.isVisible() and all(v.isVisible() for v in w.views.values())
+
+
+def test_stream_controls_and_import(window):
+    import json
+
+    w = window
+    w.demo.setChecked(False)
+    w.mode.setCurrentIndex(w.mode.findData('DSTREAMIQ'))
+    assert w.rate.currentData() == 16000000 and w.samples.value() == 16380
+    assert not w.rate.isEnabled() and not w.samples.isEnabled() and not w.run_ms.isEnabled()
+    assert w.policy.isEnabled() and 'sparse' in w.agc_note.text()
+    d = w.current_settings() | {'duration_s': 10, 'sample_rate_hz': 40000000}
+    w.settings_text.setPlainText(json.dumps(d))
+    w.apply_pasted_settings()
+    assert 'Not applied' in w.settings_feedback.text()

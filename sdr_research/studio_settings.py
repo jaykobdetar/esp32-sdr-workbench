@@ -10,7 +10,7 @@ FIELDS = {
     'frequency_mhz': {'type': 'integer', 'minimum': 2402, 'maximum': 2480},
     'duration_s': {'type': ['integer', 'null'], 'enum': [None, 5, 10, 30, 60]},
     'save_captures': {'type': 'boolean'},
-    'receiver_mode': {'type': 'string', 'enum': ['raw', 'DET1', 'DETPIPE1']},
+    'receiver_mode': {'type': 'string', 'enum': ['raw', 'DET1', 'DETPIPE1', 'DSTREAMIQ']},
     'sample_rate_hz': {'type': 'integer', 'enum': [16000000, 40000000, 80000000]},
     'gain': {'type': ['integer', 'null'], 'minimum': 0, 'maximum': 81},
     'bandwidth_mhz': {'type': 'integer', 'minimum': 0, 'maximum': 67},
@@ -108,7 +108,8 @@ Hardware: original ESP32 burst I/Q receivers and nRF52840 proprietary GFSK test 
 
 duration_s null runs until manually stopped and is receive-only; test requires 5/10/30/60 seconds. save_captures false means no session directory, summary or raw capture files are written.
 Meaning: task listen/compare requests no transmission; compare needs at least two selected receivers. test needs an explicitly selected physical transmitter. Import NEVER starts hardware, selects transmitters, changes device paths, or changes the local recording folder. The user must review and press Start separately. Simulation remains local and overrides receiver acquisition to raw.
-receiver_mode raw favors visible I/Q with readout gaps; DET1/DETPIPE1 retain candidate events, not decoded packets. gain null means hardware AGC; integers mean manual gain. AGC energies are not comparable across gain changes. ratio_milli=4000 means 4.00 times background (10-unit steps). background_policy null leaves the firmware policy unchanged; 1 legacy, 2 adaptive. Samples are fixed at 10 bits; candidate count is fixed at one. Firmware capability validation still applies at connection time.
+receiver_mode raw favors visible I/Q with readout gaps; DET1/DETPIPE1 retain candidate events, not decoded packets. gain null means hardware AGC; integers mean manual gain. AGC energies are not comparable across gain changes. ratio_milli=4000 means 4.00 times background (10-unit steps). background_policy null selects the firmware default policy; 1 legacy, 2 adaptive. Samples are fixed at 10 bits; candidate count is fixed at one. Firmware capability validation still applies at connection time.
+DSTREAMIQ is experimental persistent detector telemetry plus sparse full I/Q, not continuous IQ. It requires compatible firmware, 16MS/s,16380 samples,10bits; receiver streams start independently with no shared-clock calibration. Snapshots approximately every5seconds; commands restart every600seconds with gaps. No automatic firmware flashing. Detector window is ignored in this mode.
 Transmitter uses known payload/sequence numbers, no hopping, no custom payload. tx_interval_us must be >= floor((tx_length_bytes+10)*8/tx_mode_mbps)+300. The app sends only a finite-duration session, checks STOP and restores original transmitter packet configuration. No unbounded carrier or continuous transmission settings.
 
 JSON schema:

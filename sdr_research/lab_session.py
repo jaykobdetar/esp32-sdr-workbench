@@ -63,7 +63,7 @@ def _integer(settings: dict, key: str, low: int, high: int) -> None:
 
 def validate_receiver(settings: dict, demo: bool) -> None:
     s = default_receiver_settings() | settings
-    if s['mode'] not in ('raw', 'DET1', 'DETPIPE1'):
+    if s['mode'] not in ('raw', 'DET1', 'DETPIPE1', 'DSTREAMIQ'):
         raise ValueError('Unsupported receiver mode')
     if demo and s['mode'] != 'raw':
         raise ValueError('Synthetic input supports raw mode only')
@@ -87,6 +87,10 @@ def validate_receiver(settings: dict, demo: bool) -> None:
         s['candidate_count'] == 3 and s['mode'] != 'DETPIPE1'
     ):
         raise ValueError('Three candidates require DETPIPE1')
+    if s['mode'] == 'DSTREAMIQ' and (
+        s['samples'] != 16380 or s['rate_hz'] != 16000000 or s['bits'] != 10
+    ):
+        raise ValueError('DSTREAMIQ requires16380samples,16MS/sand10bits')
     if s['scan']:
         raise ValueError('Shared lab sessions use fixed per-receiver frequencies')
 
@@ -288,7 +292,12 @@ class LabSession(threading.Thread):
                 settings.pop('max_runs', None)
                 if not self.persist:
                     settings['autosave'] = False
-                worker = AcquisitionWorker(
+                worker_type = AcquisitionWorker
+                if settings['mode'] == 'DSTREAMIQ':
+                    from .stream_acquisition import StreamAcquisitionWorker
+
+                    worker_type = StreamAcquisitionWorker
+                worker = worker_type(
                     config.port, settings, self.output_dir / f'rx-{index + 1}', demo=config.demo
                 )
                 self.workers[config.label] = worker
