@@ -106,6 +106,57 @@ def _validate_stream_result(result):
         raise ValueError('Invalid final stream accounting')
 
 
+def full_burst_opportunity(windows, start, end, duration_us):
+    """Nominal start-time measure for a whole burst fitting ONE capture.
+
+    Denominator is [requested start, requested end - burst duration], so only
+    bursts wholly inside the requested observation window are considered.
+    Erode each capture separately BEFORE union: adjacent captures, including
+    captures on different receivers, cannot be joined into a coherent packet.
+    Uniform start-time measure is not an empirical packet-recall probability.
+    """
+    scalars = (start, end, duration_us)
+    if any(
+        isinstance(v, (bool, np.bool_))
+        or not isinstance(v, (int, float, np.number))
+        or not np.isrealobj(v)
+        or not np.isfinite(v)
+        for v in scalars
+    ):
+        raise ValueError('Burst opportunity requires finite numeric times')
+    if duration_us <= 0 or end - start <= duration_us:
+        raise ValueError('Burst duration must be positive and shorter than the observation window')
+    eligible = []
+    for window in windows:
+        if len(window) != 2:
+            raise ValueError('Capture window requires two endpoints')
+        a, b = window
+        if (
+            any(
+                isinstance(v, (bool, np.bool_))
+                or not isinstance(v, (int, float, np.number))
+                or not np.isfinite(v)
+                for v in (a, b)
+            )
+            or b <= a
+        ):
+            raise ValueError('Invalid nominal capture window')
+        # Equality leaves a single start instant, which has zero time measure.
+        if b - a > duration_us:
+            eligible.append((a, b - duration_us))
+    result = coverage(eligible, start, end - duration_us)
+    return dict(
+        burst_duration_us=duration_us,
+        start_window_us=[start, end - duration_us],
+        opportunity_percent=result['coverage_percent'],
+        eligible_start_time_us=result['covered_us'],
+        denominator_us=result['duration_us'],
+        max_ineligible_start_gap_us=result['max_gap_us'],
+        ineligible_start_gap_count=result['gap_count'],
+        note='Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee.',
+    )
+
+
 def analyze_run(row, anchors):
     try:
         start = row['scheduled_a_us']
@@ -209,6 +260,10 @@ def analyze_run(row, anchors):
             sensitivity_note='Assumption-based scenarios, not confidence bounds. Offset scenarios shift receiver B only; erosion removes the assumed error at both ends of every receiver window. Bracketing anchors cannot rule out nonlinear drift within the run.',
             clock_model=model,
             nominal_union=coverage(windows, start, end),
+            nominal_full_burst_opportunities=[
+                full_burst_opportunity(windows, start, end, duration)
+                for duration in (50, 100, 250, 500)
+            ],
             nominal_decision_union=coverage(decisions, start, end),
             note='Nominal trigger+N/fs, not calibrated RF aperture or packet recall. Residual and held-out errors are empirical, not certified bounds.',
         )
