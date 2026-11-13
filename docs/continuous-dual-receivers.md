@@ -105,6 +105,26 @@ If a stream loses framing, STOP is requested and that connection is marked faile
 Reconnect before another command. A failed run is not filled in by interpolation.
 The transmitter and receivers remain independently operable.
 
+## What would improve packet capture next?
+
+Nominal time coverage and whole-packet containment are different goals. A packet
+can cross capture boundaries or fall partly in a gap even when the union of
+listening windows covers nearly all of the timeline. Windows from independent
+receivers cannot simply be joined into one decodable waveform. Retention,
+signal quality, matching uncertainty, and successful decoding must also be
+measured against known transmitted packets.
+
+Transport bandwidth is a separate limit: the UART cannot export every sample at
+the receiver's full sample rate. Sparse snapshots keep the display useful, but
+do not remove this limit or turn telemetry into continuous I/Q.
+
+Two future paths are shared hardware timing, to control and measure overlap more
+precisely, and better on-device packet-selective retention, to spend scarce
+buffer and transport capacity on useful bursts. Both need implementation and
+controlled validation. Neither is a guaranteed route to gap-free reception or
+complete packet recovery; the remaining limits are engineering and measurement
+questions, not a lack of permission to test the existing devices.
+
 ## Evidence and source identity
 
 Use the [streaming evaluation index](evidence/dual-stream-evaluation/README.md) for accepted measurements, unsuccessful candidates, binary identities and caveats. The [RF Studio guide](rf-studio.md) explains the interactive controls. Studio streams start independently; they do not perform the RF-clock alignment and staggered scheduling of this explicit campaign. No current installation state or performance result should be inferred from the source branch name.

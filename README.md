@@ -15,9 +15,11 @@ Explore the ESP32 receiver's raw I/Q, inspect spectra and recorded events, and c
 
 > **Not continuous SDR.** Reception has gaps. Detector counts are unclassified candidate-positive captures, not decoded packets. A separate offline decoder validates only the controlled known Nordic test frames. Power is relative dBFS, not calibrated dBm.
 
-![Documented launcher in explicitly simulated mode, with the ADC-endpoint column](docs/viewer-launcher-demo.png)
+![RF Studio displaying real ambient RF from two ESP32 receivers](docs/rf-studio-hardware.png)
 
-*Original single-receiver viewer, not the RF Studio screen: actual `scripts/launch.sh --demo` window, captured on 11 November 2026 with the launcher's dark palette and the ADC-endpoint event column. The checked SIMULATED demo control, device names and status label identify synthetic raw I/Q. This screenshot demonstrates the UI, not receiver performance or new RF evidence. The historical hardware screenshot remains archived as `docs/viewer-hardware.png`.*
+*Actual Qt application rendered offscreen during a two-board, receive-only, no-save hardware soak. The display uses real ambient RF from independently started sparse streams. It does not demonstrate receiver synchronization, continuous I/Q, combined temporal coverage, or packet recall.*
+
+The [earlier single-receiver demo screenshot](docs/viewer-launcher-demo.png) shows the original `./scripts/launch.sh --demo` viewer with explicitly synthetic I/Q and the ADC-endpoint column. The [historical single-receiver hardware screenshot](docs/viewer-hardware.png) is also preserved.
 
 ## Firmware status
 
