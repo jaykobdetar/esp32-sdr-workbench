@@ -18,7 +18,16 @@ def compile_run(tmp_path, code):
     src.write_text(code)
     exe = tmp_path / 'review'
     subprocess.run(
-        [cc, '-std=c11', '-Wall', '-Wextra', str(src), '-o', str(exe)],
+        [
+            cc,
+            '-std=c11',
+            '-Wall',
+            '-Wextra',
+            '-Werror=implicit-function-declaration',
+            str(src),
+            '-o',
+            str(exe),
+        ],
         check=True,
         capture_output=True,
     )
@@ -86,11 +95,9 @@ int main(void) {
 
 def test_actual_fractional_period_accumulation(tmp_path):
     source = (HEADERS / 'dual_timing.h').read_text()
-    helper = source[
-        source.index('static inline void dual_advance') : source.index(
-            'static inline void dual_wait_trigger'
-        )
-    ]
+    start = source.index('static inline void dual_advance')
+    # Extract this function only, not helpers inserted before its former neighbor.
+    helper = source[start : source.index('\n}', start) + 2]
     compile_run(
         tmp_path,
         r"""
