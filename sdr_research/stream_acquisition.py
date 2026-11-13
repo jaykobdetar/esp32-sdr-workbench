@@ -16,6 +16,8 @@ from .pipeline import select_background_policy
 from .protocol import Capture, Radio, decode_iq
 from .recording import atomic_write_json, save_capture
 
+WRITER_JOIN_TIMEOUT_SECONDS = 5.0
+
 
 class StreamAcquisitionWorker(AcquisitionWorker):
     """Persistent telemetry in bounded600s chunks, with sparse complete IQ buffers.
@@ -30,26 +32,44 @@ class StreamAcquisitionWorker(AcquisitionWorker):
         pending = queue.Queue(maxsize=4)
         writer_errors = []
         writer_done = threading.Event()
+        writer_abort = threading.Event()
         latest = None
         last_emit = 0.0
         self.started_ns = time.monotonic_ns()
         s = self.settings
 
         def write_loop():
-            while not writer_done.is_set() or not pending.empty():
+            while not writer_abort.is_set() and (not writer_done.is_set() or not pending.empty()):
                 try:
-                    capture = pending.get(timeout=0.1)
+                    kind, value = pending.get(timeout=0.1)
                 except queue.Empty:
                     continue
                 try:
                     self.output_dir.mkdir(parents=True, exist_ok=True)
-                    path = save_capture(capture, self.output_dir / f'{uuid.uuid4().hex}-sparse-iq')
+                    if kind == 'capture':
+                        path = save_capture(
+                            value, self.output_dir / f'{uuid.uuid4().hex}-sparse-iq'
+                        )
+                    else:
+                        path = self.output_dir / f'{uuid.uuid4().hex}.dstreamiq.json'
+                        atomic_write_json(path, value)
                     self.notice('record', str(path))
                 except Exception as exc:
                     writer_errors.append(exc)
                     self.stop_requested.set()
+                    writer_abort.set()
                 finally:
                     pending.task_done()
+
+        def enqueue(kind, value):
+            if writer_errors:
+                raise RuntimeError(f'Sparse recording failed: {writer_errors[0]}')
+            try:
+                pending.put_nowait((kind, value))
+            except queue.Full:
+                raise RuntimeError(
+                    'Sparse recording queue full; stopping instead of silently losing capture or summary'
+                ) from None
 
         def emit():
             elapsed = max((time.monotonic_ns() - self.started_ns) / 1e9, 1e-9)
@@ -108,12 +128,7 @@ class StreamAcquisitionWorker(AcquisitionWorker):
             )
             self.retained_count += 1
             if s['autosave']:
-                try:
-                    pending.put_nowait(latest)
-                except queue.Full:
-                    raise RuntimeError(
-                        'Sparse recording queue full; stopping instead of silently losing IQ'
-                    ) from None
+                enqueue('capture', latest)
             emit()
 
         try:
@@ -161,10 +176,7 @@ class StreamAcquisitionWorker(AcquisitionWorker):
                 )
                 self.run_count += 1
                 if s['autosave']:
-                    self.output_dir.mkdir(parents=True, exist_ok=True)
-                    atomic_write_json(
-                        self.output_dir / f'{uuid.uuid4().hex}.dstreamiq.json', result
-                    )
+                    enqueue('summary', result)
                 emit()
                 if not self.stop_requested.is_set():
                     self.notice('state', 'Restarting bounded stream chunk; this introduces a gap')
@@ -181,10 +193,11 @@ class StreamAcquisitionWorker(AcquisitionWorker):
                     self.error = self.error or exc
             writer_done.set()
             if writer:
-                writer.join(5)
+                writer.join(WRITER_JOIN_TIMEOUT_SECONDS)
                 if writer.is_alive():
+                    writer_abort.set()
                     self.error = self.error or RuntimeError(
-                        'Sparse recording did not finish within5seconds'
+                        'Sparse recording did not finish within 5 seconds; files may be incomplete and a blocked filesystem write may finish later'
                     )
                 elif writer_errors:
                     self.error = self.error or writer_errors[0]

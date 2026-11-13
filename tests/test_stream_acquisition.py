@@ -138,3 +138,57 @@ def test_recording_failure_is_reported_and_radio_closed(setup, monkeypatch):
     w.run()
     assert 'disk full' in str(w.error)
     assert radios[0].closed
+
+
+def test_blocked_summary_writer_does_not_block_radio_shutdown(setup, monkeypatch):
+    import threading
+
+    module, w, radios = setup
+    w.settings['autosave'] = True
+    entered, release, exited = threading.Event(), threading.Event(), threading.Event()
+
+    def blocked_write(*args):
+        entered.set()
+        try:
+            assert release.wait(3)
+        finally:
+            exited.set()
+
+    def run(radio, **kw):
+        kw['on_record']({'flags': 0})
+        kw['stop'].set()
+        return {'summary': {'captures': 1}, 'records': []}
+
+    monkeypatch.setattr(module, 'atomic_write_json', blocked_write)
+    monkeypatch.setattr(module, 'run_stream', run)
+    monkeypatch.setattr(module, 'WRITER_JOIN_TIMEOUT_SECONDS', 0.1)
+    try:
+        w.start()
+        assert entered.wait(1)
+        w.join(1)
+        assert not w.is_alive()
+        assert radios[0].closed
+        assert 'did not finish' in str(w.error)
+        assert 'files may be incomplete' in str(w.error)
+    finally:
+        release.set()
+        w.join(2)
+        assert exited.wait(1)
+
+
+def test_summary_write_error_is_visible(setup, monkeypatch):
+    module, w, radios = setup
+    w.settings['autosave'] = True
+
+    def fail(*args):
+        raise OSError('summary disk full')
+
+    def run(radio, **kw):
+        kw['stop'].set()
+        return {'summary': {}, 'records': []}
+
+    monkeypatch.setattr(module, 'atomic_write_json', fail)
+    monkeypatch.setattr(module, 'run_stream', run)
+    w.run()
+    assert 'summary disk full' in str(w.error)
+    assert radios[0].closed
