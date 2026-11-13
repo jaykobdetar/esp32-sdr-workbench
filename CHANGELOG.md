@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- Add task-first RF Studio with Listen, Test a signal and Compare receivers;
+  paste validated settings JSON or copy a self-contained LLM prompt.
+- Add memory-only, until-stopped receive sessions and explicit Combined,
+  Individual and Both spectrum views. Combining is noncoherent linear power,
+  not synchronized I/Q or a coverage claim.
+- Add experimental CRC-framed DSTREAM telemetry and DSTREAMIQ sparse full-I/Q
+  delivery, with bounded buffers, cooperative stop and independent device use.
+- Add RF-clock-anchored dual-receiver campaigns, full-burst opportunity and
+  completion-inclusive timing analyses, known-packet diversity checks, and
+  sanitized reproducible evidence. No result establishes 100% packet capture.
+- Keep sparse recording filesystem writes off the acquisition thread and verify
+  echoed frequency/policy and snapshot metadata before accepting a stream.
+
 - Identify the source as `esp32-pipeline-adaptive-q16-v8`. `BGPOLICY` now accepts
   only the exact text `BGPOLICY 1` or `BGPOLICY 2`. On the v7 board `BGPOLICY1`,
   `BGPOLICY 4294967297` and `BGPOLICY -4294967295` were all accepted as rule 1.
