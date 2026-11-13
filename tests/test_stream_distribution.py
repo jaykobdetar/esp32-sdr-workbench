@@ -58,7 +58,7 @@ def test_stream_build_tests_launchers_and_guides_are_distributed():
         'docs/rf-studio-hardware.png',
         'docs/shared-rf-console.md',
         'docs/sparse-iq-stream.md',
-        'docs/pr4-review-follow-up.md',
+        'docs/validation.md',
         'tests/test_stream_distribution.py',
     ):
         assert_included(ROOT / name)

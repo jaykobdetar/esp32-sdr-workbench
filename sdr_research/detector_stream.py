@@ -212,7 +212,7 @@ def run_stream(
         summary = json.loads(line[12:])
         detail = ''
         if terminal['mean_adc2'] not in (0, 3):
-            # Older firmware sends an optional deferred ERR after END. Read only
+            # Firmware may send a deferred ERR after the END summary. Read only
             # on failure, with a short bound: overflow/snapshot errors need not
             # have a diagnostic. Missing or malformed text cannot mask failure.
             try:

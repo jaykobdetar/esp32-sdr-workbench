@@ -767,7 +767,6 @@ include docs/evidence/dual-stream-evaluation/sparse6-overlap1840.json.gz
 include docs/evidence/dual-stream-evaluation/sparse6-screening.json
 include docs/evidence/dual-stream-evaluation/studio-soak-v6.json
 include docs/evidence/dual-stream-evaluation/summary.json
-include docs/pr4-review-follow-up.md
 include docs/rf-studio-hardware.png
 include docs/rf-studio.md
 include docs/shared-rf-console.md

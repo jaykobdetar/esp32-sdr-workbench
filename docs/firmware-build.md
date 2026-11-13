@@ -1,19 +1,39 @@
 # Build the original-ESP32 firmware
 
 Current source is **`esp32-dual-sparse-iq-experimental-v7`**, the experimental
-streaming firmware in this draft PR, not the historical adaptive v8 release.
+streaming firmware, not the pre-stream adaptive-v8 baseline. Merging this PR
+would make it the default source on `main`; it does not become stable firmware
+merely because the PR is merged.
 The build below selects this current source by default. Its v7 review follow-up
 moves cooperative scheduled waiting before acquisition setup and sends the full
 capability line without the 255-byte formatting limit. See
-[sparse I/Q](sparse-iq-stream.md) and the [review follow-up](pr4-review-follow-up.md).
+[sparse I/Q](sparse-iq-stream.md) and the [v7 validation record](validation.md#streaming-v7-review-validation-13-november-2026).
 The earlier v6 measurements do not establish v7 timing or performance.
 
-The pre-stream adaptive-v8 source is preserved at commit
-`2c06109317d0ad13af5f0273f5ca12e5befc2e0d` (the PR's current `main` base). To build
-that source instead, use a separate detached worktree at that commit. This PR
-does not tag, merge, rewrite history, or move historical evidence to LFS/releases.
+## Build the pre-stream adaptive-v8 baseline instead
 
-Historical adaptive lineage: V5 added fail-closed NVS startup and strict SPEC parsing to v4. V6 also rejects embedded NUL at the shared serial line boundary. V7 adds the runtime [background-rule selector](protocol.md#background-rule-selector-v7) and idles, instead of rebooting, when NVS initialization fails. V7 passed the [exact-release board evaluation](evidence/v7-evaluation/README.md), including a 30-minute soak. Packet-retention superiority was not established. V8 fixes the malformed-selector parsing issue that evaluation found, and is otherwise identical; it is compiled in CI and host-tested, not board-tested.
+The immutable [adaptive-v8 source tree](https://github.com/jaykobdetar/esp32-sdr-workbench/tree/2c06109317d0ad13af5f0273f5ca12e5befc2e0d)
+is the pre-stream baseline. It is compiled and host-tested, **not board-tested**;
+there is no stable-release claim for v8. The similarly numbered adaptive-v7 and
+sparse-I/Q-v7 are different firmware families.
+
+From a Git checkout with the baseline commit available, create a separate source
+worktree, leaving the current checkout untouched:
+
+```sh
+git worktree add --detach ../esp32-adaptive-v8 2c06109317d0ad13af5f0273f5ca12e5befc2e0d
+cd ../esp32-adaptive-v8
+cat firmware/FIRMWARE_VARIANT  # esp32-pipeline-adaptive-q16-v8
+```
+
+Follow that worktree's `docs/firmware-build.md` with fresh output directories.
+Its source is also [browsable by commit](https://github.com/jaykobdetar/esp32-sdr-workbench/commit/2c06109317d0ad13af5f0273f5ca12e5befc2e0d).
+A descriptive source tag would make it easier to find, not add validation. No tag
+has been created by this PR. See the [pre-merge decisions](releasing.md#pr-4-pre-merge-decisions).
+
+### Historical adaptive lineage
+
+V5 added fail-closed NVS startup and strict SPEC parsing to v4. V6 also rejects embedded NUL at the shared serial line boundary. V7 adds the runtime [background-rule selector](protocol.md#background-rule-selector-v7) and idles, instead of rebooting, when NVS initialization fails. V7 passed the [exact-release board evaluation](evidence/v7-evaluation/README.md), including a 30-minute soak. Packet-retention superiority was not established. V8 fixes the malformed-selector parsing issue that evaluation found, and is otherwise identical; it is compiled in CI and host-tested, not board-tested.
 See the [review fixes and validation limits](safety-review-fixes.md).
 The earlier identified v4 build passed a [bounded passive smoke check](review-follow-up.md),
 not a soak or RF-performance validation.
@@ -138,7 +158,7 @@ Keep a verified compatible recovery firmware and follow the exported offset/part
 
 Firmware derivative: GPL-3.0-or-later. ESP-DSP and the retained ESP-IDF-derived compatibility files: Apache-2.0. See `firmware/SOURCE_PROVENANCE.md` and component license files. The external SDK includes separately licensed binary libraries; review vendor terms before redistributing compiled firmware.
 
-## Current adaptive source versus historical measurements
+## Current streaming source versus historical adaptive measurements
 
 The current `firmware/FIRMWARE_VARIANT` is `esp32-dual-sparse-iq-experimental-v7`.
 The build example labels the artifact with the source commit; `VERSION?` separately
