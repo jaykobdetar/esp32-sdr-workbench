@@ -21,6 +21,10 @@ Explore the ESP32 receiver's raw I/Q, inspect spectra and recorded events, and c
 
 The [earlier single-receiver demo screenshot](docs/viewer-launcher-demo.png) shows the original `./scripts/launch.sh --demo` viewer with explicitly synthetic I/Q and the ADC-endpoint column. The [historical single-receiver hardware screenshot](docs/viewer-hardware.png) is also preserved.
 
+## Combined core/bank experiment
+
+The [opt-in combined core/bank experiment](experiments/combined-core-banks/README.md) and [reproducible results](docs/evidence/combined-core-banks/README.md) are available for review. Deliberately staggered receivers showed 100% **nominal sample-window union in short finite trials**, not continuous delivered I/Q or 100% packet capture. The verified v7 default is unchanged; nothing installs or flashes this experiment automatically.
+
 ## Firmware status
 
 The headline duty benchmarks below belong to the historical **optimized-v2** reference, not the current experimental source tree. The table records the progression through the pre-stream v8 baseline; later dual-receiver and streaming variants have separate build identities and evidence. It does not describe which image is currently installed on any device. The earlier detector evaluations did not establish a retained-packet advantage over v2.

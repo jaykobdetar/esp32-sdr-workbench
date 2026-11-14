@@ -785,6 +785,24 @@ include scripts/launch-lab.sh
 include scripts/launch-studio.sh
 include tests/test_stream_distribution.py
 
+
+# Opt-in combined-bank experiment and sanitized reproducible evidence.
+include experiments/combined-core-banks/README.md
+include experiments/combined-core-banks/experiment.patch
+include experiments/combined-core-banks/run_campaign.py
+include experiments/combined-core-banks/unicore-sdkconfig.defaults
+include docs/evidence/combined-core-banks/README.md
+include docs/evidence/combined-core-banks/application-versions.json
+include docs/evidence/combined-core-banks/combined.json.gz
+include docs/evidence/combined-core-banks/comparison-summary.json
+include docs/evidence/combined-core-banks/control-first.json.gz
+include docs/evidence/combined-core-banks/control-repeat.json.gz
+include docs/evidence/combined-core-banks/manifest.json
+include docs/evidence/combined-core-banks/shared-source-identity.json
+include scripts/prepare_bank_experiment.py
+include scripts/verify_combined_banks.py
+include tests/test_combined_bank_experiment.py
+
 # Defense in depth for setuptools' automatic inclusions and future additions.
 global-exclude *.py[cod] *.sigmf-data *.sigmf-meta *.bin *.elf *.hex *.uf2 *.map
 global-exclude .env .env.*
