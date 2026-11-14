@@ -7,6 +7,8 @@
 #include <inttypes.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/semphr.h"
+#include "esp_freertos_hooks.h"
 #include "burst_serial.h"
 #include "burst_gpio.h"
 #include "burst_version.h"
@@ -49,6 +51,8 @@ static bool hardware_agc = true;
 /* Device monotonic microseconds sampled immediately before the dump trigger
  * register write. Not a calibrated RF arrival timestamp or host clock. */
 static uint64_t capture_trigger_device_us;
+/* Setup excludes coarse/fine scheduling waits. Reset for each DSTREAM. */
+static uint64_t capture_pretrigger_max_us;
 static unsigned frequency_mhz = 2412;
 /* Original ESP32 BBTOP RX filter: registers 1/2, seven-bit capacitor DAC.
  * Preserve bit 7 and restore PHY calibration before any retune or transfer. */
@@ -73,14 +77,23 @@ extern void rom_pbus_xpd_rx_on(int);
 extern void rom_pbus_xpd_tx_off(void);
 extern void rom_set_rxclk_en(int);
 
+/* Stream acquisition errors are deferred until the current telemetry frame is complete. */
+static bool deferred_reply;
+static char deferred_error[256];
 static void reply(const char *fmt, ...) {
     char text[256];
     va_list ap;
     va_start(ap, fmt);
     int length = vsnprintf(text, sizeof(text), fmt, ap);
     va_end(ap);
+    if (deferred_reply) {
+        if (!deferred_error[0]) snprintf(deferred_error, sizeof(deferred_error), "%s", text);
+        return;
+    }
     if (length > 0) burst_serial_send(text, length < sizeof(text) ? length : sizeof(text) - 1);
 }
+
+#include "dual_timing.h"
 
 static void tune_rx(unsigned mhz);
 static void apply_gain(void);
@@ -109,6 +122,10 @@ static bool acquire_iq_with_validation(unsigned n, unsigned source, unsigned clo
         reply("ERR args\n");
         return false;
     }
+    /* Every caller (TIMEDCAP, TRACE and both streams) waits cooperatively
+     * before changing ADC/filter state or lending the aperture to the MAC. */
+    dual_wait_prepare();
+    int64_t setup_start = esp_timer_get_time();
     if (rx_recalibration_stale()) prepare_rx();
     REG_WRITE(DUMP_CTRL, 0);
     if (!clear_option) {
@@ -127,6 +144,9 @@ static bool acquire_iq_with_validation(unsigned n, unsigned source, unsigned clo
     REG_WRITE(DUMP_BYTES, 0x03020100); /* Four distinct bytes, as in mac_init. */
     uint32_t ctrl = n | (source << 20) | ((clock == 0) << 16) | ((clock == 2) << 15);
     REG_WRITE(DUMP_CTRL, ctrl | BIT(31));
+    uint64_t setup_us = (uint64_t)(esp_timer_get_time() - setup_start);
+    if (setup_us > capture_pretrigger_max_us) capture_pretrigger_max_us = setup_us;
+    dual_wait_trigger();
     int64_t start = esp_timer_get_time();
     capture_trigger_device_us = (uint64_t)start;
     REG_SET_BIT(DUMP_CTRL, BIT(19));
@@ -246,7 +266,13 @@ static bool capture(unsigned n, unsigned rate, unsigned format) {
 #include "pipeline_acquisition_options.h"
 #include "calibration_hash.h"
 
+#include "dual_timing_commands.h"
+#include "detector_stream.h"
+#include "receiver_caps.h"
+
 static void command(char *line) {
+    if (detector_stream_command(line)) return;
+    if (dual_timing_command(line)) return;
     if (calibration_hash_command(line)) return;
     if (pipeline_acquisition_options_command(line)) return;
     if (detector_pipeline_command(line)) return;
@@ -262,12 +288,7 @@ static void command(char *line) {
     unsigned n;
     char extra;
     if (!strcmp(line, "CAPS"))
-        reply(
-            "CAPS BGPOLICY CALHASH " DETPIPE_HEALTH_CAPABILITY "PIPEKEEP PIPECOPY ACQOPT CLEAROPT PIPEKERNEL DET1 VERSION GPIO SPEC SPECN SPECCAPS SPECSTAT DCT "
-#if !CONFIG_ESP_SDR_CP2102_VIEWER_COMPAT
-            "UARTBAUD "
-#endif
-            "RXLIMITS SERIALLEASE TUNEEXT RX40 RX16 LPFANA GAIN HWAGC IQ8\n");
+        burst_serial_send(receiver_caps, sizeof(receiver_caps) - 1);
     else if (sscanf(line, "BANDWIDTH %u %c", &n, &extra) == 1 &&
              (!n || (n >= RX_BANDWIDTH_MIN && n <= RX_BANDWIDTH_MAX))) {
         rx_filter = rx_bandwidth_dcap(n);

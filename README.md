@@ -1,18 +1,29 @@
 # ESP32 SDR Research Workbench
 
+**RF Studio** provides a task-first interface for ESP32 receivers and an nRF52840 test transmitter. Start with `esp32-sdr studio` after the installation below (or `./scripts/launch-studio.sh` from a source checkout). Choose Listen, Test a signal, or Compare receivers; advanced controls stay out of the way.
+
+- **Combined / Individual / Both:** one noncoherent power spectrum or separate receiver views, with explicit contributor and freshness labels.
+- **Paste settings / ask an LLM:** copy a schema-aware prompt, paste JSON, then validate and apply. Importing settings never starts hardware.
+- **Memory-only operation:** uncheck Save and choose Until I stop for receive-only sessions without session files. Transmitter tests remain bounded.
+- **Experimental persistent telemetry + sparse I/Q:** an opt-in mode for compatible firmware, separate from ordinary raw and finite detector modes. Sparse snapshots are not a continuous waveform.
+
+Read the [RF Studio guide](docs/rf-studio.md), [combined-receiver concepts and campaign guide](docs/continuous-dual-receivers.md), [sparse-I/Q protocol](docs/sparse-iq-stream.md), and [build-specific streaming evidence](docs/evidence/dual-stream-evaluation/README.md). The earlier [RF Bench](docs/shared-rf-console.md) remains available through `./scripts/launch-lab.sh`. No launcher flashes firmware.
+
 **A native RF viewer and optimized, burst-aware energy detector for the original ESP32.**
 
 Explore the ESP32 receiver's raw I/Q, inspect spectra and recorded events, and compare honest acquisition duty with end-to-end host coverage. This project builds on [ESPARGOS/esp-sdr](https://github.com/ESPARGOS/esp-sdr), adding a Python/Qt workbench and an experimental guarded acquisition/processing pipeline.
 
 > **Not continuous SDR.** Reception has gaps. Detector counts are unclassified candidate-positive captures, not decoded packets. A separate offline decoder validates only the controlled known Nordic test frames. Power is relative dBFS, not calibrated dBm.
 
-![Documented launcher in explicitly simulated mode, with the ADC-endpoint column](docs/viewer-launcher-demo.png)
+![RF Studio displaying real ambient RF from two ESP32 receivers](docs/rf-studio-hardware.png)
 
-*Actual `scripts/launch.sh --demo` window, captured on 11 November 2026 with the launcher's dark palette and the ADC-endpoint event column. The checked SIMULATED demo control, device names and status label identify synthetic raw I/Q. This screenshot demonstrates the UI, not receiver performance or new RF evidence. The historical hardware screenshot remains archived as `docs/viewer-hardware.png`.*
+*Actual Qt application rendered offscreen during a two-board, receive-only, no-save hardware soak. The display uses real ambient RF from independently started sparse streams. It does not demonstrate receiver synchronization, continuous I/Q, combined temporal coverage, or packet recall.*
+
+The [earlier single-receiver demo screenshot](docs/viewer-launcher-demo.png) shows the original `./scripts/launch.sh --demo` viewer with explicitly synthetic I/Q and the ADC-endpoint column. The [historical single-receiver hardware screenshot](docs/viewer-hardware.png) is also preserved.
 
 ## Firmware status
 
-The headline duty benchmarks below belong to **optimized-v2**, which is also the image installed on the test board. Later images change the detector and add safety fixes, but none has shown a retained-packet advantage over v2.
+The headline duty benchmarks below belong to the historical **optimized-v2** reference, not the current experimental source tree. The table records the progression through the pre-stream v8 baseline; later dual-receiver and streaming variants have separate build identities and evidence. It does not describe which image is currently installed on any device. The earlier detector evaluations did not establish a retained-packet advantage over v2.
 
 | Image | What it adds | Evidence from the board |
 |---|---|---|
@@ -22,14 +33,20 @@ The headline duty benchmarks below belong to **optimized-v2**, which is also the
 | `adaptive-q16-v4` | Tie fix in the release source, read-only calibration fingerprint | Short passive smoke check ([follow-up](docs/review-follow-up.md)) |
 | `adaptive-q16-v5`, `v6` | NVS preserved on startup failure, strict `SPEC` parsing, NUL rejection | Short passive smoke checks ([review fixes](docs/safety-review-fixes.md)) |
 | `adaptive-q16-v7` | [Selectable background rule](docs/adaptive-detector.md#comparing-the-two-rules-on-one-image); idles instead of rebooting on NVS failure | 984-run exact-release campaign, 30-minute soak and same-image rule comparison ([v7 evaluation](docs/evidence/v7-evaluation/README.md)) |
-| `adaptive-q16-v8` (current source) | Rejects the malformed selector text that v7 accepted on the board | **None.** Compiled in CI and host-tested only |
+| [`adaptive-q16-v8`](https://github.com/jaykobdetar/esp32-sdr-workbench/tree/2c06109317d0ad13af5f0273f5ca12e5befc2e0d) (pre-stream source baseline) | Rejects the malformed selector text that v7 accepted on the board | **None.** Compiled in CI and host-tested only |
 
-Two cautions apply to every comparison between images: they were run in sequence, and the stored PHY calibration changed at an unknown point during the v3 evaluation. V7's rule selector removes both for the background rule: run on one image in one session, the old and new rules gave similar source-associated candidate rates, and neither retained more packets ([what the board showed](docs/adaptive-detector.md#what-the-board-showed)). The [remaining-validation guide](docs/remaining-validation-guide.md) covers the outstanding bench work, and the [calibration guide](docs/calibration-fingerprints.md) the boundary logging for future campaigns.
+The default `firmware/` build is **`esp32-dual-sparse-iq-experimental-v7`**, not adaptive v8. It includes experimental dual-timing, persistent detector telemetry and sparse-I/Q transfer work. Merging this PR would make that experimental source the default on `main`; no launcher flashes it automatically.
+
+The [baseline build instructions](docs/firmware-build.md#build-the-pre-stream-adaptive-v8-baseline-instead) keep adaptive v8 discoverable, while the [v7 validation record](docs/validation.md#streaming-v7-review-validation-13-november-2026) separates bounded current-image checks from historical v6 coverage and soak results.
+
+Consult [`firmware/FIRMWARE_VARIANT`](firmware/FIRMWARE_VARIANT), the device’s `VERSION?` reply, and the [streaming evidence index](docs/evidence/dual-stream-evaluation/README.md) to distinguish source identity from a measured binary. Historical [two-receiver finite-run results](docs/dual-receiver-results-2026-11-12.md) are separate from the newer stream campaigns. Neither the combined display nor these timing models establish continuous I/Q or 100% packet recall.
+
+Two cautions apply to every comparison between images: they were run in sequence, and the stored PHY calibration changed at an unknown point during the v3 evaluation. V7's rule selector removes both for the background rule: run on one image in one session, the old and new rules gave similar source-associated candidate rates, and neither retained more packets ([what the board showed](docs/adaptive-detector.md#comparing-the-two-rules-on-one-image)). The [remaining-validation guide](docs/remaining-validation-guide.md) covers the outstanding bench work, and the [calibration guide](docs/calibration-fingerprints.md) the boundary logging for future campaigns.
 
 ## What you get
 
 - **Native desktop viewer:** spectrum, capture-index waterfall, frequency survey, heuristic occupancy, event inspection and SigMF replay.
-- **Three acquisition modes:** raw snapshots, experimental DET1 and the optimized finite pipeline.
+- **Standard and experimental acquisition:** raw snapshots, finite DET1/DETPIPE1, plus explicitly opt-in persistent telemetry with sparse I/Q on compatible firmware.
 - **Headless recorder:** `esp32-sdr record` saves bounded or unattended sessions without Qt, with atomic final summaries and graceful stop signals. [Guide](docs/headless-recording.md).
 - **Event recording:** structured JSON summaries for every detector run, including no-event runs and the requested gain mode, gain index and bandwidth; CRC-checked SigMF I/Q for the strongest qualifying capture per run.
 - **Saturation indicator:** every displayed or recorded capture reports the share of samples sitting on an ADC endpoint code, and 1% or more is flagged as likely clipping.
@@ -95,7 +112,7 @@ recomputes public summary arithmetic, not waveform decoding or new hardware obse
 python3 scripts/verify_adaptive_evidence.py
 ```
 
-## Quick start: viewer
+## Quick start: RF Studio
 
 Python **3.10+** and a desktop environment are required. Linux was tested; other platforms are not hardware-validated by this project.
 
@@ -105,18 +122,18 @@ cd esp32-sdr-workbench
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e .
-./scripts/launch.sh
+./scripts/launch-studio.sh
 ```
 
-The installed command `esp32-sdr` also launches the viewer. Dependencies are NumPy, pyserial, PySide6 and pyqtgraph. On Python 3.10 and 3.11 the install deliberately selects PySide6 older than 6.12: PySide6 6.12.0 aborts the viewer within seconds on those interpreters, and is only safe on Python 3.12 or newer. `requirements-lock.txt` records the tested host versions; use it when recreating that environment, subject to wheel availability for your Python/platform.
+The original single-receiver viewer remains available through `./scripts/launch.sh` or `esp32-sdr`; the earlier shared RF Bench uses `./scripts/launch-lab.sh` or `esp32-sdr lab`. Dependencies are NumPy, pyserial, PySide6 and pyqtgraph. On Python 3.10 and 3.11 the install deliberately selects PySide6 older than 6.12: PySide6 6.12.0 aborts the viewer within seconds on those interpreters, and is only safe on Python 3.12 or newer. `requirements-lock.txt` records the tested host versions; use it when recreating that environment, subject to wheel availability for your Python/platform.
 
-1. Connect a compatible original ESP32 with this project's firmware. Close other serial monitors/viewers first.
-2. Select its port, for example `/dev/ttyUSB0`. The tested physical UART runs at **1,000,000 baud**.
-3. Start with **2440 MHz**, **16 MS/s**, **16,380 samples** and **Experimental optimized pipeline**. Use a 1-second run for responsive updates; longer finite runs amortize serial transfer overhead.
-4. Enable **Record events / detector runs**, then **Start**. Use **Stop** before opening another serial application.
-5. Inspect a saved event or replay its SigMF recording. Recordings are local and ignored by Git.
+1. Connect compatible original ESP32 receivers with the intended firmware and close other serial applications.
+2. Use **Rescan USB** and choose the receiver cards by USB location. Identical bridge serial labels do not imply identical board layouts. The physical UART runs at **1,000,000 baud**.
+3. Start with **Listen**, **2440 MHz**, and a short session. Transmitting requires the **Test a signal** task and explicit transmitter selection.
+4. Use **Combined**, **Individual**, or **Both** to inspect the latest buffers. Open **Advanced** only when you need detector or radio controls. Experimental modes verify capabilities; unsupported firmware is rejected, not replaced.
+5. Enable **Save session and captures** for recording, or disable it for memory-only use. **Until I stop** is receive-only. Use **Stop all devices** before opening another serial application.
 
-The optimized mode verifies firmware capabilities and exact option readback; it does not silently substitute a different kernel. It selects kernel 3, acquisition option 3, clear option 1 and fused-copy option 1. Raw snapshots and legacy DET1 remain available. The clearly labeled simulated mode is for UI exploration, not performance measurement.
+The simulated mode is clearly labeled and opens no hardware. It demonstrates the UI, not receiver performance. Raw snapshots and finite DET1/DETPIPE1 modes remain available alongside the explicitly experimental sparse-I/Q mode. See the [Studio guide](docs/rf-studio.md) for precise mode and recording limits.
 
 If Linux denies access to the port, arrange serial-device permission using your distribution's documented procedure. Do not run the whole GUI as root. Qt may require your distribution's desktop/XCB libraries; headless systems cannot display the interactive GUI without a display server.
 
@@ -188,3 +205,10 @@ QT_QPA_PLATFORM=offscreen python -m pytest -q
 ```
 
 Plain `pytest` runs the viewer, evidence and campaign tests in `tests/`, the receiver host tests in `firmware/tests/` and the transmitter host tests in `nrf52840-transmitter/tests/`: **610 tests plus 5 subtests** at the v8 source. The C checks need a host compiler with UndefinedBehaviorSanitizer, and the retention-patch test also needs `git`. [CI](.github/workflows/ci.yml) runs the lint, the format check and all three suites on Python 3.10 and 3.13 for every push and pull request. These software tests require no connected board and are not a replacement for hardware validation: separate [firmware CI](.github/workflows/firmware.yml) compiles ESP32 and nRF52840 source but does not operate hardware. Qt needs the system EGL/XCB libraries even for offscreen runs (`libegl1` on Debian/Ubuntu). Some campaign and analysis sources are deliberately left unformatted; the [script index](scripts/README.md) explains why.
+
+## Shared RF Bench interface
+
+Use `./scripts/launch-lab.sh` (or `esp32-sdr lab`) to control selected receivers
+and finite nRF test transmissions together. It includes overlaid live spectra,
+recording, per-device status, and a common stop control. See the
+[shared-console guide](docs/shared-rf-console.md) for setup, safety and timing limits.

@@ -1,0 +1,102 @@
+{
+  "schema": "dual-stream-evidence-manifest-v1",
+  "timing_files": [
+    {
+      "file": "campaign-r7.json.gz",
+      "sha256": "ee79e38360560ad62548d46ba3ed1706582ed510723729179808008018d13150",
+      "bytes": 2106379
+    },
+    {
+      "file": "campaign-r7-1800.json.gz",
+      "sha256": "768efe0d456b7b9d2a735ef01807142f9ea2c479de4e770867f9f6cedc20145b",
+      "bytes": 4319120
+    },
+    {
+      "file": "sparse1-onoff.json.gz",
+      "sha256": "52d9e1557845a257f2ce4d6973428eb85f28a2e96ea002cb9b51cd84e36c7e65",
+      "bytes": 2922993
+    },
+    {
+      "file": "sparse2-guard-timing.json.gz",
+      "sha256": "6e9f7932e52038854d3c28e6d19b54e91b3a092d93cd420a591872fa1fc72327",
+      "bytes": 2810392
+    },
+    {
+      "file": "sparse3-onoff.json.gz",
+      "sha256": "36f32a1f65044d1edc14c0a61c8e83f7147fe9864c333b85fea29efab2bf0b62",
+      "bytes": 1439112
+    },
+    {
+      "file": "sparse5-wake1875.json.gz",
+      "sha256": "6f22fb315263afcea84bdde626075964e4bd90d3a542833ead6b400c7e06f1e1",
+      "bytes": 2808670
+    },
+    {
+      "file": "sparse5-wake1800.json.gz",
+      "sha256": "f3ed4e08bc1895773234f619b0b4dec0ae67facf288ab3399ab4d4a62cae87ac",
+      "bytes": 2963983
+    },
+    {
+      "file": "sparse5-onoff.json.gz",
+      "sha256": "01eca3740b7788f4bb4fcabc360aeb3fb4446b0587ed7337e85aefe4d10b69b1",
+      "bytes": 1459124
+    },
+    {
+      "file": "sparse4-idle1875.json.gz",
+      "sha256": "f49e2b9b94e7046e49c9a9b4d64545775fcd0f18979ae7500281e0e824f689ba",
+      "bytes": 2131179
+    },
+    {
+      "file": "sparse4-idle1875-repeat.json.gz",
+      "sha256": "148754902dc385f195832a03df27f38ecaf3470e7563f41239d0d1a063550899",
+      "bytes": 2121103
+    },
+    {
+      "file": "sparse6-onoff.json.gz",
+      "sha256": "eac61a5375273a0cbd2db1905118e2faaf29167668779d73e2dba4cea00e2306",
+      "bytes": 2954835
+    },
+    {
+      "file": "sparse6-long-timing.json.gz",
+      "sha256": "271c255c0b2d453af6377cca1553c8d411e66ca2a7c616f34ef7dab1ec7883c8",
+      "bytes": 5571819
+    },
+    {
+      "file": "sparse6-overlap1840.json.gz",
+      "sha256": "73f57e600c1a1c96f5af76627ad750a0578d6f75ab781b9ccc2f19a36c36b848",
+      "bytes": 1446759
+    },
+    {
+      "file": "sparse6-overlap1840-long.json.gz",
+      "sha256": "c8b2afe51ed6a08bbd6852be8251d6bd1e7dd5870bf009a94e3126e46e26b7d6",
+      "bytes": 5722149
+    }
+  ],
+  "derived_files": [
+    {
+      "file": "packet-proof.json",
+      "sha256": "385deefa38acd17d96eec50ce12025d7f07217c68059623e113924320c224f0d",
+      "bytes": 84115
+    },
+    {
+      "file": "summary.json",
+      "sha256": "1eb8df8e908538e92daeca5bb6183726a11214a6fdd2a0146a0c2748b005c53f",
+      "bytes": 399813
+    },
+    {
+      "file": "sparse5-screening.json",
+      "sha256": "b7f6ee3a16af4a9ab78026a462a01c21fe8a03b65b81de619978282fe32e39fc",
+      "bytes": 27555
+    },
+    {
+      "file": "sparse6-screening.json",
+      "sha256": "c35d272bd25237e108b743bed621b62cfcf694053a8a7d4abe7610d330e7fb1e",
+      "bytes": 28840
+    },
+    {
+      "file": "studio-soak-v6.json",
+      "sha256": "34f4131a611a5442a132eff73d84e99860b427c83d7e947052295df044f7aec8",
+      "bytes": 255195
+    }
+  ]
+}

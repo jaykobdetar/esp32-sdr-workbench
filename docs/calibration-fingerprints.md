@@ -1,6 +1,7 @@
 # Stored calibration fingerprints
 
-Current original-ESP32 firmware identifies as `esp32-pipeline-adaptive-q16-v8`.
+Current experimental original-ESP32 firmware identifies as
+`esp32-dual-sparse-iq-experimental-v7`; adaptive-v8 is the pre-stream baseline.
 The read-only query was introduced in v4.
 It advertises `CALHASH` and answers `CALHASH?` with a single JSON record containing
 schema version 1, algorithm `sha256`, `bytes` (1904 for the pinned SDK), the digest
@@ -53,3 +54,30 @@ cannot identify the exact time or cause of a boot-time refresh. Two equal hashes
 do not eliminate gain, geometry, ambient RF or other confounders. Legacy stages
 without telemetry remain unknown, not unchanged. Old campaign data are not
 retroactively populated with observations that were never made.
+
+
+## Firmware installation versus boot-time refresh
+
+A changed fingerprint after reboot is not, by itself, corruption or a reason to
+restore older calibration. The pinned SDK starts in partial-calibration mode and
+can save updated PHY data when measurements make the stored data outdated, even
+when its NVS CRC and internal PHY checksum are valid. This behavior was previously
+[reproduced on the older v2 firmware](evidence/adaptive-evaluation/calibration-follow-up.md)
+and observed in the [adaptive-v7 evaluation](evidence/v7-evaluation/README.md).
+
+Keep two different checks separate:
+
+1. **Installer preservation:** verify exact board identity and partition layout,
+   retain a verified current backup in the same bootloader session as the write,
+   and require every non-application region to be byte-identical immediately
+   before and after an application-only flash, before application startup.
+2. **Runtime provenance:** after startup, record a new calibration baseline and
+   compare it around the actual tests. Investigate changes with logical-key and
+   integrity checks, and do not pool trials across different calibration states.
+
+A backup taken before an intervening application boot may legitimately no longer
+be the current state. Preserve that backup, inspect the differences, and retain a
+verified new current-state backup rather than forcing a stale comparison to pass.
+Never erase NVS, roll back a calibration blob, disable persistence, or suppress
+normal calibration merely to make two fingerprints equal. Valid storage checks
+also do not establish calibrated sensitivity or unchanged RF performance.

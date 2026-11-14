@@ -1,3 +1,4 @@
+.venv
 .venv/
 __pycache__/
 *.py[cod]
@@ -20,3 +21,7 @@ recovery/
 !docs/evidence/gui/*.detpipe1.json
 # Archived build identity/config only. Binary/ELF/map exclusions still apply.
 !docs/evidence/build/
+
+# Private sparse-I/Q captures and calibration anchor arrays.
+*.packed
+*.npy
