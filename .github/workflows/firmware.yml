@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [release, historical-retention]
+        variant: [release, historical-retention, bank-unicore, bank-combined]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,6 +47,11 @@ jobs:
             git -C "$source_root" apply --check "$GITHUB_WORKSPACE/experiments/retention/retention-experiment.patch"
             git -C "$source_root" apply "$GITHUB_WORKSPACE/experiments/retention/retention-experiment.patch"
             version=esp32-pipeline-retention-experiment
+          fi
+          if [ "$VARIANT" = bank-unicore ] || [ "$VARIANT" = bank-combined ]; then
+            source_root="$RUNNER_TEMP/$VARIANT-source"
+            python scripts/prepare_bank_experiment.py "$source_root" --variant "${VARIANT#bank-}"
+            version="$(cat "$source_root/firmware/FIRMWARE_VARIANT")"
           fi
           python "$source_root/firmware/tools/build_firmware.py" --profile esp32 --version "$version" --jobs 2 --build-root "$RUNNER_TEMP/build-$VARIANT" --output "$RUNNER_TEMP/artifacts-$VARIANT"
       # Compilation is not hardware validation. No flashing, radios or secret inputs.

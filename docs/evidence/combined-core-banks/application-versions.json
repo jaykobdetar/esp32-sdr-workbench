@@ -1,0 +1,27 @@
+[
+  {
+    "name": "control",
+    "sha256": "7c7ea03add60dfcccec5460517e2d5acd1e30a235c0f450a1b089c79c63149ba",
+    "bytes": 701408,
+    "build": {
+      "profile": "esp32",
+      "version": "9e8dd38-bank-control-v5-local",
+      "idf_commit": "25fe69f946311abdaf9ad56591f25fedbc20ac98"
+    }
+  },
+  {
+    "name": "combined",
+    "sha256": "9e6a061fe99e46dc9bc984ddb1de5528c8bbcc0ef4c23232d3cef61a0a1b39d1",
+    "bytes": 714528,
+    "build": {
+      "profile": "esp32",
+      "version": "9e8dd38-bank-combined-v5-local",
+      "idf_commit": "25fe69f946311abdaf9ad56591f25fedbc20ac98"
+    }
+  },
+  {
+    "name": "original-v7",
+    "sha256": "74d1264470c16344a685786602993f5bf011cb242508a118d0966020cf7f736c",
+    "bytes": 697328
+  }
+]

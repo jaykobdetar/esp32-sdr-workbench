@@ -1,0 +1,9 @@
+{
+  "identical_control_combined_c_sources": true,
+  "sources": {
+    "firmware/main/targets/esp32/receiver.c": "8bbd47b554b12c7bc494abd14f0e067c6b7433895f0910c7fe92f04925c5762a",
+    "firmware/main/targets/esp32/bank_bench.h": "a11ca729f40c89a25d66b1fa2aa4bf45248b88739c50119691b8746b35e4f463",
+    "firmware/main/targets/esp32/bank_probe.h": "d20346e11954d021f81cf083ad2f12164ba0a2b1baa733c42a843267b8ac65bd",
+    "firmware/main/targets/esp32/bank_energy_clear.h": "deffa6cf1884d66a2c6161ca44a627ceafb1b8cd99e233fd5ccc20e439ceb06c"
+  }
+}
