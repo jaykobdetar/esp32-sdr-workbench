@@ -537,3 +537,40 @@ def test_expired_budget_skips_before_capture(monkeypatch, tmp_path):
     row = campaign.delayed_capture(None, 2, 1, 'ON', tmp_path, 200, [500, 600], 300)
     assert row['skipped'] is True
     assert 'file' not in row
+
+
+def test_iq8_replay_matches_cap16_at_zero_discriminator_threshold():
+    import numpy as np
+
+    from scripts.iq8_replay import quantize_iq8
+    from sdr_research.protocol import decode_iq
+
+    pairs = np.array(
+        [
+            (61, -64),
+            (66, -48),
+            (96, 94),
+            (121, -20),
+            (5, -58),
+            (19, 84),
+            (105, -62),
+            (121, -23),
+            (61, -64),
+        ],
+        dtype=np.int16,
+    )
+    iq10 = (pairs[:, 0] + 1j * pairs[:, 1]) / 128
+    packed = np.column_stack((pairs[:, 0], -pairs[:, 1])).astype(np.int8).tobytes()
+    reference = decode_iq(packed, len(pairs), 8)
+    candidate = quantize_iq8(iq10)
+    assert candidate.dtype == reference.dtype == np.complex64
+    assert np.array_equal(candidate, reference)
+
+    def symbol_decision(x):
+        discriminator = np.angle(x[1:] * np.conj(x[:-1])) * 16000000 / (2 * np.pi)
+        return discriminator.mean() > 0
+
+    assert not symbol_decision(reference)
+    assert symbol_decision(candidate) == symbol_decision(reference)
+    # Numeric promotion can flip a zero-CFO symbol decision despite equal samples.
+    assert symbol_decision(reference.astype(np.complex128))
