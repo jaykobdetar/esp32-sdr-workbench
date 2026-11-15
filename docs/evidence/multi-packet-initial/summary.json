@@ -1,0 +1,319 @@
+{
+  "runs": [
+    {
+      "label": "ab-off",
+      "status": "passed-source-off-control",
+      "receipt_sha256": "998fb99652e1da77d3c9bb42373e29b18adfddb4397fa80da8f292512aea6ffa",
+      "condition_key": "{\"cap\":16,\"count\":32,\"expected_config\":{\"burst_count\":0,\"burst_gap_us\":0,\"frequency_mhz\":2440,\"hop_every\":1,\"hop_list\":\"off\",\"interval_us\":1000,\"jitter_us\":113,\"mode_mbps\":2,\"payload_hex\":\"off\",\"payload_len\":16,\"power_dbm\":0,\"seed\":52840},\"off_only\":true,\"period_us\":20000,\"receivers\":2,\"source_duration_ms\":5000,\"stagger_ms\":0}",
+      "plan": {
+        "receivers": 2,
+        "count": 32,
+        "period_us": 20000,
+        "cap": 16,
+        "stagger_ms": 0,
+        "source_duration_ms": 5000,
+        "off_only": true
+      },
+      "power_dbm": 0,
+      "conditions": [
+        {
+          "receiver": 0,
+          "condition": "OFF",
+          "status": "verified",
+          "wire_sha256": "328aee2a1f654994e4eaef7e51b9c760913a8eb920f81ad666ed1b9964b99a7e",
+          "wire_verified": true,
+          "completed": 32,
+          "skipped": 0,
+          "observations": 0,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 0,
+          "decode_mean_us": 10876.8125,
+          "decode_max_us": 10943,
+          "host_collect_ms": 889.67148,
+          "session_us": 655343
+        },
+        {
+          "receiver": 1,
+          "condition": "OFF",
+          "status": "verified",
+          "wire_sha256": "449eff57fdb41b085906eef21df6bee8a45665633575e6f547f1398d8dde48cf",
+          "wire_verified": true,
+          "completed": 32,
+          "skipped": 0,
+          "observations": 0,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 0,
+          "decode_mean_us": 10883.375,
+          "decode_max_us": 10946,
+          "host_collect_ms": 890.139592,
+          "session_us": 655339
+        }
+      ]
+    },
+    {
+      "label": "ab-simultaneous",
+      "status": "passed",
+      "receipt_sha256": "b3ebe683ec00f8f30f323ed0c04ce705bbcd5bb60cfd6f02ded4cb91d209df75",
+      "condition_key": "{\"cap\":16,\"count\":128,\"expected_config\":{\"burst_count\":0,\"burst_gap_us\":0,\"frequency_mhz\":2440,\"hop_every\":1,\"hop_list\":\"off\",\"interval_us\":1000,\"jitter_us\":113,\"mode_mbps\":2,\"payload_hex\":\"off\",\"payload_len\":16,\"power_dbm\":0,\"seed\":52840},\"off_only\":false,\"period_us\":20000,\"receivers\":2,\"source_duration_ms\":5000,\"stagger_ms\":0}",
+      "plan": {
+        "receivers": 2,
+        "count": 128,
+        "period_us": 20000,
+        "cap": 16,
+        "stagger_ms": 0,
+        "source_duration_ms": 5000,
+        "off_only": false
+      },
+      "power_dbm": 0,
+      "conditions": [
+        {
+          "receiver": 0,
+          "condition": "OFF",
+          "status": "verified",
+          "wire_sha256": "6603cba71d98f447ab91f35bf1bbfb092de4aaa0abe1ad4276b4bd1818b54c17",
+          "wire_verified": true,
+          "completed": 128,
+          "skipped": 0,
+          "observations": 0,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 0,
+          "decode_mean_us": 10888.71875,
+          "decode_max_us": 10975,
+          "host_collect_ms": 2831.347338,
+          "session_us": 2575330
+        },
+        {
+          "receiver": 1,
+          "condition": "OFF",
+          "status": "verified",
+          "wire_sha256": "322a4b11620f93a36726292cf3278423c883c06b505d0fa8201e2f9040128f90",
+          "wire_verified": true,
+          "completed": 128,
+          "skipped": 0,
+          "observations": 0,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 0,
+          "decode_mean_us": 10884.671875,
+          "decode_max_us": 10971,
+          "host_collect_ms": 2833.324484,
+          "session_us": 2575330
+        },
+        {
+          "receiver": 0,
+          "condition": "ON",
+          "status": "verified",
+          "wire_sha256": "bba492d7de029b6cf0147e55db8c1748b3426989d079a7f8484a725203f96c47",
+          "wire_verified": true,
+          "completed": 128,
+          "skipped": 0,
+          "observations": 51,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 10,
+          "decode_mean_us": 10929.90625,
+          "decode_max_us": 11050,
+          "host_collect_ms": 2835.278018,
+          "session_us": 2577417,
+          "complete_end_before_source_deadline": true
+        },
+        {
+          "receiver": 1,
+          "condition": "ON",
+          "status": "verified",
+          "wire_sha256": "ec0ffe56994a6d8cfa85d4a8d7c327bf7456f1d1b826118d775897a258f7ac90",
+          "wire_verified": true,
+          "completed": 128,
+          "skipped": 0,
+          "observations": 87,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 25,
+          "decode_mean_us": 10973.2421875,
+          "decode_max_us": 11078,
+          "host_collect_ms": 2840.319546,
+          "session_us": 2577421,
+          "complete_end_before_source_deadline": true
+        }
+      ],
+      "source_counters": {
+        "attempted": 4982,
+        "completed": 4982,
+        "scheduled": 5003,
+        "missed_slots": 21
+      },
+      "analysis": {
+        "unique_packets": 95,
+        "accepted_observations": 138,
+        "duplicate_observations": 43,
+        "completed_transmissions": 4982,
+        "attempted_transmissions": 4982,
+        "recovery_percent": 1.90686471296668,
+        "source_off_packets": 0,
+        "per_board": [
+          {
+            "receiver": 0,
+            "unique_packets": 51,
+            "observations": 51,
+            "duplicates": 0,
+            "skipped_slots": 0,
+            "output_drops": 0,
+            "incomplete_candidates": 10,
+            "busy_candidates": 0
+          },
+          {
+            "receiver": 1,
+            "unique_packets": 87,
+            "observations": 87,
+            "duplicates": 0,
+            "skipped_slots": 0,
+            "output_drops": 0,
+            "incomplete_candidates": 25,
+            "busy_candidates": 0
+          }
+        ],
+        "note": "Union of exact known sequence/payload observations over all completed transmissions in one shared finite source run. Aggregate source counters, no source event trace. Host start delay is not RF synchronization. Not continuous capture or general protocol support."
+      }
+    },
+    {
+      "label": "ab-stagger5",
+      "status": "passed",
+      "receipt_sha256": "4de6f476cc707433f5a4148672b17d42f6326ad3afa544774ea45a8e3ba22d5c",
+      "condition_key": "{\"cap\":16,\"count\":128,\"expected_config\":{\"burst_count\":0,\"burst_gap_us\":0,\"frequency_mhz\":2440,\"hop_every\":1,\"hop_list\":\"off\",\"interval_us\":1000,\"jitter_us\":113,\"mode_mbps\":2,\"payload_hex\":\"off\",\"payload_len\":16,\"power_dbm\":0,\"seed\":52840},\"off_only\":false,\"period_us\":20000,\"receivers\":2,\"source_duration_ms\":5000,\"stagger_ms\":5}",
+      "plan": {
+        "receivers": 2,
+        "count": 128,
+        "period_us": 20000,
+        "cap": 16,
+        "stagger_ms": 5,
+        "source_duration_ms": 5000,
+        "off_only": false
+      },
+      "power_dbm": 0,
+      "conditions": [
+        {
+          "receiver": 0,
+          "condition": "OFF",
+          "status": "verified",
+          "wire_sha256": "30392bd1402fe50af57522c714ad91e83c08cc980faafbbb6cf2a5e1a50be988",
+          "wire_verified": true,
+          "completed": 128,
+          "skipped": 0,
+          "observations": 0,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 0,
+          "decode_mean_us": 10881.546875,
+          "decode_max_us": 10994,
+          "host_collect_ms": 2830.810562,
+          "session_us": 2575305
+        },
+        {
+          "receiver": 1,
+          "condition": "OFF",
+          "status": "verified",
+          "wire_sha256": "09eca10735016407072a617b680f36584329f5dbf0be5d8052591744023b830d",
+          "wire_verified": true,
+          "completed": 128,
+          "skipped": 0,
+          "observations": 0,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 0,
+          "decode_mean_us": 10880.1171875,
+          "decode_max_us": 10951,
+          "host_collect_ms": 2831.650034,
+          "session_us": 2575330
+        },
+        {
+          "receiver": 0,
+          "condition": "ON",
+          "status": "verified",
+          "wire_sha256": "918bc9dc7ac710b5bd0bd853213e2964d9789ace7e0a72dea346c90db54e9789",
+          "wire_verified": true,
+          "completed": 128,
+          "skipped": 0,
+          "observations": 76,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 31,
+          "decode_mean_us": 10942.9296875,
+          "decode_max_us": 11051,
+          "host_collect_ms": 2836.109546,
+          "session_us": 2577417,
+          "complete_end_before_source_deadline": true
+        },
+        {
+          "receiver": 1,
+          "condition": "ON",
+          "status": "verified",
+          "wire_sha256": "fd62d76a5a9785ec3c1736c50e588fc6478bc409dfd31cbfc854ddbb858cc00b",
+          "wire_verified": true,
+          "completed": 128,
+          "skipped": 0,
+          "observations": 101,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 60,
+          "decode_mean_us": 10983.3125,
+          "decode_max_us": 11110,
+          "host_collect_ms": 2836.627367,
+          "session_us": 2577418,
+          "complete_end_before_source_deadline": true
+        }
+      ],
+      "source_counters": {
+        "attempted": 4980,
+        "completed": 4980,
+        "scheduled": 5003,
+        "missed_slots": 23
+      },
+      "analysis": {
+        "unique_packets": 177,
+        "accepted_observations": 177,
+        "duplicate_observations": 0,
+        "completed_transmissions": 4980,
+        "attempted_transmissions": 4980,
+        "recovery_percent": 3.5542168674698793,
+        "source_off_packets": 0,
+        "per_board": [
+          {
+            "receiver": 0,
+            "unique_packets": 76,
+            "observations": 76,
+            "duplicates": 0,
+            "skipped_slots": 0,
+            "output_drops": 0,
+            "incomplete_candidates": 31,
+            "busy_candidates": 0
+          },
+          {
+            "receiver": 1,
+            "unique_packets": 101,
+            "observations": 101,
+            "duplicates": 0,
+            "skipped_slots": 0,
+            "output_drops": 0,
+            "incomplete_candidates": 60,
+            "busy_candidates": 0
+          }
+        ],
+        "note": "Union of exact known sequence/payload observations over all completed transmissions in one shared finite source run. Aggregate source counters, no source event trace. Host start delay is not RF synchronization. Not continuous capture or general protocol support."
+      }
+    }
+  ],
+  "groups": {
+    "{\"cap\":16,\"count\":32,\"expected_config\":{\"burst_count\":0,\"burst_gap_us\":0,\"frequency_mhz\":2440,\"hop_every\":1,\"hop_list\":\"off\",\"interval_us\":1000,\"jitter_us\":113,\"mode_mbps\":2,\"payload_hex\":\"off\",\"payload_len\":16,\"power_dbm\":0,\"seed\":52840},\"off_only\":true,\"period_us\":20000,\"receivers\":2,\"source_duration_ms\":5000,\"stagger_ms\":0}": [
+      "ab-off"
+    ],
+    "{\"cap\":16,\"count\":128,\"expected_config\":{\"burst_count\":0,\"burst_gap_us\":0,\"frequency_mhz\":2440,\"hop_every\":1,\"hop_list\":\"off\",\"interval_us\":1000,\"jitter_us\":113,\"mode_mbps\":2,\"payload_hex\":\"off\",\"payload_len\":16,\"power_dbm\":0,\"seed\":52840},\"off_only\":false,\"period_us\":20000,\"receivers\":2,\"source_duration_ms\":5000,\"stagger_ms\":0}": [
+      "ab-simultaneous"
+    ],
+    "{\"cap\":16,\"count\":128,\"expected_config\":{\"burst_count\":0,\"burst_gap_us\":0,\"frequency_mhz\":2440,\"hop_every\":1,\"hop_list\":\"off\",\"interval_us\":1000,\"jitter_us\":113,\"mode_mbps\":2,\"payload_hex\":\"off\",\"payload_len\":16,\"power_dbm\":0,\"seed\":52840},\"off_only\":false,\"period_us\":20000,\"receivers\":2,\"source_duration_ms\":5000,\"stagger_ms\":5}": [
+      "ab-stagger5"
+    ]
+  }
+}
