@@ -825,3 +825,4 @@ include docs/evidence/four-receiver-evaluation/timing-awake-lowrate-120s.json
 include docs/evidence/four-receiver-evaluation/timing-awake-prospective-brackets.json
 
 include docs/evidence/four-receiver-evaluation/awake-iq8-viewer-closeout.json
+include tests/test_measurement_trial_gate.py

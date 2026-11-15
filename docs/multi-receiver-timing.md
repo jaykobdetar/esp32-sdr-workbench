@@ -44,3 +44,14 @@ packet sequences across all receivers. No Quest protocol compatibility, 100%
 packet recovery, or continuous retained I/Q follows from this timing report.
 Private output contains raw RF and device details; review and sanitize before
 publication. No hardware experiment is implied by the synthetic unit tests.
+
+## Final campaign acceptance
+
+Legacy calibration reanalyzes earlier runs when new anchor batches arrive. The
+campaign acceptance gate checks **every intended measurement trial**, not only
+the latest result, after each reanalysis and before final validation. If a later
+anchor epoch invalidates an earlier intended trial, the campaign fails even if
+its newest trial remains verified. Run indices are recorded explicitly.
+Exploratory phase-sweep rows are labeled separately and are not required to pass
+this measurement-trial gate; the sweep still requires a verified phase before
+measurement trials begin. This does not retrospectively change saved reports.

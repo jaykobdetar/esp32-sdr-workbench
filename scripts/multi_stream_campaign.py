@@ -153,6 +153,26 @@ def analyze_run(row, anchors):
         return dict(status='unverified', reason=str(exc))
 
 
+def validate_measurement_runs(report, expected_count):
+    """Gate final/current evidence for every intended trial, not exploratory sweep rows."""
+    indices = report.get('measurement_run_indices', [])
+    if len(indices) != expected_count or len(set(indices)) != len(indices):
+        raise RuntimeError('Incomplete intended measurement-trial inventory')
+    by_index = {row['index']: row for row in report['runs']}
+    if len(by_index) != len(report['runs']):
+        raise RuntimeError('Duplicate campaign run index')
+    for index in indices:
+        row = by_index.get(index)
+        if row is None or row.get('trial_role') != 'measurement':
+            raise RuntimeError('Missing or mislabeled intended measurement trial')
+        analysis = row.get('analysis', {})
+        if analysis.get('status') != 'verified-telemetry':
+            raise RuntimeError(
+                f'Unverified coverage for measurement run {index}: '
+                + analysis.get('reason', 'missing verified analysis')
+            )
+
+
 class Campaign(DualCampaign):
     def __init__(self, radios, tx, pool, output, *, source_hashes=None, defer_cyclic_gc=False):
         if not 2 <= len(radios) <= 4 or len({id(r) for r in radios}) != len(radios):
@@ -739,6 +759,7 @@ def main():
                     campaign.run(
                         1000, args.period_ns, [phase] * len(radios), not args.no_drift_compensation
                     )
+                    report['runs'][-1]['trial_role'] = 'phase-sweep'
                 campaign.anchors(needed=3)
                 for row in report['runs']:
                     row['analysis'] = analyze_run(row, report['anchors'])
@@ -749,7 +770,8 @@ def main():
                     raise RuntimeError('No verified phase-sweep result')
                 best = min(verified, key=lambda r: r['analysis']['nominal_union']['max_gap_us'])
                 phases = best['yield_phases']
-            for _ in range(args.trials):
+            report['measurement_run_indices'] = []
+            for trial_number in range(args.trials):
                 if args.trial_clock_brackets:
                     row = campaign.trial_clock_run(
                         round(args.seconds * 1000),
@@ -764,12 +786,14 @@ def main():
                         phases,
                         not args.no_drift_compensation,
                     )
+                    report['runs'][-1]['trial_role'] = 'measurement'
                     campaign.anchors(needed=3)
                     for row in report['runs']:
                         row['analysis'] = analyze_run(row, report['anchors'])
                     row = report['runs'][-1]
-                if row['analysis']['status'] != 'verified-telemetry':
-                    raise RuntimeError('Unverified coverage: ' + row['analysis']['reason'])
+                row['trial_role'] = 'measurement'
+                report['measurement_run_indices'].append(row['index'])
+                validate_measurement_runs(report, trial_number + 1)
                 print(
                     'coverage',
                     row['analysis']['nominal_union']['coverage_percent'],
@@ -777,6 +801,7 @@ def main():
                     row['analysis']['nominal_union']['max_gap_us'],
                     flush=True,
                 )
+            validate_measurement_runs(report, args.trials)
             report['status'] = 'validated'
         except BaseException as exc:
             report['status'] = 'failed'
