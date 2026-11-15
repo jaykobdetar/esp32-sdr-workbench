@@ -114,3 +114,63 @@ def test_failure_stops_and_closes(tmp_path):
     assert tx.stops == 2
     assert radio.closed
     assert 'failed' in (tmp_path / 'results.json').read_text()
+
+
+def test_complete_lifecycle_with_fake_hardware(tmp_path, monkeypatch):
+    import scripts.four_receiver_packets as campaign
+
+    class TX:
+        stops = 0
+        started = False
+        starts = []
+
+        def stop(self):
+            self.stops += 1
+            return state()
+
+        def status(self):
+            return state(uptime_ms=1002 if self.started else 1000)
+
+        def configure(self, **_):
+            return state()
+
+        def start(self, **kwargs):
+            self.starts.append(kwargs)
+            self.started = True
+            return state(
+                running=True, attempted=0, completed=0, scheduled=0, missed_slots=0, elapsed_us=0
+            )
+
+    class Radio:
+        closed = False
+
+        def connect(self):
+            return {'protocol': 6}
+
+        def command(self, _):
+            return 'CALHASH stable'
+
+        def configure(self, *_):
+            pass
+
+        def close(self):
+            self.closed = True
+
+    def fake_capture(r, receiver, index, condition, output):
+        value = row(receiver, seq=receiver)
+        value.update(index=index, condition=condition, file=condition)
+        return value
+
+    monkeypatch.setattr(campaign, 'capture', fake_capture)
+    monkeypatch.setattr(campaign.np, 'load', lambda path: path.name)
+    monkeypatch.setattr(
+        campaign, 'decode', lambda condition, *_: row(crc_verified=condition == 'ON')['decoder']
+    )
+    tx, radios = TX(), [Radio() for _ in range(4)]
+    result = run(radios, tx, tmp_path, captures=2, duration_ms=8000)
+    assert result['status'] == 'passed'
+    assert len(result['captures']) == 16
+    assert result['analysis']['unique_packets'] == 1
+    assert tx.starts == [{'count': 20000, 'duration_ms': 8000}]
+    assert tx.stops == 2
+    assert all(r.closed for r in radios)
