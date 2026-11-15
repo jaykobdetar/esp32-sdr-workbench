@@ -351,3 +351,23 @@ def test_recorder_passes_background_policy_only_when_chosen(tmp_path, monkeypatc
     assert [call.get('background_policy', 'absent') for call in seen] == [
         'absent' if policy is None else policy
     ]
+
+
+def test_demo_iq8_exact_upper_bit_quantization_of_iq10(tmp_path):
+    import numpy as np
+
+    from sdr_research.acquisition import AcquisitionWorker
+    from sdr_research.lab_session import default_receiver_settings
+
+    captures = []
+    for bits in (10, 8):
+        settings = default_receiver_settings() | {'mode': 'raw', 'bits': bits, 'samples': 1024}
+        worker = AcquisitionWorker('simulated', settings, tmp_path / str(bits), demo=True)
+        worker.rng = np.random.default_rng(123)
+        captures.append(worker.demo_capture(2440))
+    source, iq8 = captures
+    i = np.rint(source.iq.real * 512).astype(np.int16)
+    q = np.rint(-source.iq.imag * 512).astype(np.int16)
+    expected = (((i >> 2) - 1j * (q >> 2)) / 128).astype(np.complex64)
+    assert np.array_equal(iq8.iq, expected)
+    assert iq8.metadata['settings']['bits'] == 8

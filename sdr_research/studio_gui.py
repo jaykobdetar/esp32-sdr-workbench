@@ -414,6 +414,10 @@ class StudioWindow(W.QMainWindow):
                 ('Experimental persistent telemetry + sparse I/Q', 'DSTREAMIQ'),
             ]
         )
+        self.sample_bits = combo(
+            [('IQ10 · 10 bits/component (default)', 10), ('IQ8 · 8 bits/component (raw only)', 8)]
+        )
+        self.format_note = label('', 'muted', True)
         self.rate = combo(
             [('16 MS/s', 16_000_000), ('40 MS/s', 40_000_000), ('80 MS/s', 80_000_000)]
         )
@@ -432,6 +436,7 @@ class StudioWindow(W.QMainWindow):
         self.policy = combo([('Firmware default', None), ('Legacy', 1), ('Adaptive', 2)])
         for text, widget in [
             ('Receive mode', self.mode),
+            ('Raw I/Q format', self.sample_bits),
             ('Sample rate', self.rate),
             ('Gain control', self.gain_mode),
             ('Manual gain', self.gain),
@@ -442,6 +447,7 @@ class StudioWindow(W.QMainWindow):
             ('Background policy', self.policy),
         ]:
             form.addRow(text, widget)
+        form.addRow(self.format_note)
         self.agc_note = label('', 'warning', True)
         form.addRow(self.agc_note)
         self.output = W.QLineEdit(str(Path.home() / 'rf-studio-recordings'))
@@ -449,6 +455,7 @@ class StudioWindow(W.QMainWindow):
         right.addWidget(self.advanced)
         self.advanced.hide()
         self.mode.currentIndexChanged.connect(self.update_plan)
+        self.sample_bits.currentIndexChanged.connect(self.update_plan)
         self.gain_mode.currentIndexChanged.connect(self.update_plan)
         right.addWidget(
             label(
@@ -468,6 +475,7 @@ class StudioWindow(W.QMainWindow):
             duration_s=self.duration.currentData(),
             save_captures=self.save.isChecked(),
             receiver_mode=self.mode.currentData(),
+            bits_per_component=self.sample_bits.currentData(),
             sample_rate_hz=self.rate.currentData(),
             gain=None if self.gain_mode.currentData() == 'agc' else self.gain.value(),
             bandwidth_mhz=self.bandwidth.value(),
@@ -510,6 +518,7 @@ class StudioWindow(W.QMainWindow):
             self.duration,
             self.save,
             self.mode,
+            self.sample_bits,
             self.rate,
             self.gain_mode,
             self.gain,
@@ -528,6 +537,7 @@ class StudioWindow(W.QMainWindow):
             (self.task, 'task'),
             (self.duration, 'duration_s'),
             (self.mode, 'receiver_mode'),
+            (self.sample_bits, 'bits_per_component'),
             (self.rate, 'sample_rate_hz'),
             (self.policy, 'background_policy'),
             (self.tx_power, 'tx_power_dbm'),
@@ -762,6 +772,17 @@ class StudioWindow(W.QMainWindow):
         mode = 'raw' if demo else self.mode.currentData()
         detector = mode != 'raw'
         streaming = mode == 'DSTREAMIQ'
+        format_locked = self.mode.currentData() != 'raw'
+        if format_locked:
+            self.sample_bits.setCurrentIndex(self.sample_bits.findData(10))
+        self.sample_bits.setEnabled(not format_locked)
+        self.format_note.setText(
+            'IQ8 discards two low bits per component: 20% fewer payload bytes, lower precision. Not lossless or a packet-recovery guarantee.'
+            if not format_locked and self.sample_bits.currentData() == 8
+            else 'Detector and sparse-I/Q modes require IQ10.'
+            if format_locked
+            else 'IQ10 preserves all 10 ADC bits per component; raw transfer still creates receive gaps.'
+        )
         if streaming:
             self.rate.setCurrentIndex(self.rate.findData(16000000))
             self.samples.setValue(16380)
@@ -832,7 +853,7 @@ class StudioWindow(W.QMainWindow):
                     gain=None if self.gain_mode.currentData() == 'agc' else self.gain.value(),
                     bandwidth_mhz=self.bandwidth.value(),
                     samples=self.samples.value(),
-                    bits=10,
+                    bits=self.sample_bits.currentData(),
                     det_ms=self.run_ms.value(),
                     ratio_milli=round(self.ratio.value() * 1000),
                     background_policy=self.policy.currentData(),
@@ -905,7 +926,7 @@ class StudioWindow(W.QMainWindow):
         self.update_display_mode()
         self.live_title.setText('Simulated session' if demo else TASKS[task][0])
         self.live_hint.setText(
-            f'{self.frequency.value()} MHz · {self.duration.currentText()} · {"synthetic data, no hardware" if demo else ("independent sparse I/Q · experimental, not continuous" if self.mode.currentData() == "DSTREAMIQ" else "independent burst receivers")}'
+            f'{self.frequency.value()} MHz · IQ{self.sample_bits.currentData()} · {self.duration.currentText()} · {"synthetic data, no hardware" if demo else ("independent sparse I/Q · experimental, not continuous" if self.mode.currentData() == "DSTREAMIQ" else "independent burst receivers")}'
         )
         self.banner.setText('Connecting receivers…')
         self.tx_status.setText(

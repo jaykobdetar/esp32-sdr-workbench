@@ -11,6 +11,7 @@ BASE = dict(
     duration_s=10,
     save_captures=True,
     receiver_mode='raw',
+    bits_per_component=10,
     sample_rate_hz=16000000,
     gain=40,
     bandwidth_mhz=12,
@@ -87,3 +88,21 @@ def test_indefinite_receive_only():
     assert parse_settings(json.dumps(doc)) == doc
     with pytest.raises(ValueError):
         parse_settings(json.dumps(doc | {'task': 'test'}))
+
+
+def test_legacy_schema1_defaults_to_iq10():
+    legacy = {key: value for key, value in BASE.items() if key != 'bits_per_component'}
+    assert parse_settings(json.dumps(legacy)) == BASE
+
+
+@pytest.mark.parametrize('mode', ['DET1', 'DETPIPE1', 'DSTREAMIQ'])
+def test_iq8_is_raw_only(mode):
+    assert parse_settings(json.dumps(BASE | {'bits_per_component': 8}))['bits_per_component'] == 8
+    with pytest.raises(ValueError, match='10-bit'):
+        parse_settings(json.dumps(BASE | {'bits_per_component': 8, 'receiver_mode': mode}))
+
+
+@pytest.mark.parametrize('bits', [True, 8.0, '8', 9, 16])
+def test_invalid_component_precision(bits):
+    with pytest.raises(ValueError):
+        parse_settings(json.dumps(BASE | {'bits_per_component': bits}))

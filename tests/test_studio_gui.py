@@ -335,3 +335,74 @@ def test_receiver_failure_not_hidden_by_recent_plot(window, app):
     assert 'USB disconnected' in status
     assert 'connection unverified' in window.views['Receiver 2'].status.text()
     assert 'no contributors' in window.combined.metrics.text()
+
+
+def test_raw_format_default_and_mode_constraints(window):
+    w = window
+    assert w.sample_bits.currentData() == 10
+    assert w.sample_bits.isEnabled()
+    w.sample_bits.setCurrentIndex(w.sample_bits.findData(8))
+    assert '20%' in w.format_note.text() and 'lower precision' in w.format_note.text()
+    for mode in ('DET1', 'DETPIPE1', 'DSTREAMIQ'):
+        w.mode.setCurrentIndex(w.mode.findData(mode))
+        assert w.sample_bits.currentData() == 10
+        assert not w.sample_bits.isEnabled()
+        w.mode.setCurrentIndex(w.mode.findData('raw'))
+        assert w.sample_bits.isEnabled() and w.sample_bits.currentData() == 10
+        w.sample_bits.setCurrentIndex(w.sample_bits.findData(8))
+
+
+def test_format_settings_import_export_and_invalid_combination_atomic(window):
+    import json
+
+    w = window
+    saved = w.current_settings() | {'bits_per_component': 8, 'duration_s': 5}
+    w.settings_text.setPlainText(json.dumps(saved))
+    w.apply_pasted_settings()
+    assert w.current_settings() == saved and w.session is None
+    w.show_current_settings()
+    assert json.loads(w.settings_text.toPlainText()) == saved
+    invalid = saved | {'receiver_mode': 'DSTREAMIQ'}
+    w.settings_text.setPlainText(json.dumps(invalid))
+    w.apply_pasted_settings()
+    assert 'Not applied' in w.settings_feedback.text()
+    assert w.current_settings() == saved
+    legacy = {key: value for key, value in saved.items() if key != 'bits_per_component'}
+    w.settings_text.setPlainText(json.dumps(legacy))
+    w.apply_pasted_settings()
+    assert w.sample_bits.currentData() == 10
+
+
+@pytest.mark.parametrize('bits', [8, 10])
+def test_four_receiver_format_honest_simulation_recording_restart(window, app, bits):
+    import numpy as np
+
+    from sdr_research.recording import load_capture
+
+    w = window
+    w.demo_count.setCurrentIndex(1)
+    w.sample_bits.setCurrentIndex(w.sample_bits.findData(bits))
+    first = None
+    for _ in range(2):
+        w.start_session()
+        assert w.session is not first
+        first = w.session
+        until(app, lambda: len(w.latest) == 4)
+        assert all(r.settings['bits'] == bits for r in first.receivers)
+        assert f'IQ{bits}' in w.live_hint.text()
+        for capture in w.latest.values():
+            assert capture.bits == bits and capture.metadata['synthetic'] is True
+            assert capture.iq.dtype == np.complex64
+            scale = 1 << (bits - 1)
+            assert np.all(capture.iq.real * scale == np.rint(capture.iq.real * scale))
+            assert np.all(capture.iq.imag * scale == np.rint(capture.iq.imag * scale))
+        w.stop_session()
+        until(app, lambda session=first: not session.is_alive())
+        w.poll()
+        assert all(not worker.is_alive() for worker in first.workers.values())
+        assert w.sample_bits.currentData() == bits
+        saved = list(w.last_output.rglob('*.sigmf-meta'))
+        assert saved
+        loaded = load_capture(saved[0])
+        assert loaded.bits == bits
+        assert first.manifest['receivers'][0]['settings']['bits'] == bits
