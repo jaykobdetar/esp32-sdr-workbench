@@ -1,0 +1,14 @@
+{
+  "nrf52840-transmitter/firmware/Makefile": "c868002bd87c0782057728d369c2a35819fb04afc163e6225265c6f23f06ae90",
+  "nrf52840-transmitter/firmware/README.md": "b27c7fa7c51b686d9931436fd84b9944f78319ca23cdee40774abf0426c8472b",
+  "nrf52840-transmitter/firmware/main.c": "cf66d8d5f15aa9e65bff457b26153bf294d548c7ec7eaa68c152e426af49fb1f",
+  "nrf52840-transmitter/firmware/source_trace.c": "a1f125d1b3338e7483710f799afd146c7576f03e74dfd11595a784cf13610871",
+  "nrf52840-transmitter/firmware/source_trace.h": "5a86e51030d030be97b2ba733f715714a1eb8f677df2b197f6016609a8cd30f7",
+  "nrf52840-transmitter/firmware/test_offline.py": "057f388c3f4b97cbd30ebd8c06acd7e30bad1bc0afb9907a8df7f294e11845db",
+  "nrf52840-transmitter/firmware/test_source_trace.c": "a00060bb47688c3ccebbbd0914331c0eec169ca7d67007afe1cef9ea1692ef91",
+  "nrf52840-transmitter/firmware/test_trace_integration.py": "5b65903b643a99d6421cdd297cf3eeec70b596a6117e7df42748e004aa1571cd",
+  "nrf52840-transmitter/host/rf_tx.py": "865efa9eca7db7bef120f1a2554bd8be5c3794e28089710780b4730d3ebc39a8",
+  "nrf52840-transmitter/host/source_trace.py": "515edd92526b35a3821e23520e9f2e9b2fa550968c30d14727ade844936356da",
+  "nrf52840-transmitter/tests/test_host_c.py": "cbfaf26cde2ce58717831dc06c2dcad5e38500b4ab0e8363f0c8f73d067a4388",
+  "nrf52840-transmitter/tests/test_source_trace.py": "674b79f5460e4bc83f51eb640875423dd7ca352d11f3bdc78177d9441edfbbb6"
+}

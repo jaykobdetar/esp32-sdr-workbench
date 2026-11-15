@@ -48,6 +48,11 @@ testpaths = ["tests", "firmware/tests", "nrf52840-transmitter/tests"]
 line-length = 100
 target-version = "py310"
 extend-exclude = [
+    # Immutable research snapshots: exact bytes are checked by publication tests.
+    "experiments/nov14-research/core-bank-v9",
+    "experiments/nov14-research/compact-v2",
+    "experiments/nov14-research/nrf-trace-exp2",
+    "experiments/nov14-research/host",
     "firmware/components",
     "docs/evidence",
     # Campaign and analysis sources whose exact bytes are recorded in

@@ -33,3 +33,9 @@ Rejected overnight work remains documented rather than silently promoted:
 - Host timeout and cleanup failures were preserved with corrected revisions in `host/historical-*`; generic receipts do not establish packet reception or durable evidence.
 
 These negative-study raw inputs and private audit trees remain in the private archive, not this public snapshot. Existing research PRs remain separate and unmerged; this snapshot does not supersede their review decisions.
+
+## nRF transmitter trace experiment
+
+`materialize.py nrf-trace-exp2 NEW_DIRECTORY` also preserves the 12-file **0.2.3-trace-exp2** firmware/host/test overlay from the latest local transmitter trace candidate, based on the same main commit. This is unpromoted source, not the verified installed transmitter: the final physical baseline remained **0.2.2**. The trace candidate had an uncertain USB transfer followed by readback/connection diagnosis and restoration; source preservation is not production qualification or approval to install it. No transmitter calibration, bootloader image, device dumps or identifiers are included. Base main retains stable transmitter source. The UF2 vendor dependencies must be obtained as documented in that base, not from private flash backups.
+
+Publication validation additionally reconstructed the nRF snapshot and passed 133 offline transmitter tests from its firmware working directory. No RF was emitted. A dedicated CI workflow checks snapshot integrity and these offline suites; the standard firmware workflow still builds the unchanged default, not an implied qualification of these preserved binaries.
