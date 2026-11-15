@@ -1,0 +1,169 @@
+{
+  "note": "Immediate writes verified untouched regions. Later boot/session NVS contents changed; original full backups remain private.",
+  "receivers": [
+    {
+      "receiver_label": "A",
+      "status": "verified",
+      "application_verified": true,
+      "application_offset": 65536,
+      "regions": [
+        {
+          "region": "bootloader",
+          "offset": 4096,
+          "bytes": 28672,
+          "unchanged_from_original": true
+        },
+        {
+          "region": "table",
+          "offset": 32768,
+          "bytes": 4096,
+          "unchanged_from_original": true
+        },
+        {
+          "region": "nvs",
+          "offset": 36864,
+          "bytes": 24576,
+          "unchanged_from_original": false
+        },
+        {
+          "region": "phy_init",
+          "offset": 61440,
+          "bytes": 4096,
+          "unchanged_from_original": true
+        }
+      ]
+    },
+    {
+      "receiver_label": "B",
+      "status": "verified",
+      "application_verified": true,
+      "application_offset": 1048576,
+      "regions": [
+        {
+          "region": "bootloader",
+          "offset": 4096,
+          "bytes": 28672,
+          "unchanged_from_original": true
+        },
+        {
+          "region": "table",
+          "offset": 32768,
+          "bytes": 4096,
+          "unchanged_from_original": true
+        },
+        {
+          "region": "phy_init",
+          "offset": 61440,
+          "bytes": 4096,
+          "unchanged_from_original": true
+        },
+        {
+          "region": "otadata",
+          "offset": 65536,
+          "bytes": 8192,
+          "unchanged_from_original": true
+        },
+        {
+          "region": "nvs",
+          "offset": 73728,
+          "bytes": 57344,
+          "unchanged_from_original": false
+        },
+        {
+          "region": "at_customize",
+          "offset": 131072,
+          "bytes": 917504,
+          "unchanged_from_original": true
+        }
+      ]
+    },
+    {
+      "receiver_label": "C",
+      "status": "verified",
+      "application_verified": true,
+      "application_offset": 1048576,
+      "regions": [
+        {
+          "region": "bootloader",
+          "offset": 4096,
+          "bytes": 28672,
+          "unchanged_from_original": true
+        },
+        {
+          "region": "table",
+          "offset": 32768,
+          "bytes": 4096,
+          "unchanged_from_original": false
+        },
+        {
+          "region": "phy_init",
+          "offset": 61440,
+          "bytes": 4096,
+          "unchanged_from_original": true
+        },
+        {
+          "region": "otadata",
+          "offset": 65536,
+          "bytes": 8192,
+          "unchanged_from_original": true
+        },
+        {
+          "region": "nvs",
+          "offset": 73728,
+          "bytes": 57344,
+          "unchanged_from_original": false
+        },
+        {
+          "region": "at_customize",
+          "offset": 131072,
+          "bytes": 917504,
+          "unchanged_from_original": true
+        }
+      ]
+    },
+    {
+      "receiver_label": "D",
+      "status": "verified",
+      "application_verified": true,
+      "application_offset": 1048576,
+      "regions": [
+        {
+          "region": "bootloader",
+          "offset": 4096,
+          "bytes": 28672,
+          "unchanged_from_original": true
+        },
+        {
+          "region": "table",
+          "offset": 32768,
+          "bytes": 4096,
+          "unchanged_from_original": false
+        },
+        {
+          "region": "phy_init",
+          "offset": 61440,
+          "bytes": 4096,
+          "unchanged_from_original": true
+        },
+        {
+          "region": "otadata",
+          "offset": 65536,
+          "bytes": 8192,
+          "unchanged_from_original": true
+        },
+        {
+          "region": "nvs",
+          "offset": 73728,
+          "bytes": 57344,
+          "unchanged_from_original": false
+        },
+        {
+          "region": "at_customize",
+          "offset": 131072,
+          "bytes": 917504,
+          "unchanged_from_original": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "note": "Source-off serial integrity control only, not multi-receiver coverage or packet recall",
+  "trials": [
+    {
+      "receiver_label": "C",
+      "duration_ms": 60000,
+      "status": "failed",
+      "error": "ProtocolError('DSTREAM framing/CRC failure; coverage is unverified')",
+      "captures": null,
+      "validated_records_before_failure": 26184,
+      "failed_frame_bytes": 48,
+      "failed_frame_all_ff": true
+    },
+    {
+      "receiver_label": "A",
+      "duration_ms": 60000,
+      "status": "passed",
+      "error": null,
+      "captures": 32001,
+      "validated_records_before_failure": null,
+      "failed_frame_bytes": null,
+      "failed_frame_all_ff": false
+    },
+    {
+      "receiver_label": "C",
+      "duration_ms": 60000,
+      "status": "failed",
+      "error": "ProtocolError('DSTREAM framing/CRC failure; coverage is unverified')",
+      "captures": null,
+      "validated_records_before_failure": 9315,
+      "failed_frame_bytes": 48,
+      "failed_frame_all_ff": true
+    },
+    {
+      "receiver_label": "A",
+      "duration_ms": 60000,
+      "status": "passed",
+      "error": null,
+      "captures": 32001,
+      "validated_records_before_failure": null,
+      "failed_frame_bytes": null,
+      "failed_frame_all_ff": false
+    }
+  ],
+  "source_final_running": false,
+  "source_sha256": {
+    "scripts/multi_stream_campaign.py": "fec06cf1fb08d2b1270565b5ddc970e4d8599fb4870862299d3a9a5d83c34aef",
+    "scripts/dual_stream_campaign.py": "ef31ba64cc84d06258e03d5cb3604b0d48d319b91c4a2727f4aef8e5b63b23cf",
+    "sdr_research/detector_stream.py": "f22c8abb06d36a903e50246e8bd2383fe0b885227090fba13c20735bd7dfb8ed",
+    "sdr_research/protocol.py": "470b7f8e9327a59cc180f8630bfe7ee8a5d720d0b1447629791ce3d9c9e56507",
+    "scripts/analyze_nrf_iq.py": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e",
+    "sdr_research/calibration.py": "4774359016c125f998c3eb028dcb6217b2bc8b29145dddb87344eac89a2249c5"
+  }
+}

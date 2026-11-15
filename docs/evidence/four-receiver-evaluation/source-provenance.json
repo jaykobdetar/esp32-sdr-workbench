@@ -1,0 +1,44 @@
+{
+  "note": "Measured file versions, not a claim that every later helper existed during every earlier trial. Longer and diagnostic campaigns also retain imported source hashes in their private reports.",
+  "experiments": {
+    "timing-smoke and timing-30s": {
+      "revision": "478d9d1cca03bddc0afa5af3b0b17786261aaeab",
+      "source_sha256": {
+        "scripts/multi_stream_campaign.py": "f92bca1954eb1ee7ef15d50deb3b1dbb186df39d0d05c875f248c38ee1a1641c",
+        "scripts/dual_stream_campaign.py": "ef31ba64cc84d06258e03d5cb3604b0d48d319b91c4a2727f4aef8e5b63b23cf",
+        "sdr_research/detector_stream.py": "c664920c704d984d0ec5887ba8f5332f6b267660b83404f9edbc26db67c90118",
+        "scripts/analyze_nrf_iq.py": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e"
+      }
+    },
+    "packets-smoke original": {
+      "revision": "ae695341307a25c9a273143811a84d6739b6d251",
+      "source_sha256": {
+        "scripts/four_receiver_packets.py": "efd365cfe5c0860703b332e4b5707a419b9e280356a02845ac0b33c4caea8c47"
+      }
+    },
+    "packets-smoke separate reanalysis": {
+      "revision": "3b0c7153d7c186e0a304c5abe93b07e61cd80a48",
+      "source_sha256": {
+        "scripts/four_receiver_packets.py": "890a5c948f91d30e17b15395cc3066bbae18d21b4a700513b813b0555f1d6a66"
+      }
+    },
+    "packets-low-repeat and packets-positive": {
+      "revision": "5fa9ace09cf2049799a78ba1e0ed2a6c31d2cde3",
+      "source_sha256": {
+        "scripts/four_receiver_packets.py": "c6bbcf73f1835bb40a68fbf19d96e3817f0ed1434efc890b93ae8c31e32467da"
+      }
+    },
+    "viewer physical corrected": {
+      "revision": "2191d447a1e923b38c691290f38dccda12c4c73c",
+      "source_sha256": {
+        "sdr_research/studio_gui.py": "0fae1e68d25859f724eb2daaf0b628867bfb62d04ed900139a9c246b014ba5b8"
+      }
+    },
+    "packets-staggered and all simultaneous/stagger repeat-2/repeat-3 cohorts": {
+      "revision": "156b060e4011dce21f9869b9a1de30aa2bc17c15",
+      "source_sha256": {
+        "scripts/four_receiver_packets.py": "a2e4cdd240b3306af122791303aae52eb487e89827572f56027e202fdaad2000"
+      }
+    }
+  }
+}

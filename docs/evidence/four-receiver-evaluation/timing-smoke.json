@@ -1,0 +1,215 @@
+{
+  "status": "passed",
+  "receiver_count": 4,
+  "error": null,
+  "trials": [
+    {
+      "duration_ms": 10000,
+      "periods_ns": [
+        1875000,
+        1874958,
+        1875008,
+        1875001
+      ],
+      "yield_phases": [
+        34,
+        34,
+        34,
+        34
+      ],
+      "analysis_status": "verified-telemetry",
+      "reason": null,
+      "captures": [
+        5334,
+        5334,
+        5334,
+        5334
+      ],
+      "skipped": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "max_late_us": [
+        0,
+        3,
+        3,
+        0
+      ],
+      "nominal_union": {
+        "coverage_percent": 99.99987,
+        "covered_us": 9999987,
+        "duration_us": 10000000,
+        "gap_count": 1,
+        "max_gap_us": 13,
+        "first_gaps_relative_us": [
+          [
+            0,
+            13
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_decision_union": {
+        "coverage_percent": 99.69999,
+        "covered_us": 9969999,
+        "duration_us": 10000000,
+        "gap_count": 1,
+        "max_gap_us": 30001,
+        "first_gaps_relative_us": [
+          [
+            0,
+            30001
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_completion_inclusive_union": {
+        "coverage_percent": 99.98532229484995,
+        "covered_us": 10001793.561714359,
+        "duration_us": 10003261.810988363,
+        "gap_count": 2,
+        "max_gap_us": 1455.2492740042508,
+        "first_gaps_relative_us": [
+          [
+            0,
+            13
+          ],
+          [
+            10001806.561714359,
+            10003261.810988363
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "full_burst_opportunities": [
+        {
+          "burst_duration_us": 50,
+          "opportunity_percent": 99.99986999935,
+          "eligible_start_time_us": 9999937,
+          "denominator_us": 9999950,
+          "max_ineligible_start_gap_us": 13,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 100,
+          "opportunity_percent": 99.99986999869999,
+          "eligible_start_time_us": 9999887,
+          "denominator_us": 9999900,
+          "max_ineligible_start_gap_us": 13,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 250,
+          "opportunity_percent": 99.99986999674992,
+          "eligible_start_time_us": 9999737,
+          "denominator_us": 9999750,
+          "max_ineligible_start_gap_us": 13,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 500,
+          "opportunity_percent": 99.99986999349967,
+          "eligible_start_time_us": 9999487,
+          "denominator_us": 9999500,
+          "max_ineligible_start_gap_us": 13,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        }
+      ],
+      "clock_fit_screens": [
+        {
+          "relative_drift": -2.2568538856781215e-05,
+          "max_residual_us": 0.7168387868441641,
+          "heldout_max_error_us": 0.8195907231420279,
+          "independent_capture_pair_count": 11,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 3
+        },
+        {
+          "relative_drift": 4.083534043567881e-06,
+          "max_residual_us": 0.6552071655169129,
+          "heldout_max_error_us": 0.8237784653902054,
+          "independent_capture_pair_count": 11,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 3
+        },
+        {
+          "relative_drift": 4.988794259474858e-07,
+          "max_residual_us": 0.528305109590292,
+          "heldout_max_error_us": 0.6498492043465376,
+          "independent_capture_pair_count": 11,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 3
+        }
+      ],
+      "sensitivity_eroded": [
+        {
+          "assumed_endpoint_error_us": 1,
+          "union": {
+            "coverage_percent": 99.99986,
+            "covered_us": 9999986,
+            "duration_us": 10000000,
+            "gap_count": 1,
+            "max_gap_us": 14,
+            "first_gaps_relative_us": [
+              [
+                0,
+                14
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        },
+        {
+          "assumed_endpoint_error_us": 5,
+          "union": {
+            "coverage_percent": 99.99982,
+            "covered_us": 9999982,
+            "duration_us": 10000000,
+            "gap_count": 1,
+            "max_gap_us": 18,
+            "first_gaps_relative_us": [
+              [
+                0,
+                18
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        },
+        {
+          "assumed_endpoint_error_us": 20,
+          "union": {
+            "coverage_percent": 99.99967,
+            "covered_us": 9999967,
+            "duration_us": 10000000,
+            "gap_count": 1,
+            "max_gap_us": 33,
+            "first_gaps_relative_us": [
+              [
+                0,
+                33
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        }
+      ]
+    }
+  ],
+  "source_final_running": false,
+  "source_sha256": null,
+  "note": "Numeric projection only. Complete raw I/Q, telemetry, board identifiers/calibration fingerprints and recovery remain private. Reanalysis cannot be reproduced from this summary alone.",
+  "receiver_labels_in_order": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "rejected_trials": []
+}

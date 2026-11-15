@@ -1,0 +1,441 @@
+{
+  "status": "failed",
+  "receiver_count": 3,
+  "error": "ProtocolError('Missing or non-monotonic stream records')",
+  "trials": [
+    {
+      "duration_ms": 120000,
+      "periods_ns": [
+        1875000,
+        1874958,
+        1875001
+      ],
+      "yield_phases": [
+        34,
+        34,
+        34
+      ],
+      "analysis_status": "verified-telemetry",
+      "reason": null,
+      "captures": [
+        64001,
+        64002,
+        64001
+      ],
+      "skipped": [
+        0,
+        0,
+        0
+      ],
+      "max_late_us": [
+        0,
+        3,
+        2
+      ],
+      "nominal_union": {
+        "coverage_percent": 99.99998916666667,
+        "covered_us": 119999987,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 13,
+        "first_gaps_relative_us": [
+          [
+            0,
+            13
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_decision_union": {
+        "coverage_percent": 99.97499916666666,
+        "covered_us": 119969999,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 30001,
+        "first_gaps_relative_us": [
+          [
+            0,
+            30001
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_completion_inclusive_union": {
+        "coverage_percent": 99.99857705581913,
+        "covered_us": 120003287.93632132,
+        "duration_us": 120004995.54042211,
+        "gap_count": 3,
+        "max_gap_us": 1460.2828399837017,
+        "first_gaps_relative_us": [
+          [
+            0,
+            13
+          ],
+          [
+            120002277.16329792,
+            120002511.48455873
+          ],
+          [
+            120003535.25758213,
+            120004995.54042211
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "full_burst_opportunities": [
+        {
+          "burst_duration_us": 50,
+          "opportunity_percent": 99.99998916666215,
+          "eligible_start_time_us": 119999937,
+          "denominator_us": 119999950,
+          "max_ineligible_start_gap_us": 13,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 100,
+          "opportunity_percent": 99.99998916665764,
+          "eligible_start_time_us": 119999887,
+          "denominator_us": 119999900,
+          "max_ineligible_start_gap_us": 13,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 250,
+          "opportunity_percent": 99.9999891666441,
+          "eligible_start_time_us": 119999737,
+          "denominator_us": 119999750,
+          "max_ineligible_start_gap_us": 13,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 500,
+          "opportunity_percent": 83.8012147279115,
+          "eligible_start_time_us": 100561038.66742016,
+          "denominator_us": 119999500,
+          "max_ineligible_start_gap_us": 116.22469195723534,
+          "ineligible_start_gap_count": 192000,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        }
+      ],
+      "clock_fit_screens": [
+        {
+          "relative_drift": -2.2488775675354753e-05,
+          "max_residual_us": 2.049989662365988,
+          "heldout_max_error_us": 2.233747124671936,
+          "independent_capture_pair_count": 14,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 6
+        },
+        {
+          "relative_drift": 5.138274961498269e-07,
+          "max_residual_us": 1.8102857461199164,
+          "heldout_max_error_us": 1.9720334708690643,
+          "independent_capture_pair_count": 14,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 6
+        }
+      ],
+      "sensitivity_eroded": [
+        {
+          "assumed_endpoint_error_us": 1,
+          "union": {
+            "coverage_percent": 99.99998833333333,
+            "covered_us": 119999986,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 14,
+            "first_gaps_relative_us": [
+              [
+                0,
+                14
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        },
+        {
+          "assumed_endpoint_error_us": 5,
+          "union": {
+            "coverage_percent": 99.999985,
+            "covered_us": 119999982,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 18,
+            "first_gaps_relative_us": [
+              [
+                0,
+                18
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        },
+        {
+          "assumed_endpoint_error_us": 20,
+          "union": {
+            "coverage_percent": 99.9999725,
+            "covered_us": 119999967,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 33,
+            "first_gaps_relative_us": [
+              [
+                0,
+                33
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        }
+      ]
+    },
+    {
+      "duration_ms": 120000,
+      "periods_ns": [
+        1875000,
+        1874958,
+        1875001
+      ],
+      "yield_phases": [
+        34,
+        34,
+        34
+      ],
+      "analysis_status": "verified-telemetry",
+      "reason": null,
+      "captures": [
+        64001,
+        64002,
+        64001
+      ],
+      "skipped": [
+        0,
+        0,
+        0
+      ],
+      "max_late_us": [
+        0,
+        3,
+        3
+      ],
+      "nominal_union": {
+        "coverage_percent": 99.99999583333333,
+        "covered_us": 119999995,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 5,
+        "first_gaps_relative_us": [
+          [
+            0,
+            5
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_decision_union": {
+        "coverage_percent": 99.97499916666666,
+        "covered_us": 119969999,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 30001,
+        "first_gaps_relative_us": [
+          [
+            0,
+            30001
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_completion_inclusive_union": {
+        "coverage_percent": 99.99861197776534,
+        "covered_us": 120003294.28233123,
+        "duration_us": 120004959.97785842,
+        "gap_count": 3,
+        "max_gap_us": 1428.2821191549301,
+        "first_gaps_relative_us": [
+          [
+            0,
+            5
+          ],
+          [
+            120002275.50930864,
+            120002507.92271668
+          ],
+          [
+            120003531.69573927,
+            120004959.97785842
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "full_burst_opportunities": [
+        {
+          "burst_duration_us": 50,
+          "opportunity_percent": 99.9999958333316,
+          "eligible_start_time_us": 119999945,
+          "denominator_us": 119999950,
+          "max_ineligible_start_gap_us": 5,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 100,
+          "opportunity_percent": 99.99999583332986,
+          "eligible_start_time_us": 119999895,
+          "denominator_us": 119999900,
+          "max_ineligible_start_gap_us": 5,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 250,
+          "opportunity_percent": 99.99999583332465,
+          "eligible_start_time_us": 119999745,
+          "denominator_us": 119999750,
+          "max_ineligible_start_gap_us": 5,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 500,
+          "opportunity_percent": 83.80121603419558,
+          "eligible_start_time_us": 100561040.23495454,
+          "denominator_us": 119999500,
+          "max_ineligible_start_gap_us": 112.70199400186539,
+          "ineligible_start_gap_count": 192000,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        }
+      ],
+      "clock_fit_screens": [
+        {
+          "relative_drift": -2.2487972424498644e-05,
+          "max_residual_us": 1.973079078597948,
+          "heldout_max_error_us": 2.1762362122535706,
+          "independent_capture_pair_count": 11,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 3
+        },
+        {
+          "relative_drift": 5.143576597942445e-07,
+          "max_residual_us": 1.7581821968778968,
+          "heldout_max_error_us": 1.9391325414180756,
+          "independent_capture_pair_count": 11,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 3
+        }
+      ],
+      "sensitivity_eroded": [
+        {
+          "assumed_endpoint_error_us": 1,
+          "union": {
+            "coverage_percent": 99.999995,
+            "covered_us": 119999994,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 6,
+            "first_gaps_relative_us": [
+              [
+                0,
+                6
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        },
+        {
+          "assumed_endpoint_error_us": 5,
+          "union": {
+            "coverage_percent": 99.99999166666667,
+            "covered_us": 119999990,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 10,
+            "first_gaps_relative_us": [
+              [
+                0,
+                10
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        },
+        {
+          "assumed_endpoint_error_us": 20,
+          "union": {
+            "coverage_percent": 99.99997916666666,
+            "covered_us": 119999975,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 25,
+            "first_gaps_relative_us": [
+              [
+                0,
+                25
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        }
+      ]
+    }
+  ],
+  "source_final_running": false,
+  "source_sha256": {
+    "scripts/multi_stream_campaign.py": "fec06cf1fb08d2b1270565b5ddc970e4d8599fb4870862299d3a9a5d83c34aef",
+    "scripts/dual_stream_campaign.py": "ef31ba64cc84d06258e03d5cb3604b0d48d319b91c4a2727f4aef8e5b63b23cf",
+    "sdr_research/detector_stream.py": "f22c8abb06d36a903e50246e8bd2383fe0b885227090fba13c20735bd7dfb8ed",
+    "sdr_research/protocol.py": "470b7f8e9327a59cc180f8630bfe7ee8a5d720d0b1447629791ce3d9c9e56507",
+    "scripts/analyze_nrf_iq.py": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e",
+    "sdr_research/calibration.py": "4774359016c125f998c3eb028dcb6217b2bc8b29145dddb87344eac89a2249c5"
+  },
+  "note": "Numeric projection only. Complete raw I/Q, telemetry, board identifiers/calibration fingerprints and recovery remain private. Reanalysis cannot be reproduced from this summary alone.",
+  "receiver_labels_in_order": [
+    "A",
+    "B",
+    "D"
+  ],
+  "rejected_trials": [
+    {
+      "duration_ms": 120000,
+      "reason": "At least one receiver failed; no union coverage is accepted.",
+      "receivers": [
+        {
+          "receiver_label": "A",
+          "status": "error",
+          "error": "Missing or non-monotonic stream records",
+          "validated_records_before_failure": 14022,
+          "expected_sequence": 14023,
+          "observed_sequence": 14031,
+          "magic_valid": true,
+          "frame_all_zero": false,
+          "frame_all_ff": false
+        },
+        {
+          "receiver_label": "B",
+          "status": "error",
+          "error": "Missing or non-monotonic stream records",
+          "validated_records_before_failure": 14021,
+          "expected_sequence": 14022,
+          "observed_sequence": 14026,
+          "magic_valid": true,
+          "frame_all_zero": false,
+          "frame_all_ff": false
+        },
+        {
+          "receiver_label": "D",
+          "status": "error",
+          "error": "DSTREAM framing/CRC failure; coverage is unverified",
+          "validated_records_before_failure": 14021,
+          "expected_sequence": 14022,
+          "observed_sequence": null,
+          "magic_valid": false,
+          "frame_all_zero": true,
+          "frame_all_ff": false
+        }
+      ]
+    }
+  ]
+}

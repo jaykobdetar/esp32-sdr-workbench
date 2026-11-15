@@ -1,0 +1,54 @@
+{
+  "status": "passed",
+  "error": null,
+  "analysis": {
+    "unique_packets": 44,
+    "completed_transmissions": 15938,
+    "attempted_transmissions": 15938,
+    "scheduled_slots": 15996,
+    "missed_slots": 58,
+    "recovery_percent": 0.27606977036014557,
+    "per_receiver_unique": [
+      11,
+      14,
+      9,
+      10
+    ],
+    "accepted_observations": 44,
+    "duplicate_observations": 0,
+    "source_off_packets": 0,
+    "note": "Unique CRC/address/full-known-payload packets divided by completed source transmissions during the entire finite ON run. Sparse raw snapshots include large transfer gaps. This is not nominal RF coverage, continuous reception, an instantaneous capture-window recall estimate, or Quest compatibility."
+  },
+  "captures_by_condition": {
+    "ON": 64,
+    "OFF": 64
+  },
+  "expected_config": {
+    "frequency_mhz": 2440,
+    "mode_mbps": 2,
+    "power_dbm": 0,
+    "payload_len": 16,
+    "interval_us": 1000,
+    "jitter_us": 113,
+    "seed": 52840,
+    "burst_count": 0,
+    "burst_gap_us": 0,
+    "hop_every": 1,
+    "hop_list": "off",
+    "payload_hex": "off"
+  },
+  "capture_plan": {
+    "stagger_ms": 100,
+    "per_receiver_delay_ms": [
+      0,
+      100,
+      200,
+      300
+    ],
+    "captures_per_condition": 16,
+    "source_duration_ms": 16000,
+    "last_capture_start_lower_bound_ms": 10942.5,
+    "note": "Host sleep per receiver before each concurrent round, NOT RF synchronization. UART-based lower bound is not a runtime guarantee. Actual capture calls may extend beyond the finite source run."
+  },
+  "source_final_running": false
+}
