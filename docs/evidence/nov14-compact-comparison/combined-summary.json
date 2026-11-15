@@ -1,0 +1,694 @@
+{
+  "inputs": {
+    "private-rx0-analysis.json": "66057e53403d29dccd9d9f423d1dab5ff1a764a871fdadf6a786d66d40a1b39e",
+    "private-rx1-analysis.json": "b3bb43edcdce1d4d1449fc3bc66ada1ba925e8299a37f4c5de72c9ea923e805d"
+  },
+  "scope": "Both sequential receivers; paired random assignment is block, not individual capture. Separate source sessions are distinct namespaces. Source-consistent not air-attested. No conditional recall, continuous coverage or superiority p-value.",
+  "cells": {
+    "off": {
+      "compact": {
+        "blocks": 12,
+        "captures": 48,
+        "observed_records": 0,
+        "source_consistent_unique_sequences": null,
+        "completed": null,
+        "out_of_completed_range_records": null,
+        "whole_block_observation_fraction": null
+      },
+      "legacy": {
+        "blocks": 12,
+        "captures": 48,
+        "observed_records": 0,
+        "source_consistent_unique_sequences": null,
+        "completed": null,
+        "out_of_completed_range_records": null,
+        "whole_block_observation_fraction": null
+      }
+    },
+    "fixed0": {
+      "compact": {
+        "blocks": 12,
+        "captures": 48,
+        "observed_records": 32,
+        "source_consistent_unique_sequences": 32,
+        "completed": 45175,
+        "out_of_completed_range_records": 0,
+        "whole_block_observation_fraction": 0.0007083563918096292
+      },
+      "legacy": {
+        "blocks": 12,
+        "captures": 48,
+        "observed_records": 39,
+        "source_consistent_unique_sequences": 39,
+        "completed": 45544,
+        "out_of_completed_range_records": 0,
+        "whole_block_observation_fraction": 0.0008563147725276656
+      }
+    },
+    "fixed-12": {
+      "compact": {
+        "blocks": 12,
+        "captures": 48,
+        "observed_records": 21,
+        "source_consistent_unique_sequences": 21,
+        "completed": 45123,
+        "out_of_completed_range_records": 0,
+        "whole_block_observation_fraction": 0.0004653945881257895
+      },
+      "legacy": {
+        "blocks": 12,
+        "captures": 48,
+        "observed_records": 21,
+        "source_consistent_unique_sequences": 21,
+        "completed": 45512,
+        "out_of_completed_range_records": 0,
+        "whole_block_observation_fraction": 0.0004614167692037265
+      }
+    },
+    "burst0": {
+      "compact": {
+        "blocks": 12,
+        "captures": 48,
+        "observed_records": 12,
+        "source_consistent_unique_sequences": 12,
+        "completed": 18081,
+        "out_of_completed_range_records": 0,
+        "whole_block_observation_fraction": 0.000663680106188817
+      },
+      "legacy": {
+        "blocks": 12,
+        "captures": 48,
+        "observed_records": 13,
+        "source_consistent_unique_sequences": 13,
+        "completed": 18237,
+        "out_of_completed_range_records": 0,
+        "whole_block_observation_fraction": 0.0007128365410977683
+      }
+    },
+    "hop0": {
+      "compact": {
+        "blocks": 12,
+        "captures": 48,
+        "observed_records": 17,
+        "source_consistent_unique_sequences": 17,
+        "completed": 45209,
+        "out_of_completed_range_records": 0,
+        "whole_block_observation_fraction": 0.00037603132119710676
+      },
+      "legacy": {
+        "blocks": 12,
+        "captures": 48,
+        "observed_records": 18,
+        "source_consistent_unique_sequences": 18,
+        "completed": 45576,
+        "out_of_completed_range_records": 0,
+        "whole_block_observation_fraction": 0.00039494470774091627
+      }
+    }
+  },
+  "modes": {
+    "compact": {
+      "captures": 240,
+      "observed_records": 82,
+      "output_drops": 0,
+      "incomplete_hypotheses": 12,
+      "busy_syncs": 0,
+      "result_wire_bytes": {
+        "mean": 696.3416666666667,
+        "median": 689.0,
+        "min": 679,
+        "max": 717
+      },
+      "iq_wire_bytes": {
+        "mean": 66157.77916666666,
+        "median": 66160.0,
+        "min": 66150,
+        "max": 66160
+      },
+      "result_output_us": {
+        "mean": 70110.30416666667,
+        "median": 70128.0,
+        "min": 70041,
+        "max": 70154
+      },
+      "iq_output_us": {
+        "mean": 728722.5166666667,
+        "median": 728721.0,
+        "min": 728701,
+        "max": 728740
+      },
+      "helper_seconds": {
+        "mean": 0.9206376937703681,
+        "median": 0.9204783844979829,
+        "min": 0.9137844850047259,
+        "max": 0.9887899739987915
+      },
+      "total_host_seconds": {
+        "mean": 0.9373714293831047,
+        "median": 0.9373543724941555,
+        "min": 0.9300013070023851,
+        "max": 1.0043851749942405
+      },
+      "firmware_preoutput_us": {
+        "mean": 17482.620833333334,
+        "median": 17464.5,
+        "min": 17439,
+        "max": 17555
+      }
+    },
+    "legacy": {
+      "captures": 240,
+      "observed_records": 91,
+      "output_drops": 0,
+      "incomplete_hypotheses": 12,
+      "busy_syncs": 0,
+      "result_wire_bytes": {
+        "mean": 2480.65,
+        "median": 2483.0,
+        "min": 2473,
+        "max": 2483
+      },
+      "iq_wire_bytes": {
+        "mean": 66157.65833333334,
+        "median": 66160.0,
+        "min": 66150,
+        "max": 66160
+      },
+      "result_output_us": {
+        "mean": 88186.74583333333,
+        "median": 88199.5,
+        "min": 87889,
+        "max": 88806
+      },
+      "iq_output_us": {
+        "mean": 728730.6625,
+        "median": 728721.0,
+        "min": 728697,
+        "max": 729730
+      },
+      "helper_seconds": {
+        "mean": 0.9280203699379854,
+        "median": 0.927753861004021,
+        "min": 0.9227550849900581,
+        "max": 0.9400038440071512
+      },
+      "total_host_seconds": {
+        "mean": 0.9450310263583863,
+        "median": 0.9444502289989032,
+        "min": 0.9383354299934581,
+        "max": 0.9555607340007555
+      },
+      "firmware_preoutput_us": {
+        "mean": 17488.8,
+        "median": 17475.0,
+        "min": 17439,
+        "max": 17853
+      }
+    }
+  },
+  "pairs": [
+    {
+      "receiver": 0,
+      "cell": "off",
+      "pair": 0,
+      "result_output_difference_us": -18082.0,
+      "full_host_difference_seconds": -0.008314057999086799,
+      "source_consistent_unique_sequence_difference": null
+    },
+    {
+      "receiver": 0,
+      "cell": "off",
+      "pair": 1,
+      "result_output_difference_us": -18079.5,
+      "full_host_difference_seconds": -0.008749490247282665,
+      "source_consistent_unique_sequence_difference": null
+    },
+    {
+      "receiver": 0,
+      "cell": "off",
+      "pair": 2,
+      "result_output_difference_us": -18080.5,
+      "full_host_difference_seconds": 0.005768785249529174,
+      "source_consistent_unique_sequence_difference": null
+    },
+    {
+      "receiver": 0,
+      "cell": "off",
+      "pair": 3,
+      "result_output_difference_us": -18079.75,
+      "full_host_difference_seconds": -0.008913319252314977,
+      "source_consistent_unique_sequence_difference": null
+    },
+    {
+      "receiver": 0,
+      "cell": "off",
+      "pair": 4,
+      "result_output_difference_us": -18079.25,
+      "full_host_difference_seconds": -0.007204056750197196,
+      "source_consistent_unique_sequence_difference": null
+    },
+    {
+      "receiver": 0,
+      "cell": "off",
+      "pair": 5,
+      "result_output_difference_us": -18080.75,
+      "full_host_difference_seconds": -0.008515702746080933,
+      "source_consistent_unique_sequence_difference": null
+    },
+    {
+      "receiver": 0,
+      "cell": "fixed0",
+      "pair": 0,
+      "result_output_difference_us": -18048.0,
+      "full_host_difference_seconds": -0.0072540232504252344,
+      "source_consistent_unique_sequence_difference": -3
+    },
+    {
+      "receiver": 0,
+      "cell": "fixed0",
+      "pair": 1,
+      "result_output_difference_us": -18074.75,
+      "full_host_difference_seconds": -0.007711517504503718,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 0,
+      "cell": "fixed0",
+      "pair": 2,
+      "result_output_difference_us": -18053.75,
+      "full_host_difference_seconds": -0.00939945074787829,
+      "source_consistent_unique_sequence_difference": -1
+    },
+    {
+      "receiver": 0,
+      "cell": "fixed0",
+      "pair": 3,
+      "result_output_difference_us": -18040.0,
+      "full_host_difference_seconds": -0.008618345000286354,
+      "source_consistent_unique_sequence_difference": -2
+    },
+    {
+      "receiver": 0,
+      "cell": "fixed0",
+      "pair": 4,
+      "result_output_difference_us": -18080.0,
+      "full_host_difference_seconds": -0.0077898620038467925,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 0,
+      "cell": "fixed0",
+      "pair": 5,
+      "result_output_difference_us": -18054.5,
+      "full_host_difference_seconds": -0.0075505924978642724,
+      "source_consistent_unique_sequence_difference": -1
+    },
+    {
+      "receiver": 0,
+      "cell": "fixed-12",
+      "pair": 0,
+      "result_output_difference_us": -17996.0,
+      "full_host_difference_seconds": -0.008002793252671836,
+      "source_consistent_unique_sequence_difference": -1
+    },
+    {
+      "receiver": 0,
+      "cell": "fixed-12",
+      "pair": 1,
+      "result_output_difference_us": -18107.75,
+      "full_host_difference_seconds": -0.008886970492312685,
+      "source_consistent_unique_sequence_difference": 1
+    },
+    {
+      "receiver": 0,
+      "cell": "fixed-12",
+      "pair": 2,
+      "result_output_difference_us": -18060.75,
+      "full_host_difference_seconds": -0.007097016252373578,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 0,
+      "cell": "fixed-12",
+      "pair": 3,
+      "result_output_difference_us": -18108.75,
+      "full_host_difference_seconds": -0.009273167994251708,
+      "source_consistent_unique_sequence_difference": 2
+    },
+    {
+      "receiver": 0,
+      "cell": "fixed-12",
+      "pair": 4,
+      "result_output_difference_us": -18093.5,
+      "full_host_difference_seconds": -0.006011000252328813,
+      "source_consistent_unique_sequence_difference": 2
+    },
+    {
+      "receiver": 0,
+      "cell": "fixed-12",
+      "pair": 5,
+      "result_output_difference_us": -18071.5,
+      "full_host_difference_seconds": -0.0077745657436025795,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 0,
+      "cell": "burst0",
+      "pair": 0,
+      "result_output_difference_us": -18077.25,
+      "full_host_difference_seconds": -0.009836205492320005,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 0,
+      "cell": "burst0",
+      "pair": 1,
+      "result_output_difference_us": -18078.25,
+      "full_host_difference_seconds": -0.006892111250635935,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 0,
+      "cell": "burst0",
+      "pair": 2,
+      "result_output_difference_us": -18086.75,
+      "full_host_difference_seconds": -0.0071066632626752835,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 0,
+      "cell": "burst0",
+      "pair": 3,
+      "result_output_difference_us": -18072.75,
+      "full_host_difference_seconds": -0.007722442998783663,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 0,
+      "cell": "burst0",
+      "pair": 4,
+      "result_output_difference_us": -18080.0,
+      "full_host_difference_seconds": -0.007471986009477405,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 0,
+      "cell": "burst0",
+      "pair": 5,
+      "result_output_difference_us": -18081.25,
+      "full_host_difference_seconds": -0.008312350251799216,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 0,
+      "cell": "hop0",
+      "pair": 0,
+      "result_output_difference_us": -18068.5,
+      "full_host_difference_seconds": -0.011278533249424072,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 0,
+      "cell": "hop0",
+      "pair": 1,
+      "result_output_difference_us": -18092.75,
+      "full_host_difference_seconds": -0.008736649506317917,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 0,
+      "cell": "hop0",
+      "pair": 2,
+      "result_output_difference_us": -18119.5,
+      "full_host_difference_seconds": 0.004648032248951495,
+      "source_consistent_unique_sequence_difference": 2
+    },
+    {
+      "receiver": 0,
+      "cell": "hop0",
+      "pair": 3,
+      "result_output_difference_us": -18081.5,
+      "full_host_difference_seconds": -0.00799758549692342,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 0,
+      "cell": "hop0",
+      "pair": 4,
+      "result_output_difference_us": -18070.5,
+      "full_host_difference_seconds": -0.007029493754089344,
+      "source_consistent_unique_sequence_difference": 1
+    },
+    {
+      "receiver": 0,
+      "cell": "hop0",
+      "pair": 5,
+      "result_output_difference_us": -18111.75,
+      "full_host_difference_seconds": -0.008702483250090154,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 1,
+      "cell": "off",
+      "pair": 0,
+      "result_output_difference_us": -18068.0,
+      "full_host_difference_seconds": -0.00815401149156969,
+      "source_consistent_unique_sequence_difference": null
+    },
+    {
+      "receiver": 1,
+      "cell": "off",
+      "pair": 1,
+      "result_output_difference_us": -18087.75,
+      "full_host_difference_seconds": -0.008421316004387336,
+      "source_consistent_unique_sequence_difference": null
+    },
+    {
+      "receiver": 1,
+      "cell": "off",
+      "pair": 2,
+      "result_output_difference_us": -18086.75,
+      "full_host_difference_seconds": -0.006488682749477448,
+      "source_consistent_unique_sequence_difference": null
+    },
+    {
+      "receiver": 1,
+      "cell": "off",
+      "pair": 3,
+      "result_output_difference_us": -18074.0,
+      "full_host_difference_seconds": -0.007932631007861346,
+      "source_consistent_unique_sequence_difference": null
+    },
+    {
+      "receiver": 1,
+      "cell": "off",
+      "pair": 4,
+      "result_output_difference_us": -18083.5,
+      "full_host_difference_seconds": -0.006778719751309836,
+      "source_consistent_unique_sequence_difference": null
+    },
+    {
+      "receiver": 1,
+      "cell": "off",
+      "pair": 5,
+      "result_output_difference_us": -18082.0,
+      "full_host_difference_seconds": -0.01024913775108871,
+      "source_consistent_unique_sequence_difference": null
+    },
+    {
+      "receiver": 1,
+      "cell": "fixed0",
+      "pair": 0,
+      "result_output_difference_us": -18079.75,
+      "full_host_difference_seconds": -0.009464989499974763,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 1,
+      "cell": "fixed0",
+      "pair": 1,
+      "result_output_difference_us": -18086.0,
+      "full_host_difference_seconds": -0.007490179745218484,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 1,
+      "cell": "fixed0",
+      "pair": 2,
+      "result_output_difference_us": -18063.0,
+      "full_host_difference_seconds": -0.005983533501421334,
+      "source_consistent_unique_sequence_difference": -1
+    },
+    {
+      "receiver": 1,
+      "cell": "fixed0",
+      "pair": 3,
+      "result_output_difference_us": -18079.0,
+      "full_host_difference_seconds": -0.006621443495532731,
+      "source_consistent_unique_sequence_difference": 2
+    },
+    {
+      "receiver": 1,
+      "cell": "fixed0",
+      "pair": 4,
+      "result_output_difference_us": -18091.0,
+      "full_host_difference_seconds": -0.006500851257442264,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 1,
+      "cell": "fixed0",
+      "pair": 5,
+      "result_output_difference_us": -18040.75,
+      "full_host_difference_seconds": -0.007279700002982281,
+      "source_consistent_unique_sequence_difference": -1
+    },
+    {
+      "receiver": 1,
+      "cell": "fixed-12",
+      "pair": 0,
+      "result_output_difference_us": -18209.5,
+      "full_host_difference_seconds": -0.008408498004428111,
+      "source_consistent_unique_sequence_difference": -2
+    },
+    {
+      "receiver": 1,
+      "cell": "fixed-12",
+      "pair": 1,
+      "result_output_difference_us": -18078.25,
+      "full_host_difference_seconds": -0.008411584502027836,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 1,
+      "cell": "fixed-12",
+      "pair": 2,
+      "result_output_difference_us": -18018.25,
+      "full_host_difference_seconds": -0.00892144149474916,
+      "source_consistent_unique_sequence_difference": -3
+    },
+    {
+      "receiver": 1,
+      "cell": "fixed-12",
+      "pair": 3,
+      "result_output_difference_us": -18095.25,
+      "full_host_difference_seconds": -0.00737575149469194,
+      "source_consistent_unique_sequence_difference": 1
+    },
+    {
+      "receiver": 1,
+      "cell": "fixed-12",
+      "pair": 4,
+      "result_output_difference_us": -18094.75,
+      "full_host_difference_seconds": -0.008264252748631407,
+      "source_consistent_unique_sequence_difference": 1
+    },
+    {
+      "receiver": 1,
+      "cell": "fixed-12",
+      "pair": 5,
+      "result_output_difference_us": -18070.0,
+      "full_host_difference_seconds": -0.008155550494848285,
+      "source_consistent_unique_sequence_difference": -1
+    },
+    {
+      "receiver": 1,
+      "cell": "burst0",
+      "pair": 0,
+      "result_output_difference_us": -18087.5,
+      "full_host_difference_seconds": -0.008065743757470045,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 1,
+      "cell": "burst0",
+      "pair": 1,
+      "result_output_difference_us": -18060.25,
+      "full_host_difference_seconds": -0.008329973494255682,
+      "source_consistent_unique_sequence_difference": -1
+    },
+    {
+      "receiver": 1,
+      "cell": "burst0",
+      "pair": 2,
+      "result_output_difference_us": -18065.5,
+      "full_host_difference_seconds": -0.007990739006345393,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 1,
+      "cell": "burst0",
+      "pair": 3,
+      "result_output_difference_us": -18054.25,
+      "full_host_difference_seconds": -0.009620806751627242,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 1,
+      "cell": "burst0",
+      "pair": 4,
+      "result_output_difference_us": -18068.5,
+      "full_host_difference_seconds": -0.00703649599745404,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 1,
+      "cell": "burst0",
+      "pair": 5,
+      "result_output_difference_us": -18060.75,
+      "full_host_difference_seconds": -0.00907253849436529,
+      "source_consistent_unique_sequence_difference": 0
+    },
+    {
+      "receiver": 1,
+      "cell": "hop0",
+      "pair": 0,
+      "result_output_difference_us": -18057.0,
+      "full_host_difference_seconds": -0.0072219699977722485,
+      "source_consistent_unique_sequence_difference": -1
+    },
+    {
+      "receiver": 1,
+      "cell": "hop0",
+      "pair": 1,
+      "result_output_difference_us": -18062.5,
+      "full_host_difference_seconds": -0.010273667252477026,
+      "source_consistent_unique_sequence_difference": -1
+    },
+    {
+      "receiver": 1,
+      "cell": "hop0",
+      "pair": 2,
+      "result_output_difference_us": -18066.5,
+      "full_host_difference_seconds": -0.010222753498965176,
+      "source_consistent_unique_sequence_difference": -1
+    },
+    {
+      "receiver": 1,
+      "cell": "hop0",
+      "pair": 3,
+      "result_output_difference_us": -18079.0,
+      "full_host_difference_seconds": -0.009285878753871657,
+      "source_consistent_unique_sequence_difference": -1
+    },
+    {
+      "receiver": 1,
+      "cell": "hop0",
+      "pair": 4,
+      "result_output_difference_us": -18108.0,
+      "full_host_difference_seconds": -0.0057939112521125935,
+      "source_consistent_unique_sequence_difference": 1
+    },
+    {
+      "receiver": 1,
+      "cell": "hop0",
+      "pair": 5,
+      "result_output_difference_us": -18037.5,
+      "full_host_difference_seconds": -0.008023446251172572,
+      "source_consistent_unique_sequence_difference": -1
+    }
+  ],
+  "result_output_compact_faster_pairs": 60,
+  "full_host_compact_faster_pairs": 58,
+  "paired_blocks": 60
+}

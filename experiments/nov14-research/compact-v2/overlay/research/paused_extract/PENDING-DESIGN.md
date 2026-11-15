@@ -1,0 +1,17 @@
+# Pending implementation decisions
+
+Offline preparation only. New isolated extraction from verified v9 source archive. No device access, install or default change. This is not a frozen approved protocol yet.
+
+Proposed opt-in ESP32-only CMake flag PAUSED_PACKET_EXTRACT, default OFF, explicit separate research build profile; frozen v6 and original source archive untouched. Exact original DFA source only. No repetition or hopping.
+
+Commands: PEX? capability; PEX CAP (0..64, exactly one full16380-word capture); PEXGET GENERATION; PEXDROP GENERATION. No partial integer parsing or extra arguments. Boot-local monotonic nonzero uint64 generation, refuse exhaustion, identify boot with explicit session token. Generation consumed on attempted capture, failed attempts never retained. Snapshot current frequency/filter/gain/AGC and calibration evidence. Fixed source0/clock0 only.
+
+One owned input copy, separate typed workspace/result; allocate before acquisition. Reject existing detector/bank retention or scheduled capture state, do not discard it. During lease, reject unrelated commands with explicit busy rather than silently invalidating samples. PEXGET is stopped-only and rereads immutable private bytes, never aperture. Explicit DROP releases the lease; failed capture frees immediately. GET transport failure invalidates/frees lease, no success suffix. Need define bounded retention timeout/reconnect policy and authoritative generation status before freeze.
+
+Output should use fixed versioned binary metadata/result/IQ payload framed by exact lengths and transport CRC with bounded terminal trailer. Full result bytes1844 preserve all counters, not just emitted packet identities. Host parses exact layout and cross-checks full native result plus observed-bit CRC using exported input. Firmware compact records without retained IQ are lower evidence tier. Command completion/timestamps cannot claim source eligibility or continuous coverage.
+
+State: IDLE -> ADMISSION -> PREPARE -> MAPPED_CAPTURE -> RESTORED -> COPY -> DECODE -> OUTPUT -> RETAINED. Every failure restores mapping/ADC/filter/byte-select first; calibration lock released before allocation free or UART. STOP only at safe unmapped boundaries, never UART while mapped; timeout20ms always cleanup. Decoder100ms after-return rejection is not a kill switch. Full stage timestamps/resource snapshots needed; normal original capture code should remain unchanged and instrumentation use a sibling routine with reviewed identical register sequence.
+
+Pending parent judgment: v9 ESP32 calibration table comparison is not a true epoch. Candidate lease API could acquire existing PHY mutex, verify freshness and snapshot live DC tables, hold only over finite prepare/acquire/restore and release before copy/decode. Must inspect supported lock scope/reentrancy before implementation and qualify on hardware later. This serializes only cooperating PHY writers; cannot claim prevention of autonomous changes. Snapshot-only alternative must explicitly admit change-and-revert uncertainty. Original stale-check API cannot be recursively called under the proposed lock.
+
+Existing UART burst_serial_finish(NULL,0) provides bounded real drain and idle gap before mapping; restrict new command to UART (original ESP32), fail closed otherwise. No serial driver replacement. All transfer work remains after restoration. Current normal app command handler is single-owner, but lease reconnect/expiry needs explicit handling rather than assuming that owner identity persists.

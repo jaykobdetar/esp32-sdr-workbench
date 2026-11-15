@@ -1,0 +1,10 @@
+{
+  "revision": "layered-v2-final-reviewed-source",
+  "source_files": {
+    "adapter.py": "fc9da9790e3b3698c0806c67b6761830bdff03f495c4243c6c5f706ae85c0356",
+    "test_layered.py": "2d813fb5082a9cb4149c879774b809ae74d821227806632d1b5066fc550c734c",
+    "test_adapter.py": "91afd141c11f95da7330579e0c97426391f377d177ac81463304e0659600b948",
+    "frozen-collector/collector.py": "4eb3232da0a302010e83fd1766934b38263cd307dbd3b68c62547e0fe2ca8e4d"
+  },
+  "script_sha256": "8545a4f4c88e0fc9ddcca583e9edfb55e3f967e1842a439e775ca9c8ced545b6"
+}

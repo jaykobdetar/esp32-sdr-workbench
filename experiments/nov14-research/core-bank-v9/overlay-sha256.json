@@ -1,0 +1,23 @@
+{
+  "MANIFEST.in": "7a0179568eb1e77f743592bb39310eacb3a51fdbd3a8b935e387d368d7e07582",
+  "firmware/FIRMWARE_VARIANT": "3475e3b18a9ee613afdfc8837f2c2c340f47c73ce3d013490a82e394933e21dd",
+  "firmware/main/common/burst_serial.c": "a7b4fb47860669ca3ad13b56d7fbb7f27824d4214c94763ccbecf3e44da61958",
+  "firmware/main/common/burst_serial.h": "8aee86a646fa4414019f03d0e10ab1bea2c7cb25df952ee90feace76fcb7284f",
+  "firmware/main/common/spectrum.c": "22e45920f07dfeb6807d0b668f46d8e2d930754e33709bf4a961132b9e013ba4",
+  "firmware/main/targets/esp32/bank_bench.h": "554ff60d06739ea45049e16a8fb4a0d301831f6da1e20748da940d90d55e23c4",
+  "firmware/main/targets/esp32/bank_energy_clear.h": "deffa6cf1884d66a2c6161ca44a627ceafb1b8cd99e233fd5ccc20e439ceb06c",
+  "firmware/main/targets/esp32/bank_probe.h": "ffcf0966bb34697a3a1d2f5c859c32a11d2913e609a643453bec7dbbc0d97a53",
+  "firmware/main/targets/esp32/detector_experiment.h": "58646f196e247e7037298adb48a582b7857d8d283f233b0d78064a48185f669d",
+  "firmware/main/targets/esp32/detector_pipeline.h": "e588414512310a2b620a4fcfa83c3cec5f80866b9566dd67cfb68dca12b2bd1f",
+  "firmware/main/targets/esp32/receiver.c": "9893b2e23c933282880cf565728e5e821744c3af3da4808d5c7b05668025280f",
+  "firmware/main/targets/esp32/receiver_caps.h": "8687ba107f5e4c1ba563f144e46c81793d365a9a9bf767faea48a54189dac08d",
+  "firmware/sdkconfig.defaults.esp32": "1fd903edd06d7e84ec874399cc92dbc64ecf04de4e5b41bb64c84504d24b6e66",
+  "firmware/tests/test_bank_combined.py": "53d6cf58fd4581f470651d7cb69fa357ab5e834c814708313b36a5a105c5e92e",
+  "firmware/tests/test_nvs_preservation.py": "7c6f75a30c5e718e14a8ea8168c79543474e4d95118623abd72068efed4b4703",
+  "firmware/tests/test_release_variant.py": "87b207020c358b85edaf2ae23fe1d01962f5827b6cbadb7a11be2f74756e7ba8",
+  "firmware/tests/test_serial_command_boundary.py": "18a53bd5c42b4ddcb2089d07889b7a1834f3ccbe47d65465fa13e730d0399582",
+  "firmware/tests/test_serial_finish.py": "e9f46b6664e185147f9740c6fb7bb34f1962b4fc73d8d21a734acc1d7aeabc75",
+  "firmware/tests/test_spectrum_arguments.py": "132b045942fafaa707ef4724a1473747c5ad98dd7171b82c40267b9ade9d9306",
+  "sdr_research/calibration.py": "ca412cd26b702b59ff5c44e856bcc83571183932892f12a1538e98615c63e229",
+  "tests/test_dstream_c_review.py": "f1725848d13749c4579e610410fad0aaa470da4f8a1bdc055b61b27002d86229"
+}

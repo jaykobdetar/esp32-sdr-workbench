@@ -1,0 +1,27 @@
+# Whole-call versus backend timeout: applicability review and proposed tiny cases
+
+2026-11-14. Static inspection only. No cases executed, sleeps, devices, serial imports or frozen-file changes. Sources: bounded-adapter-v2-final adapter.py (reviewed SHA256 `65ed42c92550270358e2aeca385c58b7f74b9076109a931a13b0e5431254768d`), included collector.py (`4eb3232da0a302010e83fd1766934b38263cd307dbd3b68c62547e0fe2ca8e4d`), and original adapter-v1-final adapter.py.
+
+## Finding
+
+Both adapters begin their elapsed-time budget before backend settings checks and temporary timeout setup. They then assign the entire caller timeout to the backend. They restore/check settings before the final elapsed-time test against that same budget. For positive timeout B, backend duration B and positive setup/restoration cost H necessarily produce measured elapsed B+H > B. A backend honoring its configured blocking timeout can therefore be rejected. Ordinary backend scheduling overshoot is not even needed for this conclusion.
+
+The collector compounds the same contract: read polls pass at most 0.1 seconds, then check the whole transport invocation against that timeout plus only one microsecond. Its four-second I/O-silence allowance is a separate outer policy, not permission to exceed a single poll's whole-call limit. If one poll waits its full backend timeout, it can abort after roughly one poll rather than continue toward four seconds. The allowance remains reachable for promptly returning empties, so not every empty read necessarily fails. A short/partial result returned only at timeout has the same problem; bytes consumed by the adapter remain audit evidence, not collector-delivered bytes. Writes have the same layered-budget structure but this does not establish how often a real write blocks to its limit.
+
+This is honest fail-closed rejection, not unsafe commands, false packets or evidence of faulty physical pySerial behavior. It is nevertheless a substantive applicability gap for a normal blocking-read backend. Frozen-clock and immediate synthetic-return tests do not qualify it. Merely allowing an adapter grace period would still conflict with the collector's independent whole-call limit.
+
+## At most three proposed deterministic cases, awaiting approval
+
+Use a tiny scalar fake clock advanced by designated settings/restoration hooks and the fake read. No sleep or real backend; default budget can be 100 ms and explicitly synthetic overhead 1 ms before plus 1 ms after. Those numbers are test inputs, not measurements or recommended production reserves.
+
+1. **Full-timeout empty:** fake read advances by its configured backend timeout and returns empty bytes. Verify current adapter rejects DEADLINE, timeout properties restore and later calls cannot access backend. A future layered implementation should permit this case only when the configured inner timeout leaves adequate room inside the separately declared outer budget.
+2. **Full-timeout partial:** same schedule returns one byte for a request of two. Verify current rejection retains that byte in adapter audit with return eligibility false; do not merge it into collector RX. Future code must preserve this distinction on any genuine outer-budget violation.
+3. **Early-return empty:** fake read returns before its inner timeout with total known cost below the outer budget. Verify success and restoration. For a future layered design, exercise the collector-facing whole-call boundary in this same case, so an adapter-only fix cannot conceal a collector mismatch. Include the immediately adjacent insufficient-budget admission assertion without new backend activity.
+
+## Prospective layered contract, not an implementation authorization
+
+Separate (a) collector session/frame/silence/ownership deadlines, (b) the transport whole-call deadline, and (c) the backend blocking wait. The requested backend wait must be strictly inside the remaining whole-call budget after observed setup and an explicitly declared restoration/return reserve. If insufficient budget remains, reject before I/O, rather than assign a full wait and inevitably fail afterward. Any recomputation and timeout setter must itself be covered; do not presume setup is free or universally bounded.
+
+The collector and adapter must agree which layer their API timeout denotes. One practical design is an explicit whole-call deadline plus a maximum backend polling wait; derive a shorter backend wait after setup, with declared slack for restoration and return. Keep outer collector checks, source ownership margins, total deadline and no-retry poison behavior. Do not just widen every timeout or reset the four-second silence clock on empty returns. Explicitly account for nonblocking quiet checks (currently a separate 10 ms whole-call allowance), writes and wrapper/return overhead too.
+
+No finite reserve proves arbitrary Python scheduling, backend timeout compliance or getter/setter duration bounds. Measure those during separately authorized awake admission; retain conservative rejection when a genuine outer deadline is exceeded. First establish deterministic compatibility, then qualify actual backend behavior with source OFF and one receiver. Until this mismatch is resolved or explicitly qualified under a suitable backend contract, hold live use of this host client; do not treat the existing offline freeze as proving ordinary timeout-return tolerance. Firmware, hardware recovery gates and source-OFF scope remain unchanged.

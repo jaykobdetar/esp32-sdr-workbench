@@ -1,0 +1,26 @@
+{
+  "base_manifest": "7219eeb60a2f074b5e23b34178acf6c2c24fc096810085f28c45cddad94d0a44",
+  "changed_existing_files": [
+    "collector.py"
+  ],
+  "files": {
+    "REFERENCE-PINS.json": "4f3f8028276d3eba1d0ef07e166e277351e0b6a309ac567c7188332a58b11e7e",
+    "codec.py": "c1416fdc616b91376e773fa0368c5205859d207b9576ec49258a5f3a8b917da6",
+    "collector.py": "4eb3232da0a302010e83fd1766934b38263cd307dbd3b68c62547e0fe2ca8e4d",
+    "expected-version.json": "3f09e39388ef5f5279e7b390d0af1624e8c8a8a6fdace70751fda1987ac815e5",
+    "mock-result.bin": "d3dede147cac52252f30959f206a3a8f03e9016bdfd07ad084f9a2149a1e2887",
+    "mock-result.bin.error": "46c401d19e412c2e82234bea0d33cff5275d82a44665b0be413406f336c9d53d",
+    "mock-result.bin.iq": "9daa333d230409ea6782dabbcf7a5db75321f3a84047a800f8b55b0b800c071b",
+    "reference/LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+    "reference/firmware/main/targets/esp32/packet_decimated_dfa.c": "14475465975a5af24509dc836e21c68a43cab1b7e80f5924c3287759298cef61",
+    "reference/firmware/main/targets/esp32/packet_decimated_dfa.h": "10182fa7203a2e55850a40a2eedbd4594016505fcff3ac24669b92155b566bd9",
+    "reference/firmware/main/targets/esp32/prefix_dfa.h": "81d6478969690a8dfe59d1b26041d262432adea09c8c43020503c9024e1049fe",
+    "reference/research/paused_extract/native/decoder.so": "fb7c0aa062ac90ac895bcf2303990f7c6186c301e49f9777c8e017a17ff78677",
+    "reference/research/paused_extract/native/receipt.json": "af7796507dd983d17076fa7947c9030210c6880b3f944f609859e01348f768a2",
+    "reference/research/paused_extract/observed_bits.py": "962ca497dda0b640003633b9882e0042b0519b2c019f9f7e4369c5d785aefa11",
+    "reference/research/paused_extract/verify.py": "78b27f169a558ee1269805c48281de7c3e3d43aaa2ad0d4c19d30dd93046ef9f",
+    "test_collector.py": "60663ff5e65d865e4029f633a1aa04628dd8184e33a334621629f36f0061015f",
+    "test_compact_collector.py": "4c257c2a42ffd5f9166363a47eeb5a056b7ac4391b5600ce62d77b895662ff3d",
+    "test_disclosures.py": "0e414d646adc0cba25bd1c298f4a429ea26528257a10a520766c646c7fa163d5"
+  }
+}
