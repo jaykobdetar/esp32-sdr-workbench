@@ -83,8 +83,9 @@ def accepted(decoder):
     return values
 
 
-def summarize(rows, start, final, receiver_count, expected_config=None):
+def summarize(rows, start, final, receiver_count, expected_config=None, capture_bits=10):
     """Conservative denominator: v0.2.2 sequences count attempted TX from zero."""
+    expected_format = capture_format(capture_bits)
     expected_config = configuration() if expected_config is None else expected_config
     if (
         not isinstance(expected_config, dict)
@@ -137,6 +138,21 @@ def summarize(rows, start, final, receiver_count, expected_config=None):
     off = []
     observed = {condition: set() for condition in ('OFF', 'ON')}
     for row in rows:
+        observed_format = row.get('capture_format')
+        settings = row.get('metadata', {}).get('settings')
+        if settings is not None and (
+            settings.get('bits') != capture_bits or settings.get('rate_hz') != 16000000
+        ):
+            raise ValueError('Capture format conflicts with stored receiver settings')
+        if observed_format is None:
+            # Older campaign source fixed 16380 samples; its stored settings
+            # still establish component precision and sample rate.
+            settings = row.get('metadata', {}).get('settings', {})
+            observed_format = capture_format(settings.get('bits'))
+            if settings.get('rate_hz') != 16000000:
+                raise ValueError('Invalid legacy capture sample rate')
+        if observed_format != expected_format:
+            raise ValueError('Capture format differs across ON/OFF or from requested format')
         receiver = row.get('receiver')
         if type(receiver) is not int or not 0 <= receiver < receiver_count:
             raise ValueError('Invalid receiver index')
@@ -186,8 +202,24 @@ def check_calibration(before, after):
             raise ValueError('Receiver reset during trial')
 
 
+def capture_format(bits=10):
+    if type(bits) is not int or bits not in (8, 10):
+        raise ValueError('Capture bits must be 8 or 10 per component')
+    return dict(
+        bits_per_component=bits,
+        complex_samples=16380,
+        sample_rate_hz=16000000,
+        packed_payload_bytes=16380 * bits * 2 // 8,
+        command=f'CAP{bits * 2}',
+        nominal_aperture_us=16380 / 16,
+    )
+
+
 def capture(radio, receiver, index, condition, output):
     c = radio.capture(16380)
+    actual_format = capture_format(c.bits)
+    if len(c.iq) != 16380 or c.sample_rate_hz != 16000000:
+        raise ValueError('Unexpected actual capture length or sample rate')
     if not c.crc_ok:
         raise ValueError('Capture transport CRC failed')
     filename = f'{condition.lower()}-rx{receiver}-{index:03d}.npy'
@@ -202,10 +234,12 @@ def capture(radio, receiver, index, condition, output):
         host_end_ns=c.monotonic_end_ns,
         firmware_capture_us=c.firmware_capture_us,
         metadata=c.metadata,
+        capture_format=actual_format,
+        actual_capture_call_us=(c.monotonic_end_ns - c.monotonic_start_ns) / 1000,
     )
 
 
-def stagger_plan(receiver_count, captures, duration_ms, stagger_ms=0):
+def stagger_plan(receiver_count, captures, duration_ms, stagger_ms=0, capture_bits=10):
     if type(receiver_count) is not int or not 2 <= receiver_count <= 4:
         raise ValueError('Two to four receivers required')
     if type(stagger_ms) is not int or not 0 <= stagger_ms <= 250:
@@ -214,13 +248,17 @@ def stagger_plan(receiver_count, captures, duration_ms, stagger_ms=0):
         raise ValueError('Captures must be 1..32')
     if type(duration_ms) is not int or not 1000 <= duration_ms <= 30000:
         raise ValueError('Duration must be 1000..30000 ms')
+    format_info = capture_format(capture_bits)
     delays = [k * stagger_ms for k in range(receiver_count)]
-    # Each completed round must move 40950 raw bytes at 1 Mbaud, 8N1,
+    # Each completed round must move the raw payload at 1 Mbaud, 8N1,
     # before the next round. Ignore framing/processing overhead: LOWER bound.
-    last_start_lower_bound = captures * max(delays) + (captures - 1) * 409.5
+    wire_ms = format_info['packed_payload_bytes'] / 100
+    last_start_lower_bound = captures * max(delays) + (captures - 1) * wire_ms
     if last_start_lower_bound >= duration_ms:
         raise ValueError('Even the lower-bound last capture start exceeds source duration')
     return dict(
+        capture_format=format_info,
+        raw_wire_lower_bound_ms=wire_ms,
         stagger_ms=stagger_ms,
         per_receiver_delay_ms=delays,
         captures_per_condition=captures,
@@ -257,9 +295,19 @@ def delayed_capture(radio, receiver, index, condition, output, delay_ms, deadlin
     return row
 
 
-def run(radios, tx, output, captures=8, duration_ms=8000, *, power_dbm=-20, stagger_ms=0):
+def run(
+    radios,
+    tx,
+    output,
+    captures=8,
+    duration_ms=8000,
+    *,
+    power_dbm=-20,
+    stagger_ms=0,
+    capture_bits=10,
+):
     expected_config = configuration(power_dbm)
-    plan = stagger_plan(len(radios), captures, duration_ms, stagger_ms)
+    plan = stagger_plan(len(radios), captures, duration_ms, stagger_ms, capture_bits)
     report = dict(
         status='running', captures=[], note=NOTE, expected_config=expected_config, capture_plan=plan
     )
@@ -277,7 +325,7 @@ def run(radios, tx, output, captures=8, duration_ms=8000, *, power_dbm=-20, stag
         report['devices'] = [r.connect() for r in radios]
         report['calibration_before'] = calibration(radios, 'campaign-before')
         for r in radios:
-            r.configure(2440, 16000000, 12, 60, 10)
+            r.configure(2440, 16000000, 12, 60, capture_bits)
         tx.configure(**expected_config)
         with ThreadPoolExecutor(len(radios)) as pool:
             for condition in ('OFF', 'ON'):
@@ -344,6 +392,7 @@ def run(radios, tx, output, captures=8, duration_ms=8000, *, power_dbm=-20, stag
             report['tx_final_run'],
             len(radios),
             expected_config,
+            capture_bits,
         )
         report['status'] = 'passed'
     except BaseException as exc:
@@ -381,6 +430,7 @@ def main():
     p.add_argument('--duration-ms', type=int, default=8000)
     p.add_argument('--power-dbm', type=int, choices=POWERS_DBM, default=-20)
     p.add_argument('--stagger-ms', type=int, default=0)
+    p.add_argument('--capture-bits', type=int, choices=(8, 10), default=10)
     p.add_argument('--run', action='store_true')
     a = p.parse_args()
     if not 2 <= len(a.port) <= 4 or len({str(Path(v).resolve()) for v in a.port}) != len(a.port):
@@ -388,7 +438,7 @@ def main():
     if not 1 <= a.captures <= 32 or not 1000 <= a.duration_ms <= 30000:
         p.error('Captures 1..32 and duration 1000..30000 ms required')
     try:
-        plan = stagger_plan(len(a.port), a.captures, a.duration_ms, a.stagger_ms)
+        plan = stagger_plan(len(a.port), a.captures, a.duration_ms, a.stagger_ms, a.capture_bits)
     except ValueError as exc:
         p.error(str(exc))
     if not a.run:
@@ -417,6 +467,7 @@ def main():
             a.duration_ms,
             power_dbm=a.power_dbm,
             stagger_ms=a.stagger_ms,
+            capture_bits=a.capture_bits,
         )
     print(json.dumps(dict(status=report['status'], analysis=report.get('analysis'))))
     return 0 if report['status'] == 'passed' else 1

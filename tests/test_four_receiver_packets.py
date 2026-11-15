@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from scripts.four_receiver_packets import CONFIG, accepted, payload, run, summarize
+from scripts.four_receiver_packets import CONFIG, accepted, capture_format, payload, run, summarize
 
 
 def state(**extra):
@@ -49,6 +49,7 @@ def row(receiver=0, seq=2, condition='ON', **extra):
         condition=condition,
         transport_crc_valid=True,
         decoder={'full_payload_matches': [hit]},
+        capture_format=capture_format(),
     )
 
 
@@ -135,7 +136,8 @@ def test_failure_stops_and_closes(tmp_path):
 
 
 @pytest.mark.parametrize('fail_cleanup', [False, True])
-def test_complete_lifecycle_with_fake_hardware(tmp_path, monkeypatch, fail_cleanup):
+@pytest.mark.parametrize('capture_bits', [8, 10])
+def test_complete_lifecycle_with_fake_hardware(tmp_path, monkeypatch, fail_cleanup, capture_bits):
     import scripts.four_receiver_packets as campaign
 
     class TX:
@@ -178,15 +180,17 @@ def test_complete_lifecycle_with_fake_hardware(tmp_path, monkeypatch, fail_clean
                 )
             )
 
-        def configure(self, *_):
-            pass
+        def configure(self, *args):
+            self.bits = args[-1]
 
         def close(self):
             self.closed = True
 
     def fake_capture(r, receiver, index, condition, output):
         value = row(receiver, seq=receiver)
-        value.update(index=index, condition=condition, file=condition)
+        value.update(
+            index=index, condition=condition, file=condition, capture_format=capture_format(r.bits)
+        )
         return value
 
     monkeypatch.setattr(campaign, 'capture', fake_capture)
@@ -195,11 +199,13 @@ def test_complete_lifecycle_with_fake_hardware(tmp_path, monkeypatch, fail_clean
         campaign, 'decode', lambda condition, *_: row(crc_verified=condition == 'ON')['decoder']
     )
     tx, radios = TX(), [Radio() for _ in range(4)]
-    result = run(radios, tx, tmp_path, captures=2, duration_ms=8000)
+    result = run(radios, tx, tmp_path, captures=2, duration_ms=8000, capture_bits=capture_bits)
     assert result['status'] == ('failed' if fail_cleanup else 'passed')
     if fail_cleanup:
         assert result['cleanup_errors'] == ["RuntimeError('STOP failed')"]
     assert len(result['captures']) == 16
+    assert all(r.bits == capture_bits for r in radios)
+    assert result['capture_plan']['capture_format'] == capture_format(capture_bits)
     assert result['analysis']['unique_packets'] == 1
     assert tx.starts == [{'count': 20000, 'duration_ms': 8000}]
     assert tx.stops == 2
@@ -400,3 +406,62 @@ def test_host_delay_and_deadline_observation(monkeypatch, tmp_path, condition):
         ]
     else:
         assert 'host_duration_deadline_observation' not in result
+
+
+@pytest.mark.parametrize('bits,wire_bytes', [(8, 32760), (10, 40950)])
+def test_format_plan_and_consistent_controls(bits, wire_bytes):
+    from scripts.four_receiver_packets import stagger_plan
+
+    plan = stagger_plan(4, 16, 16000, 100, bits)
+    assert plan['capture_format']['packed_payload_bytes'] == wire_bytes
+    assert plan['raw_wire_lower_bound_ms'] == wire_bytes / 100
+    rows = empty_controls()
+    for r in rows:
+        r['capture_format'] = capture_format(bits)
+    assert summarize(rows, fresh_state(), state(), 4, capture_bits=bits)['unique_packets'] == 0
+    rows[0]['capture_format'] = capture_format(18 - bits)
+    with pytest.raises(ValueError, match='Capture format'):
+        summarize(rows, fresh_state(), state(), 4, capture_bits=bits)
+
+
+@pytest.mark.parametrize('bits', [True, 7, 9, 11, '8', None])
+def test_bad_capture_bits(bits):
+    with pytest.raises(ValueError, match='Capture bits'):
+        capture_format(bits)
+
+
+def test_legacy_format_metadata_is_checked():
+    rows = empty_controls()
+    for r in rows:
+        del r['capture_format']
+        r['metadata'] = {'settings': {'bits': 10, 'rate_hz': 16000000}}
+    assert summarize(rows, fresh_state(), state(), 4)['unique_packets'] == 0
+    rows[-1]['metadata']['settings']['bits'] = 8
+    with pytest.raises(ValueError, match='Capture format'):
+        summarize(rows, fresh_state(), state(), 4)
+
+
+def test_exact_iq8_quantization_matches_packer_all_signed_values():
+    import numpy as np
+
+    from scripts.iq8_replay import quantize_iq8
+    from sdr_research.protocol import decode_iq
+
+    i = np.arange(-512, 512, dtype=np.int16)
+    q = i[::-1]
+    # Independently mimic unsigned field extraction and byte packing in C.
+    words = (i.astype(np.uint32) & 1023) | ((q.astype(np.uint32) & 1023) << 10)
+    packed = np.column_stack(((words >> 2) & 255, (words >> 12) & 255)).astype(np.uint8)
+    expected = decode_iq(packed.tobytes(), len(i), 8)
+    actual = quantize_iq8((i - 1j * q) / 512)
+    assert np.array_equal(actual, expected)
+
+
+@pytest.mark.parametrize('value', [0.0001 + 0j, 1 + 0j, complex(float('nan'), 0)])
+def test_quantization_rejects_non_iq10(value):
+    import numpy as np
+
+    from scripts.iq8_replay import quantize_iq8
+
+    with pytest.raises(ValueError):
+        quantize_iq8(np.array([value]))

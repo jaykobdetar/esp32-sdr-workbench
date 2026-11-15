@@ -102,3 +102,39 @@ completed transmissions in the finite source run.
 Compare a staggered trial with an equal-power, equal-duration, equal-snapshot-count
 unstaggered trial. A single pair is a diagnostic comparison, not a statistical
 advantage, sensitivity gain, or continuous-coverage claim.
+
+### Explicit IQ8 transport trial (default remains IQ10)
+
+`--capture-bits 8` requests the existing firmware's CAP16 format: 8 bits per I
+and Q component, obtained by discarding the low two bits of each signed 10-bit
+ADC component. `--capture-bits 10` remains the default CAP20 path. Both retain
+16,380 complex samples at 16 MS/s, approximately 1023.75 us of nominal aperture.
+The IQ8 payload is 32,760 bytes versus IQ10's 40,950 bytes. At 1 Mbaud/8N1 the
+payload-only wire floors are 327.6 ms and 409.5 ms. The plan's budget calculation
+now uses the selected format rather than a fixed IQ10 cost.
+
+Each row records actual component precision, complex sample count, sample rate,
+packed payload length, firmware capture duration, and measured host capture-call
+time; metadata also retains measured payload-transfer and header-latency times.
+Analysis rejects mixed ON/OFF formats or a format different from the requested
+one. The source waveform and completed-transmission denominator are unchanged.
+Old fixed-IQ10 reports are still checked through their saved capture settings.
+IQ8 is an explicit trial option, not a promoted default or a lossless claim.
+
+`python -m nrf_campaigns.iq8_replay PRIVATE_CAMPAIGN_DIRECTORY` independently reruns
+the baseline decoder and exact firmware-equivalent IQ8 quantization on retained
+IQ10 data without opening hardware or modifying the evidence. It verifies the
+input IQ10 grid and compares full payload/address/CRC-accepted observations.
+A replay of 576 retained captures (288 ON and 288 OFF) from four 0 dBm trials
+and one -20 dBm trial preserved all 187 strong-source accepted observations with
+no gained observations or OFF detections. In the weak-source trial, accepted
+observations fell from eight to seven; its seven-packet receiver union survived
+because another receiver retained the lost observation's packet. This is
+quantization replay, not fresh CAP16 hardware validation or universal equivalence.
+
+A bounded physical ABBA IQ10/IQ8 comparison should keep source power, duration,
+nominal aperture, snapshot count, and staggering equal. Compare wire/host timing,
+transport integrity, and packet outcomes. A fixed-count trial can demonstrate
+faster completion but not increased capture throughput. A separate equal-duration
+acquisition-budget trial is needed to test whether saved service time yields more
+retained unique packets. A single pair is not statistical proof of superiority.
