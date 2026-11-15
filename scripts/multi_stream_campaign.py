@@ -23,6 +23,7 @@ from sdr_research.calibration import record_calibration
 from sdr_research.detector_stream import APERTURE_US, run_stream
 from sdr_research.dual_timing import clock_probe, coverage
 from sdr_research.protocol import Radio
+from sdr_research.stream_diagnostics import diagnose_failed_stream
 
 from .analyze_nrf_iq import decode
 from .dual_stream_campaign import (
@@ -45,6 +46,7 @@ _SOURCE_FILES = {
     'sdr_research/protocol.py': inspect.getsourcefile(Radio),
     'scripts/analyze_nrf_iq.py': inspect.getsourcefile(decode),
     'sdr_research/calibration.py': inspect.getsourcefile(record_calibration),
+    'sdr_research/stream_diagnostics.py': inspect.getsourcefile(diagnose_failed_stream),
 }
 
 
@@ -317,7 +319,9 @@ class Campaign(DualCampaign):
                 f.result()
             results = [f.result() for f in futures]
         except BaseException:
+            cancellation = dict(event_set_started_host_monotonic_ns=time.monotonic_ns())
             stop.set()
+            cancellation['event_set_returned_host_monotonic_ns'] = time.monotonic_ns()
             outcomes = []
             for k, f in enumerate(futures):
                 outcome = dict(receiver_index=k, port=getattr(self.radios[k], 'port', None))
@@ -328,6 +332,7 @@ class Campaign(DualCampaign):
                         summary=peer['summary'],
                         transport_crc_valid=peer.get('transport_crc_valid'),
                         stop_requested=peer.get('stop_requested'),
+                        stop_command_timing=peer.get('stop_command_timing', []),
                     )
                 except BaseException as error:
                     outcome.update(
@@ -352,12 +357,38 @@ class Campaign(DualCampaign):
                     periods_ns=periods,
                     yield_phases=phases,
                     host_failure_monotonic_ns=time.monotonic_ns(),
+                    cancellation_timing=cancellation,
                     receivers=outcomes,
                     reason='At least one receiver failed; no union coverage is accepted.',
                 )
             )
-            self.save()
-            raise
+            try:
+                self.save()  # Preserve primary evidence before best-effort diagnostics.
+                for k, outcome in enumerate(outcomes):
+                    if outcome['status'] != 'error':
+                        continue
+                    previous = outcome.get('private_stream_diagnostics', {}).get(
+                        'last_valid_record'
+                    )
+                    states = self.report.get('calibration_by_receiver', [])
+                    observations = (
+                        states[k].get('calibration_observations', []) if k < len(states) else []
+                    )
+                    calibration = next(
+                        (v for v in reversed(observations) if v.get('status') == 'observed'), None
+                    )
+                    try:
+                        outcome['same_descriptor_diagnostics'] = diagnose_failed_stream(
+                            self.radios[k], previous_record=previous, calibration_before=calibration
+                        )
+                    except BaseException as diagnostic_error:
+                        outcome['same_descriptor_diagnostics'] = dict(
+                            status='diagnostic-failed', error_type=type(diagnostic_error).__name__
+                        )
+                self.save()
+            except BaseException as save_error:
+                rejected[-1]['diagnostic_persistence_error_type'] = type(save_error).__name__
+            raise  # Never replace the primary stream failure with cleanup failure.
         row = dict(
             index=len(self.report['runs']),
             scheduled_a_us=a,

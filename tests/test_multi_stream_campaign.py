@@ -269,7 +269,10 @@ def test_distinct_board_calibrations_are_not_compared_to_each_other(tmp_path):
     assert all(r['device_us'] == 10 for r in after)
 
 
-def test_failed_campaign_persists_private_rejection_and_peer_summaries(monkeypatch, tmp_path):
+@pytest.mark.parametrize('diagnostic_failure', [False, True])
+def test_failed_campaign_persists_private_rejection_and_peer_summaries(
+    monkeypatch, tmp_path, diagnostic_failure
+):
     import json
     from concurrent.futures import ThreadPoolExecutor
 
@@ -291,8 +294,18 @@ def test_failed_campaign_persists_private_rejection_and_peer_summaries(monkeypat
     radios = [Radio(k) for k in range(4)]
     error = ProtocolError('DSTREAM framing/CRC failure; coverage is unverified')
     error.stream_diagnostics = {'frame_hex': '00' * 48, 'expected_sequence': 3}
+    finished = []
+
+    def diagnose(radio, **kwargs):
+        assert sorted(finished) == [0, 1, 2, 3]
+        if diagnostic_failure:
+            raise RuntimeError('injected diagnostic failure')
+        return {'status': 'diagnosed-rejected-stream'}
+
+    monkeypatch.setattr(module, 'diagnose_failed_stream', diagnose)
 
     def stream(r, **kwargs):
+        finished.append(radios.index(r))
         if r is radios[2]:
             raise error
         return {'summary': {'captures': 2}, 'transport_crc_valid': True, 'stop_requested': False}
@@ -313,6 +326,14 @@ def test_failed_campaign_persists_private_rejection_and_peer_summaries(monkeypat
     assert campaign.report['runs'] == []
     rejected = campaign.report['rejected_runs'][0]
     assert rejected['status'] == 'rejected'
+    cancellation = rejected['cancellation_timing']
+    assert (
+        cancellation['event_set_started_host_monotonic_ns']
+        <= cancellation['event_set_returned_host_monotonic_ns']
+    )
+    assert rejected['receivers'][2]['same_descriptor_diagnostics']['status'] == (
+        'diagnostic-failed' if diagnostic_failure else 'diagnosed-rejected-stream'
+    )
     assert rejected['receivers'][2]['port'] == '/dev/mock2'
     assert rejected['receivers'][2]['private_stream_diagnostics'] == error.stream_diagnostics
     assert [r['status'] for r in rejected['receivers']] == [
@@ -331,7 +352,7 @@ def test_provenance_hashes_actual_sources_without_absolute_keys(tmp_path):
     import hashlib
 
     hashes = module.source_provenance()
-    assert len(hashes) == 6
+    assert len(hashes) == 7
     for name, path in module._SOURCE_FILES.items():
         assert not name.startswith('/') and '..' not in name
         assert hashes[name] == hashlib.sha256(Path(path).read_bytes()).hexdigest()

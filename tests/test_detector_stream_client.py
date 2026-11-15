@@ -374,3 +374,35 @@ def test_begin_failure_has_no_raw_frame():
     assert caught.value.stream_diagnostics['stage'] == 'begin'
     assert caught.value.stream_diagnostics['validated_record_count'] == 0
     assert 'frame_hex' not in caught.value.stream_diagnostics
+
+
+def test_cleanup_stop_error_never_masks_primary_crc_error():
+    radio, frames, _ = fake_radio()
+    frames[0] = b'\xff' * 48
+    radio._read.side_effect = frames
+    radio.serial.write.side_effect = OSError('injected STOP write failure')
+    with pytest.raises(ProtocolError, match='framing/CRC') as caught:
+        run_stream(radio, start_us=START)
+    d = caught.value.stream_diagnostics
+    assert d['cleanup_stop_error_type'] == 'OSError'
+    assert d['stop_command_timing'][0]['reason'] == 'primary-error-cleanup'
+    assert (
+        d['stop_command_timing'][0]['error_host_monotonic_ns']
+        >= d['stop_command_timing'][0]['write_started_host_monotonic_ns']
+    )
+    assert radio.failed
+
+
+def test_shared_stop_write_has_ordered_host_timestamps():
+    radio, _, _ = fake_radio(status=3)
+    radio.serial.write.return_value = 5
+    stop = Event()
+    stop.set()
+    result = run_stream(radio, start_us=START, stop=stop)
+    action = result['stop_command_timing'][0]
+    assert action['reason'] == 'shared-event-observed' and action['bytes_written'] == 5
+    assert (
+        action['write_started_host_monotonic_ns']
+        <= action['write_returned_host_monotonic_ns']
+        <= action['flush_returned_host_monotonic_ns']
+    )
