@@ -83,3 +83,30 @@ def test_public_projection_has_no_machine_paths_or_raw_device_identity():
         text = path.read_text()
         assert '/home/' not in text and '/dev/' not in text
         inspect(json.loads(text))
+
+
+@pytest.mark.parametrize(
+    ('name', 'expected_count', 'expected_percent'),
+    [
+        ('timing-smoke.json', 1, 99.69999),
+        ('timing-30s.json', 2, 99.89999666666667),
+        ('timing-abd-120s.json', 2, 99.97499916666666),
+    ],
+)
+def test_decision_union_keeps_warmup_in_requested_denominator(
+    name, expected_count, expected_percent
+):
+    trials = load(name)['trials']
+    assert len(trials) == expected_count
+    for trial in trials:
+        assert trial['analysis_status'] == 'verified-telemetry'
+        decision = trial['nominal_decision_union']
+        duration_us = trial['duration_ms'] * 1000
+        assert decision['duration_us'] == duration_us
+        assert decision['covered_us'] == duration_us - 30001
+        assert decision['coverage_percent'] == pytest.approx(expected_percent, rel=0, abs=1e-10)
+        assert decision['gap_count'] == 1
+        assert decision['max_gap_us'] == 30001
+        assert decision['first_gaps_relative_us'] == [[0, 30001]]
+        assert decision['gap_list_truncated'] is False
+        assert decision['covered_us'] < trial['nominal_union']['covered_us']

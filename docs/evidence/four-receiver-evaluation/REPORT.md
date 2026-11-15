@@ -20,14 +20,16 @@ The reconstructed v9 firmware compiled with the pinned SDK and passed 71 firmwar
 
 At a 1.875 ms period with idle-wakeup selector 34 and independently RF-anchored clocks:
 
-| Trial | Requested window | Nominal union | Largest gap | Outcome |
-|---|---:|---:|---:|---|
-| Initial smoke | 10 s | 99.9998700% | 13 µs | Verified |
-| Repeat 1 | 30 s | 99.9999567% | 13 µs | Verified |
-| Repeat 2 | 30 s | 99.9999833% | 5 µs | Verified |
-| Repeat 3 | 30 s requested | Not reported | Not reported | Rejected: stream framing/CRC failure on C |
+| Trial | Requested window | Nominal acquisition union | Nominal decision-valid union | Largest acquisition gap | Outcome |
+|---|---:|---:|---:|---:|---|
+| Initial smoke | 10 s | 99.9998700% | 99.69999% | 13 µs | Verified |
+| Repeat 1 | 30 s | 99.9999567% | 99.8999966667% | 13 µs | Verified |
+| Repeat 2 | 30 s | 99.9999833% | 99.8999966667% | 5 µs | Verified |
+| Repeat 3 | 30 s requested | Not reported | Not reported | Not reported | Rejected: stream framing/CRC failure on C |
 
-The accepted gaps were at the requested startup edge, not trimmed away. Each accepted run passed complete record/terminal accounting and every receiver-to-reference clock fit's bracketing and held-out checks. The 10-second run's maximum held-out error was below 0.83 µs, an empirical screen rather than a certified error bound. Its ±20 µs endpoint-erosion scenario retained 99.99967% nominal union. Its detector-decision union was lower (99.69999%) because warmup is excluded from valid decisions.
+The accepted gaps were at the requested startup edge, not trimmed away. Each accepted run passed complete record/terminal accounting and every receiver-to-reference clock fit's bracketing and held-out checks. The 10-second run's maximum held-out error was below 0.83 µs, an empirical screen rather than a certified error bound. Its ±20 µs endpoint-erosion scenario retained 99.99967% nominal union.
+
+Decision-valid windows exclude exactly the first 16 warmup records from **each receiver**. In every accepted 10-, 30- and 120-second trial documented here, the combined decision-valid union first starts 30,001 µs after the requested start. It has that single startup gap and no interior union gap within the requested window under the nominal timing model. Its denominator still includes the full requested window, including warmup. This is eligibility for a detector decision, **not a positive detection, decoded packet, packet-recovery percentage or host delivery-time measurement**. The acquisition union includes warmup; the decision-valid union does not.
 
 These are trigger-plus-nominal-sample-duration windows. DSTREAM discards raw I/Q. Clock anchors are selected common packets, not a recall denominator. Complete host-session preparation, anchor collection and delivery are not hidden inside the requested timing denominator; they are outside that particular measurement.
 
@@ -44,7 +46,15 @@ No firmware path intentionally produces an all-FF DSTREAM record. This narrows t
 
 ## Longer A/B/D comparison, excluding C
 
-Two 120-second trials passed all clock-fit, CRC/accounting and calibration screens at 99.9999892% and 99.9999958% nominal union, with 13 µs and 5 µs startup gaps. The third requested 120-second trial was rejected after approximately 26 seconds: B first produced a valid-CRC ordinary record with a four-record sequence gap. A subsequently had an eight-record gap and D an all-zero frame. Group cancellation was being requested, but normal STOP semantics do not intentionally produce these records; exact causality is not established. Complete per-peer diagnostics remain private and no coverage is reported for the rejected run.
+Two 120-second trials passed all clock-fit, CRC/accounting and calibration screens:
+
+| A/B/D trial | Requested window | Nominal acquisition union | Nominal decision-valid union | Largest acquisition gap | Outcome |
+|---|---:|---:|---:|---:|---|
+| Repeat 1 | 120 s | 99.9999892% | 99.9749991667% | 13 µs | Verified |
+| Repeat 2 | 120 s | 99.9999958% | 99.9749991667% | 5 µs | Verified |
+| Repeat 3 | 120 s requested | Not reported | Not reported | Not reported | Rejected: stream sequence/framing failures |
+
+Both accepted decision-valid unions exclude the same 30,001 µs startup gap described above, with no interior union gap in the requested interval under the nominal model. The third requested 120-second trial was rejected after approximately 26 seconds: B first produced a valid-CRC ordinary record with a four-record sequence gap. A subsequently had an eight-record gap and D an all-zero frame. Group cancellation was being requested, but normal STOP semantics do not intentionally produce these records; exact causality is not established. Complete per-peer diagnostics remain private and no coverage is reported for the rejected run.
 
 This is evidence of two successful bounded trials, **not sustained three-receiver reliability**. It also prevents attributing all long-run failures exclusively to C's independently observed FF corruption. All four subsequently recovered to passive CRC-valid captures without firmware or physical-connection changes.
 
