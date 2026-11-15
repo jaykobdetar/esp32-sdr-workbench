@@ -376,15 +376,22 @@ def test_begin_failure_has_no_raw_frame():
     assert 'frame_hex' not in caught.value.stream_diagnostics
 
 
-def test_cleanup_stop_error_never_masks_primary_crc_error():
+@pytest.mark.parametrize('operation', ['write', 'flush'])
+@pytest.mark.parametrize('cleanup_error', [OSError('injected STOP failure'), KeyboardInterrupt()])
+def test_cleanup_stop_error_never_masks_primary_crc_error(operation, cleanup_error):
     radio, frames, _ = fake_radio()
     frames[0] = b'\xff' * 48
     radio._read.side_effect = frames
-    radio.serial.write.side_effect = OSError('injected STOP write failure')
+    getattr(radio.serial, operation).side_effect = cleanup_error
     with pytest.raises(ProtocolError, match='framing/CRC') as caught:
         run_stream(radio, start_us=START)
     d = caught.value.stream_diagnostics
-    assert d['cleanup_stop_error_type'] == 'OSError'
+    assert d['cleanup_stop_error_type'] == type(cleanup_error).__name__
+    assert d['frame_hex'] == 'ff' * 48
+    assert d['frame_bytes_received'] == 48
+    assert d['magic_valid'] is False
+    assert d['received_crc32'] == 0xFFFFFFFF
+    assert d['computed_crc32'] != d['received_crc32']
     assert d['stop_command_timing'][0]['reason'] == 'primary-error-cleanup'
     assert (
         d['stop_command_timing'][0]['error_host_monotonic_ns']
