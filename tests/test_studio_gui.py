@@ -285,8 +285,17 @@ def test_four_receiver_demo_visible_health_repeat_and_stop(window, app):
     until(app, lambda: not first.is_alive())
     w.poll()
     assert all('historical' in status.text() for status in w.receiver_statuses.values())
+    old_statuses = list(w.receiver_statuses.values())
     w.start_session()
     assert w.session is not first
+    # Before DeferredDelete is delivered, retired labels must already be hidden.
+    assert all(not status.isVisible() for status in old_statuses)
+    assert w.receiver_health_layout.count() == 4
+    app.processEvents()
+    visible_statuses = [
+        child for child in w.receiver_health.findChildren(QtWidgets.QLabel) if child.isVisible()
+    ]
+    assert len(visible_statuses) == 4
     until(app, lambda: len(w.latest) == 4)
     assert len(w.receiver_statuses) == 4
 

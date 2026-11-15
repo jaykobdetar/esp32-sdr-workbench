@@ -879,6 +879,9 @@ class StudioWindow(W.QMainWindow):
         while self.receiver_health_layout.count():
             item = self.receiver_health_layout.takeAt(0)
             if item.widget():
+                # Deferred deletion may wait until the next event-loop turn.
+                # Hide retired labels immediately so restart cannot paint both sessions.
+                item.widget().hide()
                 item.widget().deleteLater()
         self.rx_select.clear()
         self.log.clear()
