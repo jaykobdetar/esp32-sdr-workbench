@@ -285,7 +285,7 @@ def test_campaign_source_off_smoke_and_cleanup_failure(tmp_path, monkeypatch):
     class RX:
         info = {
             'version': 'VERSION '
-            + json.dumps({'firmware_variant': 'esp32-packet-only-bounded-v1'}),
+            + json.dumps({'firmware_variant': 'esp32-packet-only-bounded-v1finish'}),
             'caps': ['PKTONLY', 'CALHASH'],
         }
         closed = False
@@ -432,3 +432,13 @@ def test_candidate_emitter_synthetic_interoperability():
     result = validate_lines(lines, 3, 10000, 16)
     assert result['accepted_observations'] == 3
     assert result['unique_sequences'] == [42]
+
+
+@pytest.mark.parametrize(
+    'end,expected',
+    [(100, True), (3000000099, True), (3000000100, False), (4500000100, False), (99, False)],
+)
+def test_complete_end_conservative_source_deadline(end, expected):
+    from scripts.packet_only_campaign import complete_end_before_source_deadline
+
+    assert complete_end_before_source_deadline(100, end, 3000) is expected

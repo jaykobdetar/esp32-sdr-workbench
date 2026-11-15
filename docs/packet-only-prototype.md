@@ -1,7 +1,7 @@
 # Single-board packet-only prototype verifier
 
 This is an opt-in host verifier for the separately reviewed
-`esp32-packet-only-bounded-v1` firmware candidate, **not a firmware installer**.
+`esp32-packet-only-bounded-v1finish` firmware candidate, **not a firmware installer**.
 It is restricted to the controlled unwhitened Nordic 2 Mbit/s, 16-byte `RFTX`
 payload and address `efcdab89c3`. It is not a Quest/general protocol decoder.
 The candidate serializes acquisition, fixed known-source decoding and metadata
@@ -97,3 +97,9 @@ independent app-image verification. Only core 1 / 240 MHz is qualified here.
 Source evidence is aggregate START/final completed counters, not an event-level
 source trace. The retained synthetic wire fixture is produced by the actual C
 emitter using fake hardware and synthetic decoder results; it is not RF evidence.
+
+The qualified finish revision paces INFO and END delivery. Firmware session_us
+is sampled before END output, not at host receipt. Successful ON controls require
+complete END receipt before the conservative source deadline measured from the
+host START send boundary. A 3 s plan is not a guarantee: the terminal pacing
+upper bound alone is 4.5 s, and late completion rejects the result.

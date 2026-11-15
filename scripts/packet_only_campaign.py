@@ -1,6 +1,6 @@
 """Single-board finite packet-only prototype controls; dry-run unless --run.
 
-Requires separately reviewed/flashed esp32-packet-only-bounded-v1. Never flashes.
+Requires separately reviewed/flashed esp32-packet-only-bounded-v1finish. Never flashes.
 """
 
 import argparse
@@ -91,6 +91,12 @@ def packet_recovery(conditions, source_start, source_final, config):
     )
 
 
+def complete_end_before_source_deadline(start_host_before_ns, end_host_ns, duration_ms):
+    if any(type(v) is not int or v < 0 for v in (start_host_before_ns, end_host_ns, duration_ms)):
+        raise ValueError('Invalid host/source timing evidence')
+    return start_host_before_ns <= end_host_ns < start_host_before_ns + duration_ms * 1000000
+
+
 def run(
     radio,
     tx,
@@ -118,7 +124,7 @@ def run(
                 str(p.name): hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in (Path(__file__), Path(__file__).parents[1] / 'sdr_research/packet_only.py')
             },
-            expected_firmware_variant='esp32-packet-only-bounded-v1',
+            expected_firmware_variant='esp32-packet-only-bounded-v1finish',
             firmware_app_hash='Not queried; integrator must retain independently verified flashed app hash',
             source_evidence='Aggregate completed counters only; no source event-level trace',
         ),
@@ -153,7 +159,7 @@ def run(
         report['device'] = info
         version = json.loads(info['version'].removeprefix('VERSION '))
         if (
-            version.get('firmware_variant') != 'esp32-packet-only-bounded-v1'
+            version.get('firmware_variant') != 'esp32-packet-only-bounded-v1finish'
             or 'PKTONLY' not in info['caps']
         ):
             raise ValueError('Wrong packet-only candidate firmware')
@@ -209,6 +215,17 @@ def run(
                 row['collector_finished_after_latest_source_duration_deadline'] = (
                     row['host_collect_end_ns'] > latest_duration_deadline
                 )
+                # Conservative bound: START can execute anytime after host send.
+                # Complete END delivery, not firmware pre-send session_us, must fit.
+                row['collector_finished_before_earliest_source_deadline'] = (
+                    complete_end_before_source_deadline(
+                        report['source_start_host_before_ns'],
+                        row['host_collect_end_ns'],
+                        source_duration_ms,
+                    )
+                )
+                if not row['collector_finished_before_earliest_source_deadline']:
+                    raise ValueError('Complete END delivery did not precede source duration bound')
             row['status'] = 'verified'
             save()
         report['calibration_after'] = calibration([radio], 'campaign-after')
