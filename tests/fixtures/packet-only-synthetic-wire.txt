@@ -1,0 +1,8 @@
+PONLY 0 BEGIN 1 count=3 period_us=10000 cap=16 hz=240000000 core=1 start_us=20010 *287de5c1
+PONLY 1 WINDOW slot=0 trigger_us=20155 scheduled_us=20010 capture_us=1025 decode_us=6255 cycles=1500000 packets=1 output_drops=0 busy=0 incomplete=0 *b1195237
+PONLY 2 PACKET slot=0 source_sequence=42 address_sample=0 phase=0 polarity=1 address=efcdab89c3 air_crc=1967 payload=524654582a0000003233343536373839 *c3848d8f
+PONLY 3 WINDOW slot=1 trigger_us=30150 scheduled_us=30010 capture_us=1025 decode_us=6255 cycles=1500000 packets=1 output_drops=0 busy=0 incomplete=0 *100ef37c
+PONLY 4 PACKET slot=1 source_sequence=42 address_sample=0 phase=0 polarity=1 address=efcdab89c3 air_crc=1967 payload=524654582a0000003233343536373839 *c39d738d
+PONLY 5 WINDOW slot=2 trigger_us=40160 scheduled_us=40010 capture_us=1025 decode_us=6255 cycles=1500000 packets=1 output_drops=0 busy=0 incomplete=0 *5e936d50
+PONLY 6 PACKET slot=2 source_sequence=42 address_sample=0 phase=0 polarity=1 address=efcdab89c3 air_crc=1967 payload=524654582a0000003233343536373839 *04b1f489
+PONLY 7 END status=0 completed=3 decoded=3 decode_errors=0 decoder_status=0 faults=0 skipped=0 cancelled=0 packets=3 output_drops=0 busy=0 incomplete=0 tx_failed=0 decode_max_us=6255 cycles_max=1500000 decode_total_us=18765 cycles_total=4500000 gap_ns=17957500 max_gap_ns=8986250 session_us=48455 *9c66ae43
