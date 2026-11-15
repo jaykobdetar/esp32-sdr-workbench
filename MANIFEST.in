@@ -826,3 +826,8 @@ include docs/evidence/four-receiver-evaluation/timing-awake-prospective-brackets
 
 include docs/evidence/four-receiver-evaluation/awake-iq8-viewer-closeout.json
 include tests/test_measurement_trial_gate.py
+
+include scripts/packet_only_campaign.py
+include docs/packet-only-prototype.md
+include tests/test_packet_only.py
+include tests/fixtures/packet-only-synthetic-wire.txt
