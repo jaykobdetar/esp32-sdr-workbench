@@ -1,0 +1,257 @@
+{
+  "runs": [
+    {
+      "label": "off-smoke",
+      "status": "passed-source-off-control",
+      "receipt_sha256": "8b33fe13233036ee37fce9aceb7d5460670d0e8e98aac1146094b4f5a845c94f",
+      "count": 32,
+      "period_us": 10000,
+      "cap": 16,
+      "source_duration_ms": 3000,
+      "power_dbm": 0,
+      "conditions": [
+        {
+          "condition": "OFF",
+          "completed": 16,
+          "skipped": 16,
+          "observations": 0,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 0,
+          "decode_mean_us": 10886.3125,
+          "decode_max_us": 10967,
+          "session_us": 335343,
+          "host_collect_ms": 568.815034,
+          "wire_sha256": "28c9091c288af2a40ea56e3c25abd63c820ca45ffbe7767fea0a844990cc954f"
+        }
+      ]
+    },
+    {
+      "label": "rejected-10ms",
+      "status": "failed",
+      "receipt_sha256": "4564b8767183a992242bd6de7c837c3a0c29760fd0bcafe581a1a8a441268cbf",
+      "count": 128,
+      "period_us": 10000,
+      "cap": 16,
+      "source_duration_ms": 3000,
+      "power_dbm": 0,
+      "conditions": [
+        {
+          "condition": "OFF",
+          "completed": 64,
+          "skipped": 64,
+          "observations": 0,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 0,
+          "decode_mean_us": 10881.8125,
+          "decode_max_us": 11031,
+          "session_us": 1295330,
+          "host_collect_ms": 1529.25535,
+          "wire_sha256": "2f193234807d9393fddb88cfa89da71a85457079bf755146c91b654dc9d9b00a"
+        },
+        {
+          "condition": "ON",
+          "completed": 64,
+          "skipped": 64,
+          "observations": 30,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 15,
+          "decode_mean_us": 10941.53125,
+          "decode_max_us": 11036,
+          "session_us": 1295413,
+          "host_collect_ms": 1551.640057,
+          "wire_sha256": "b4711f1bdad10be5fe662d146f827e6e2c61083c03d33c0ecea67ff80f00eae0"
+        }
+      ],
+      "source_counters": {
+        "attempted": 2990,
+        "completed": 2989,
+        "scheduled": 3003,
+        "missed_slots": 13
+      },
+      "exclusion": "Failed campaign: no accepted recall, even when individual wire observations validate."
+    },
+    {
+      "label": "repeat-1",
+      "status": "passed",
+      "receipt_sha256": "3907ac1724ee0268b38a8ba71e5ee5687b407d27771d61d461dd7b3d113d9066",
+      "count": 128,
+      "period_us": 20000,
+      "cap": 16,
+      "source_duration_ms": 4000,
+      "power_dbm": 0,
+      "conditions": [
+        {
+          "condition": "OFF",
+          "completed": 128,
+          "skipped": 0,
+          "observations": 0,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 0,
+          "decode_mean_us": 10872.28125,
+          "decode_max_us": 11029,
+          "session_us": 2575330,
+          "host_collect_ms": 2830.649803,
+          "wire_sha256": "ca7b0d822ac0edbc97d18fa683250b6f50ea70bd154a539812e067a0d17bd199"
+        },
+        {
+          "condition": "ON",
+          "completed": 128,
+          "skipped": 0,
+          "observations": 73,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 31,
+          "decode_mean_us": 10932.15625,
+          "decode_max_us": 11033,
+          "session_us": 2577417,
+          "host_collect_ms": 2835.61852,
+          "wire_sha256": "b901049e19c9bb457c61e0ec78ff4899881a8e0588421f81e04293b4a3a0c806"
+        }
+      ],
+      "source_counters": {
+        "attempted": 3988,
+        "completed": 3988,
+        "scheduled": 4003,
+        "missed_slots": 15
+      },
+      "analysis": {
+        "unique_packets": 73,
+        "accepted_observations": 73,
+        "duplicate_observations": 0,
+        "completed_transmissions": 3988,
+        "attempted_transmissions": 3988,
+        "recovery_percent": 1.8304914744232699,
+        "source_off_packets": 0,
+        "skipped_slots": 0,
+        "busy_candidates": 0,
+        "incomplete_candidates": 31,
+        "output_drops": 0,
+        "note": "Single-board delivered known RFTX16 packets / all completed source transmissions in this finite source run, including startup and slack. Not continuous capture, general packet support, or an equal-condition comparison to sparse raw controls. Candidate counters cannot identify how many unique RF packets were missed."
+      }
+    },
+    {
+      "label": "repeat-2",
+      "status": "passed",
+      "receipt_sha256": "f82d5201b29074c0520f7977eda1e1d866976cdb2f5f980a71206239cdc3f61e",
+      "count": 128,
+      "period_us": 20000,
+      "cap": 16,
+      "source_duration_ms": 4000,
+      "power_dbm": 0,
+      "conditions": [
+        {
+          "condition": "OFF",
+          "completed": 128,
+          "skipped": 0,
+          "observations": 0,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 0,
+          "decode_mean_us": 10876.6015625,
+          "decode_max_us": 10966,
+          "session_us": 2575305,
+          "host_collect_ms": 2830.726524,
+          "wire_sha256": "09a7e8f2b7b9e22a7916cadf6f510cf41d51bd5c87c5514bdac45a2417685568"
+        },
+        {
+          "condition": "ON",
+          "completed": 128,
+          "skipped": 0,
+          "observations": 85,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 21,
+          "decode_mean_us": 10957.1953125,
+          "decode_max_us": 11081,
+          "session_us": 2577417,
+          "host_collect_ms": 2835.95564,
+          "wire_sha256": "a2f219505af4a11677b57fa935b230389be9ef960f12c0e422f8dd0f125695d5"
+        }
+      ],
+      "source_counters": {
+        "attempted": 3991,
+        "completed": 3991,
+        "scheduled": 4003,
+        "missed_slots": 12
+      },
+      "analysis": {
+        "unique_packets": 85,
+        "accepted_observations": 85,
+        "duplicate_observations": 0,
+        "completed_transmissions": 3991,
+        "attempted_transmissions": 3991,
+        "recovery_percent": 2.1297920320721624,
+        "source_off_packets": 0,
+        "skipped_slots": 0,
+        "busy_candidates": 0,
+        "incomplete_candidates": 21,
+        "output_drops": 0,
+        "note": "Single-board delivered known RFTX16 packets / all completed source transmissions in this finite source run, including startup and slack. Not continuous capture, general packet support, or an equal-condition comparison to sparse raw controls. Candidate counters cannot identify how many unique RF packets were missed."
+      }
+    },
+    {
+      "label": "repeat-3",
+      "status": "passed",
+      "receipt_sha256": "96c5b96f8bbbf2c45482b9d873b01df5d53b20252d7876d3bf3e6cecfcb19527",
+      "count": 128,
+      "period_us": 20000,
+      "cap": 16,
+      "source_duration_ms": 4000,
+      "power_dbm": 0,
+      "conditions": [
+        {
+          "condition": "OFF",
+          "completed": 128,
+          "skipped": 0,
+          "observations": 0,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 0,
+          "decode_mean_us": 10879.3203125,
+          "decode_max_us": 11018,
+          "session_us": 2575334,
+          "host_collect_ms": 2830.832398,
+          "wire_sha256": "76a8532002088d372f4b8591046cb3bf4436b6b7426869d91c8af4c8a50e08c5"
+        },
+        {
+          "condition": "ON",
+          "completed": 128,
+          "skipped": 0,
+          "observations": 75,
+          "output_drops": 0,
+          "busy": 0,
+          "incomplete": 43,
+          "decode_mean_us": 10951.625,
+          "decode_max_us": 11087,
+          "session_us": 2575417,
+          "host_collect_ms": 2833.858014,
+          "wire_sha256": "c0c1a7515cf1ae2479e05638323c031578c47ca52cd85d04837374254361449d"
+        }
+      ],
+      "source_counters": {
+        "attempted": 3992,
+        "completed": 3992,
+        "scheduled": 4003,
+        "missed_slots": 11
+      },
+      "analysis": {
+        "unique_packets": 75,
+        "accepted_observations": 75,
+        "duplicate_observations": 0,
+        "completed_transmissions": 3992,
+        "attempted_transmissions": 3992,
+        "recovery_percent": 1.8787575150300602,
+        "source_off_packets": 0,
+        "skipped_slots": 0,
+        "busy_candidates": 0,
+        "incomplete_candidates": 43,
+        "output_drops": 0,
+        "note": "Single-board delivered known RFTX16 packets / all completed source transmissions in this finite source run, including startup and slack. Not continuous capture, general packet support, or an equal-condition comparison to sparse raw controls. Candidate counters cannot identify how many unique RF packets were missed."
+      }
+    }
+  ]
+}
