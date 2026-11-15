@@ -267,3 +267,73 @@ def test_distinct_board_calibrations_are_not_compared_to_each_other(tmp_path):
     after = campaign.check_calibration('after')
     assert [r['sha256'] for r in before] == [r['sha256'] for r in after]
     assert all(r['device_us'] == 10 for r in after)
+
+
+def test_failed_campaign_persists_private_rejection_and_peer_summaries(monkeypatch, tmp_path):
+    import json
+    from concurrent.futures import ThreadPoolExecutor
+
+    from sdr_research.protocol import ProtocolError
+
+    class Radio:
+        info = {'caps': ['CALHASH']}
+
+        def __init__(self, k):
+            self.port = f'/dev/mock{k}'
+
+        def command(self, command):
+            return calibration_reply()
+
+    class Tx:
+        def stop(self):
+            pass
+
+    radios = [Radio(k) for k in range(4)]
+    error = ProtocolError('DSTREAM framing/CRC failure; coverage is unverified')
+    error.stream_diagnostics = {'frame_hex': '00' * 48, 'expected_sequence': 3}
+
+    def stream(r, **kwargs):
+        if r is radios[2]:
+            raise error
+        return {'summary': {'captures': 2}, 'transport_crc_valid': True, 'stop_requested': False}
+
+    monkeypatch.setattr(module, 'run_stream', stream)
+    monkeypatch.setattr(module, 'clock_probe', lambda r: {'offset_us': 0})
+    monkeypatch.setattr(module.time, 'monotonic_ns', lambda: 700000000)
+    with ThreadPoolExecutor(4) as pool:
+        campaign = module.Campaign(radios, Tx(), pool, tmp_path)
+        campaign.report['anchors'] = [
+            dict(a, receiver_index=k)
+            for k in range(1, 4)
+            for a in anchors(offset=k * 100000, drift=k * 10e-6)
+        ]
+        with pytest.raises(ProtocolError) as caught:
+            campaign.run(1000, 2000000, [34] * 4)
+        assert caught.value is error
+    assert campaign.report['runs'] == []
+    rejected = campaign.report['rejected_runs'][0]
+    assert rejected['status'] == 'rejected'
+    assert rejected['receivers'][2]['port'] == '/dev/mock2'
+    assert rejected['receivers'][2]['private_stream_diagnostics'] == error.stream_diagnostics
+    assert [r['status'] for r in rejected['receivers']] == [
+        'completed-peer',
+        'completed-peer',
+        'error',
+        'completed-peer',
+    ]
+    assert rejected['receivers'][0]['summary']['captures'] == 2
+    assert module.analyze_run(rejected, campaign.report['anchors'])['status'] == 'unverified'
+    saved = json.loads((tmp_path / 'results.json').read_text())
+    assert saved['rejected_runs'] == campaign.report['rejected_runs']
+
+
+def test_provenance_hashes_actual_sources_without_absolute_keys(tmp_path):
+    import hashlib
+
+    hashes = module.source_provenance()
+    assert len(hashes) == 6
+    for name, path in module._SOURCE_FILES.items():
+        assert not name.startswith('/') and '..' not in name
+        assert hashes[name] == hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    campaign = module.Campaign([object(), object()], None, None, tmp_path)
+    assert campaign.report['source_sha256'] == hashes

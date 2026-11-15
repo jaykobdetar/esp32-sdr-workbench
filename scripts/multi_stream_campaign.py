@@ -7,6 +7,8 @@ Results are nominal acquisition-window coverage, not packet recall.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import inspect
 import itertools
 import json
 import os
@@ -36,10 +38,29 @@ from .dual_stream_campaign import (
     to_a,
 )
 
+_SOURCE_FILES = {
+    'scripts/multi_stream_campaign.py': __file__,
+    'scripts/dual_stream_campaign.py': inspect.getsourcefile(DualCampaign),
+    'sdr_research/detector_stream.py': inspect.getsourcefile(run_stream),
+    'sdr_research/protocol.py': inspect.getsourcefile(Radio),
+    'scripts/analyze_nrf_iq.py': inspect.getsourcefile(decode),
+    'sdr_research/calibration.py': inspect.getsourcefile(record_calibration),
+}
+
+
+def source_provenance():
+    """Hash actual imported source files; expose only stable repo-relative labels."""
+    return {
+        name: hashlib.sha256(Path(path).read_bytes()).hexdigest()
+        for name, path in _SOURCE_FILES.items()
+    }
+
 
 def analyze_run(row, anchors):
     """Require every reference-to-device fit to pass the existing independent screens."""
     try:
+        if row.get('status') == 'rejected':
+            raise ValueError('Rejected streaming attempt is not accepted coverage evidence')
         count = len(row['receivers'])
         if not 2 <= count <= 4:
             raise ValueError('Two to four receiver results required')
@@ -113,10 +134,12 @@ def analyze_run(row, anchors):
 
 
 class Campaign(DualCampaign):
-    def __init__(self, radios, tx, pool, output):
+    def __init__(self, radios, tx, pool, output, *, source_hashes=None):
         if not 2 <= len(radios) <= 4 or len({id(r) for r in radios}) != len(radios):
             raise ValueError('Two to four distinct receiver objects required')
+        hashes = source_provenance() if source_hashes is None else dict(source_hashes)
         super().__init__(radios, tx, pool, output)
+        self.report['source_sha256'] = hashes
 
     def check_calibration(self, boundary):
         states = self.report.setdefault('calibration_by_receiver', [{} for _ in self.radios])
@@ -295,11 +318,45 @@ class Campaign(DualCampaign):
             results = [f.result() for f in futures]
         except BaseException:
             stop.set()
-            for f in futures:
+            outcomes = []
+            for k, f in enumerate(futures):
+                outcome = dict(receiver_index=k, port=getattr(self.radios[k], 'port', None))
                 try:
-                    f.result()
-                except BaseException:
-                    pass
+                    peer = f.result()
+                    outcome.update(
+                        status='completed-peer',
+                        summary=peer['summary'],
+                        transport_crc_valid=peer.get('transport_crc_valid'),
+                        stop_requested=peer.get('stop_requested'),
+                    )
+                except BaseException as error:
+                    outcome.update(
+                        status='error', error_type=type(error).__name__, error=str(error)
+                    )
+                    diagnostics = getattr(error, 'stream_diagnostics', None)
+                    if isinstance(diagnostics, dict):
+                        outcome['private_stream_diagnostics'] = diagnostics
+                outcomes.append(outcome)
+            # Keep failures outside runs: no coverage analysis can count a peer
+            # summary as a complete multi-device trial. Raw frame diagnostics are
+            # private and must not be included in sanitized public projections.
+            rejected = self.report.setdefault('rejected_runs', [])
+            rejected.append(
+                dict(
+                    status='rejected',
+                    index=len(rejected),
+                    attempted_after_completed_runs=len(self.report['runs']),
+                    scheduled_a_us=a,
+                    duration_ms=duration_ms,
+                    deadlines_us=deadlines,
+                    periods_ns=periods,
+                    yield_phases=phases,
+                    host_failure_monotonic_ns=time.monotonic_ns(),
+                    receivers=outcomes,
+                    reason='At least one receiver failed; no union coverage is accepted.',
+                )
+            )
+            self.save()
             raise
         row = dict(
             index=len(self.report['runs']),
@@ -365,9 +422,10 @@ def main():
         return
     os.umask(0o077)
     args.output.mkdir(mode=0o700, parents=True, exist_ok=False)
+    source_hashes = source_provenance()  # Before opening transmitter or receivers.
     radios = [Radio(x) for x in args.port]
     with Transmitter(serial_number=args.tx_serial) as tx, ThreadPoolExecutor(len(radios)) as pool:
-        campaign = Campaign(radios, tx, pool, args.output)
+        campaign = Campaign(radios, tx, pool, args.output, source_hashes=source_hashes)
         report = campaign.report
         try:
             tx.stop()
