@@ -814,3 +814,8 @@ include docs/evidence/four-receiver-evaluation/awake-nonce-batch-control.json
 include docs/evidence/iq-stagger-matched/REPORT.md
 
 include docs/evidence/iq-stagger-matched/summary.json
+include scripts/trial_clock_brackets.py
+
+include docs/trial-clock-brackets.md
+
+include tests/test_trial_clock_brackets.py

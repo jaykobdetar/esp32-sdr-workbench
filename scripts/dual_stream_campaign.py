@@ -157,7 +157,7 @@ def full_burst_opportunity(windows, start, end, duration_us):
     )
 
 
-def analyze_run(row, anchors):
+def analyze_run(row, anchors, *, use_all_bracketing=False):
     try:
         start = row['scheduled_a_us']
         end = start + row['duration_ms'] * 1000
@@ -181,8 +181,10 @@ def analyze_run(row, anchors):
 
         # Limit independent capture pairs, not packets: one capture can decode
         # many packets and must never crowd out independent observations.
-        before = nearest_pairs(reversed([a for a in ordered if a['a_us'] < start]))
-        after = nearest_pairs([a for a in ordered if a['a_us'] > end])
+        before_candidates = list(reversed([a for a in ordered if a['a_us'] < start]))
+        after_candidates = [a for a in ordered if a['a_us'] > end]
+        before = before_candidates if use_all_bracketing else nearest_pairs(before_candidates)
+        after = after_candidates if use_all_bracketing else nearest_pairs(after_candidates)
         if not before or not after:
             raise ValueError('Missing bracketing RF anchors')
         if any('pair' not in anchor for anchor in before + after):

@@ -231,6 +231,9 @@ def test_anchor_stop_failure_still_drains_every_reader(monkeypatch, tmp_path):
     class Future:
         calls = 0
 
+        def done(self):
+            return self.calls >= 2
+
         def result(self):
             self.calls += 1
             if self.calls == 1:
@@ -250,10 +253,14 @@ def test_anchor_stop_failure_still_drains_every_reader(monkeypatch, tmp_path):
 
     pool = Pool()
     campaign = module.Campaign([FakeRadio() for _ in range(4)], Tx(), pool, tmp_path)
-    with pytest.raises(RuntimeError, match='STOP fault'):
+    with pytest.raises(RuntimeError, match='raw failure'):
         campaign.anchors(attempts=1)
     # First reader failed in the result loop; all four were awaited in cleanup.
-    assert [f.calls for f in pool.futures] == [2, 1, 1, 1]
+    assert [f.calls for f in pool.futures] == [2, 2, 2, 2]
+    assert (
+        campaign.report['anchor_failures'][0]['cleanup_observations'][0]['stage']
+        == 'transmitter-stop'
+    )
 
 
 def test_distinct_board_calibrations_are_not_compared_to_each_other(tmp_path):
@@ -352,7 +359,7 @@ def test_provenance_hashes_actual_sources_without_absolute_keys(tmp_path):
     import hashlib
 
     hashes = module.source_provenance()
-    assert len(hashes) == 8
+    assert len(hashes) == 9
     for name, path in module._SOURCE_FILES.items():
         assert not name.startswith('/') and '..' not in name
         assert hashes[name] == hashlib.sha256(Path(path).read_bytes()).hexdigest()

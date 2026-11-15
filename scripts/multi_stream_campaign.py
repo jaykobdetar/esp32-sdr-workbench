@@ -24,6 +24,7 @@ from sdr_research.detector_stream import APERTURE_US, run_stream
 from sdr_research.dual_timing import clock_probe, coverage
 from sdr_research.gc_policy import deferred_cyclic_gc
 from sdr_research.protocol import Radio
+from sdr_research.recording import atomic_write_json
 from sdr_research.stream_diagnostics import diagnose_failed_stream
 
 from .analyze_nrf_iq import decode
@@ -39,8 +40,17 @@ from .dual_stream_campaign import (
     full_burst_opportunity,
     to_a,
 )
+from .trial_clock_brackets import (
+    MAX_BOUNDARY_AGE_US,
+    MIN_GROUPS,
+    anchor_seal,
+    batch_spec,
+    select_trial_anchors,
+    trial_spec,
+)
 
 _SOURCE_FILES = {
+    'scripts/trial_clock_brackets.py': inspect.getsourcefile(select_trial_anchors),
     'sdr_research/gc_policy.py': inspect.getsourcefile(inspect.unwrap(deferred_cyclic_gc)),
     'scripts/multi_stream_campaign.py': __file__,
     'scripts/dual_stream_campaign.py': inspect.getsourcefile(DualCampaign),
@@ -68,12 +78,17 @@ def analyze_run(row, anchors):
         count = len(row['receivers'])
         if not 2 <= count <= 4:
             raise ValueError('Two to four receiver results required')
+        bracket_diagnostics = None
+        if 'clock_brackets' in row:
+            anchors, bracket_diagnostics = select_trial_anchors(row, anchors)
         models = [None]
         pair_diagnostics = []
         for k in range(1, count):
             pair_row = dict(row, receivers=[row['receivers'][0], row['receivers'][k]])
             selected = [a for a in anchors if a.get('receiver_index') == k]
-            result = analyze_pair(pair_row, selected)
+            result = analyze_pair(
+                pair_row, selected, use_all_bracketing=bracket_diagnostics is not None
+            )
             if result['status'] != 'verified-telemetry':
                 raise ValueError(f'Receiver {k} clock/telemetry: {result["reason"]}')
             models.append(result['clock_model'])
@@ -120,6 +135,7 @@ def analyze_run(row, anchors):
         return dict(
             status='verified-telemetry',
             receiver_count=count,
+            clock_brackets=bracket_diagnostics,
             clock_models_to_reference=pair_diagnostics,
             requested_window_a_us=[start, end],
             nominal_union=coverage(windows, start, end),
@@ -195,6 +211,139 @@ class Campaign(DualCampaign):
             self.report['status'] = 'passed'
         return errors
 
+    def _save_anchor_progress(self):
+        batch = self._anchor_batch
+        pair_ids = batch['pair_ids']
+        atomic_write_json(
+            self.out / f'anchor-progress-{batch["batch_id"]}.json',
+            dict(
+                schema=1,
+                batch=dict(batch),
+                source_sha256=self.report['source_sha256'],
+                anchors=[
+                    a for a in self.report['anchors'] if a.get('batch_id') == batch['batch_id']
+                ],
+                anchor_pairs=[p for p in self.report['anchor_pairs'] if p['index'] in pair_ids],
+                note='Durable trial-local anchor progress; full results checkpoint remains separate. No prior stream records serialized here.',
+            ),
+        )
+        # Persist the rename as well as the fsynced file contents on this Linux host.
+        directory = os.open(self.out, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+
+    def bracket_batch(self, trial_index, role, *, reference_boundary_us=None):
+        batch = dict(batch_spec(trial_index, role), status='collecting', pair_ids=[])
+        if reference_boundary_us is not None:
+            batch['reference_boundary_us'] = reference_boundary_us
+        batches = self.report.setdefault('anchor_batches', [])
+        if any(b['batch_id'] == batch['batch_id'] for b in batches):
+            raise ValueError('Calibration batch ID cannot be reused')
+        batches.append(batch)
+        self._anchor_batch = batch
+        try:
+            self._save_anchor_progress()
+            self.anchors(needed=MIN_GROUPS, attempts=60)
+            batch.update(
+                anchor_seal(
+                    [a for a in self.report['anchors'] if a.get('batch_id') == batch['batch_id']]
+                )
+            )
+            batch['status'] = 'complete'
+            self._save_anchor_progress()
+        except BaseException:
+            batch['status'] = 'failed'
+            try:
+                self._save_anchor_progress()
+            except BaseException as save_error:
+                batch['progress_save_error_type'] = type(save_error).__name__
+            raise
+        finally:
+            self._anchor_batch = None
+        return dict(batch, pair_ids=list(batch['pair_ids']))
+
+    def trial_clock_run(self, duration_ms, period_ns, phases, compensate=True):
+        index = len(self.report['runs'])
+        before = self.bracket_batch(index, 'before')
+        # No full-report serialization between fresh pre-batch and scheduling.
+        self._pending_brackets = trial_spec(index)
+        self._pending_before_batch = before
+        try:
+            self.run(duration_ms, period_ns, phases, compensate)
+        finally:
+            self._pending_brackets = None
+        row = self.report['runs'][-1]
+        after = self.bracket_batch(
+            index, 'after', reference_boundary_us=row['scheduled_a_us'] + row['duration_ms'] * 1000
+        )
+        row['clock_bracket_batches'] = [before, after]
+        row['analysis'] = analyze_run(row, self.report['anchors'])
+        row['analysis_frozen'] = True
+        self.save()
+        if row['analysis']['status'] != 'verified-telemetry':
+            raise RuntimeError('Unverified trial-local coverage: ' + row['analysis']['reason'])
+        return row
+
+    def _finish_anchor_readers(self, futures):
+        """STOP source and positively join every submitted reader, despite signals."""
+        errors = []
+        try:
+            self.tx.stop()
+        except BaseException as exc:
+            errors.append(dict(stage='transmitter-stop', error_type=type(exc).__name__))
+        for k, future in enumerate(futures):
+            while not future.done():
+                try:
+                    future.result()
+                except BaseException as exc:
+                    if not future.done():
+                        errors.append(
+                            dict(
+                                stage='reader-join-interrupted',
+                                receiver_index=k,
+                                error_type=type(exc).__name__,
+                            )
+                        )
+        return errors
+
+    def _capture_anchor_pair(self, index, deadlines):
+        futures = []
+        try:
+            # START and partial submission both belong inside cleanup scope.
+            self.tx.start(count=4000, duration_ms=2000)
+            for k, radio in enumerate(self.radios):
+                futures.append(
+                    self.pool.submit(
+                        self.raw, radio, deadlines[k], self.out / f'anchor-{index:04d}-rx{k}'
+                    )
+                )
+            values = [future.result() for future in futures]
+        except BaseException:
+            errors = self._finish_anchor_readers(futures)
+            self.report.setdefault('anchor_failures', []).append(
+                dict(
+                    pair=index,
+                    submitted_readers=len(futures),
+                    readers_joined=True,
+                    cleanup_observations=errors,
+                )
+            )
+            raise  # Preserve the primary START/submission/read/wait exception.
+        errors = self._finish_anchor_readers(futures)
+        if errors:
+            self.report.setdefault('anchor_failures', []).append(
+                dict(
+                    pair=index,
+                    submitted_readers=len(futures),
+                    readers_joined=True,
+                    cleanup_observations=errors,
+                )
+            )
+            raise RuntimeError('Anchor source STOP or reader cleanup was interrupted/unverified')
+        return values
+
     def anchors(self, needed=3, attempts=60):
         count = len(self.radios)
         initial = [
@@ -207,6 +356,24 @@ class Campaign(DualCampaign):
             clocks = list(self.pool.map(clock_probe, self.radios))
             target = time.monotonic_ns() / 1000 + 300000 + (i * 137) % 1000
             a = round(target + clocks[0]['offset_us'])
+            batch = getattr(self, '_anchor_batch', None)
+            if batch is not None:
+                existing = [
+                    v['a_us']
+                    for v in self.report['anchors']
+                    if v.get('batch_id') == batch['batch_id']
+                ]
+                boundary = batch.get('reference_boundary_us')
+                if boundary is not None and a - boundary > MAX_BOUNDARY_AGE_US:
+                    raise ValueError('Post-batch cannot obtain fresh anchors within 60 seconds')
+                if (
+                    batch['role'] == 'before'
+                    and existing
+                    and a - min(existing) > MAX_BOUNDARY_AGE_US
+                ):
+                    raise ValueError(
+                        'Pre-batch already exceeds 60 seconds; no anchor exclusions allowed'
+                    )
             deadlines = [a]
             for k in range(1, count):
                 previous = [x for x in self.report['anchors'] if x.get('receiver_index') == k]
@@ -220,23 +387,7 @@ class Campaign(DualCampaign):
                     if delta is not None
                     else round(target + clocks[k]['offset_us'])
                 )
-            self.tx.start(count=4000, duration_ms=2000)
-            futures = [
-                self.pool.submit(self.raw, r, deadlines[k], self.out / f'anchor-{i:04d}-rx{k}')
-                for k, r in enumerate(self.radios)
-            ]
-            try:
-                values = [f.result() for f in futures]
-            finally:
-                try:
-                    self.tx.stop()
-                finally:
-                    # Readers must finish before any outer cleanup closes their ports.
-                    for f in futures:
-                        try:
-                            f.result()
-                        except BaseException:
-                            pass
+            values = self._capture_anchor_pair(i, deadlines)
             decoded = [decode(v[1], 16000000, 2, 16) for v in values]
             matches = [
                 {
@@ -246,6 +397,9 @@ class Campaign(DualCampaign):
                 }
                 for d in decoded
             ]
+            batch = getattr(self, '_anchor_batch', None)
+            if batch is not None:
+                batch['pair_ids'].append(i)
             self.report['anchor_pairs'].append(
                 dict(
                     index=i, receivers=[v[0] for v in values], decoders=decoded, tx=self.tx.status()
@@ -258,9 +412,20 @@ class Campaign(DualCampaign):
                         for j in (0, k)
                     ]
                     self.report['anchors'].append(
-                        dict(pair=i, sequence=seq, a_us=ts[0], b_us=ts[1], receiver_index=k)
+                        dict(
+                            pair=i,
+                            sequence=seq,
+                            a_us=ts[0],
+                            b_us=ts[1],
+                            receiver_index=k,
+                            **(
+                                {key: batch[key] for key in ('batch_id', 'trial_index', 'role')}
+                                if batch is not None
+                                else {}
+                            ),
+                        )
                     )
-            self.save()
+            self._save_anchor_progress() if batch is not None else self.save()
             groups = [
                 len(
                     {a['pair'] for a in self.report['anchors'] if a.get('receiver_index') == k}
@@ -279,7 +444,7 @@ class Campaign(DualCampaign):
             )
             if min(groups) >= needed:
                 self.check_calibration('after anchors')
-                self.save()
+                self._save_anchor_progress() if batch is not None else self.save()
                 return
         raise RuntimeError('Insufficient independent RF-anchor pairs for every receiver')
 
@@ -312,12 +477,26 @@ class Campaign(DualCampaign):
         ):
             raise ValueError('One integer phase in 0..34 per receiver required')
         self.tx.stop()
+        pending = getattr(self, '_pending_brackets', None)
+        prediction_anchors = self.report['anchors']
+        if pending is not None:
+            prediction_anchors = [
+                x for x in prediction_anchors if x.get('batch_id') == pending['before_batch_id']
+            ]
         models = [None] + [
-            fit_clock([a for a in self.report['anchors'] if a.get('receiver_index') == k][-12:])
+            fit_clock(
+                [x for x in prediction_anchors if x.get('receiver_index') == k]
+                if pending is not None
+                else [x for x in prediction_anchors if x.get('receiver_index') == k][-12:]
+            )
             for k in range(1, count)
         ]
         c = clock_probe(self.radios[0])
         a = round((time.monotonic_ns() / 1000 + 300000 + c['offset_us']) / 1000) * 1000
+        if pending is not None:
+            ages = [a - x['a_us'] for x in prediction_anchors]
+            if not ages or min(ages) <= 0 or max(ages) > MAX_BOUNDARY_AGE_US:
+                raise ValueError('Fresh pre-batch exceeds the declared 60-second boundary age')
         # Stagger in reference time, then transform both phase and period.
         deadlines, periods = [a], [period_ns]
         for k in range(1, count):
@@ -446,6 +625,9 @@ class Campaign(DualCampaign):
             receivers=results,
             clock_predictions=models,
         )
+        if pending is not None:
+            row['clock_brackets'] = dict(pending)
+            row['clock_bracket_batches'] = [self._pending_before_batch]
         self.report['runs'].append(row)
         try:
             row['calibration_after'] = self.check_calibration('after stream')
@@ -472,6 +654,7 @@ def main():
     p.add_argument('--period-ns', type=int, default=1875000)
     p.add_argument('--phases', default=None)
     p.add_argument('--phase-sweep', action='store_true')
+    p.add_argument('--trial-clock-brackets', action='store_true')
     p.add_argument('--no-drift-compensation', action='store_true')
     args = p.parse_args()
     phases = list(map(int, args.phases.split(','))) if args.phases else [0] * len(args.port)
@@ -485,6 +668,8 @@ def main():
         p.error('Seconds 1..600, trials 1..20')
     if not 1600000 <= args.period_ns <= 10000000:
         p.error('Period outside firmware range')
+    if args.trial_clock_brackets and args.phase_sweep:
+        p.error('Trial-local clock brackets do not support phase sweep')
     if args.defer_cyclic_gc and (args.seconds > 120 or args.trials > 3 or args.phase_sweep):
         p.error('GC deferral requires <=120 seconds, <=3 trials, and no phase sweep')
     if not args.run:
@@ -496,6 +681,7 @@ def main():
                     seconds=args.seconds,
                     trials=args.trials,
                     phase_sweep=args.phase_sweep,
+                    trial_clock_brackets=trial_spec(0) if args.trial_clock_brackets else None,
                     transmitter=dict(frequency_mhz=2440, power_dbm=0, mode_mbps=2, payload_len=16),
                     note='Explicit --run required. Private output includes raw RF and device details.',
                 )
@@ -545,7 +731,9 @@ def main():
                 payload_hex='off',
                 seed=52840,
             )
-            campaign.anchors(needed=8, attempts=60)
+            report['trial_clock_brackets_enabled'] = args.trial_clock_brackets
+            if not args.trial_clock_brackets:
+                campaign.anchors(needed=8, attempts=60)
             if args.phase_sweep:
                 for phase in range(8):
                     campaign.run(
@@ -562,16 +750,24 @@ def main():
                 best = min(verified, key=lambda r: r['analysis']['nominal_union']['max_gap_us'])
                 phases = best['yield_phases']
             for _ in range(args.trials):
-                campaign.run(
-                    round(args.seconds * 1000),
-                    args.period_ns,
-                    phases,
-                    not args.no_drift_compensation,
-                )
-                campaign.anchors(needed=3)
-                for row in report['runs']:
-                    row['analysis'] = analyze_run(row, report['anchors'])
-                row = report['runs'][-1]
+                if args.trial_clock_brackets:
+                    row = campaign.trial_clock_run(
+                        round(args.seconds * 1000),
+                        args.period_ns,
+                        phases,
+                        not args.no_drift_compensation,
+                    )
+                else:
+                    campaign.run(
+                        round(args.seconds * 1000),
+                        args.period_ns,
+                        phases,
+                        not args.no_drift_compensation,
+                    )
+                    campaign.anchors(needed=3)
+                    for row in report['runs']:
+                        row['analysis'] = analyze_run(row, report['anchors'])
+                    row = report['runs'][-1]
                 if row['analysis']['status'] != 'verified-telemetry':
                     raise RuntimeError('Unverified coverage: ' + row['analysis']['reason'])
                 print(
