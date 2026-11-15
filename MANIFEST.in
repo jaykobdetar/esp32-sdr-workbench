@@ -839,3 +839,7 @@ include docs/evidence/packet-only-initial/REPORT.md
 include docs/evidence/packet-only-initial/summary.json
 include scripts/project_packet_only.py
 include tests/test_packet_only_projection.py
+
+include docs/multi-packet-only-prototype.md
+include scripts/multi_packet_only_campaign.py
+include tests/test_multi_packet_only.py
