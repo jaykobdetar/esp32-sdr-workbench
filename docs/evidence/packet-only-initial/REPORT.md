@@ -5,6 +5,21 @@ compatibility. The source denominator is aggregate completed transmissions;
 there is no event-level source trace. Full wire transcripts were revalidated
 against the strict parser before producing the allowlisted numeric summary.
 
+## Candidate preparation and recovery
+
+Only receiver A was changed for these controls. The initial candidate's exact
+128-byte capability reply was withheld until a later nonce query released it;
+that check was not accepted as normal delivery. The qualified `v1finish`
+candidate instead reuses the preserved paced INFO/END send path without changing
+CRC-framed wire bytes. The first installation of that fix failed during serial
+writing; automatic rollback verified the exact whole pre-write image. One retry
+from a fresh verified recovery checkpoint succeeded, with all nonwritten bytes
+verified unchanged before application boot. Earlier images, failed checks and
+rollback receipts remain private and preserved. This is not proof that the
+underlying serial fault is resolved or that runtime calibration survives resets.
+
+## Controlled packet outcomes
+
 | Control | Requested / completed ON slots | Skips | Valid recall |
 |---|---:|---:|---:|
 | Source-OFF smoke, 10 ms | 32 / 16 OFF only | 16 | Not a recall trial; zero OFF packets |
