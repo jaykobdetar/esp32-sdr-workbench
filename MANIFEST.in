@@ -848,3 +848,5 @@ include docs/evidence/multi-packet-initial/REPORT.md
 include docs/evidence/multi-packet-initial/summary.json
 include scripts/project_multi_packet_only.py
 include tests/test_multi_packet_projection.py
+
+include docs/evidence/multi-packet-initial/closeout.json

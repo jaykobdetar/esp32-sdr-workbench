@@ -20,6 +20,20 @@ Current work: [19-item improvement checklist](improvement-checklist.md) · [Full
 
 [Review follow-up](review-follow-up.md) records v4 fixes and bounded passive validation.
 
+## Four-receiver research (opt-in)
+
+- [Four-board timing and raw-I/Q report](evidence/four-receiver-evaluation/REPORT.md):
+  nominal windows, detector warmup, transport failures, IQ8 controls and viewer checks.
+- [Prospective clock brackets](trial-clock-brackets.md): sealed trial-local anchors,
+  without selecting away bad fits.
+- [Packet-only candidate](../experiments/packet-only-v1finish/README.md),
+  [single-board verifier](packet-only-prototype.md) and
+  [two-to-four-board verifier](multi-packet-only-prototype.md): bounded known-source
+  metadata controls, not a replacement for default firmware or general protocol support.
+- [Single-board results](evidence/packet-only-initial/REPORT.md) and
+  [multi-board results](evidence/multi-packet-initial/REPORT.md): actual delivered
+  packet counts, source-OFF controls and explicit losses. No continuous-capture claim.
+
 ## Latest adaptive evaluation
 
 [Report and public evidence](evidence/adaptive-evaluation/README.md): released-v3

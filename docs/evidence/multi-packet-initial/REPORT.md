@@ -89,3 +89,20 @@ continuous capture, stable RF phase spacing, or general/Quest compatibility.
 The repeated bounded result is useful evidence of this known-source metadata
 path; it is not a direct efficacy comparison with the differently configured
 raw-IQ baseline or a randomized estimate of host-delay benefit.
+
+## Firmware and viewer closeout
+
+All four receivers now run the same opt-in `v1finish` application, with individual
+fresh verified recovery images and app-only writes checked against every
+nonwritten byte before boot. A failed fix installation on A was exactly rolled
+back before its successful retry; that failure remains preserved. Original
+calibration remains in each original backup, not assumed unchanged at runtime.
+
+The [sanitized closeout](closeout.json) also records two bounded passive IQ8
+viewer sessions with four CRC-valid cards, stop/restart and joined workers,
+followed by final passive CRC captures and RELEASE acknowledgments on all four
+receivers. The transmitter was stopped and no serial owners were observed after
+cleanup. Screenshots were inspected privately. This proves bounded regression
+checks, not long-run stability. The viewer still displays asynchronous raw
+snapshots; packet-only controls remain an opt-in research CLI, not a new live
+packet dashboard.
