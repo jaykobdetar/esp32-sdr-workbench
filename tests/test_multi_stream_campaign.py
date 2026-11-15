@@ -86,8 +86,10 @@ def test_scheduler_staggers_reference_time_and_drifts_period(monkeypatch, tmp_pa
     from concurrent.futures import ThreadPoolExecutor
 
     class Radio:
+        info = {'caps': ['CALHASH']}
+
         def command(self, command):
-            return 'CALHASH stable'
+            return calibration_reply()
 
     class Tx:
         def stop(self):
@@ -125,3 +127,143 @@ def test_duplicate_receiver_object_rejected(tmp_path):
     r = object()
     with pytest.raises(ValueError):
         module.Campaign([r, r], None, None, tmp_path)
+
+
+def calibration_reply(digest='a', device_us=1):
+    import json
+
+    return 'CALHASH ' + json.dumps(
+        dict(version=1, algorithm='sha256', bytes=1904, device_us=device_us, sha256=digest * 64)
+    )
+
+
+class FakeRadio:
+    info = {'caps': ['CALHASH']}
+    failed = False
+
+    def __init__(self, *, close_error=False):
+        self.reply = calibration_reply()
+        self.closed = False
+        self.close_error = close_error
+
+    def command(self, command):
+        assert command == 'CALHASH?'
+        return self.reply
+
+    def close(self):
+        self.closed = True
+        if self.close_error:
+            raise RuntimeError('close fault')
+
+
+class FakeTx:
+    def __init__(self, *, stop_error=False, running=False):
+        self.stop_error = stop_error
+        self.running = running
+        self.calls = 0
+
+    def stop(self):
+        self.calls += 1
+        if self.stop_error:
+            raise RuntimeError('STOP fault')
+
+    def status(self):
+        return {'running': self.running}
+
+
+@pytest.mark.parametrize('fault', ['changed', 'clock_reset', 'malformed', 'unsupported'])
+def test_calibration_fails_closed_per_receiver(tmp_path, fault):
+    radios = [FakeRadio() for _ in range(4)]
+    campaign = module.Campaign(radios, FakeTx(), None, tmp_path)
+    campaign.check_calibration('before')
+    if fault == 'unsupported':
+        radios[3].info = {'caps': []}
+    else:
+        radios[3].reply = {
+            'changed': calibration_reply('b'),
+            'clock_reset': calibration_reply(device_us=0),
+            'malformed': 'CALHASH invalid',
+        }[fault]
+    with pytest.raises(RuntimeError, match='Receiver 3'):
+        campaign.check_calibration('after')
+    assert len(campaign.report['calibration_by_receiver'][0]['calibration_observations']) == 2
+
+
+def test_cleanup_attempts_all_ports_and_does_not_pass_on_stop_failure(tmp_path):
+    radios = [FakeRadio(close_error=i == 0) for i in range(4)]
+    campaign = module.Campaign(radios, FakeTx(stop_error=True), None, tmp_path)
+    campaign.check_calibration('before')
+    campaign.report['status'] = 'validated'
+    errors = campaign.cleanup()
+    assert all(r.closed for r in radios)
+    assert len(errors) == 2
+    assert campaign.report['status'] == 'failed'
+    assert campaign.report['tx_final'] == {'running': False}
+
+
+def test_cleanup_rejects_transmitter_still_running(tmp_path):
+    campaign = module.Campaign([FakeRadio(), FakeRadio()], FakeTx(running=True), None, tmp_path)
+    campaign.report['status'] = 'validated'
+    assert campaign.cleanup()
+    assert campaign.report['status'] == 'failed'
+
+
+def test_cleanup_success_required_for_pass_and_does_not_erase_primary_failure(tmp_path):
+    campaign = module.Campaign([FakeRadio(), FakeRadio()], FakeTx(), None, tmp_path)
+    campaign.report['status'] = 'validated'
+    assert campaign.cleanup() == []
+    assert campaign.report['status'] == 'passed'
+    campaign.report['status'] = 'failed'
+    assert campaign.cleanup() == []
+    assert campaign.report['status'] == 'failed'
+
+
+def test_anchor_stop_failure_still_drains_every_reader(monkeypatch, tmp_path):
+    class Tx(FakeTx):
+        def stop(self):
+            self.calls += 1
+            if self.calls == 2:
+                raise RuntimeError('STOP fault')
+
+        def start(self, **kwargs):
+            pass
+
+    class Future:
+        calls = 0
+
+        def result(self):
+            self.calls += 1
+            if self.calls == 1:
+                raise RuntimeError('raw failure')
+
+    class Pool:
+        def __init__(self):
+            self.futures = []
+
+        def map(self, fn, radios):
+            return [{'offset_us': 0} for _ in radios]
+
+        def submit(self, *args):
+            f = Future()
+            self.futures.append(f)
+            return f
+
+    pool = Pool()
+    campaign = module.Campaign([FakeRadio() for _ in range(4)], Tx(), pool, tmp_path)
+    with pytest.raises(RuntimeError, match='STOP fault'):
+        campaign.anchors(attempts=1)
+    # First reader failed in the result loop; all four were awaited in cleanup.
+    assert [f.calls for f in pool.futures] == [2, 1, 1, 1]
+
+
+def test_distinct_board_calibrations_are_not_compared_to_each_other(tmp_path):
+    radios = [FakeRadio() for _ in range(4)]
+    for k, radio in enumerate(radios):
+        radio.reply = calibration_reply('abcd'[k])
+    campaign = module.Campaign(radios, FakeTx(), None, tmp_path)
+    before = campaign.check_calibration('before')
+    for k, radio in enumerate(radios):
+        radio.reply = calibration_reply('abcd'[k], device_us=10)
+    after = campaign.check_calibration('after')
+    assert [r['sha256'] for r in before] == [r['sha256'] for r in after]
+    assert all(r['device_us'] == 10 for r in after)

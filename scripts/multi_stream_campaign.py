@@ -17,6 +17,7 @@ from threading import Event
 
 from nrf_tx.rf_tx import Transmitter
 
+from sdr_research.calibration import record_calibration
 from sdr_research.detector_stream import APERTURE_US, run_stream
 from sdr_research.dual_timing import clock_probe, coverage
 from sdr_research.protocol import Radio
@@ -117,6 +118,54 @@ class Campaign(DualCampaign):
             raise ValueError('Two to four distinct receiver objects required')
         super().__init__(radios, tx, pool, output)
 
+    def check_calibration(self, boundary):
+        states = self.report.setdefault('calibration_by_receiver', [{} for _ in self.radios])
+        observations = []
+        errors = []
+        for k, r in enumerate(self.radios):
+            try:
+                value = record_calibration(states[k], r, r.info, boundary, required=True)
+                observations.append(value)
+                observed = [
+                    v for v in states[k]['calibration_observations'] if v['status'] == 'observed'
+                ]
+                if value['sha256'] != observed[0]['sha256'] or value['device_clock_regressed']:
+                    raise RuntimeError('Stored calibration changed or device clock regressed')
+            except BaseException as exc:
+                errors.append(f'Receiver {k}: {exc}')
+        if errors:
+            raise RuntimeError('; '.join(errors))
+        return observations
+
+    def cleanup(self):
+        """Attempt every cleanup step; a failed STOP must not skip receivers."""
+        errors = []
+        try:
+            self.tx.stop()
+        except BaseException as exc:
+            errors.append(f'Transmitter STOP unverified: {exc}')
+        try:
+            self.report['tx_final'] = self.tx.status()
+            if self.report['tx_final'].get('running') is not False:
+                raise RuntimeError('Transmitter did not report running=false')
+        except BaseException as exc:
+            errors.append(f'Transmitter final status unverified: {exc}')
+        try:
+            self.report['calibration_final'] = self.check_calibration('cleanup')
+        except BaseException as exc:
+            errors.append(f'Final calibration unverified: {exc}')
+        for k, r in enumerate(self.radios):
+            try:
+                r.close()
+            except BaseException as exc:
+                errors.append(f'Receiver {k} close failed: {exc}')
+        self.report['cleanup_errors'] = errors
+        if errors:
+            self.report['status'] = 'failed'
+        elif self.report['status'] == 'validated':
+            self.report['status'] = 'passed'
+        return errors
+
     def anchors(self, needed=3, attempts=60):
         count = len(self.radios)
         initial = [
@@ -150,12 +199,15 @@ class Campaign(DualCampaign):
             try:
                 values = [f.result() for f in futures]
             finally:
-                self.tx.stop()
-                for f in futures:
-                    try:
-                        f.result()
-                    except BaseException:
-                        pass
+                try:
+                    self.tx.stop()
+                finally:
+                    # Readers must finish before any outer cleanup closes their ports.
+                    for f in futures:
+                        try:
+                            f.result()
+                        except BaseException:
+                            pass
             decoded = [decode(v[1], 16000000, 2, 16) for v in values]
             matches = [
                 {
@@ -197,6 +249,8 @@ class Campaign(DualCampaign):
                 flush=True,
             )
             if min(groups) >= needed:
+                self.check_calibration('after anchors')
+                self.save()
                 return
         raise RuntimeError('Insufficient independent RF-anchor pairs for every receiver')
 
@@ -256,10 +310,12 @@ class Campaign(DualCampaign):
             yield_phases=phases,
             receivers=results,
             clock_predictions=models,
-            calibration_after=[r.command('CALHASH?') for r in self.radios],
         )
         self.report['runs'].append(row)
-        self.save()
+        try:
+            row['calibration_after'] = self.check_calibration('after stream')
+        finally:
+            self.save()
         print(
             'stream',
             row['index'],
@@ -317,6 +373,7 @@ def main():
             tx.stop()
             report['tx_before'] = tx.status()
             report['devices'] = [r.connect() for r in radios]
+            report['calibration_before'] = campaign.check_calibration('before configuration')
             for r in radios:
                 if 'DSTREAM' not in r.info['caps']:
                     raise ValueError('DSTREAM firmware required')
@@ -326,7 +383,7 @@ def main():
                 r.command('ACQOPT 3')
                 r.command('CLEAROPT 1')
                 r.command('BGPOLICY 1')
-            report['calibration_before'] = [r.command('CALHASH?') for r in radios]
+            report['calibration_configured'] = campaign.check_calibration('after configuration')
             tx.configure(
                 frequency_mhz=2440,
                 mode_mbps=2,
@@ -344,7 +401,9 @@ def main():
             campaign.anchors(needed=8, attempts=60)
             if args.phase_sweep:
                 for phase in range(8):
-                    campaign.run(1000, args.period_ns, [phase] * len(radios))
+                    campaign.run(
+                        1000, args.period_ns, [phase] * len(radios), not args.no_drift_compensation
+                    )
                 campaign.anchors(needed=3)
                 for row in report['runs']:
                     row['analysis'] = analyze_run(row, report['anchors'])
@@ -375,19 +434,17 @@ def main():
                     row['analysis']['nominal_union']['max_gap_us'],
                     flush=True,
                 )
-            report['status'] = 'passed'
+            report['status'] = 'validated'
         except BaseException as exc:
             report['status'] = 'failed'
             report['error'] = repr(exc)
             raise
         finally:
-            try:
-                tx.stop()
-                report['tx_final'] = tx.status()
-            finally:
-                for r in radios:
-                    r.close()
-                campaign.save()
+            validated = report['status'] == 'validated'
+            cleanup_errors = campaign.cleanup()
+            campaign.save()
+            if validated and cleanup_errors:
+                raise RuntimeError('Campaign cleanup unverified: ' + '; '.join(cleanup_errors))
 
 
 if __name__ == '__main__':
