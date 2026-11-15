@@ -239,7 +239,9 @@ def capture(radio, receiver, index, condition, output):
     )
 
 
-def stagger_plan(receiver_count, captures, duration_ms, stagger_ms=0, capture_bits=10):
+def stagger_plan(
+    receiver_count, captures, duration_ms, stagger_ms=0, capture_bits=10, acquisition_budget_ms=None
+):
     if type(receiver_count) is not int or not 2 <= receiver_count <= 4:
         raise ValueError('Two to four receivers required')
     if type(stagger_ms) is not int or not 0 <= stagger_ms <= 250:
@@ -254,9 +256,19 @@ def stagger_plan(receiver_count, captures, duration_ms, stagger_ms=0, capture_bi
     # before the next round. Ignore framing/processing overhead: LOWER bound.
     wire_ms = format_info['packed_payload_bytes'] / 100
     last_start_lower_bound = captures * max(delays) + (captures - 1) * wire_ms
-    if last_start_lower_bound >= duration_ms:
-        raise ValueError('Even the lower-bound last capture start exceeds source duration')
+    if acquisition_budget_ms is None:
+        if last_start_lower_bound >= duration_ms:
+            raise ValueError('Even the lower-bound last capture start exceeds source duration')
+    elif (
+        type(acquisition_budget_ms) is not int
+        or not max(delays) < acquisition_budget_ms <= duration_ms
+    ):
+        raise ValueError(
+            'Acquisition budget must exceed all planned delays and not source duration'
+        )
     return dict(
+        acquisition_budget_ms=acquisition_budget_ms,
+        capture_mode='fixed-count' if acquisition_budget_ms is None else 'host-time-budget',
         capture_format=format_info,
         raw_wire_lower_bound_ms=wire_ms,
         stagger_ms=stagger_ms,
@@ -270,11 +282,31 @@ def stagger_plan(receiver_count, captures, duration_ms, stagger_ms=0, capture_bi
     )
 
 
-def delayed_capture(radio, receiver, index, condition, output, delay_ms, deadline_bounds=None):
+def delayed_capture(
+    radio,
+    receiver,
+    index,
+    condition,
+    output,
+    delay_ms,
+    deadline_bounds=None,
+    acquisition_deadline_ns=None,
+):
     queued_ns = time.monotonic_ns()
     if delay_ms:
         time.sleep(delay_ms / 1000)
     started_ns = time.monotonic_ns()
+    if acquisition_deadline_ns is not None and started_ns >= acquisition_deadline_ns:
+        return dict(
+            skipped=True,
+            receiver=receiver,
+            index=index,
+            condition=condition,
+            reason='Host acquisition budget expired before capture call',
+            planned_host_delay_ms=delay_ms,
+            host_worker_start_ns=queued_ns,
+            host_capture_call_start_ns=started_ns,
+        )
     row = capture(radio, receiver, index, condition, output)
     ended_ns = time.monotonic_ns()
     row.update(
@@ -305,9 +337,12 @@ def run(
     power_dbm=-20,
     stagger_ms=0,
     capture_bits=10,
+    acquisition_budget_ms=None,
 ):
     expected_config = configuration(power_dbm)
-    plan = stagger_plan(len(radios), captures, duration_ms, stagger_ms, capture_bits)
+    plan = stagger_plan(
+        len(radios), captures, duration_ms, stagger_ms, capture_bits, acquisition_budget_ms
+    )
     report = dict(
         status='running', captures=[], note=NOTE, expected_config=expected_config, capture_plan=plan
     )
@@ -334,8 +369,10 @@ def run(
                 )
                 report.setdefault('calibration_boundaries', []).append(boundary)
                 deadline_bounds = None
+                budget_start_ns = time.monotonic_ns()
                 if condition == 'ON':
                     start_call_ns = time.monotonic_ns()
+                    budget_start_ns = start_call_ns
                     report['tx_start'] = tx.start(count=20000, duration_ms=duration_ms)
                     start_reply_ns = time.monotonic_ns()
                     deadline_bounds = [
@@ -343,7 +380,19 @@ def run(
                         start_reply_ns + duration_ms * 1000000,
                     ]
                     report['source_duration_deadline_host_bounds_ns'] = deadline_bounds
+                acquisition_deadline_ns = (
+                    None
+                    if acquisition_budget_ms is None
+                    else budget_start_ns + acquisition_budget_ms * 1000000
+                )
+                rounds_started = 0
                 for index in range(captures):
+                    if (
+                        acquisition_deadline_ns is not None
+                        and time.monotonic_ns() >= acquisition_deadline_ns
+                    ):
+                        break
+                    rounds_started += 1
                     futures = [
                         pool.submit(
                             delayed_capture,
@@ -354,6 +403,7 @@ def run(
                             output,
                             plan['per_receiver_delay_ms'][k],
                             deadline_bounds,
+                            acquisition_deadline_ns,
                         )
                         for k, r in enumerate(radios)
                     ]
@@ -364,10 +414,31 @@ def run(
                             values.append(future.result())
                         except Exception as exc:
                             errors.append(exc)
-                    report['captures'].extend(values)
+                    report['captures'].extend(v for v in values if not v.get('skipped'))
+                    report.setdefault('skipped_captures', []).extend(
+                        v for v in values if v.get('skipped')
+                    )
                     save()
                     if errors:
                         raise errors[0]
+                boundary['acquisition_budget'] = dict(
+                    requested_ms=acquisition_budget_ms,
+                    start_host_ns=budget_start_ns,
+                    deadline_host_ns=acquisition_deadline_ns,
+                    end_host_ns=time.monotonic_ns(),
+                    rounds_started=rounds_started,
+                    round_cap=captures,
+                    round_cap_reached=rounds_started == captures,
+                    per_receiver_captures=[
+                        sum(
+                            r['condition'] == condition and r['receiver'] == k
+                            for r in report['captures']
+                        )
+                        for k in range(len(radios))
+                    ],
+                    note='Host call-start budget; in-flight UART transfer may finish after deadline. '
+                    'Not synchronized RF coverage. A reached round cap may limit throughput.',
+                )
                 if condition == 'ON':
                     deadline = time.monotonic() + duration_ms / 1000 + 3
                     while True:
@@ -431,6 +502,11 @@ def main():
     p.add_argument('--power-dbm', type=int, choices=POWERS_DBM, default=-20)
     p.add_argument('--stagger-ms', type=int, default=0)
     p.add_argument('--capture-bits', type=int, choices=(8, 10), default=10)
+    p.add_argument(
+        '--acquisition-budget-ms',
+        type=int,
+        help='Equal host call-start budget per ON/OFF condition; --captures is a round cap',
+    )
     p.add_argument('--run', action='store_true')
     a = p.parse_args()
     if not 2 <= len(a.port) <= 4 or len({str(Path(v).resolve()) for v in a.port}) != len(a.port):
@@ -438,7 +514,14 @@ def main():
     if not 1 <= a.captures <= 32 or not 1000 <= a.duration_ms <= 30000:
         p.error('Captures 1..32 and duration 1000..30000 ms required')
     try:
-        plan = stagger_plan(len(a.port), a.captures, a.duration_ms, a.stagger_ms, a.capture_bits)
+        plan = stagger_plan(
+            len(a.port),
+            a.captures,
+            a.duration_ms,
+            a.stagger_ms,
+            a.capture_bits,
+            a.acquisition_budget_ms,
+        )
     except ValueError as exc:
         p.error(str(exc))
     if not a.run:
@@ -468,6 +551,7 @@ def main():
             power_dbm=a.power_dbm,
             stagger_ms=a.stagger_ms,
             capture_bits=a.capture_bits,
+            acquisition_budget_ms=a.acquisition_budget_ms,
         )
     print(json.dumps(dict(status=report['status'], analysis=report.get('analysis'))))
     return 0 if report['status'] == 'passed' else 1

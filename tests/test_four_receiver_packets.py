@@ -137,7 +137,10 @@ def test_failure_stops_and_closes(tmp_path):
 
 @pytest.mark.parametrize('fail_cleanup', [False, True])
 @pytest.mark.parametrize('capture_bits', [8, 10])
-def test_complete_lifecycle_with_fake_hardware(tmp_path, monkeypatch, fail_cleanup, capture_bits):
+@pytest.mark.parametrize('budget_mode', [False, True])
+def test_complete_lifecycle_with_fake_hardware(
+    tmp_path, monkeypatch, fail_cleanup, capture_bits, budget_mode
+):
     import scripts.four_receiver_packets as campaign
 
     class TX:
@@ -186,24 +189,64 @@ def test_complete_lifecycle_with_fake_hardware(tmp_path, monkeypatch, fail_clean
         def close(self):
             self.closed = True
 
+    host_clock = [0]
+
     def fake_capture(r, receiver, index, condition, output):
+        if budget_mode and receiver == 3:
+            host_clock[0] += 2000000000
         value = row(receiver, seq=receiver)
         value.update(
             index=index, condition=condition, file=condition, capture_format=capture_format(r.bits)
         )
         return value
 
+    if budget_mode:
+
+        class ImmediateFuture:
+            def __init__(self, value):
+                self.value = value
+
+            def result(self):
+                return self.value
+
+        class ImmediatePool:
+            def __init__(self, *_):
+                pass
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_):
+                pass
+
+            def submit(self, fn, *args):
+                return ImmediateFuture(fn(*args))
+
+        monkeypatch.setattr(campaign, 'ThreadPoolExecutor', ImmediatePool)
+        monkeypatch.setattr(campaign.time, 'monotonic_ns', lambda: host_clock[0])
     monkeypatch.setattr(campaign, 'capture', fake_capture)
     monkeypatch.setattr(campaign.np, 'load', lambda path: path.name)
     monkeypatch.setattr(
         campaign, 'decode', lambda condition, *_: row(crc_verified=condition == 'ON')['decoder']
     )
     tx, radios = TX(), [Radio() for _ in range(4)]
-    result = run(radios, tx, tmp_path, captures=2, duration_ms=8000, capture_bits=capture_bits)
+    result = run(
+        radios,
+        tx,
+        tmp_path,
+        captures=2,
+        duration_ms=8000,
+        capture_bits=capture_bits,
+        acquisition_budget_ms=1000 if budget_mode else None,
+    )
     assert result['status'] == ('failed' if fail_cleanup else 'passed')
     if fail_cleanup:
         assert result['cleanup_errors'] == ["RuntimeError('STOP failed')"]
-    assert len(result['captures']) == 16
+    assert len(result['captures']) == (8 if budget_mode else 16)
+    for boundary in result['calibration_boundaries']:
+        budget = boundary['acquisition_budget']
+        assert budget['round_cap_reached'] is not budget_mode
+        assert budget['per_receiver_captures'] == [1 if budget_mode else 2] * 4
     assert all(r.bits == capture_bits for r in radios)
     assert result['capture_plan']['capture_format'] == capture_format(capture_bits)
     assert result['analysis']['unique_packets'] == 1
@@ -465,3 +508,31 @@ def test_quantization_rejects_non_iq10(value):
 
     with pytest.raises(ValueError):
         quantize_iq8(np.array([value]))
+
+
+@pytest.mark.parametrize('budget', [-1, 0, 300, 16001, True, 1000.0])
+def test_invalid_acquisition_budget(budget):
+    from scripts.four_receiver_packets import stagger_plan
+
+    with pytest.raises(ValueError, match='Acquisition budget'):
+        stagger_plan(4, 32, 16000, 100, 10, budget)
+
+
+def test_equal_budget_allows_round_cap_larger_than_fixed_count_plan():
+    from scripts.four_receiver_packets import stagger_plan
+
+    plan = stagger_plan(4, 32, 16000, 100, 8, 14000)
+    assert plan['capture_mode'] == 'host-time-budget'
+    assert plan['acquisition_budget_ms'] == 14000
+
+
+def test_expired_budget_skips_before_capture(monkeypatch, tmp_path):
+    import scripts.four_receiver_packets as campaign
+
+    clock = iter([100, 300])
+    monkeypatch.setattr(campaign.time, 'monotonic_ns', lambda: next(clock))
+    monkeypatch.setattr(campaign.time, 'sleep', lambda _: None)
+    monkeypatch.setattr(campaign, 'capture', lambda *_: pytest.fail('Capture after deadline'))
+    row = campaign.delayed_capture(None, 2, 1, 'ON', tmp_path, 200, [500, 600], 300)
+    assert row['skipped'] is True
+    assert 'file' not in row

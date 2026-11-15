@@ -138,3 +138,32 @@ transport integrity, and packet outcomes. A fixed-count trial can demonstrate
 faster completion but not increased capture throughput. A separate equal-duration
 acquisition-budget trial is needed to test whether saved service time yields more
 retained unique packets. A single pair is not statistical proof of superiority.
+
+### Equal host acquisition-budget mode
+
+After fixed-count format controls pass, compare IQ10 and IQ8 with, for example,
+`--captures 32 --duration-ms 16000 --acquisition-budget-ms 14000 --stagger-ms 100`.
+In this optional mode `--captures` is a maximum number of rounds, not a promised
+snapshot count. Each OFF and ON condition gets the same finite host call-start
+budget. ON's budget starts immediately before sending START (not after its USB
+acknowledgement); OFF's starts immediately before its first round. The source
+still runs to its independent finite count/duration bound, so the denominator
+remains every completed transmission during that entire source run.
+
+The host stops launching new rounds when the budget expires, and each receiver
+rechecks after its stagger sleep before calling capture. A last partial round may
+therefore contain snapshots from only some receivers. Skipped calls are recorded
+separately and are not counted as captures or decoded as empty IQ. An in-flight
+capture/readout finishes normally and can extend past the budget. All workers
+still join before source/receiver cleanup. Every receiver must retain nonempty
+ON and OFF controls for valid analysis.
+
+Each condition records its requested budget, host start/deadline/end times,
+rounds started, actual per-receiver snapshot counts, and whether the round cap
+was reached. A reached cap can prevent this experiment from measuring the full
+available throughput: do not call that run an uncapped time-budget result.
+Budget validity is checked separately from the fixed-count lower bound because
+unused capped rounds need not fit. No timing label represents a calibrated RF
+aperture. Compare actual retained counts, service-time measurements, unique
+packets and completed denominators across balanced repeated trials, not just the
+best percentage. The IQ10 default and fixed-count behavior remain unchanged.
