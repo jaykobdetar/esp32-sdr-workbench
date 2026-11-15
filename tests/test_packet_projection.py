@@ -64,3 +64,48 @@ def test_failed_12s_control_preserves_denominator_failure_without_recall():
     assert all(c['all_transport_crc_valid'] for c in data['conditions'])
     assert 'recovery_percent' not in path.read_text()
     assert all(r['run'] != data['run'] for r in json.loads(EVIDENCE.read_text())['runs'])
+
+
+@pytest.mark.parametrize(
+    'field,value', [('stagger_ms', 5), ('power_dbm', -20), ('source_duration_ms', 12000)]
+)
+def test_grouping_separates_protocol_conditions(field, value):
+    original = json.loads(EVIDENCE.read_text())['runs'][0]
+    changed = copy.deepcopy(original)
+    changed[field] = value
+    assert len(aggregate([original, changed])) == 2
+
+
+def test_grouping_separates_acquisition_budget_and_round_cap():
+    original = json.loads(EVIDENCE.read_text())['runs'][0]
+    for field, value in [('requested_acquisition_budget_ms', 10000), ('round_cap', 32)]:
+        changed = copy.deepcopy(original)
+        changed['conditions'][1][field] = value
+        assert len(aggregate([original, changed])) == 2
+
+
+def test_matched_stagger_evidence_accounting():
+    path = EVIDENCE.parent.parent / 'iq-stagger-matched/summary.json'
+    data = json.loads(path.read_text())
+    assert len(data['runs']) == 8
+    assert data['groups'] == aggregate(data['runs'])
+    assert len(data['groups']) == 4
+    assert {(g['bits_per_component'], g['stagger_ms']) for g in data['groups']} == {
+        (8, 5),
+        (8, 100),
+        (10, 5),
+        (10, 100),
+    }
+    for run in data['runs']:
+        assert run['source_duration_ms'] == 16000
+        assert run['packet_analysis']['source_off_packets'] == 0
+        assert run['packet_analysis']['duplicate_observations'] == 0
+        for condition in run['conditions']:
+            assert condition['requested_acquisition_budget_ms'] == 10000
+            assert condition['round_cap'] == 32
+            assert condition['round_cap_reached'] is False
+            assert condition['captures'] == sum(condition['per_receiver_captures'])
+            assert condition['calls_started_after_latest_source_duration_deadline'] == 0
+            assert condition['calls_ended_after_latest_source_duration_deadline'] == 0
+    for forbidden in ('/home/', '/dev/', 'CALHASH', 'serial_number', 'device_us', '.npy'):
+        assert forbidden not in path.read_text()

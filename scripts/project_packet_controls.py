@@ -48,6 +48,11 @@ def project(label, report):
         selected = [r for r in rows if r['condition'] == condition]
         per_receiver = [sum(r['receiver'] == k for r in selected) for k in range(count)]
         budget = boundary['acquisition_budget']
+        if (
+            budget['requested_ms'] != plan['acquisition_budget_ms']
+            or budget['round_cap'] != plan['captures_per_condition']
+        ):
+            raise ValueError('Condition budget/cap differs from requested plan')
         if per_receiver != budget['per_receiver_captures']:
             raise ValueError('Saved capture accounting differs from observed rows')
         durations = [(r['host_end_ns'] - r['host_start_ns']) / 1e6 for r in selected]
@@ -111,12 +116,18 @@ def aggregate(runs):
             r['stagger_ms'],
             r['source_duration_ms'],
             r['conditions'][1]['requested_acquisition_budget_ms'],
+            tuple(c['round_cap'] for c in r['conditions']),
         )
 
-    keys = sorted({group_key(r) for r in runs})
-    for mode, bits, power, stagger, source_ms, budget_ms in keys:
+    keys = sorted(
+        {group_key(r) for r in runs},
+        key=lambda key: (*key[:5], -1 if key[5] is None else key[5], key[6]),
+    )
+    for mode, bits, power, stagger, source_ms, budget_ms, caps in keys:
         selected = [
-            r for r in runs if group_key(r) == (mode, bits, power, stagger, source_ms, budget_ms)
+            r
+            for r in runs
+            if group_key(r) == (mode, bits, power, stagger, source_ms, budget_ms, caps)
         ]
         unique = sum(r['packet_analysis']['unique_packets'] for r in selected)
         completed = sum(r['packet_analysis']['completed_transmissions'] for r in selected)
@@ -128,6 +139,7 @@ def aggregate(runs):
                 stagger_ms=stagger,
                 source_duration_ms=source_ms,
                 acquisition_budget_ms=budget_ms,
+                round_caps_off_on=list(caps),
                 runs=len(selected),
                 on_captures=sum(r['conditions'][1]['captures'] for r in selected),
                 off_captures=sum(r['conditions'][0]['captures'] for r in selected),

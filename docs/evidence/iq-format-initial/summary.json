@@ -611,6 +611,10 @@
       "stagger_ms": 100,
       "source_duration_ms": 16000,
       "acquisition_budget_ms": null,
+      "round_caps_off_on": [
+        16,
+        16
+      ],
       "runs": 2,
       "on_captures": 128,
       "off_captures": 128,
@@ -627,6 +631,10 @@
       "stagger_ms": 100,
       "source_duration_ms": 16000,
       "acquisition_budget_ms": null,
+      "round_caps_off_on": [
+        16,
+        16
+      ],
       "runs": 2,
       "on_captures": 128,
       "off_captures": 128,
@@ -643,6 +651,10 @@
       "stagger_ms": 100,
       "source_duration_ms": 16000,
       "acquisition_budget_ms": 14000,
+      "round_caps_off_on": [
+        32,
+        32
+      ],
       "runs": 2,
       "on_captures": 176,
       "off_captures": 176,
@@ -659,6 +671,10 @@
       "stagger_ms": 100,
       "source_duration_ms": 16000,
       "acquisition_budget_ms": 14000,
+      "round_caps_off_on": [
+        32,
+        32
+      ],
       "runs": 2,
       "on_captures": 154,
       "off_captures": 158,
