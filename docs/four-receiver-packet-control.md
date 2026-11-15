@@ -71,3 +71,34 @@ improved sensitivity or packet recovery. Keep their completed-transmission
 counts and per-receiver outcomes separate. Do not silently select only the
 better result or claim a controlled sensitivity measurement from nominal source
 power alone.
+
+### Optional host staggering
+
+`--stagger-ms 100` delays receiver k by k*100 ms before each concurrent capture
+round, in both OFF and ON conditions. Allowed values are integer 0..250; default
+0 preserves simultaneous command submission. Four receivers therefore receive
+planned host delays of 0, 100, 200, and 300 ms. These are host sleeps, **not RF
+synchronization** or calibrated acquisition offsets. Thread scheduling, serial
+traffic, and firmware latency still vary. The report records the plan, worker
+and capture-call times, and each planned delay.
+
+The plan rejects combinations whose last capture cannot even start inside the
+requested source duration under a lower-bound calculation. Every earlier full
+round must transfer 40,950 raw bytes per receiver at 1 Mbaud/8N1 (409.5 ms), plus
+the largest host delay. Thus the last-start lower bound is
+`captures * max_delay_ms + (captures - 1) * 409.5`. Framing and processing overhead
+are deliberately excluded: passing this check is **not** a runtime guarantee.
+For example 32 rounds, four receivers, and 250 ms staggering cannot fit a 30 s
+source run. The limit assumes the CLI's fixed default 1 Mbaud receiver transport.
+
+ON capture rows label whether their host call started or ended after the latest
+host-duration deadline. That deadline is bracketed by host times immediately
+before START and after its acknowledgement, plus the requested duration. It is
+not a measured RF timestamp. The source count limit or an error can stop RF
+earlier; a pre-deadline capture call does not prove RF overlap. Late observations
+remain visible rather than silently discarded, and the denominator remains all
+completed transmissions in the finite source run.
+
+Compare a staggered trial with an equal-power, equal-duration, equal-snapshot-count
+unstaggered trial. A single pair is a diagnostic comparison, not a statistical
+advantage, sensitivity gain, or continuous-coverage claim.

@@ -205,9 +205,64 @@ def capture(radio, receiver, index, condition, output):
     )
 
 
-def run(radios, tx, output, captures=8, duration_ms=8000, *, power_dbm=-20):
+def stagger_plan(receiver_count, captures, duration_ms, stagger_ms=0):
+    if type(receiver_count) is not int or not 2 <= receiver_count <= 4:
+        raise ValueError('Two to four receivers required')
+    if type(stagger_ms) is not int or not 0 <= stagger_ms <= 250:
+        raise ValueError('Host stagger must be an integer in 0..250 ms')
+    if type(captures) is not int or not 1 <= captures <= 32:
+        raise ValueError('Captures must be 1..32')
+    if type(duration_ms) is not int or not 1000 <= duration_ms <= 30000:
+        raise ValueError('Duration must be 1000..30000 ms')
+    delays = [k * stagger_ms for k in range(receiver_count)]
+    # Each completed round must move 40950 raw bytes at 1 Mbaud, 8N1,
+    # before the next round. Ignore framing/processing overhead: LOWER bound.
+    last_start_lower_bound = captures * max(delays) + (captures - 1) * 409.5
+    if last_start_lower_bound >= duration_ms:
+        raise ValueError('Even the lower-bound last capture start exceeds source duration')
+    return dict(
+        stagger_ms=stagger_ms,
+        per_receiver_delay_ms=delays,
+        captures_per_condition=captures,
+        source_duration_ms=duration_ms,
+        last_capture_start_lower_bound_ms=last_start_lower_bound,
+        note='Host sleep per receiver before each concurrent round, NOT RF synchronization. '
+        'UART-based lower bound is not a runtime guarantee. Actual capture calls '
+        'may extend beyond the finite source run.',
+    )
+
+
+def delayed_capture(radio, receiver, index, condition, output, delay_ms, deadline_bounds=None):
+    queued_ns = time.monotonic_ns()
+    if delay_ms:
+        time.sleep(delay_ms / 1000)
+    started_ns = time.monotonic_ns()
+    row = capture(radio, receiver, index, condition, output)
+    ended_ns = time.monotonic_ns()
+    row.update(
+        planned_host_delay_ms=delay_ms,
+        host_worker_start_ns=queued_ns,
+        host_capture_call_start_ns=started_ns,
+        host_capture_call_end_ns=ended_ns,
+    )
+    if deadline_bounds is not None:
+        earliest, latest = deadline_bounds
+        row['host_duration_deadline_observation'] = dict(
+            capture_call_started_after_latest_deadline=started_ns >= latest,
+            capture_call_ended_after_latest_deadline=ended_ns >= latest,
+            capture_call_start_in_deadline_uncertainty=earliest <= started_ns < latest,
+            note='Host duration bounds only, not calibrated RF timestamps; source count limit '
+            'or errors may stop it earlier. A pre-deadline call does not prove RF overlap.',
+        )
+    return row
+
+
+def run(radios, tx, output, captures=8, duration_ms=8000, *, power_dbm=-20, stagger_ms=0):
     expected_config = configuration(power_dbm)
-    report = dict(status='running', captures=[], note=NOTE, expected_config=expected_config)
+    plan = stagger_plan(len(radios), captures, duration_ms, stagger_ms)
+    report = dict(
+        status='running', captures=[], note=NOTE, expected_config=expected_config, capture_plan=plan
+    )
     old = None
 
     def save():
@@ -230,11 +285,28 @@ def run(radios, tx, output, captures=8, duration_ms=8000, *, power_dbm=-20):
                     condition=condition, before=calibration(radios, condition + '-before')
                 )
                 report.setdefault('calibration_boundaries', []).append(boundary)
+                deadline_bounds = None
                 if condition == 'ON':
+                    start_call_ns = time.monotonic_ns()
                     report['tx_start'] = tx.start(count=20000, duration_ms=duration_ms)
+                    start_reply_ns = time.monotonic_ns()
+                    deadline_bounds = [
+                        start_call_ns + duration_ms * 1000000,
+                        start_reply_ns + duration_ms * 1000000,
+                    ]
+                    report['source_duration_deadline_host_bounds_ns'] = deadline_bounds
                 for index in range(captures):
                     futures = [
-                        pool.submit(capture, r, k, index, condition, output)
+                        pool.submit(
+                            delayed_capture,
+                            r,
+                            k,
+                            index,
+                            condition,
+                            output,
+                            plan['per_receiver_delay_ms'][k],
+                            deadline_bounds,
+                        )
                         for k, r in enumerate(radios)
                     ]
                     # Collect every worker before propagating an exception.
@@ -308,12 +380,17 @@ def main():
     p.add_argument('--captures', type=int, default=8)
     p.add_argument('--duration-ms', type=int, default=8000)
     p.add_argument('--power-dbm', type=int, choices=POWERS_DBM, default=-20)
+    p.add_argument('--stagger-ms', type=int, default=0)
     p.add_argument('--run', action='store_true')
     a = p.parse_args()
     if not 2 <= len(a.port) <= 4 or len({str(Path(v).resolve()) for v in a.port}) != len(a.port):
         p.error('Two to four distinct verified ports required')
     if not 1 <= a.captures <= 32 or not 1000 <= a.duration_ms <= 30000:
         p.error('Captures 1..32 and duration 1000..30000 ms required')
+    try:
+        plan = stagger_plan(len(a.port), a.captures, a.duration_ms, a.stagger_ms)
+    except ValueError as exc:
+        p.error(str(exc))
     if not a.run:
         print(
             json.dumps(
@@ -324,6 +401,7 @@ def main():
                     captures=a.captures,
                     duration_ms=a.duration_ms,
                     note=NOTE,
+                    capture_plan=plan,
                 )
             )
         )
@@ -338,6 +416,7 @@ def main():
             a.captures,
             a.duration_ms,
             power_dbm=a.power_dbm,
+            stagger_ms=a.stagger_ms,
         )
     print(json.dumps(dict(status=report['status'], analysis=report.get('analysis'))))
     return 0 if report['status'] == 'passed' else 1

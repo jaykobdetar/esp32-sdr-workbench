@@ -128,7 +128,7 @@ def test_failure_stops_and_closes(tmp_path):
 
     tx, radio = TX(), Radio()
     with pytest.raises(RuntimeError, match='bad receiver'):
-        run([radio], tx, tmp_path)
+        run([radio, Radio()], tx, tmp_path)
     assert tx.stops == 2
     assert radio.closed
     assert 'failed' in (tmp_path / 'results.json').read_text()
@@ -349,3 +349,54 @@ def test_expected_config_must_not_change_other_experiment_parameters():
 def test_nondefault_power_needs_explicit_expected_config():
     with pytest.raises(ValueError, match='configuration changed'):
         summarize(empty_controls(), fresh_state(power_dbm=0), state(power_dbm=0), 4)
+
+
+@pytest.mark.parametrize(
+    'count,stagger,delays', [(4, 0, [0, 0, 0, 0]), (4, 100, [0, 100, 200, 300]), (2, 250, [0, 250])]
+)
+def test_stagger_plan(count, stagger, delays):
+    from scripts.four_receiver_packets import stagger_plan
+
+    plan = stagger_plan(count, 16, 16000, stagger)
+    assert plan['per_receiver_delay_ms'] == delays
+    assert plan['last_capture_start_lower_bound_ms'] == 16 * max(delays) + 15 * 409.5
+    assert 'NOT RF synchronization' in plan['note']
+
+
+@pytest.mark.parametrize('stagger', [-1, 251, True, 100.0, '100'])
+def test_invalid_stagger_rejected(stagger):
+    from scripts.four_receiver_packets import stagger_plan
+
+    with pytest.raises(ValueError, match='stagger'):
+        stagger_plan(4, 16, 16000, stagger)
+
+
+def test_impossible_stagger_budget_rejected():
+    from scripts.four_receiver_packets import stagger_plan
+
+    with pytest.raises(ValueError, match='lower-bound'):
+        stagger_plan(4, 32, 30000, 250)
+    # A feasible lower bound is not a promise the host will complete in time.
+    assert stagger_plan(4, 16, 16000, 100)['last_capture_start_lower_bound_ms'] < 16000
+
+
+@pytest.mark.parametrize('condition', ['ON', 'OFF'])
+def test_host_delay_and_deadline_observation(monkeypatch, tmp_path, condition):
+    import scripts.four_receiver_packets as campaign
+
+    clock = iter([100, 400, 600])
+    sleeps = []
+    monkeypatch.setattr(campaign.time, 'monotonic_ns', lambda: next(clock))
+    monkeypatch.setattr(campaign.time, 'sleep', sleeps.append)
+    monkeypatch.setattr(campaign, 'capture', lambda *args: {'condition': condition})
+    bounds = [200, 300] if condition == 'ON' else None
+    result = campaign.delayed_capture(None, 3, 0, condition, tmp_path, 300, bounds)
+    assert sleeps == [0.3]
+    assert result['planned_host_delay_ms'] == 300
+    assert result['host_capture_call_start_ns'] == 400
+    if bounds:
+        assert result['host_duration_deadline_observation'][
+            'capture_call_started_after_latest_deadline'
+        ]
+    else:
+        assert 'host_duration_deadline_observation' not in result
