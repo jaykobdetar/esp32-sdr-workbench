@@ -95,7 +95,7 @@ def test_acquisition_preserves_sibling_after_failure_and_joins(tmp_path, monkeyp
     assert (tmp_path / 'off-1.wire.txt').read_text() == 'retained-1\n'
 
 
-@pytest.mark.parametrize('failure', [None, 'worker', 'stop', 'close'])
+@pytest.mark.parametrize('failure', [None, 'worker', 'stop', 'close', 'calibration'])
 def test_campaign_lifecycle_and_failclosed_receipt(tmp_path, monkeypatch, failure):
     import io
     import json
@@ -164,10 +164,19 @@ def test_campaign_lifecycle_and_failclosed_receipt(tmp_path, monkeypatch, failur
         lambda radios, *args: [{'sha256': 'a' * 64, 'bytes': 1904, 'device_us': 1} for _ in radios],
     )
     radios, tx = [RX(0), RX(1)], TX()
-    if failure == 'worker':
-        with pytest.raises(RuntimeError, match='receiver failed'):
+    if failure == 'calibration':
+
+        def bad_final(radios, boundary):
+            if boundary == 'campaign-after':
+                raise RuntimeError('final calibration failed')
+            return [{'sha256': 'a' * 64, 'bytes': 1904, 'device_us': 1} for _ in radios]
+
+        monkeypatch.setattr(module, 'calibration', bad_final)
+    if failure in ('worker', 'calibration'):
+        with pytest.raises(RuntimeError):
             module.run(radios, tx, tmp_path, count=3, period_us=10000)
-        assert finished == [1]
+        if failure == 'worker':
+            assert finished == [1]
     else:
         result = module.run(radios, tx, tmp_path, count=3, period_us=10000)
         assert result['status'] == ('passed' if failure is None else 'failed')
@@ -175,3 +184,62 @@ def test_campaign_lifecycle_and_failclosed_receipt(tmp_path, monkeypatch, failur
     assert report['status'] == ('passed' if failure is None else 'failed')
     assert all(r.closed and r.serial.closed for r in radios)
     assert tx.stops == 2
+    assert ('analysis' in report) is (failure is None)
+
+
+@pytest.mark.parametrize('where', ['submit', 'wait'])
+def test_coordinator_interrupt_drains_real_workers(tmp_path, monkeypatch, where):
+    import concurrent.futures
+
+    import scripts.multi_packet_only_campaign as module
+
+    finished = threading.Event()
+    started = threading.Event()
+
+    def reader(*args, on_line):
+        started.set()
+        on_line('retained before coordinator interruption')
+        time.sleep(0.03)
+        finished.set()
+        return {'status': 'verified'}
+
+    class FutureProxy:
+        interrupted = False
+
+        def __init__(self, future):
+            self.future = future
+
+        def done(self):
+            return self.future.done()
+
+        def result(self):
+            if where == 'wait' and not self.interrupted:
+                self.interrupted = True
+                assert started.wait(1)
+                raise KeyboardInterrupt('coordinator wait interrupted')
+            return self.future.result()
+
+    class ExecutorProxy:
+        def __init__(self, **kwargs):
+            self.pool = concurrent.futures.ThreadPoolExecutor(**kwargs)
+            self.submitted = 0
+
+        def submit(self, *args):
+            self.submitted += 1
+            if where == 'submit' and self.submitted == 2:
+                assert started.wait(1)
+                raise KeyboardInterrupt('partial submit interrupted')
+            return FutureProxy(self.pool.submit(*args))
+
+        def shutdown(self, **kwargs):
+            return self.pool.shutdown(**kwargs)
+
+    monkeypatch.setattr(module, 'collect', reader)
+    monkeypatch.setattr(module, 'ThreadPoolExecutor', ExecutorProxy)
+    rows = []
+    with pytest.raises(KeyboardInterrupt):
+        acquire([0, 1], tmp_path, 'OFF', rows, 3, 10000, 16, 0)
+    assert finished.is_set()
+    assert rows[0]['status'] == 'collected'
+    assert (tmp_path / 'off-0.wire.txt').exists()
+    assert all(r['status'] in ('collected', 'pending') for r in rows)

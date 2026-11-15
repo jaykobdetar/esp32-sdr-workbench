@@ -442,3 +442,72 @@ def test_complete_end_conservative_source_deadline(end, expected):
     from scripts.packet_only_campaign import complete_end_before_source_deadline
 
     assert complete_end_before_source_deadline(100, end, 3000) is expected
+
+
+@pytest.mark.parametrize('failure', ['calibration', 'stop', 'close'])
+def test_single_board_late_failure_has_no_accepted_analysis(tmp_path, monkeypatch, failure):
+    import scripts.packet_only_campaign as campaign
+
+    class RX:
+        serial = Serial()
+
+        def connect(self):
+            return {
+                'version': 'VERSION '
+                + json.dumps({'firmware_variant': 'esp32-packet-only-bounded-v1finish'}),
+                'caps': ['PKTONLY'],
+            }
+
+        def command(self, command):
+            return INFO
+
+        def configure(self, *args):
+            pass
+
+        def close(self):
+            if failure == 'close':
+                raise RuntimeError('close failure')
+
+    class TX:
+        stops = 0
+        started = False
+
+        def stop(self):
+            self.stops += 1
+            if failure == 'stop' and self.stops == 2:
+                raise RuntimeError('stop failure')
+            return source()
+
+        def status(self):
+            return source(elapsed_us=3000000)
+
+        def configure(self, **kwargs):
+            return source()
+
+        def start(self, **kwargs):
+            self.started = True
+            return fresh_source()
+
+    tx = TX()
+
+    def calibration(*args):
+        if failure == 'calibration' and args[-1] == 'campaign-after':
+            raise RuntimeError('calibration failure')
+        return [{'sha256': 'a' * 64, 'bytes': 1904, 'device_us': 1}]
+
+    def reader(*args, on_line):
+        lines = wire(objects(tx.started))
+        for line in lines:
+            on_line(line)
+        return validate_lines(lines, 3, 10000, 16)
+
+    monkeypatch.setattr(campaign, 'calibration', calibration)
+    monkeypatch.setattr(campaign, 'collect', reader)
+    if failure == 'calibration':
+        with pytest.raises(RuntimeError):
+            run(RX(), tx, tmp_path, count=3)
+    else:
+        assert run(RX(), tx, tmp_path, count=3)['status'] == 'failed'
+    receipt = json.loads((tmp_path / 'results.json').read_text())
+    assert receipt['status'] == 'failed'
+    assert 'analysis' not in receipt

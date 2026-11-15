@@ -204,12 +204,21 @@ def run(
             off_only=off_only,
         ),
         provenance=dict(
-            coordinator_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            host_sha256={
+                str(path.name): hashlib.sha256(path.read_bytes()).hexdigest()
+                for path in (
+                    Path(__file__),
+                    Path(__file__).with_name('packet_only_campaign.py'),
+                    Path(__file__).with_name('four_receiver_packets.py'),
+                    Path(__file__).parents[1] / 'sdr_research/packet_only.py',
+                )
+            },
             source_evidence='Aggregate completed counters only; no event-level source trace',
             firmware_app_hash='Integrator independently verifies each image; VERSION is not app hash',
         ),
     )
     old = None
+    provisional_analysis = None
 
     def save():
         atomic_write_json(output / 'results.json', report)
@@ -287,7 +296,7 @@ def run(
                 or final['elapsed_us'] < source_duration_ms * 1000
             ):
                 raise ValueError('Source stopped early')
-            report['analysis'] = summarize(
+            provisional_analysis = summarize(
                 report['conditions'], report['source_start'], final, config, len(radios)
             )
         report['calibration_after'] = calibration(radios, 'campaign-after')
@@ -323,9 +332,12 @@ def run(
                         failures.append(repr(exc))
         if failures:
             report.update(status='failed', cleanup_errors=failures)
+        if report['status'] == 'passed' and provisional_analysis is not None:
+            report['analysis'] = provisional_analysis
         try:
             save()
         except BaseException as exc:
+            report.pop('analysis', None)
             report.update(status='failed', receipt_error=repr(exc))
             if primary is None:
                 raise

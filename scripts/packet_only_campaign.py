@@ -139,6 +139,7 @@ def run(
         ),
     )
     old = None
+    provisional_analysis = None
 
     def save():
         atomic_write_json(output / 'results.json', report)
@@ -231,7 +232,7 @@ def run(
         report['calibration_after'] = calibration([radio], 'campaign-after')
         check_calibration(report['calibration_before'], report['calibration_after'])
         if not off_only:
-            report['analysis'] = packet_recovery(
+            provisional_analysis = packet_recovery(
                 report['conditions'], report['source_start'], report['source_final'], config
             )
         report['status'] = 'passed-source-off-control' if off_only else 'passed'
@@ -266,9 +267,12 @@ def run(
                     failures.append(repr(exc))
         if failures:
             report.update(status='failed', cleanup_errors=failures)
+        if report['status'] == 'passed' and provisional_analysis is not None:
+            report['analysis'] = provisional_analysis
         try:
             save()
         except BaseException as exc:
+            report.pop('analysis', None)
             report.update(status='failed', receipt_error=repr(exc))
             if primary is None:
                 raise
