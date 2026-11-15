@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -19,7 +20,7 @@ from sdr_research.calibration import record_calibration
 from sdr_research.protocol import Radio
 from sdr_research.recording import atomic_write_json
 
-from .analyze_nrf_iq import decode
+from .analyze_nrf_iq import decode, payload
 
 CONFIG = dict(
     frequency_mhz=2440,
@@ -57,17 +58,26 @@ def accepted(decoder):
             hit.get(k) is True
             for k in ('crc_verified', 'address_verified', 'full_known_payload_match')
         ):
-            if hit.get('observed_payload_hex') != hit.get('expected_payload_hex'):
-                raise ValueError('Inconsistent known-payload evidence')
             seq = hit['sequence']
-            if isinstance(seq, bool) or not isinstance(seq, int) or seq < 0:
+            if isinstance(seq, bool) or not isinstance(seq, int) or not 0 <= seq < 2**32:
                 raise ValueError('Invalid packet sequence')
+            expected = payload(seq, 16)
+            for field in ('observed_payload_hex', 'expected_payload_hex'):
+                value = hit.get(field)
+                if (
+                    not isinstance(value, str)
+                    or re.fullmatch(r'[0-9a-fA-F]{32}', value) is None
+                    or bytes.fromhex(value) != expected
+                ):
+                    raise ValueError('Inconsistent known-payload evidence')
             values.append(seq)
     return values
 
 
 def summarize(rows, start, final, receiver_count):
     """Conservative denominator: v0.2.2 sequences count attempted TX from zero."""
+    if type(receiver_count) is not int or not 2 <= receiver_count <= 4:
+        raise ValueError('Two to four expected receivers required')
     for state in (start, final):
         if (
             state.get('version') != '0.2.2'
@@ -78,6 +88,11 @@ def summarize(rows, start, final, receiver_count):
             raise ValueError('Unsupported or unhealthy transmitter accounting')
         if saved_config(state) != CONFIG:
             raise ValueError('Source configuration changed')
+    if start.get('running') is not True or any(
+        type(start.get(key)) is not int or start[key] != 0
+        for key in ('attempted', 'completed', 'scheduled', 'missed_slots', 'elapsed_us')
+    ):
+        raise ValueError('Fresh running source with reset counters required')
     if final.get('running') is not False or final['uptime_ms'] < start['uptime_ms']:
         raise ValueError('Source still running or reset')
     counts = [final[k] for k in ('attempted', 'completed', 'scheduled', 'missed_slots')]
@@ -90,10 +105,17 @@ def summarize(rows, start, final, receiver_count):
         raise ValueError('Transmitter counters reset')
     per_board = [[] for _ in range(receiver_count)]
     off = []
+    observed = {condition: set() for condition in ('OFF', 'ON')}
     for row in rows:
+        receiver = row.get('receiver')
+        if type(receiver) is not int or not 0 <= receiver < receiver_count:
+            raise ValueError('Invalid receiver index')
         if row['transport_crc_valid'] is not True:
             raise ValueError('Invalid raw transport')
         seqs = accepted(row['decoder'])
+        if row['condition'] not in observed:
+            raise ValueError('Unknown source condition')
+        observed[row['condition']].add(receiver)
         if row['condition'] == 'OFF':
             off.extend(seqs)
         elif row['condition'] == 'ON':
@@ -104,6 +126,8 @@ def summarize(rows, start, final, receiver_count):
             raise ValueError('Unknown source condition')
     if off:
         raise ValueError('Source-OFF accepted packets invalidate attribution')
+    if any(receivers != set(range(receiver_count)) for receivers in observed.values()):
+        raise ValueError('Nonempty ON and OFF captures required for every receiver')
     union = set().union(*(set(values) for values in per_board))
     return dict(
         unique_packets=len(union),

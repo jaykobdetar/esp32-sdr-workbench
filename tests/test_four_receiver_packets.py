@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from scripts.four_receiver_packets import CONFIG, accepted, run, summarize
+from scripts.four_receiver_packets import CONFIG, accepted, payload, run, summarize
 
 
 def state(**extra):
@@ -26,14 +26,20 @@ def state(**extra):
     return value
 
 
+def fresh_state(**extra):
+    value = state(running=True, attempted=0, completed=0, scheduled=0, missed_slots=0, elapsed_us=0)
+    value.update(extra)
+    return value
+
+
 def row(receiver=0, seq=2, condition='ON', **extra):
     hit = dict(
         sequence=seq,
         crc_verified=True,
         address_verified=True,
         full_known_payload_match=True,
-        observed_payload_hex='aa',
-        expected_payload_hex='aa',
+        observed_payload_hex=payload(seq, 16).hex(),
+        expected_payload_hex=payload(seq, 16).hex(),
     )
     hit.update(extra)
     return dict(
@@ -44,8 +50,16 @@ def row(receiver=0, seq=2, condition='ON', **extra):
     )
 
 
+def empty_controls(receiver_count=4):
+    return [
+        row(receiver=k, condition=condition, crc_verified=False)
+        for condition in ('OFF', 'ON')
+        for k in range(receiver_count)
+    ]
+
+
 def test_union_denominator_duplicates():
-    result = summarize([row(), row(1), row(3, 3)], state(), state(), 4)
+    result = summarize(empty_controls() + [row(), row(1), row(3, 3)], fresh_state(), state(), 4)
     assert result['unique_packets'] == 2
     assert result['recovery_percent'] == 20
     assert result['duplicate_observations'] == 1
@@ -70,7 +84,7 @@ def test_union_denominator_duplicates():
 )
 def test_reject_denominator(change):
     with pytest.raises(ValueError):
-        summarize([row()], state(), state(**change), 4)
+        summarize([row()], fresh_state(), state(**change), 4)
 
 
 @pytest.mark.parametrize('flag', ['crc_verified', 'address_verified', 'full_known_payload_match'])
@@ -80,10 +94,10 @@ def test_reject_unverified_hits(flag):
 
 def test_off_negative_and_out_of_range():
     with pytest.raises(ValueError, match='OFF'):
-        summarize([row(condition='OFF')], state(), state(), 4)
+        summarize([row(condition='OFF')], fresh_state(), state(), 4)
     with pytest.raises(ValueError, match='outside'):
-        summarize([row(seq=10)], state(), state(), 4)
-    result = summarize([row(condition='OFF', crc_verified=False)], state(), state(), 4)
+        summarize([row(seq=10)], fresh_state(), state(), 4)
+    result = summarize(empty_controls(), fresh_state(), state(), 4)
     assert result['unique_packets'] == 0
 
 
@@ -202,3 +216,63 @@ def test_calibration_ignores_timestamp_but_rejects_changes():
     after[0].update(sha256='a' * 64, device_us=99)
     with pytest.raises(ValueError, match='reset'):
         check_calibration(before, after)
+
+
+@pytest.mark.parametrize('condition', ['OFF', 'ON'])
+@pytest.mark.parametrize('receiver', range(4))
+def test_missing_control_or_receiver_rejected(condition, receiver):
+    rows = [
+        r
+        for r in empty_controls()
+        if not (r['condition'] == condition and r['receiver'] == receiver)
+    ]
+    with pytest.raises(ValueError, match='every receiver'):
+        summarize(rows, fresh_state(), state(), 4)
+
+
+@pytest.mark.parametrize('receiver', [True, False, -1, 4, 1.5, '0', None])
+def test_invalid_receiver_rejected(receiver):
+    rows = empty_controls()
+    rows[0]['receiver'] = receiver
+    with pytest.raises(ValueError, match='receiver index'):
+        summarize(rows, fresh_state(), state(), 4)
+
+
+@pytest.mark.parametrize(
+    'value', [None, '', 'aa', '00' * 16, 'g' * 32, ' ' + payload(2, 16).hex(), payload(3, 16).hex()]
+)
+@pytest.mark.parametrize('field', ['observed_payload_hex', 'expected_payload_hex'])
+def test_incomplete_or_wrong_payload_rejected(value, field):
+    with pytest.raises(ValueError, match='known-payload'):
+        accepted(row(**{field: value})['decoder'])
+
+
+def test_missing_payload_fields_rejected():
+    decoder = row()['decoder']
+    del decoder['full_payload_matches'][0]['observed_payload_hex']
+    del decoder['full_payload_matches'][0]['expected_payload_hex']
+    with pytest.raises(ValueError, match='known-payload'):
+        accepted(decoder)
+
+
+def test_empty_campaign_rejected():
+    with pytest.raises(ValueError, match='every receiver'):
+        summarize([], fresh_state(), state(), 4)
+
+
+@pytest.mark.parametrize(
+    'change',
+    [
+        dict(running=False),
+        dict(attempted=1),
+        dict(completed=1),
+        dict(scheduled=1),
+        dict(missed_slots=1),
+        dict(elapsed_us=1),
+        dict(attempted=False),
+        dict(elapsed_us=0.0),
+    ],
+)
+def test_start_must_prove_fresh_run(change):
+    with pytest.raises(ValueError, match='Fresh running'):
+        summarize(empty_controls(), fresh_state(**change), state(), 4)
