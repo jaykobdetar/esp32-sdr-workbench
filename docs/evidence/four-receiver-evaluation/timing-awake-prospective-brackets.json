@@ -1,0 +1,2477 @@
+{
+  "status": "passed",
+  "receiver_count": 4,
+  "clock_policy": "prospective-trial-batches-v1",
+  "defer_cyclic_gc": true,
+  "source_sha256": {
+    "scripts/trial_clock_brackets.py": "786a638e50b6a185350bcf5e01afbd72fe0d068f38783a5261b3f1fa1a49c677",
+    "sdr_research/gc_policy.py": "97786142dbaf71753ae305a56049a295ce817006535b6e784b97a93ffd545b9e",
+    "scripts/multi_stream_campaign.py": "733cdf4fe85bb690864ec5b8db5e9af8ab02e6eb89f0e01a8f70e83258b22a4d",
+    "scripts/dual_stream_campaign.py": "21f8df10ceb08fbac517c1c1419a6ba4aaf22e9b8c3cf76d05c6c8da4a7c4c34",
+    "sdr_research/detector_stream.py": "ce1d37697a4cb4708651e3aea85db94829cab35fee1b4ad126b560487efa357f",
+    "sdr_research/protocol.py": "470b7f8e9327a59cc180f8630bfe7ee8a5d720d0b1447629791ce3d9c9e56507",
+    "scripts/analyze_nrf_iq.py": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e",
+    "sdr_research/calibration.py": "4774359016c125f998c3eb028dcb6217b2bc8b29145dddb87344eac89a2249c5",
+    "sdr_research/stream_diagnostics.py": "c27381f0ccc8828a8264da543127098d477fb2a27d5589a303f8db6a6efc3d8b"
+  },
+  "source_final_running": false,
+  "cleanup_errors": [],
+  "trials": [
+    {
+      "trial_index": 0,
+      "duration_ms": 120000,
+      "periods_ns": [
+        1875000,
+        1874958,
+        1875010,
+        1875001
+      ],
+      "analysis_status": "verified-telemetry",
+      "analysis_frozen": true,
+      "clock_brackets": {
+        "policy": "trial-batches-v1",
+        "trial_index": 0,
+        "before_batch_id": "trial-0000-before",
+        "after_batch_id": "trial-0000-after",
+        "minimum_groups_per_side": 8,
+        "maximum_boundary_age_us": 60000000,
+        "receiver_brackets": [
+          {
+            "receiver_index": 1,
+            "before_pair_ids": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              6,
+              7,
+              8,
+              9,
+              13,
+              14
+            ],
+            "before_anchor_count": 11,
+            "before_boundary_age_range_us": [
+              940444.5625,
+              13398239.5625
+            ],
+            "after_pair_ids": [
+              15,
+              16,
+              17,
+              18,
+              19,
+              21,
+              22,
+              23,
+              25,
+              26,
+              28
+            ],
+            "after_anchor_count": 11,
+            "after_boundary_age_range_us": [
+              5140271.375,
+              16703452.375
+            ]
+          },
+          {
+            "receiver_index": 2,
+            "before_pair_ids": [
+              0,
+              2,
+              3,
+              6,
+              7,
+              9,
+              13,
+              14
+            ],
+            "before_anchor_count": 8,
+            "before_boundary_age_range_us": [
+              940444.5625,
+              13398239.5625
+            ],
+            "after_pair_ids": [
+              15,
+              17,
+              18,
+              19,
+              21,
+              22,
+              26,
+              28
+            ],
+            "after_anchor_count": 8,
+            "after_boundary_age_range_us": [
+              5140271.375,
+              16703452.375
+            ]
+          },
+          {
+            "receiver_index": 3,
+            "before_pair_ids": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              6,
+              7,
+              8,
+              9,
+              13,
+              14
+            ],
+            "before_anchor_count": 11,
+            "before_boundary_age_range_us": [
+              940444.5625,
+              13398239.5625
+            ],
+            "after_pair_ids": [
+              15,
+              16,
+              17,
+              18,
+              19,
+              21,
+              22,
+              25,
+              26,
+              28
+            ],
+            "after_anchor_count": 10,
+            "after_boundary_age_range_us": [
+              5140271.375,
+              16703452.375
+            ]
+          }
+        ],
+        "assigned_anchor_count": 59
+      },
+      "sealed_batches": [
+        {
+          "batch_id": "trial-0000-before",
+          "trial_index": 0,
+          "role": "before",
+          "status": "complete",
+          "anchor_count": 30,
+          "anchor_sha256": "a9ad9f7b02a2883a1c53da4dd20d722b988a6a81c0e9667c61f0e121a7c15b68"
+        },
+        {
+          "batch_id": "trial-0000-after",
+          "trial_index": 0,
+          "role": "after",
+          "status": "complete",
+          "anchor_count": 29,
+          "anchor_sha256": "49614bcc74e844988bc5e9a05cf6f31ab21103e8ad63bf30b4651c938aef6412"
+        }
+      ],
+      "clock_fits": [
+        {
+          "relative_drift": -2.2371839935781622e-05,
+          "anchor_count": 22,
+          "span_us": 150101691.9375,
+          "max_residual_us": 1.1455528971273452,
+          "rms_residual_us": 0.5355740273237403,
+          "heldout_max_error_us": 1.253822237253189,
+          "independent_capture_pair_count": 22,
+          "before_capture_pair_count": 11,
+          "after_capture_pair_count": 11,
+          "heldout_evaluated_fold_count": 22
+        },
+        {
+          "relative_drift": 5.633746888053498e-06,
+          "anchor_count": 16,
+          "span_us": 150101691.9375,
+          "max_residual_us": 1.001770416740328,
+          "rms_residual_us": 0.6334389840291693,
+          "heldout_max_error_us": 1.13694629073143,
+          "independent_capture_pair_count": 16,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 8,
+          "heldout_evaluated_fold_count": 16
+        },
+        {
+          "relative_drift": 7.342198540284235e-07,
+          "anchor_count": 21,
+          "span_us": 150101691.9375,
+          "max_residual_us": 1.1122711431235075,
+          "rms_residual_us": 0.5279851779573144,
+          "heldout_max_error_us": 1.2361770570278168,
+          "independent_capture_pair_count": 21,
+          "before_capture_pair_count": 11,
+          "after_capture_pair_count": 10,
+          "heldout_evaluated_fold_count": 21
+        }
+      ],
+      "nominal_union": {
+        "coverage_percent": 99.99998916666667,
+        "covered_us": 119999987,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 13,
+        "first_gaps_relative_us": [
+          [
+            0,
+            13
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_decision_union": {
+        "coverage_percent": 99.97499916666666,
+        "covered_us": 119969999,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 30001,
+        "first_gaps_relative_us": [
+          [
+            0,
+            30001
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "transport_record_counts": [
+        64001,
+        64002,
+        64000,
+        64001
+      ],
+      "gc_restored": true,
+      "sensitivity": [
+        {
+          "assumed_endpoint_error_us": 1,
+          "eroded_union": {
+            "coverage_percent": 99.99998833333333,
+            "covered_us": 119999986,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 14,
+            "first_gaps_relative_us": [
+              [
+                0,
+                14
+              ]
+            ],
+            "gap_list_truncated": false
+          },
+          "offset_corner_scenarios": [
+            {
+              "receiver_offsets_us": [
+                0,
+                -1,
+                -1,
+                -1
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -1,
+                -1,
+                1
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -1,
+                1,
+                -1
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -1,
+                1,
+                1
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                1,
+                -1,
+                -1
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                1,
+                -1,
+                1
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                1,
+                1,
+                -1
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                1,
+                1,
+                1
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            }
+          ]
+        },
+        {
+          "assumed_endpoint_error_us": 5,
+          "eroded_union": {
+            "coverage_percent": 99.999985,
+            "covered_us": 119999982,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 18,
+            "first_gaps_relative_us": [
+              [
+                0,
+                18
+              ]
+            ],
+            "gap_list_truncated": false
+          },
+          "offset_corner_scenarios": [
+            {
+              "receiver_offsets_us": [
+                0,
+                -5,
+                -5,
+                -5
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -5,
+                -5,
+                5
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -5,
+                5,
+                -5
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -5,
+                5,
+                5
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                5,
+                -5,
+                -5
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                5,
+                -5,
+                5
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                5,
+                5,
+                -5
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                5,
+                5,
+                5
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            }
+          ]
+        },
+        {
+          "assumed_endpoint_error_us": 20,
+          "eroded_union": {
+            "coverage_percent": 99.9999725,
+            "covered_us": 119999967,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 33,
+            "first_gaps_relative_us": [
+              [
+                0,
+                33
+              ]
+            ],
+            "gap_list_truncated": false
+          },
+          "offset_corner_scenarios": [
+            {
+              "receiver_offsets_us": [
+                0,
+                -20,
+                -20,
+                -20
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -20,
+                -20,
+                20
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -20,
+                20,
+                -20
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -20,
+                20,
+                20
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                20,
+                -20,
+                -20
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                20,
+                -20,
+                20
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                20,
+                20,
+                -20
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                20,
+                20,
+                20
+              ],
+              "union": {
+                "coverage_percent": 99.99998916666667,
+                "covered_us": 119999987,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 13,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    13
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            }
+          ]
+        }
+      ],
+      "sensitivity_note": "Assumed endpoint errors and constant-offset corner scenarios, not confidence bounds or exhaustive nonlinear-drift bounds."
+    },
+    {
+      "trial_index": 1,
+      "duration_ms": 120000,
+      "periods_ns": [
+        1875000,
+        1874958,
+        1875011,
+        1875001
+      ],
+      "analysis_status": "verified-telemetry",
+      "analysis_frozen": true,
+      "clock_brackets": {
+        "policy": "trial-batches-v1",
+        "trial_index": 1,
+        "before_batch_id": "trial-0001-before",
+        "after_batch_id": "trial-0001-after",
+        "minimum_groups_per_side": 8,
+        "maximum_boundary_age_us": 60000000,
+        "receiver_brackets": [
+          {
+            "receiver_index": 1,
+            "before_pair_ids": [
+              31,
+              34,
+              36,
+              37,
+              38,
+              39,
+              40,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47
+            ],
+            "before_anchor_count": 13,
+            "before_boundary_age_range_us": [
+              1059814.625,
+              15286497.25
+            ],
+            "after_pair_ids": [
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              55,
+              58,
+              62,
+              63,
+              64
+            ],
+            "after_anchor_count": 11,
+            "after_boundary_age_range_us": [
+              11414481.9375,
+              25713057.4375
+            ]
+          },
+          {
+            "receiver_index": 2,
+            "before_pair_ids": [
+              31,
+              35,
+              37,
+              38,
+              42,
+              44,
+              45,
+              47
+            ],
+            "before_anchor_count": 8,
+            "before_boundary_age_range_us": [
+              1059814.625,
+              15286497.25
+            ],
+            "after_pair_ids": [
+              48,
+              50,
+              51,
+              53,
+              55,
+              62,
+              63,
+              64
+            ],
+            "after_anchor_count": 8,
+            "after_boundary_age_range_us": [
+              11414481.9375,
+              25713057.4375
+            ]
+          },
+          {
+            "receiver_index": 3,
+            "before_pair_ids": [
+              31,
+              34,
+              35,
+              36,
+              37,
+              38,
+              39,
+              40,
+              42,
+              44,
+              45,
+              46,
+              47
+            ],
+            "before_anchor_count": 13,
+            "before_boundary_age_range_us": [
+              1059814.625,
+              15286497.25
+            ],
+            "after_pair_ids": [
+              48,
+              50,
+              51,
+              52,
+              53,
+              55,
+              58,
+              60,
+              61,
+              62,
+              63,
+              64
+            ],
+            "after_anchor_count": 12,
+            "after_boundary_age_range_us": [
+              11414481.9375,
+              25713057.4375
+            ]
+          }
+        ],
+        "assigned_anchor_count": 65
+      },
+      "sealed_batches": [
+        {
+          "batch_id": "trial-0001-before",
+          "trial_index": 1,
+          "role": "before",
+          "status": "complete",
+          "anchor_count": 34,
+          "anchor_sha256": "5c85096f413c3c42cabdc820cbd84cd8c04722249f0b99d7ba8be42720a783b7"
+        },
+        {
+          "batch_id": "trial-0001-after",
+          "trial_index": 1,
+          "role": "after",
+          "status": "complete",
+          "anchor_count": 31,
+          "anchor_sha256": "520033b3ec7f597ba0b2e659d2356d87a688e5042adaf8d0c5d8f9be4c680826"
+        }
+      ],
+      "clock_fits": [
+        {
+          "relative_drift": -2.2359604731538287e-05,
+          "anchor_count": 24,
+          "span_us": 160999554.6875,
+          "max_residual_us": 1.040552938124165,
+          "rms_residual_us": 0.4958635073019207,
+          "heldout_max_error_us": 1.1486859321594238,
+          "independent_capture_pair_count": 24,
+          "before_capture_pair_count": 13,
+          "after_capture_pair_count": 11,
+          "heldout_evaluated_fold_count": 24
+        },
+        {
+          "relative_drift": 5.694797789123364e-06,
+          "anchor_count": 16,
+          "span_us": 160999554.6875,
+          "max_residual_us": 0.9244312341324985,
+          "rms_residual_us": 0.5694724744142882,
+          "heldout_max_error_us": 1.052302211523056,
+          "independent_capture_pair_count": 16,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 8,
+          "heldout_evaluated_fold_count": 16
+        },
+        {
+          "relative_drift": 7.070547460138078e-07,
+          "anchor_count": 25,
+          "span_us": 160999554.6875,
+          "max_residual_us": 1.2854872345924377,
+          "rms_residual_us": 0.5078626139922232,
+          "heldout_max_error_us": 1.3926127552986145,
+          "independent_capture_pair_count": 25,
+          "before_capture_pair_count": 13,
+          "after_capture_pair_count": 12,
+          "heldout_evaluated_fold_count": 25
+        }
+      ],
+      "nominal_union": {
+        "coverage_percent": 99.99999583333333,
+        "covered_us": 119999995,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 5,
+        "first_gaps_relative_us": [
+          [
+            0,
+            5
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_decision_union": {
+        "coverage_percent": 99.97499916666666,
+        "covered_us": 119969999,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 30001,
+        "first_gaps_relative_us": [
+          [
+            0,
+            30001
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "transport_record_counts": [
+        64001,
+        64002,
+        64000,
+        64001
+      ],
+      "gc_restored": true,
+      "sensitivity": [
+        {
+          "assumed_endpoint_error_us": 1,
+          "eroded_union": {
+            "coverage_percent": 99.999995,
+            "covered_us": 119999994,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 6,
+            "first_gaps_relative_us": [
+              [
+                0,
+                6
+              ]
+            ],
+            "gap_list_truncated": false
+          },
+          "offset_corner_scenarios": [
+            {
+              "receiver_offsets_us": [
+                0,
+                -1,
+                -1,
+                -1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -1,
+                -1,
+                1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -1,
+                1,
+                -1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -1,
+                1,
+                1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                1,
+                -1,
+                -1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                1,
+                -1,
+                1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                1,
+                1,
+                -1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                1,
+                1,
+                1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            }
+          ]
+        },
+        {
+          "assumed_endpoint_error_us": 5,
+          "eroded_union": {
+            "coverage_percent": 99.99999166666667,
+            "covered_us": 119999990,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 10,
+            "first_gaps_relative_us": [
+              [
+                0,
+                10
+              ]
+            ],
+            "gap_list_truncated": false
+          },
+          "offset_corner_scenarios": [
+            {
+              "receiver_offsets_us": [
+                0,
+                -5,
+                -5,
+                -5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -5,
+                -5,
+                5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -5,
+                5,
+                -5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -5,
+                5,
+                5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                5,
+                -5,
+                -5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                5,
+                -5,
+                5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                5,
+                5,
+                -5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                5,
+                5,
+                5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            }
+          ]
+        },
+        {
+          "assumed_endpoint_error_us": 20,
+          "eroded_union": {
+            "coverage_percent": 99.99997916666666,
+            "covered_us": 119999975,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 25,
+            "first_gaps_relative_us": [
+              [
+                0,
+                25
+              ]
+            ],
+            "gap_list_truncated": false
+          },
+          "offset_corner_scenarios": [
+            {
+              "receiver_offsets_us": [
+                0,
+                -20,
+                -20,
+                -20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -20,
+                -20,
+                20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -20,
+                20,
+                -20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -20,
+                20,
+                20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                20,
+                -20,
+                -20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                20,
+                -20,
+                20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                20,
+                20,
+                -20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                20,
+                20,
+                20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            }
+          ]
+        }
+      ],
+      "sensitivity_note": "Assumed endpoint errors and constant-offset corner scenarios, not confidence bounds or exhaustive nonlinear-drift bounds."
+    },
+    {
+      "trial_index": 2,
+      "duration_ms": 120000,
+      "periods_ns": [
+        1875000,
+        1874958,
+        1875011,
+        1875002
+      ],
+      "analysis_status": "verified-telemetry",
+      "analysis_frozen": true,
+      "clock_brackets": {
+        "policy": "trial-batches-v1",
+        "trial_index": 2,
+        "before_batch_id": "trial-0002-before",
+        "after_batch_id": "trial-0002-after",
+        "minimum_groups_per_side": 8,
+        "maximum_boundary_age_us": 60000000,
+        "receiver_brackets": [
+          {
+            "receiver_index": 1,
+            "before_pair_ids": [
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76
+            ],
+            "before_anchor_count": 10,
+            "before_boundary_age_range_us": [
+              1139247.0625,
+              9124333.6875
+            ],
+            "after_pair_ids": [
+              77,
+              78,
+              79,
+              80,
+              82,
+              83,
+              86,
+              87,
+              88,
+              89,
+              90,
+              91,
+              92,
+              93,
+              94
+            ],
+            "after_anchor_count": 15,
+            "after_boundary_age_range_us": [
+              17747878.4375,
+              32841167.75
+            ]
+          },
+          {
+            "receiver_index": 2,
+            "before_pair_ids": [
+              67,
+              68,
+              69,
+              70,
+              72,
+              74,
+              75,
+              76
+            ],
+            "before_anchor_count": 8,
+            "before_boundary_age_range_us": [
+              1139247.0625,
+              9124333.6875
+            ],
+            "after_pair_ids": [
+              77,
+              79,
+              82,
+              83,
+              86,
+              92,
+              93,
+              94
+            ],
+            "after_anchor_count": 8,
+            "after_boundary_age_range_us": [
+              17747878.4375,
+              32841167.75
+            ]
+          },
+          {
+            "receiver_index": 3,
+            "before_pair_ids": [
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76
+            ],
+            "before_anchor_count": 10,
+            "before_boundary_age_range_us": [
+              1139247.0625,
+              9124333.6875
+            ],
+            "after_pair_ids": [
+              77,
+              78,
+              79,
+              80,
+              82,
+              83,
+              86,
+              87,
+              88,
+              89,
+              90,
+              91,
+              92,
+              93,
+              94
+            ],
+            "after_anchor_count": 15,
+            "after_boundary_age_range_us": [
+              17747878.4375,
+              32841167.75
+            ]
+          }
+        ],
+        "assigned_anchor_count": 66
+      },
+      "sealed_batches": [
+        {
+          "batch_id": "trial-0002-before",
+          "trial_index": 2,
+          "role": "before",
+          "status": "complete",
+          "anchor_count": 28,
+          "anchor_sha256": "fcc536236f576c84eb14471f7fc6eb506ab9b8f214b5128b0d50c17ed1f80b45"
+        },
+        {
+          "batch_id": "trial-0002-after",
+          "trial_index": 2,
+          "role": "after",
+          "status": "complete",
+          "anchor_count": 38,
+          "anchor_sha256": "8b321c52c2da6282191be1502bbc18bb7de263afb9b349782467da6266930ca0"
+        }
+      ],
+      "clock_fits": [
+        {
+          "relative_drift": -2.2359836307662086e-05,
+          "anchor_count": 25,
+          "span_us": 161965501.4375,
+          "max_residual_us": 1.3652935174759477,
+          "rms_residual_us": 0.5450004068802082,
+          "heldout_max_error_us": 1.455789029598236,
+          "independent_capture_pair_count": 25,
+          "before_capture_pair_count": 10,
+          "after_capture_pair_count": 15,
+          "heldout_evaluated_fold_count": 25
+        },
+        {
+          "relative_drift": 5.710941524568242e-06,
+          "anchor_count": 16,
+          "span_us": 161965501.4375,
+          "max_residual_us": 0.5418743398040533,
+          "rms_residual_us": 0.27617652386388103,
+          "heldout_max_error_us": 0.6227260828018188,
+          "independent_capture_pair_count": 16,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 8,
+          "heldout_evaluated_fold_count": 16
+        },
+        {
+          "relative_drift": 6.971819083295611e-07,
+          "anchor_count": 25,
+          "span_us": 161965501.4375,
+          "max_residual_us": 1.2096716053783894,
+          "rms_residual_us": 0.5375113401456457,
+          "heldout_max_error_us": 1.3005191683769226,
+          "independent_capture_pair_count": 25,
+          "before_capture_pair_count": 10,
+          "after_capture_pair_count": 15,
+          "heldout_evaluated_fold_count": 25
+        }
+      ],
+      "nominal_union": {
+        "coverage_percent": 99.99999583333333,
+        "covered_us": 119999995,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 5,
+        "first_gaps_relative_us": [
+          [
+            0,
+            5
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_decision_union": {
+        "coverage_percent": 99.97499916666666,
+        "covered_us": 119969999,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 30001,
+        "first_gaps_relative_us": [
+          [
+            0,
+            30001
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "transport_record_counts": [
+        64001,
+        64002,
+        64000,
+        64001
+      ],
+      "gc_restored": true,
+      "sensitivity": [
+        {
+          "assumed_endpoint_error_us": 1,
+          "eroded_union": {
+            "coverage_percent": 99.999995,
+            "covered_us": 119999994,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 6,
+            "first_gaps_relative_us": [
+              [
+                0,
+                6
+              ]
+            ],
+            "gap_list_truncated": false
+          },
+          "offset_corner_scenarios": [
+            {
+              "receiver_offsets_us": [
+                0,
+                -1,
+                -1,
+                -1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -1,
+                -1,
+                1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -1,
+                1,
+                -1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -1,
+                1,
+                1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                1,
+                -1,
+                -1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                1,
+                -1,
+                1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                1,
+                1,
+                -1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                1,
+                1,
+                1
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            }
+          ]
+        },
+        {
+          "assumed_endpoint_error_us": 5,
+          "eroded_union": {
+            "coverage_percent": 99.99999166666667,
+            "covered_us": 119999990,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 10,
+            "first_gaps_relative_us": [
+              [
+                0,
+                10
+              ]
+            ],
+            "gap_list_truncated": false
+          },
+          "offset_corner_scenarios": [
+            {
+              "receiver_offsets_us": [
+                0,
+                -5,
+                -5,
+                -5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -5,
+                -5,
+                5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -5,
+                5,
+                -5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -5,
+                5,
+                5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                5,
+                -5,
+                -5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                5,
+                -5,
+                5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                5,
+                5,
+                -5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                5,
+                5,
+                5
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            }
+          ]
+        },
+        {
+          "assumed_endpoint_error_us": 20,
+          "eroded_union": {
+            "coverage_percent": 99.99997916666666,
+            "covered_us": 119999975,
+            "duration_us": 120000000,
+            "gap_count": 1,
+            "max_gap_us": 25,
+            "first_gaps_relative_us": [
+              [
+                0,
+                25
+              ]
+            ],
+            "gap_list_truncated": false
+          },
+          "offset_corner_scenarios": [
+            {
+              "receiver_offsets_us": [
+                0,
+                -20,
+                -20,
+                -20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -20,
+                -20,
+                20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -20,
+                20,
+                -20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                -20,
+                20,
+                20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                20,
+                -20,
+                -20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                20,
+                -20,
+                20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                20,
+                20,
+                -20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            },
+            {
+              "receiver_offsets_us": [
+                0,
+                20,
+                20,
+                20
+              ],
+              "union": {
+                "coverage_percent": 99.99999583333333,
+                "covered_us": 119999995,
+                "duration_us": 120000000,
+                "gap_count": 1,
+                "max_gap_us": 5,
+                "first_gaps_relative_us": [
+                  [
+                    0,
+                    5
+                  ]
+                ],
+                "gap_list_truncated": false
+              }
+            }
+          ]
+        }
+      ],
+      "sensitivity_note": "Assumed endpoint errors and constant-offset corner scenarios, not confidence bounds or exhaustive nonlinear-drift bounds."
+    }
+  ],
+  "note": "Three bounded prospective120s four-receiver trials; nominal trigger+N/fs and assumption-based sensitivity, not continuous retainedIQ, calibrated RF apertures, packet recall, a proven GC rootcause or sustained reliability. Earlier failed legacy analyses remain failed.",
+  "calibration_unchanged_by_receiver": [
+    true,
+    true,
+    true,
+    true
+  ]
+}

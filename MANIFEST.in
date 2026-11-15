@@ -819,3 +819,9 @@ include scripts/trial_clock_brackets.py
 include docs/trial-clock-brackets.md
 
 include tests/test_trial_clock_brackets.py
+
+include docs/evidence/four-receiver-evaluation/timing-awake-lowrate-120s.json
+
+include docs/evidence/four-receiver-evaluation/timing-awake-prospective-brackets.json
+
+include docs/evidence/four-receiver-evaluation/awake-iq8-viewer-closeout.json

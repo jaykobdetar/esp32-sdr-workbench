@@ -277,3 +277,64 @@ def test_batched_nonce_meets_rate_without_workload_equivalence_claim():
         )
         assert 25600 < row['actual_validated_bytes_per_second'] < 25601
     assert 'not equivalent to DSTREAM' in data['note']
+
+
+def test_single_lowrate_trial_retains_slower_warmup_and_separate_scope():
+    data = load('timing-awake-lowrate-120s.json')
+    assert data['status'] == 'passed' and len(data['trials']) == 1
+    assert data['clock_policy'] == 'legacy-global-affine-selector'
+    assert data['source_final_running'] is False and data['gc_restored'] is True
+    trial = data['trials'][0]
+    assert trial['periods_ns'][0] == 3750000
+    assert trial['transport_record_counts'] == [32001, 32002, 32001, 32001]
+    assert trial['max_late_us'] == [2, 4, 4, 3]
+    for name in ('skipped', 'overflow', 'idle_fallbacks'):
+        assert trial[name] == [0, 0, 0, 0]
+    assert trial['nominal_union']['covered_us'] == 120000000 - 13
+    assert trial['nominal_decision_union']['covered_us'] == 120000000 - 60001
+    assert trial['nominal_decision_union']['first_gaps_relative_us'] == [[0, 60001]]
+
+
+def test_prospective_brackets_use_all_sealed_fresh_groups_without_relabeling():
+    data = load('timing-awake-prospective-brackets.json')
+    assert data['status'] == 'passed' and len(data['trials']) == 3
+    assert data['cleanup_errors'] == [] and data['source_final_running'] is False
+    assert all(data['calibration_unchanged_by_receiver'])
+    for row, total, gap in zip(data['trials'], [59, 65, 66], [13, 5, 5], strict=True):
+        assert row['analysis_frozen'] is True and row['gc_restored'] is True
+        assert row['analysis_status'] == 'verified-telemetry'
+        assert row['transport_record_counts'] == [64001, 64002, 64000, 64001]
+        assert row['nominal_union']['first_gaps_relative_us'] == [[0, gap]]
+        assert row['nominal_decision_union']['first_gaps_relative_us'] == [[0, 30001]]
+        assert row['clock_brackets']['assigned_anchor_count'] == total
+        assert sum(b['anchor_count'] for b in row['sealed_batches']) == total
+        assert sum(f['anchor_count'] for f in row['clock_fits']) == total
+        for batch in row['sealed_batches']:
+            assert batch['status'] == 'complete' and len(batch['anchor_sha256']) == 64
+        for bracket in row['clock_brackets']['receiver_brackets']:
+            for role in ('before', 'after'):
+                assert len(bracket[f'{role}_pair_ids']) >= 8
+                assert 0 < min(bracket[f'{role}_boundary_age_range_us'])
+                assert max(bracket[f'{role}_boundary_age_range_us']) <= 60000000
+        for fit in row['clock_fits']:
+            assert fit['max_residual_us'] <= 20 and fit['heldout_max_error_us'] <= 20
+            assert abs(fit['relative_drift']) <= 0.001
+            assert fit['heldout_evaluated_fold_count'] == fit['independent_capture_pair_count']
+        assert len(row['sensitivity']) == 3
+        assert all(len(s['offset_corner_scenarios']) == 8 for s in row['sensitivity'])
+        assert row['sensitivity'][2]['eroded_union']['covered_us'] == 120000000 - gap - 20
+    assert load('timing-awake-gc-deferred.json')['status'] == 'failed'
+
+
+def test_iq8_viewer_closeout_distinguishes_cards_from_timing_labels():
+    data = load('awake-iq8-viewer-closeout.json')
+    assert data['status'] == 'passed'
+    assert data['final_workers_joined'] and data['qt_window_disposed']
+    assert len(data['viewer_sessions']) == 2
+    for session in data['viewer_sessions']:
+        assert session['all_workers_joined'] and len(session['cards']) == 4
+        assert all(
+            c['crc_ok'] and c['bits'] == 8 and c['samples'] == 1024 for c in session['cards']
+        )
+    assert len(data['passive_health']) == 4 and data['source_final_running'] is False
+    assert all(r['crc_ok'] and r['release'] == 'OK' for r in data['passive_health'])

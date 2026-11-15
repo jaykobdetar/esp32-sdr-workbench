@@ -29,7 +29,7 @@ At a 1.875 ms period with idle-wakeup selector 34 and independently RF-anchored 
 
 The accepted gaps were at the requested startup edge, not trimmed away. Each accepted run passed complete record/terminal accounting and every receiver-to-reference clock fit's bracketing and held-out checks. The 10-second run's maximum held-out error was below 0.83 µs, an empirical screen rather than a certified error bound. Its ±20 µs endpoint-erosion scenario retained 99.99967% nominal union.
 
-Decision-valid windows exclude exactly the first 16 warmup records from **each receiver**. In every accepted 10-, 30- and 120-second trial documented here, the combined decision-valid union first starts 30,001 µs after the requested start. It has that single startup gap and no interior union gap within the requested window under the nominal timing model. Its denominator still includes the full requested window, including warmup. This is eligibility for a detector decision, **not a positive detection, decoded packet, packet-recovery percentage or host delivery-time measurement**. The acquisition union includes warmup; the decision-valid union does not.
+Decision-valid windows exclude exactly the first 16 warmup records from **each receiver**. In the accepted 10-, 30- and 120-second trials using the 1.875 ms period, the combined decision-valid union first starts 30,001 µs after the requested start. It has that single startup gap and no interior union gap within the requested window under the nominal timing model. Its denominator still includes the full requested window, including warmup. This is eligibility for a detector decision, **not a positive detection, decoded packet, packet-recovery percentage or host delivery-time measurement**. The acquisition union includes warmup; the decision-valid union does not.
 
 These are trigger-plus-nominal-sample-duration windows. DSTREAM discards raw I/Q. Clock anchors are selected common packets, not a recall denominator. Complete host-session preparation, anchor collection and delivery are not hidden inside the requested timing denominator; they are outside that particular measurement.
 
@@ -171,6 +171,65 @@ was confirmed stopped before and after. Matching aggregate bytes/s still does
 not match DSTREAM's packetization, RF/SRAM work or firmware scheduling, and
 this bounded acquisition-free success does not establish streaming reliability.
 
+## Single lower-load timing control
+
+A separate [single 120-second four-board control](timing-awake-lowrate-120s.json)
+used a 3.75 ms nominal period, half the record rate of the earlier 1.875 ms
+trials, with the public opt-in scoped GC deferral and legacy clock selector.
+It passed final clock, transport and cleanup checks: nominal acquisition union
+was 99.9999891667% with a 13 µs startup gap; decision-valid union was
+99.9499991667% with a 60,001 µs startup gap. The larger decision gap reflects
+16 warmup captures at the slower cadence, not a hidden interior gap.
+
+Record counts were 32,001 / 32,002 / 32,001 / 32,001 for A–D, with zero skipped
+captures, overflow or idle fallbacks and maximum lateness of 2 / 4 / 4 / 3 µs.
+The source was stopped and GC policy restored. This one bounded lower-load
+pass does not establish sustained reliability or validate the later prospective
+trial-bracket policy; it must not be pooled with the higher-rate trials.
+
+## Prospective sealed-bracket timing validation
+
+The [prospectively declared trial-local policy](../../trial-clock-brackets.md)
+was then tested in a new campaign, rather than used to rescue prior rejected
+results. Each trial used fresh before/after batches, at least eight independent
+shared capture groups per peer on each side, a 60-second maximum boundary age,
+all assigned anchors and immutable count/digest receipts. The unchanged 20 µs
+residual/whole-group-held-out and 1000 ppm drift screens remained in force.
+Lightweight durable batch checkpoints avoided repeatedly serializing previous
+stream histories during anchor collection. Earlier global-fit failures remain
+failed and are not replaced by these new measurements.
+
+All **three new 120-second four-board trials** passed final telemetry, clock,
+calibration and cleanup checks at a 1.875 ms nominal period with the public
+scoped-GC option. The [numeric evidence](timing-awake-prospective-brackets.json)
+records frozen analyses, exact assigned group IDs, inventory seals, actual ages,
+all peer fits and sensitivity scenarios. Independent offline reanalysis of the
+complete private streams/anchors exactly reproduced all three saved analyses.
+
+| New trial | Nominal acquisition union | Decision-valid union | Startup acquisition gap |
+|---|---:|---:|---:|
+| 1 | 99.9999891667% | 99.9749991667% | 13 µs |
+| 2 | 99.9999958333% | 99.9749991667% | 5 µs |
+| 3 | 99.9999958333% | 99.9749991667% | 5 µs |
+
+Each decision-valid union retained a 30,001 µs startup/warmup gap. No interior
+union gap occurred **under the nominal trigger-plus-sample-duration model**
+inside these requested windows. Counts were 64,001 / 64,002 / 64,000 / 64,001
+per trial for A–D. Assigned anchors totaled 59, 65 and 66 across the three peer
+fits; every peer had at least eight groups on both sides. Actual pre-boundary
+ages ranged from 0.940 to 15.287 seconds and post-boundary ages from 5.140 to
+32.841 seconds. Maximum whole-group-held-out error across all nine fits was
+1.456 µs, an empirical diagnostic rather than a certified timing bound.
+
+With an **assumed** 20 µs error removed from each nominal window endpoint,
+acquisition union was 99.9999725%, 99.9999791667% and 99.9999791667%. Offset-corner
+scenarios are also retained. These are sensitivity assumptions, not measured
+confidence limits or proof of valid ADC samples at every instant. The source
+was confirmed stopped, calibration hashes stayed unchanged within the campaign,
+and the original GC policy was restored after every trial. Three bounded
+successes do not establish sustained reliability, prove GC was the earlier
+root cause, deliver continuous retained I/Q or establish packet recall.
+
 ## Offline IQ8 replay, not a hardware throughput result
 
 A corrected deterministic replay quantized retained 10-bit-source captures to
@@ -232,9 +291,33 @@ stagger is not RF synchronization, and zero observed duplicates does not prove
 nonoverlapping RF apertures. Do not pool these 10-second-budget results with
 the earlier 14-second-budget controls. The default format remains IQ10.
 
+## What remains before continuous retention
+
+At 16 MS/s, signed IQ8 requires 32 MB/s before framing. A 1 Mbaud UART using
+8N1 carries at most 0.1 MB/s before protocol overhead. Even ideal time-sharing
+across four such links supplies only 0.4 MB/s, an 80-fold shortfall for one
+continuous full-rate IQ8 stream. This wire-capacity calculation is not a
+packet-recall ceiling: validated on-device selection or decoding could emit
+much less data, but its misses and compute/queue limits need separate tests.
+
+Further host staggering cannot close that gap. A next architecture must reduce
+data before UART (for example, validated cropping, decimation or packet results)
+or use a substantially faster transport. Any streaming decoder also needs a
+worst-case cycle and bounded-queue budget, including RF ownership and cleanup;
+these experiments do not establish one. The present work improves bounded
+telemetry and sparse retained snapshots, not continuous retained capture.
+
 ## Viewer verification
 
 The physical offscreen viewer displayed four distinct live CRC-valid receivers, then stopped, restarted and joined all workers. A restart defect that left overlapping retired status labels was fixed and regression-tested. A separate private test-harness teardown defect was reproduced in simulation and fixed by correctly processing deferred Qt deletion. The corrected physical two-session test exited cleanly; the earlier process crash is not counted as a clean pass. Screenshots and raw device paths remain private.
+
+A later [physical IQ8 GUI smoke and passive closeout](awake-iq8-viewer-closeout.json)
+passed two sessions: each of four cards showed actual 8-bit, 1,024-sample,
+CRC-valid captures, followed by joined workers and a disposed Qt window. Card
+ordering differs from the timing labels and is not silently equated with them.
+Separate final passive checks returned CRC-valid 256-sample captures and RELEASE
+acknowledgments on all four receivers; the transmitter reported stopped. These
+are bounded UI/cleanup checks, not continuous reception or calibration proof.
 
 The viewer labels asynchronous captures and stale/error connections and excludes stopped/failed receivers from live combined power. Its waterfall is successive retained snapshots, not uninterrupted time; combined power is noncoherent diversity.
 
