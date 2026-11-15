@@ -49,3 +49,18 @@ def test_project_rejects_incomplete_results(status):
 def test_project_rejects_identifying_path_as_label():
     with pytest.raises(ValueError, match='non-identifying'):
         project('/home/person/result', {})
+
+
+def test_failed_12s_control_preserves_denominator_failure_without_recall():
+    path = EVIDENCE.with_name('failed-12s-control.json')
+    data = json.loads(path.read_text())
+    assert data['status'] == 'failed'
+    assert data['recall_analysis_accepted'] is False
+    final = data['transmitter_final']
+    assert final['attempted'] - final['completed'] == 1
+    assert final['attempted'] + final['missed_slots'] == final['scheduled']
+    assert final['errors'] == 0 and final['running'] is False
+    assert [c['retained_captures'] for c in data['conditions']] == [56, 56]
+    assert all(c['all_transport_crc_valid'] for c in data['conditions'])
+    assert 'recovery_percent' not in path.read_text()
+    assert all(r['run'] != data['run'] for r in json.loads(EVIDENCE.read_text())['runs'])
