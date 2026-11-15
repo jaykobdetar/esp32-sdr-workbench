@@ -10,7 +10,7 @@ R = pathlib.Path(__file__).resolve().parent
 
 class Publication(unittest.TestCase):
     def test_overlays(self):
-        for variant in ['core-bank-v9', 'compact-v2']:
+        for variant in ['core-bank-v9', 'compact-v2', 'nrf-trace-exp2']:
             for rel, h in json.loads((R / variant / 'overlay-sha256.json').read_text()).items():
                 self.assertEqual(
                     hashlib.sha256((R / variant / 'overlay' / rel).read_bytes()).hexdigest(), h
