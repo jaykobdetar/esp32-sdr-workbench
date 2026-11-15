@@ -15,6 +15,7 @@ from pathlib import Path
 import numpy as np
 from nrf_tx.rf_tx import Transmitter
 
+from sdr_research.calibration import record_calibration
 from sdr_research.protocol import Radio
 from sdr_research.recording import atomic_write_json
 
@@ -119,6 +120,18 @@ def summarize(rows, start, final, receiver_count):
     )
 
 
+def calibration(radios, boundary):
+    return [record_calibration({}, r, r.info, boundary, required=True) for r in radios]
+
+
+def check_calibration(before, after):
+    for a, b in zip(before, after, strict=True):
+        if a['sha256'] != b['sha256'] or a['bytes'] != b['bytes']:
+            raise ValueError('Calibration fingerprint changed')
+        if b['device_us'] < a['device_us']:
+            raise ValueError('Receiver reset during trial')
+
+
 def capture(radio, receiver, index, condition, output):
     c = radio.capture(16380)
     if not c.crc_ok:
@@ -152,12 +165,16 @@ def run(radios, tx, output, captures=8, duration_ms=8000):
             raise RuntimeError('Source-OFF state not confirmed')
         old = saved_config(report['tx_before'])
         report['devices'] = [r.connect() for r in radios]
-        report['calibration_before'] = [r.command('CALHASH?') for r in radios]
+        report['calibration_before'] = calibration(radios, 'campaign-before')
         for r in radios:
             r.configure(2440, 16000000, 12, 60, 10)
         tx.configure(**CONFIG)
         with ThreadPoolExecutor(len(radios)) as pool:
             for condition in ('OFF', 'ON'):
+                boundary = dict(
+                    condition=condition, before=calibration(radios, condition + '-before')
+                )
+                report.setdefault('calibration_boundaries', []).append(boundary)
                 if condition == 'ON':
                     report['tx_start'] = tx.start(count=20000, duration_ms=duration_ms)
                 for index in range(captures):
@@ -186,9 +203,10 @@ def run(radios, tx, output, captures=8, duration_ms=8000):
                             raise TimeoutError('Source failed to stop within finite duration')
                         time.sleep(0.05)
                     report['tx_final_run'] = state
-        report['calibration_after'] = [r.command('CALHASH?') for r in radios]
-        if report['calibration_before'] != report['calibration_after']:
-            raise ValueError('Calibration fingerprint changed')
+                boundary['after'] = calibration(radios, condition + '-after')
+                check_calibration(boundary['before'], boundary['after'])
+        report['calibration_after'] = calibration(radios, 'campaign-after')
+        check_calibration(report['calibration_before'], report['calibration_after'])
         # Decode after RF stops; CPU time must not consume the sampling interval.
         for row in report['captures']:
             row['decoder'] = decode(np.load(output / row['file']), 16000000, 2, 16)
