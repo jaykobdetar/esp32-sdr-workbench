@@ -119,8 +119,11 @@ of a transport root cause. Include terminal readout in measured end-to-end
 source denominators; a conservative host deadline may reject a late response.
 
 Before any packet qualification, require source-OFF controls with zero false
-matches, independently verified positive source traces, finite source limits,
-strict packet/counter checks, and board recovery. No physical acquisition success
+matches, independently verified finite source sessions and aggregate completed-transmission
+counters, finite source limits,
+strict packet/counter checks, and board recovery. Aggregate counters are not an
+event-level source trace and do not establish per-packet transmission times.
+No physical acquisition success
 is claimed by this package.
 
 ## Provenance and license
