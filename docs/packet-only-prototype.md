@@ -85,11 +85,14 @@ baseline for these initial single-board, short packet-only controls. First prove
 protocol, cleanup, false-match controls and finite repeatability; only then design
 matched-duration comparisons.
 
-The earlier decoder timing of 6.244 ms per 1.02375 ms sample window is about
-6.1 times slower than real time; two CRC passes measured 8.236 ms, about 8.0 times.
-Removing the 334 ms raw-IQ UART transfer does not remove this compute bottleneck.
-Ten-millisecond slots cap nominal aperture time at roughly 10.24% per receiver
-before skipped slots and other losses. No continuous capture claim follows.
+The [initial physical controls](evidence/packet-only-initial/REPORT.md) measured
+10.932–10.957 ms mean ON decoding for 16,380 samples (1.02375 ms), about 10.7
+times input real time. Capture plus decode alone therefore limits one board to
+about 8.5% duty before other overhead. The tested 20 ms cadence has a nominal
+5.12% sample aperture fraction; it did not skip slots in the three short repeats.
+Earlier benchmark numbers must not be divided by this full-window duration:
+preserved benchmarks used different capture sizes and algorithms. Removing raw
+I/Q transfer does not remove the compute bottleneck or prove continuous capture.
 
 Provenance: receipts hash the host parser/campaign source. VERSION identifies the
 expected variant, not the flashed app hash: the integrator must retain its

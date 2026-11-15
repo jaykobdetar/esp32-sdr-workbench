@@ -102,13 +102,19 @@ leading/trailing session time; use full host/source intervals for recall.
 
 ## Budget and limitations
 
-A separately measured6.244ms decoder call for1.02375ms input is about6.10times
-input realtime:1,498,560 versus245,700cycles at240MHz. Capture+decode alone would
-limit one board to about14.1% duty before setup/readout/idle.10ms slots limit
-nominal aperture duty to10.2375%, reduced by actual skipped slots. Four such
-pipelines do not imply continuous coverage. Reduced UART volume does not remove
-the compute bottleneck. Evaluate delivered unique packets against complete
-source completed counts, not nominal timing coverage or optimistic extrapolation.
+The [initial physical controls](../../docs/evidence/packet-only-initial/REPORT.md)
+measured 10.932–10.957 ms mean ON decoding for 16,380 samples (1.02375 ms),
+about 10.7 times input real time. Capture plus decode alone limits one board to
+about 8.5% duty before setup/readout/idle, or roughly 34% summed across four
+ideal independent pipelines. These are compute bounds, not packet recall or
+continuous coverage. The tested 20 ms slots have a nominal aperture fraction
+of 5.12% per receiver before additional losses and source-window slack.
+
+Earlier 6.244 ms / full-window arithmetic mixed benchmark assumptions and is
+withdrawn: preserved benchmark capture sizes and algorithms differ. Use the
+actual candidate measurements, not those historical timings, for its budget.
+Reduced UART volume does not remove the compute bottleneck. Evaluate delivered
+unique packets against complete source completed counts, not nominal coverage.
 
 The initial128-byte INFO response exposed a boundary-sensitive delivery issue
 in a separate capability-only check. This revision preserves exact wire bytes,

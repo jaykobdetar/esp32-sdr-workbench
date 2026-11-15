@@ -41,8 +41,8 @@ A source-boundary in-flight attempt is possible, not established over-air loss.
 It remains separate from accepted trials and is retained in the summary.
 
 Actual candidate mean ON decode time was 10.932–10.957 ms per 1.02375 ms sample
-window, roughly 10.7 times real time. The earlier 6.244 ms measurement does not
-represent this instrumented candidate. Ten-millisecond admission therefore
+window, roughly 10.7 times real time. Earlier benchmark timings used different
+capture sizes and algorithms and are not substituted for this measurement. Ten-millisecond admission therefore
 skipped half the slots; 20 ms had no skips in these short repeats. Whole ON
 collection including paced END delivery took about 2.834–2.836 seconds for 128
 windows; firmware session_us ends before that terminal output.
