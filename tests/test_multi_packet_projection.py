@@ -117,3 +117,36 @@ def test_failed_partial_stream_is_retained_without_recall(tmp_path):
     assert result['conditions'][1]['wire_verified'] is True
     assert 'analysis' not in result
     assert result['status'] == 'failed'
+
+
+def test_retained_four_receiver_projection_groups_and_totals():
+    from pathlib import Path
+
+    evidence = json.loads(
+        (Path(__file__).parents[1] / 'docs/evidence/multi-packet-initial/summary.json').read_text()
+    )
+    runs = {r['label']: r for r in evidence['runs']}
+    labels = [f'abcd-stagger5-{i}' for i in (1, 2, 3)]
+    group = [runs[label] for label in labels]
+    assert len({r['condition_key'] for r in group}) == 1
+    assert runs['abcd-simultaneous']['condition_key'] != group[0]['condition_key']
+    assert runs['ab-stagger5']['condition_key'] != group[0]['condition_key']
+    assert sum(r['analysis']['unique_packets'] for r in group) == 1042
+    assert sum(r['analysis']['completed_transmissions'] for r in group) == 14936
+    for row in group:
+        assert row['status'] == 'passed'
+        assert row['analysis']['duplicate_observations'] == 0
+        assert row['analysis']['source_off_packets'] == 0
+        assert len(row['conditions']) == 8
+        assert [r['unique_packets'] for r in row['analysis']['per_board']] == {
+            'abcd-stagger5-1': [81, 106, 79, 94],
+            'abcd-stagger5-2': [77, 108, 74, 86],
+            'abcd-stagger5-3': [69, 104, 80, 84],
+        }[row['label']]
+        assert all(
+            c['wire_verified']
+            and c['completed'] == 128
+            and c['skipped'] == 0
+            and c['output_drops'] == 0
+            for c in row['conditions']
+        )
