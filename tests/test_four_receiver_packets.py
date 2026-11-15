@@ -574,3 +574,155 @@ def test_iq8_replay_matches_cap16_at_zero_discriminator_threshold():
     assert symbol_decision(candidate) == symbol_decision(reference)
     # Numeric promotion can flip a zero-CFO symbol decision despite equal samples.
     assert symbol_decision(reference.astype(np.complex128))
+
+
+@pytest.mark.parametrize('fail_sibling', [False, True])
+def test_asymmetric_partial_final_round_preserves_successes_and_errors(
+    tmp_path, monkeypatch, fail_sibling
+):
+    import scripts.four_receiver_packets as campaign
+
+    host_ns = [0]
+    retrieved = []
+    calls = []
+
+    class Future:
+        def __init__(self, key, fn, args):
+            self.key = key
+            try:
+                self.value, self.error = fn(*args), None
+            except Exception as exc:
+                self.value, self.error = None, exc
+
+        def result(self):
+            retrieved.append(self.key)
+            if self.error:
+                raise self.error
+            return self.value
+
+    class Pool:
+        def __init__(self, *_):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            pass
+
+        def submit(self, fn, *args):
+            return Future((args[3], args[2], args[1]), fn, args)
+
+    class TX:
+        stops = 0
+
+        def stop(self):
+            self.stops += 1
+            return state()
+
+        def status(self):
+            return state()
+
+        def configure(self, **_):
+            return state()
+
+        def start(self, **_):
+            return fresh_state()
+
+    class Radio:
+        info = {'caps': ['CALHASH']}
+        closed = False
+
+        def connect(self):
+            return self.info
+
+        def configure(self, *_):
+            pass
+
+        def command(self, _):
+            return 'CALHASH ' + json.dumps(
+                dict(
+                    version=1,
+                    algorithm='sha256',
+                    bytes=1904,
+                    sha256='a' * 64,
+                    device_us=host_ns[0] // 1000,
+                )
+            )
+
+        def close(self):
+            self.closed = True
+
+    def fake_capture(radio, receiver, index, condition, output):
+        calls.append((condition, index, receiver))
+        host_ns[0] += 250000000 if condition == 'ON' and index == 1 and receiver == 0 else 20000000
+        if fail_sibling and (condition, index, receiver) == ('OFF', 1, 1):
+            raise ValueError('Injected capture CRC failure')
+        name = f'{condition}-{index}-{receiver}'
+        # Save a marker to verify that successful siblings are not discarded.
+        (output / name).write_text('retained')
+        value = row(receiver=receiver, condition=condition, crc_verified=condition == 'ON')
+        value.update(file=name, index=index)
+        return value
+
+    monkeypatch.setattr(campaign, 'ThreadPoolExecutor', Pool)
+    monkeypatch.setattr(campaign.time, 'monotonic_ns', lambda: host_ns[0])
+    monkeypatch.setattr(
+        campaign.time,
+        'sleep',
+        lambda seconds: host_ns.__setitem__(0, host_ns[0] + round(seconds * 1000000000)),
+    )
+    monkeypatch.setattr(campaign, 'capture', fake_capture)
+    monkeypatch.setattr(campaign.np, 'load', lambda path: path.name)
+    monkeypatch.setattr(
+        campaign,
+        'decode',
+        lambda filename, *_: row(crc_verified=filename.startswith('ON'))['decoder'],
+    )
+    tx, radios = TX(), [Radio() for _ in range(4)]
+    if fail_sibling:
+        with pytest.raises(ValueError, match='Injected capture CRC'):
+            run(
+                radios,
+                tx,
+                tmp_path,
+                captures=32,
+                duration_ms=8000,
+                stagger_ms=100,
+                acquisition_budget_ms=1000,
+            )
+        result = json.loads((tmp_path / 'results.json').read_text())
+        assert result['status'] == 'failed'
+        assert len(retrieved) == 8  # Including failed and expired siblings.
+        assert len(result['captures']) == 5
+        assert len(result['skipped_captures']) == 2
+        assert ('OFF', 1, 0) in calls
+        assert (tmp_path / 'OFF-1-0').read_text() == 'retained'
+        assert any(r['file'] == 'OFF-1-0' for r in result['captures'])
+    else:
+        result = run(
+            radios,
+            tx,
+            tmp_path,
+            captures=32,
+            duration_ms=8000,
+            stagger_ms=100,
+            acquisition_budget_ms=1000,
+        )
+        assert result['status'] == 'passed'
+        counts = [
+            b['acquisition_budget']['per_receiver_captures']
+            for b in result['calibration_boundaries']
+        ]
+        assert counts == [[2, 2, 1, 1], [2, 1, 1, 1]]
+        assert len(result['captures']) == 11
+        assert len(result['skipped_captures']) == 5
+        assert len(retrieved) == 16
+        assert all(
+            not b['acquisition_budget']['round_cap_reached']
+            for b in result['calibration_boundaries']
+        )
+        assert all((tmp_path / r['file']).read_text() == 'retained' for r in result['captures'])
+        assert all('file' not in r for r in result['skipped_captures'])
+    assert tx.stops == 2
+    assert all(r.closed for r in radios)
