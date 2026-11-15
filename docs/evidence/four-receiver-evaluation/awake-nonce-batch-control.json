@@ -1,0 +1,60 @@
+{
+  "status": "passed",
+  "matching_source_revision": "5737a47",
+  "source_sha256": {
+    "serial_nonce_control.py": "f4e28e02d7a1ce02aa6df1f35256dc07e4c32f0e3da2801e16187fdbff438d8a"
+  },
+  "source_initial_running": false,
+  "source_final_running": false,
+  "trials": [
+    {
+      "status": "passed",
+      "requested_seconds": 120.0,
+      "elapsed_seconds": 120.00005555798998,
+      "target_response_bytes_per_second": 25600,
+      "actual_validated_bytes_per_second": 25600.3881474491,
+      "validated_response_bytes": 3072048,
+      "batch_size": 16,
+      "receiver_label": "A",
+      "completed_batches": 9143,
+      "validated_nonce_replies": 146288
+    },
+    {
+      "status": "passed",
+      "requested_seconds": 120.0,
+      "elapsed_seconds": 120.00005654999404,
+      "target_response_bytes_per_second": 25600,
+      "actual_validated_bytes_per_second": 25600.387935818457,
+      "validated_response_bytes": 3072048,
+      "batch_size": 16,
+      "receiver_label": "B",
+      "completed_batches": 9143,
+      "validated_nonce_replies": 146288
+    },
+    {
+      "status": "passed",
+      "requested_seconds": 120.0,
+      "elapsed_seconds": 120.00005618901923,
+      "target_response_bytes_per_second": 25600,
+      "actual_validated_bytes_per_second": 25600.388012827545,
+      "validated_response_bytes": 3072048,
+      "batch_size": 16,
+      "receiver_label": "C",
+      "completed_batches": 9143,
+      "validated_nonce_replies": 146288
+    },
+    {
+      "status": "passed",
+      "requested_seconds": 120.0,
+      "elapsed_seconds": 120.00006582197966,
+      "target_response_bytes_per_second": 25600,
+      "actual_validated_bytes_per_second": 25600.385957765968,
+      "validated_response_bytes": 3072048,
+      "batch_size": 16,
+      "receiver_label": "D",
+      "completed_batches": 9143,
+      "validated_nonce_replies": 146288
+    }
+  ],
+  "note": "Batched-reader concurrent changing-nonce acquisition-free control. Actual aggregate response rates meet the 25600-byte/s target, but packetization, bidirectional request load, RF acquisition, SRAM ownership and firmware scheduling are not equivalent to DSTREAM. Bounded success is not sustained streaming reliability."
+}

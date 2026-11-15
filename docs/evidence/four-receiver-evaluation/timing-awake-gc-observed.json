@@ -1,0 +1,134 @@
+{
+  "status": "failed",
+  "receiver_count": 4,
+  "source_final_running": false,
+  "source_sha256": {
+    "scripts/multi_stream_campaign.py": "30c868835e263f67bcafe5ced54e854857d5b41ce21099dc1e087b795f6b12a4",
+    "scripts/dual_stream_campaign.py": "ef31ba64cc84d06258e03d5cb3604b0d48d319b91c4a2727f4aef8e5b63b23cf",
+    "sdr_research/detector_stream.py": "ce1d37697a4cb4708651e3aea85db94829cab35fee1b4ad126b560487efa357f",
+    "sdr_research/protocol.py": "470b7f8e9327a59cc180f8630bfe7ee8a5d720d0b1447629791ce3d9c9e56507",
+    "scripts/analyze_nrf_iq.py": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e",
+    "sdr_research/calibration.py": "4774359016c125f998c3eb028dcb6217b2bc8b29145dddb87344eac89a2249c5",
+    "sdr_research/stream_diagnostics.py": "c27381f0ccc8828a8264da543127098d477fb2a27d5589a303f8db6a6efc3d8b"
+  },
+  "trials": [
+    {
+      "duration_ms": 120000,
+      "analysis_status": "verified-telemetry",
+      "nominal_union": {
+        "coverage_percent": 99.99998916666667,
+        "covered_us": 119999987,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 13,
+        "first_gaps_relative_us": [
+          [
+            0,
+            13
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_decision_union": {
+        "coverage_percent": 99.97499916666666,
+        "covered_us": 119969999,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 30001,
+        "first_gaps_relative_us": [
+          [
+            0,
+            30001
+          ]
+        ],
+        "gap_list_truncated": false
+      }
+    },
+    {
+      "duration_ms": 120000,
+      "analysis_status": "verified-telemetry",
+      "nominal_union": {
+        "coverage_percent": 99.99999583333333,
+        "covered_us": 119999995,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 5,
+        "first_gaps_relative_us": [
+          [
+            0,
+            5
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_decision_union": {
+        "coverage_percent": 99.97499916666666,
+        "covered_us": 119969999,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 30001,
+        "first_gaps_relative_us": [
+          [
+            0,
+            30001
+          ]
+        ],
+        "gap_list_truncated": false
+      }
+    }
+  ],
+  "rejected_trials": [
+    {
+      "status": "rejected",
+      "requested_duration_ms": 120000,
+      "after_accepted_trials": 2,
+      "peer_diagnostics": [
+        {
+          "receiver_label": "A",
+          "validated_record_count": 30530,
+          "sequence_gap": 44,
+          "failed_frame_crc_valid": true,
+          "error_observed_relative_to_shared_stop_us": 85.88
+        },
+        {
+          "receiver_label": "B",
+          "validated_record_count": 30530,
+          "sequence_gap": 44,
+          "failed_frame_crc_valid": true,
+          "error_observed_relative_to_shared_stop_us": 32.53
+        },
+        {
+          "receiver_label": "C",
+          "validated_record_count": 30530,
+          "sequence_gap": 44,
+          "failed_frame_crc_valid": true,
+          "error_observed_relative_to_shared_stop_us": 678.199
+        },
+        {
+          "receiver_label": "D",
+          "validated_record_count": 30529,
+          "sequence_gap": 44,
+          "failed_frame_crc_valid": true,
+          "error_observed_relative_to_shared_stop_us": -1389.87
+        }
+      ],
+      "earliest_observed_error_receiver": "D",
+      "note": "Incomplete trial: no accepted coverage. Host observation timestamps do not establish physical causality."
+    }
+  ],
+  "host_observation": {
+    "gc_policy_changed": false,
+    "gc_enabled_before": true,
+    "gc_enabled_after": true,
+    "gc_events_retained": 20000,
+    "gc_events_dropped": 75298,
+    "heartbeats_dropped": 0,
+    "preceding_heartbeat_gap_ms": 249.998862,
+    "gap_end_before_first_error_ms": 3.222629,
+    "last_retained_gc_event_before_first_error_s": 284.592765613,
+    "gc_event_coverage_at_failure": false,
+    "monitor_source_sha256": "8d1a7c9f4ab4a34316d1a9b16843ab689ea477313c850e89aa783ee95d31c627",
+    "target_source_sha256": "76ad91a1e61f01fd7d3a84997ee4f57ed365d4598882210425b5eb31e0479281",
+    "note": "Heartbeat includes intentional 10ms sleeps; gap reflects inability to schedule that Python thread, not a GIL-specific mechanism. GC event buffer overflowed long before failure, so this is host-stall correlation only, not evidence identifying GC as its cause. Monitoring can perturb execution."
+  }
+}

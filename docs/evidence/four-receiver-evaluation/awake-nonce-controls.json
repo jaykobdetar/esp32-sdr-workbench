@@ -1,0 +1,124 @@
+{
+  "matching_source_revision": "298261fd0febb4be4ac72b0cf59ad37303ac5e6c",
+  "note": "Concurrent changing-nonce exact-response controls without acquisition. Observed rates are below the 25600-byte/s target, so these are not exact DSTREAM-rate or packetization matches and do not establish acquisition-path reliability. No raw nonces or device identities included.",
+  "cohorts": [
+    {
+      "name": "awake-nonce-smoke",
+      "status": "passed",
+      "source_initial_running": false,
+      "source_final_running": false,
+      "source_sha256": {
+        "serial_nonce_control.py": "9e4f62c79d66d9b7a27aadf9c86a33759eb730c943bb4fc26dbe42dcc2600f1e"
+      },
+      "trials": [
+        {
+          "status": "passed",
+          "requested_seconds": 5.0,
+          "elapsed_seconds": 5.005375335982535,
+          "target_response_bytes_per_second": 25600,
+          "actual_validated_bytes_per_second": 24501.659070073765,
+          "validated_response_bytes": 122640,
+          "batch_size": 16,
+          "receiver_label": "A",
+          "completed_batches": 365,
+          "validated_nonce_replies": 5840
+        },
+        {
+          "status": "passed",
+          "requested_seconds": 5.0,
+          "elapsed_seconds": 5.010845985001652,
+          "target_response_bytes_per_second": 25600,
+          "actual_validated_bytes_per_second": 24541.963646076714,
+          "validated_response_bytes": 122976,
+          "batch_size": 16,
+          "receiver_label": "B",
+          "completed_batches": 366,
+          "validated_nonce_replies": 5856
+        },
+        {
+          "status": "passed",
+          "requested_seconds": 5.0,
+          "elapsed_seconds": 5.0020110369951,
+          "target_response_bytes_per_second": 25600,
+          "actual_validated_bytes_per_second": 24988.349500941426,
+          "validated_response_bytes": 124992,
+          "batch_size": 16,
+          "receiver_label": "C",
+          "completed_batches": 372,
+          "validated_nonce_replies": 5952
+        },
+        {
+          "status": "passed",
+          "requested_seconds": 5.0,
+          "elapsed_seconds": 5.0036274770100135,
+          "target_response_bytes_per_second": 25600,
+          "actual_validated_bytes_per_second": 24711.671795736394,
+          "validated_response_bytes": 123648,
+          "batch_size": 16,
+          "receiver_label": "D",
+          "completed_batches": 368,
+          "validated_nonce_replies": 5888
+        }
+      ]
+    },
+    {
+      "name": "awake-nonce-120s",
+      "status": "passed",
+      "source_initial_running": false,
+      "source_final_running": false,
+      "source_sha256": {
+        "serial_nonce_control.py": "9e4f62c79d66d9b7a27aadf9c86a33759eb730c943bb4fc26dbe42dcc2600f1e"
+      },
+      "trials": [
+        {
+          "status": "passed",
+          "requested_seconds": 120.0,
+          "elapsed_seconds": 120.0068746189936,
+          "target_response_bytes_per_second": 25600,
+          "actual_validated_bytes_per_second": 24112.21864736424,
+          "validated_response_bytes": 2893632,
+          "batch_size": 16,
+          "receiver_label": "A",
+          "completed_batches": 8612,
+          "validated_nonce_replies": 137792
+        },
+        {
+          "status": "passed",
+          "requested_seconds": 120.0,
+          "elapsed_seconds": 120.00805215499713,
+          "target_response_bytes_per_second": 25600,
+          "actual_validated_bytes_per_second": 24221.174727890655,
+          "validated_response_bytes": 2906736,
+          "batch_size": 16,
+          "receiver_label": "B",
+          "completed_batches": 8651,
+          "validated_nonce_replies": 138416
+        },
+        {
+          "status": "passed",
+          "requested_seconds": 120.0,
+          "elapsed_seconds": 120.00089003599714,
+          "target_response_bytes_per_second": 25600,
+          "actual_validated_bytes_per_second": 24029.42177458025,
+          "validated_response_bytes": 2883552,
+          "batch_size": 16,
+          "receiver_label": "C",
+          "completed_batches": 8582,
+          "validated_nonce_replies": 137312
+        },
+        {
+          "status": "passed",
+          "requested_seconds": 120.0,
+          "elapsed_seconds": 120.00982986399322,
+          "target_response_bytes_per_second": 25600,
+          "actual_validated_bytes_per_second": 24083.62717683657,
+          "validated_response_bytes": 2890272,
+          "batch_size": 16,
+          "receiver_label": "D",
+          "completed_batches": 8602,
+          "validated_nonce_replies": 137632
+        }
+      ]
+    }
+  ]
+}

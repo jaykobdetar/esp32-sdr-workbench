@@ -1,0 +1,168 @@
+{
+  "status": "failed",
+  "receiver_count": 4,
+  "source_final_running": false,
+  "source_sha256": {
+    "scripts/multi_stream_campaign.py": "30c868835e263f67bcafe5ced54e854857d5b41ce21099dc1e087b795f6b12a4",
+    "scripts/dual_stream_campaign.py": "ef31ba64cc84d06258e03d5cb3604b0d48d319b91c4a2727f4aef8e5b63b23cf",
+    "sdr_research/detector_stream.py": "ce1d37697a4cb4708651e3aea85db94829cab35fee1b4ad126b560487efa357f",
+    "sdr_research/protocol.py": "470b7f8e9327a59cc180f8630bfe7ee8a5d720d0b1447629791ce3d9c9e56507",
+    "scripts/analyze_nrf_iq.py": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e",
+    "sdr_research/calibration.py": "4774359016c125f998c3eb028dcb6217b2bc8b29145dddb87344eac89a2249c5",
+    "sdr_research/stream_diagnostics.py": "c27381f0ccc8828a8264da543127098d477fb2a27d5589a303f8db6a6efc3d8b"
+  },
+  "experiment": "Full collection before each Campaign.run deadline scheduling; cyclic GC disabled only throughout that coordinator call; restored afterward. Not a production fix.",
+  "production_mitigation": false,
+  "trials": [
+    {
+      "duration_ms": 120000,
+      "analysis_status": "unverified",
+      "reason": "Receiver 1 clock/telemetry: Held-out clock error exceeds 20 us screen",
+      "transport_record_counts": [
+        64001,
+        64002,
+        64000,
+        64001
+      ],
+      "transport_crc_valid": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "pretrial_full_collection_ms": 4.463149,
+      "gc_disabled_during_coordinator_call": true,
+      "gc_restored": true,
+      "max_observed_in_run_heartbeat_interval_ms": 13.077419,
+      "clock_fits": [
+        {
+          "receiver_label": "B",
+          "relative_drift_ppm": -22.424799886626026,
+          "max_residual_us": 19.075825713109225,
+          "max_heldout_error_us": 31.734983325004578,
+          "before_group_count": 8,
+          "after_group_count": 8
+        },
+        {
+          "receiver_label": "C",
+          "relative_drift_ppm": 5.573104678501522,
+          "max_residual_us": 19.53382633207366,
+          "max_heldout_error_us": 21.95334404706955,
+          "before_group_count": 8,
+          "after_group_count": 8
+        },
+        {
+          "receiver_label": "D",
+          "relative_drift_ppm": 0.519921212882542,
+          "max_residual_us": 17.87784375436604,
+          "max_heldout_error_us": 19.150029182434082,
+          "before_group_count": 8,
+          "after_group_count": 8
+        }
+      ]
+    },
+    {
+      "duration_ms": 120000,
+      "analysis_status": "unverified",
+      "reason": "Receiver 1 clock/telemetry: Clock fit exceeds 1000 ppm / 20 us screening limits",
+      "transport_record_counts": [
+        64001,
+        64002,
+        64000,
+        64001
+      ],
+      "transport_crc_valid": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "pretrial_full_collection_ms": 109.668033,
+      "gc_disabled_during_coordinator_call": true,
+      "gc_restored": true,
+      "max_observed_in_run_heartbeat_interval_ms": 13.612549,
+      "clock_fits": [
+        {
+          "receiver_label": "B",
+          "relative_drift_ppm": -22.407771788494607,
+          "max_residual_us": 23.857006530743092,
+          "max_heldout_error_us": 26.08628386259079,
+          "before_group_count": 8,
+          "after_group_count": 6
+        },
+        {
+          "receiver_label": "C",
+          "relative_drift_ppm": 5.587606445813368,
+          "max_residual_us": 22.68111725524068,
+          "max_heldout_error_us": 24.52201610803604,
+          "before_group_count": 8,
+          "after_group_count": 7
+        },
+        {
+          "receiver_label": "D",
+          "relative_drift_ppm": 0.5617652638289428,
+          "max_residual_us": 18.8380638808012,
+          "max_heldout_error_us": 20.229570984840393,
+          "before_group_count": 8,
+          "after_group_count": 8
+        }
+      ]
+    },
+    {
+      "duration_ms": 120000,
+      "analysis_status": "unverified",
+      "reason": "Receiver 1 clock/telemetry: Clock fit exceeds 1000 ppm / 20 us screening limits",
+      "transport_record_counts": [
+        64001,
+        64002,
+        64000,
+        64001
+      ],
+      "transport_crc_valid": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "pretrial_full_collection_ms": 230.272048,
+      "gc_disabled_during_coordinator_call": true,
+      "gc_restored": true,
+      "max_observed_in_run_heartbeat_interval_ms": 14.49442,
+      "clock_fits": [
+        {
+          "receiver_label": "B",
+          "relative_drift_ppm": -22.411376647865215,
+          "max_residual_us": 24.20873321266845,
+          "max_heldout_error_us": 26.697103202342987,
+          "before_group_count": 8,
+          "after_group_count": 3
+        },
+        {
+          "receiver_label": "C",
+          "relative_drift_ppm": 5.590924545356,
+          "max_residual_us": 22.260728882160038,
+          "max_heldout_error_us": 24.303297638893127,
+          "before_group_count": 8,
+          "after_group_count": 4
+        },
+        {
+          "receiver_label": "D",
+          "relative_drift_ppm": 0.5526760056424851,
+          "max_residual_us": 19.868535298854113,
+          "max_heldout_error_us": 21.709059417247772,
+          "before_group_count": 8,
+          "after_group_count": 4
+        }
+      ]
+    }
+  ],
+  "clock_screen_note": "Final all-anchor reanalysis supersedes earlier console results. Screen limits unchanged: drift1000ppm,residual20us,whole-capture-group heldout20us. No nominal unions published for these unverified runs. Up to8 nearest before/after groups may include later cohorts, so earlier results can change as evidence accumulates. Coherent time-cohort residual shifts are not a unique diagnosis of reference-clock drift or GC causation.",
+  "provenance_note": "Private wrapper reports startup/final source hashes equal; a temporary on-disk main-module edit was restored and did not change the already loaded module. Scoped GC policy is an experimental wrapper behavior, not a production default.",
+  "monitor": {
+    "total_gc_events": 94484,
+    "overwritten_gc_events": 74484,
+    "retention": "most recent events in chronological order; start may precede ring",
+    "private_entry_sha256": "447e128824421758dc5861cdc56b4f03646aa498d9ed4ca433a572726e2e566f",
+    "private_monitor_sha256": "6319f4b91f57d5c040a727b0d4e8f0678d3afd962ea2a8eca4debb516c28de17"
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "status": "passed",
+  "quantized_dtype": "complex64",
+  "source_sha256": {
+    "scripts/iq8_replay.py": "ecafe2d53a6aeb3bf1797f0aa3f4f4fd345cb0a42ab2f97a5bf9dfbc32b33922",
+    "scripts/four_receiver_packets.py": "8c81d859082b94f093f736079ad827db6b0281b5ce24a970730db84161a5166d",
+    "scripts/analyze_nrf_iq.py": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e",
+    "firmware/main/common/burst_capture.h": "eb1e7b2238d0d6fcbe3fee0bb5e838ae3a2408ccebf1a7511b88d8f9857bb84d"
+  },
+  "runs": [
+    {
+      "run": "packets-positive",
+      "analysis": {
+        "captures": 128,
+        "on_captures": 64,
+        "off_captures": 64,
+        "original_on_observations": 52,
+        "iq8_on_observations": 52,
+        "lost_observations": 0,
+        "gained_observations": 0,
+        "original_off_observations": 0,
+        "iq8_off_observations": 0,
+        "original_unique_packets": 22,
+        "iq8_unique_packets": 22,
+        "lost_unique_packets": 0,
+        "gained_unique_packets": 0,
+        "note": "Offline deterministic quantization only, not CAP16 hardware validation, new captures, a throughput measurement, or universal decoder equivalence."
+      }
+    },
+    {
+      "run": "packets-staggered",
+      "analysis": {
+        "captures": 128,
+        "on_captures": 64,
+        "off_captures": 64,
+        "original_on_observations": 41,
+        "iq8_on_observations": 41,
+        "lost_observations": 0,
+        "gained_observations": 0,
+        "original_off_observations": 0,
+        "iq8_off_observations": 0,
+        "original_unique_packets": 41,
+        "iq8_unique_packets": 41,
+        "lost_unique_packets": 0,
+        "gained_unique_packets": 0,
+        "note": "Offline deterministic quantization only, not CAP16 hardware validation, new captures, a throughput measurement, or universal decoder equivalence."
+      }
+    },
+    {
+      "run": "packets-stagger-repeat-2",
+      "analysis": {
+        "captures": 128,
+        "on_captures": 64,
+        "off_captures": 64,
+        "original_on_observations": 50,
+        "iq8_on_observations": 50,
+        "lost_observations": 0,
+        "gained_observations": 0,
+        "original_off_observations": 0,
+        "iq8_off_observations": 0,
+        "original_unique_packets": 50,
+        "iq8_unique_packets": 50,
+        "lost_unique_packets": 0,
+        "gained_unique_packets": 0,
+        "note": "Offline deterministic quantization only, not CAP16 hardware validation, new captures, a throughput measurement, or universal decoder equivalence."
+      }
+    },
+    {
+      "run": "packets-stagger-repeat-3",
+      "analysis": {
+        "captures": 128,
+        "on_captures": 64,
+        "off_captures": 64,
+        "original_on_observations": 44,
+        "iq8_on_observations": 44,
+        "lost_observations": 0,
+        "gained_observations": 0,
+        "original_off_observations": 0,
+        "iq8_off_observations": 0,
+        "original_unique_packets": 44,
+        "iq8_unique_packets": 44,
+        "lost_unique_packets": 0,
+        "gained_unique_packets": 0,
+        "note": "Offline deterministic quantization only, not CAP16 hardware validation, new captures, a throughput measurement, or universal decoder equivalence."
+      }
+    },
+    {
+      "run": "packets-low-repeat",
+      "analysis": {
+        "captures": 64,
+        "on_captures": 32,
+        "off_captures": 32,
+        "original_on_observations": 8,
+        "iq8_on_observations": 7,
+        "lost_observations": 1,
+        "gained_observations": 0,
+        "original_off_observations": 0,
+        "iq8_off_observations": 0,
+        "original_unique_packets": 7,
+        "iq8_unique_packets": 7,
+        "lost_unique_packets": 0,
+        "gained_unique_packets": 0,
+        "note": "Offline deterministic quantization only, not CAP16 hardware validation, new captures, a throughput measurement, or universal decoder equivalence."
+      }
+    }
+  ],
+  "matching_public_source_revision": "112e29e",
+  "prior_replay_attempts": [
+    "v1 superseded: complex128 did not match physical CAP16 complex64 decoder input",
+    "v2 aborted: incorrect source selection; not valid evidence"
+  ],
+  "note": "Numeric projection of corrected offline replay; raw input manifest and IQ remain private. This is not a physical IQ8 result."
+}

@@ -794,3 +794,23 @@ prune backups
 prune nrf52840-transmitter/vendor
 prune nrf52840-transmitter/artifacts
 prune nrf52840-transmitter/backups
+
+include docs/evidence/four-receiver-evaluation/awake-serial-controls.json
+
+include docs/evidence/four-receiver-evaluation/iq8-offline-replay.json
+
+include docs/evidence/four-receiver-evaluation/timing-awake-four-120s.json
+
+include docs/evidence/iq-format-initial/summary.json
+
+include docs/evidence/four-receiver-evaluation/timing-awake-gc-observed.json
+
+include docs/evidence/four-receiver-evaluation/awake-nonce-controls.json
+
+include docs/evidence/four-receiver-evaluation/timing-awake-gc-deferred.json
+
+include docs/evidence/four-receiver-evaluation/awake-nonce-batch-control.json
+
+include docs/evidence/iq-stagger-matched/REPORT.md
+
+include docs/evidence/iq-stagger-matched/summary.json

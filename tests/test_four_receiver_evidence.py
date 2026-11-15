@@ -110,3 +110,170 @@ def test_decision_union_keeps_warmup_in_requested_denominator(
         assert decision['first_gaps_relative_us'] == [[0, 30001]]
         assert decision['gap_list_truncated'] is False
         assert decision['covered_us'] < trial['nominal_union']['covered_us']
+
+
+def test_awake_serial_controls_preserve_intermittence_and_setup_failure():
+    data = load('awake-serial-controls.json')
+    rows = data['trials']
+    assert len(rows) == 6
+    assert [r['status'] for r in rows[:3]] == [
+        'passed-exact-response-control',
+        'failed',
+        'passed-exact-response-control',
+    ]
+    assert [r['receiver_label'] for r in rows] == ['C', 'C', 'A', 'C', 'C', 'C']
+    failure = rows[1]
+    assert 8 < failure['elapsed_seconds'] < 9
+    assert failure['leading_ff_bytes'] == 64
+    assert failure['failed_response_bytes'] == 254
+    assert failure['remainder_after_64_exact'] is True
+    assert failure['same_descriptor_resynchronized'] is True
+    assert failure['calibration_hash_unchanged'] is True
+    for row in rows[3:]:
+        assert row['status'] == 'passed-exact-response-control'
+        assert 120 <= row['elapsed_seconds'] < 121
+        assert row['failed_response_bytes'] == 0
+    attempts = {row['cohort']: row for row in data['attempts']}
+    absent = attempts['awake-c-new-port-control']
+    assert absent['trial_count'] == 2
+    assert absent['source_condition'] == 'physically-absent'
+    setup = attempts['awake-c-new-port-with-source-control']
+    assert setup['status'] == 'failed' and setup['trial_count'] == 0
+    restored = attempts['awake-c-new-port-with-source-control-retry1']
+    assert restored['status'] == 'passed' and restored['trial_count'] == 1
+    assert restored['source_condition'] == 'connected-stopped'
+
+
+def test_corrected_iq8_replay_preserves_observation_and_unique_distinction():
+    data = load('iq8-offline-replay.json')
+    assert data['status'] == 'passed'
+    assert data['quantized_dtype'] == 'complex64'
+    assert len(data['prior_replay_attempts']) == 2
+    runs = {r['run']: r['analysis'] for r in data['runs']}
+    assert len(runs) == 5
+    weak = runs.pop('packets-low-repeat')
+    assert weak['original_on_observations'] == 8
+    assert weak['iq8_on_observations'] == 7
+    assert weak['lost_observations'] == 1
+    assert weak['original_unique_packets'] == weak['iq8_unique_packets'] == 7
+    assert sum(a['original_on_observations'] for a in runs.values()) == 187
+    assert sum(a['iq8_on_observations'] for a in runs.values()) == 187
+    for result in [*runs.values(), weak]:
+        assert result['captures'] == result['on_captures'] + result['off_captures']
+        assert result['original_off_observations'] == result['iq8_off_observations'] == 0
+        assert result['gained_observations'] == result['gained_unique_packets'] == 0
+        assert result['lost_unique_packets'] == 0
+        assert 'not CAP16 hardware validation' in result['note']
+    for result in runs.values():
+        assert result['lost_observations'] == 0
+
+
+def test_awake_projections_in_source_distribution_manifest():
+    manifest = (ROOT.parents[2] / 'MANIFEST.in').read_text()
+    for name in ('awake-serial-controls.json', 'iq8-offline-replay.json'):
+        assert f'include docs/evidence/four-receiver-evaluation/{name}' in manifest.splitlines()
+
+
+def test_awake_timing_keeps_startup_failure_and_rejected_stream_separate():
+    data = load('timing-awake-four-120s.json')
+    assert data['status'] == 'failed' and data['source_final_running'] is False
+    assert data['initial_startup_attempt']['accepted_trial_count'] == 0
+    assert data['initial_startup_attempt']['source_final_running'] is False
+    assert len(data['trials']) == 2
+    for row, gap in zip(data['trials'], [13, 5], strict=True):
+        assert row['duration_ms'] == 120000
+        assert row['nominal_union']['max_gap_us'] == gap
+        assert row['nominal_decision_union']['covered_us'] == 120000000 - 30001
+    assert len(data['rejected_trials']) == 1
+    rejected = data['rejected_trials'][0]
+    assert 'nominal_union' not in rejected
+    assert rejected['earliest_observed_error_receiver'] == 'C'
+    peers = {r['receiver_label']: r for r in rejected['peer_diagnostics']}
+    assert [peers[k]['sequence_gap'] for k in 'ABCD'] == [36, 40, 36, 40]
+    assert (
+        peers['C']['error_observed_relative_to_shared_stop_us']
+        < peers['A']['error_observed_relative_to_shared_stop_us']
+        < 0
+    )
+    assert all(peers[k]['error_observed_relative_to_shared_stop_us'] > 0 for k in 'BD')
+    for row in peers.values():
+        assert row['failed_frame_crc_valid'] is True
+        assert row['same_descriptor_resynchronized'] is True
+        assert row['clock_regressed'] is False
+        assert row['calibration_hash_unchanged'] is True
+
+
+def test_gc_observation_retains_monitor_loss_and_only_correlates():
+    data = load('timing-awake-gc-observed.json')
+    assert data['status'] == 'failed' and data['source_final_running'] is False
+    assert len(data['trials']) == 2
+    rejected = data['rejected_trials'][0]
+    assert rejected['earliest_observed_error_receiver'] == 'D'
+    assert 'nominal_union' not in rejected
+    assert all(r['sequence_gap'] == 44 for r in rejected['peer_diagnostics'])
+    assert all(r['failed_frame_crc_valid'] for r in rejected['peer_diagnostics'])
+    monitor = data['host_observation']
+    assert monitor['gc_policy_changed'] is False
+    assert monitor['gc_event_coverage_at_failure'] is False
+    assert monitor['gc_events_retained'] == 20000
+    assert monitor['gc_events_dropped'] == 75298
+    assert monitor['preceding_heartbeat_gap_ms'] == pytest.approx(249.998862)
+    assert monitor['gap_end_before_first_error_ms'] == pytest.approx(3.222629)
+    assert monitor['last_retained_gc_event_before_first_error_s'] > 280
+
+
+def test_nonce_controls_report_actual_not_target_rates():
+    data = load('awake-nonce-controls.json')
+    assert data['matching_source_revision'].startswith('298261f')
+    assert len(data['cohorts']) == 2
+    for cohort, requested in zip(data['cohorts'], [5, 120], strict=True):
+        assert cohort['status'] == 'passed'
+        assert cohort['source_initial_running'] is cohort['source_final_running'] is False
+        assert [r['receiver_label'] for r in cohort['trials']] == list('ABCD')
+        for row in cohort['trials']:
+            assert row['status'] == 'passed' and row['requested_seconds'] == requested
+            assert row['elapsed_seconds'] >= requested
+            assert row['validated_nonce_replies'] == row['completed_batches'] * 16
+            assert row['actual_validated_bytes_per_second'] == pytest.approx(
+                row['validated_response_bytes'] / row['elapsed_seconds']
+            )
+            assert (
+                row['actual_validated_bytes_per_second'] < row['target_response_bytes_per_second']
+            )
+    assert [
+        round(r['actual_validated_bytes_per_second'], 1) for r in data['cohorts'][1]['trials']
+    ] == [24112.2, 24221.2, 24029.4, 24083.6]
+
+
+def test_gc_deferred_complete_transport_does_not_certify_coverage():
+    data = load('timing-awake-gc-deferred.json')
+    assert data['status'] == 'failed' and data['production_mitigation'] is False
+    assert data['source_final_running'] is False
+    assert len(data['trials']) == 3
+    for trial in data['trials']:
+        assert trial['analysis_status'] == 'unverified'
+        assert 'nominal_union' not in trial and 'nominal_decision_union' not in trial
+        assert trial['transport_record_counts'] == [64001, 64002, 64000, 64001]
+        assert all(trial['transport_crc_valid'])
+        assert trial['gc_disabled_during_coordinator_call'] is True
+        assert trial['gc_restored'] is True
+        assert trial['max_observed_in_run_heartbeat_interval_ms'] < 20
+        assert any(f['max_heldout_error_us'] > 20 for f in trial['clock_fits'])
+        assert all(abs(f['relative_drift_ppm']) < 1000 for f in trial['clock_fits'])
+
+
+def test_batched_nonce_meets_rate_without_workload_equivalence_claim():
+    data = load('awake-nonce-batch-control.json')
+    assert data['status'] == 'passed' and data['matching_source_revision'] == '5737a47'
+    assert data['source_initial_running'] is data['source_final_running'] is False
+    assert [r['receiver_label'] for r in data['trials']] == list('ABCD')
+    for row in data['trials']:
+        assert row['requested_seconds'] == 120
+        assert row['validated_response_bytes'] == 3072048
+        assert row['completed_batches'] == 9143
+        assert row['validated_nonce_replies'] == 9143 * 16
+        assert row['actual_validated_bytes_per_second'] == pytest.approx(
+            row['validated_response_bytes'] / row['elapsed_seconds']
+        )
+        assert 25600 < row['actual_validated_bytes_per_second'] < 25601
+    assert 'not equivalent to DSTREAM' in data['note']
