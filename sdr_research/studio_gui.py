@@ -213,6 +213,7 @@ class StudioWindow(W.QMainWindow):
         self.arrivals = {}
         self.combined = None
         self.views = {}
+        self.receiver_statuses = {}
         self.dialogs = []
         self.last_output = None
         self.history = []
@@ -299,6 +300,10 @@ class StudioWindow(W.QMainWindow):
         self.demo = W.QCheckBox('Explore with simulated data · no hardware used')
         self.demo.toggled.connect(self.refresh_devices)
         left.addWidget(self.demo)
+        self.demo_count = combo([('2 simulated receivers', 2), ('4 simulated receivers', 4)])
+        self.demo_count.setEnabled(False)
+        self.demo_count.currentIndexChanged.connect(self.refresh_devices)
+        left.addWidget(self.demo_count)
         self.paste_toggle = W.QCheckBox('Paste settings / ask an LLM')
         left.addWidget(self.paste_toggle)
         self.paste_panel = W.QGroupBox('Portable settings · JSON')
@@ -581,6 +586,10 @@ class StudioWindow(W.QMainWindow):
             1,
         )
         layout.addLayout(display_row)
+        self.receiver_health = W.QWidget()
+        self.receiver_health_layout = W.QGridLayout(self.receiver_health)
+        self.receiver_health_layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.receiver_health)
         self.views_container = W.QWidget()
         self.views_layout = W.QGridLayout(self.views_container)
         self.views_layout.setContentsMargins(0, 0, 0, 0)
@@ -671,6 +680,7 @@ class StudioWindow(W.QMainWindow):
                 item.widget().deleteLater()
         self.device_rows = []
         demo = self.demo.isChecked()
+        self.demo_count.setEnabled(demo)
         try:
             self.devices = [] if demo else discover_devices()
         except Exception as error:
@@ -681,8 +691,8 @@ class StudioWindow(W.QMainWindow):
             return
         entries = (
             [
-                ('receiver', 'demo-a', '', 'Simulated radio A'),
-                ('receiver', 'demo-b', '', 'Simulated radio B'),
+                ('receiver', f'demo-{i + 1}', '', f'Simulated radio {i + 1}')
+                for i in range(self.demo_count.currentData())
             ]
             if demo
             else [
@@ -721,7 +731,7 @@ class StudioWindow(W.QMainWindow):
         self.device_hint.setText(
             'No supported USB radios detected. Plug in an ESP32 receiver, then rescan. You can explore the interface with simulated data.'
             if not entries
-            else 'Two simulated receivers; no USB devices will be opened.'
+            else f'{counts["receiver"]} simulated receivers; no USB devices will be opened.'
             if demo
             else 'USB detected is not a health check. Connection is verified when the session starts. Ports are kept separate even when serial labels match.'
         )
@@ -865,6 +875,11 @@ class StudioWindow(W.QMainWindow):
         self.latest.clear()
         self.arrivals.clear()
         self.views.clear()
+        self.receiver_statuses.clear()
+        while self.receiver_health_layout.count():
+            item = self.receiver_health_layout.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
         self.rx_select.clear()
         self.log.clear()
         while self.views_layout.count():
@@ -878,6 +893,11 @@ class StudioWindow(W.QMainWindow):
             view = ReceiverView(receiver.label, COLORS[i % len(COLORS)])
             self.views_layout.addWidget(view, 1 + i // 2, i % 2)
             self.views[receiver.label] = view
+            view.setToolTip(receiver.port)
+            status = label(f'{receiver.label}: connecting · {receiver.port}', 'muted', True)
+            status.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+            self.receiver_health_layout.addWidget(status, i // 2, i % 2)
+            self.receiver_statuses[receiver.label] = status
             self.rx_select.addItem(receiver.label)
         self.update_display_mode()
         self.live_title.setText('Simulated session' if demo else TASKS[task][0])
@@ -931,14 +951,19 @@ class StudioWindow(W.QMainWindow):
                     self.arrivals[name] = time.monotonic()
                 self.latest[name] = capture
             self.views[name].update_capture(capture, stats)
+        self.update_receiver_health()
         if self.combined and self.finished_session is not session:
             self.combined.update_inputs(
-                {name: (capture, self.arrivals[name]) for name, capture in self.latest.items()}
+                {
+                    name: (capture, self.arrivals[name])
+                    for name, capture in self.latest.items()
+                    if name in session.workers
+                    and session.workers[name].error is None
+                    and session.workers[name].is_alive()
+                }
             )
         self.inspect_button.setEnabled(bool(self.latest))
         if session.is_alive():
-            for view in self.views.values():
-                view.refresh_age()
             start = session.manifest.get('run_started_monotonic_ns')
             if start and session.state == 'running':
                 elapsed = max(0, (time.monotonic_ns() - start) / 1e9)
@@ -974,12 +999,38 @@ class StudioWindow(W.QMainWindow):
             self.history_root = Path(self.output.text()).expanduser()
             self.refresh_history()
             self.update_plan()
-            for view in self.views.values():
-                view.status.setText('Stopped · last capture')
             if self.combined:
                 self.combined.status.setText('Stopped · last combined display')
         if self.closing:
             self.close()
+
+    def update_receiver_health(self) -> None:
+        """Always show every selected receiver, even when individual plots are hidden.
+
+        USB paths identify connections, not a calibrated clock or chip identity.
+        A stale retained plot is not evidence that its receiver is still connected.
+        """
+        session = self.session
+        for config in session.receivers:
+            view = self.views[config.label]
+            worker = session.workers.get(config.label)
+            if worker is not None and worker.error is not None:
+                state = f'Error / connection unverified: {worker.error}'
+            elif not session.is_alive():
+                state = 'Session ended · historical capture only'
+            elif worker is None or worker.ident is None:
+                state = 'Connecting · no successful acquisition yet'
+            elif not worker.is_alive():
+                state = 'Receiver stopped · not live'
+            elif view.last_received is None:
+                state = 'Acquiring · no retained I/Q yet'
+            else:
+                age = time.monotonic() - view.last_received
+                state = f'Last I/Q {age:.1f}s ago · asynchronous'
+                if age > (8 if config.settings.get('mode') == 'DSTREAMIQ' else 2):
+                    state += ' · stale'
+            view.status.setText(state)
+            self.receiver_statuses[config.label].setText(f'{config.label}: {state}\n{config.port}')
 
     def update_display_mode(self) -> None:
         mode = self.display_mode.currentData()

@@ -259,3 +259,70 @@ def test_stream_controls_and_import(window):
     w.settings_text.setPlainText(json.dumps(d))
     w.apply_pasted_settings()
     assert 'Not applied' in w.settings_feedback.text()
+
+
+def test_four_receiver_demo_visible_health_repeat_and_stop(window, app):
+    w = window
+    w.demo_count.setCurrentIndex(1)
+    assert len(w.device_rows) == 4
+    assert '4 simulated receivers' in w.device_hint.text()
+    w.show()
+    w.start_session()
+    first = w.session
+    until(app, lambda: len(w.latest) == 4)
+    assert len(w.views) == len(w.receiver_statuses) == w.rx_select.count() == 4
+    # All four connections remain visible in combined-only mode.
+    assert all(status.isVisible() for status in w.receiver_statuses.values())
+    assert all(not view.isVisible() for view in w.views.values())
+    w.display_mode.setCurrentIndex(2)
+    assert all(view.isVisible() for view in w.views.values())
+    for index, view in enumerate(w.views.values()):
+        assert w.views_layout.getItemPosition(w.views_layout.indexOf(view))[:2] == (
+            1 + index // 2,
+            index % 2,
+        )
+    w.stop_session()
+    until(app, lambda: not first.is_alive())
+    w.poll()
+    assert all('historical' in status.text() for status in w.receiver_statuses.values())
+    w.start_session()
+    assert w.session is not first
+    until(app, lambda: len(w.latest) == 4)
+    assert len(w.receiver_statuses) == 4
+
+
+def test_four_duplicate_serials_stay_distinct_and_rescan_preserves_selection(window, monkeypatch):
+    devices = [
+        Device(
+            'receiver',
+            f'/dev/path-{i}',
+            f'/dev/ttyUSB{i}',
+            'RX',
+            f'usb-{i}',
+            '0001',
+            0x10C4,
+            0xEA60,
+        )
+        for i in range(4)
+    ]
+    monkeypatch.setattr('sdr_research.studio_gui.discover_devices', lambda: devices)
+    window.demo.setChecked(False)
+    assert len(window.device_rows) == 4
+    window.device_rows[2]['check'].setChecked(False)
+    window.refresh_devices()
+    assert [row['check'].isChecked() for row in window.device_rows] == [True, True, False, True]
+    assert len({row['port'] for row in window.device_rows}) == 4
+
+
+def test_receiver_failure_not_hidden_by_recent_plot(window, app):
+    window.start_session()
+    until(app, lambda: len(window.latest) == 2)
+    window.session.stop()
+    window.session.join(6)
+    worker = window.session.workers['Receiver 2']
+    worker.error = RuntimeError('USB disconnected')
+    window.poll()
+    status = window.receiver_statuses['Receiver 2'].text()
+    assert 'USB disconnected' in status
+    assert 'connection unverified' in window.views['Receiver 2'].status.text()
+    assert 'no contributors' in window.combined.metrics.text()
