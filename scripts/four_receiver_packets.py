@@ -44,6 +44,15 @@ NOTE = (
 )
 
 
+POWERS_DBM = (-20, -16, -12, -8, -4, 0)
+
+
+def configuration(power_dbm=-20):
+    if type(power_dbm) is not int or power_dbm not in POWERS_DBM:
+        raise ValueError('Unsupported controlled source power')
+    return dict(CONFIG, power_dbm=power_dbm)
+
+
 def saved_config(status):
     result = {key: status[key] for key in CONFIG if key not in ('hop_list', 'payload_hex')}
     result['hop_list'] = ','.join(map(str, status['hop_list'])) or 'off'
@@ -74,8 +83,14 @@ def accepted(decoder):
     return values
 
 
-def summarize(rows, start, final, receiver_count):
+def summarize(rows, start, final, receiver_count, expected_config=None):
     """Conservative denominator: v0.2.2 sequences count attempted TX from zero."""
+    expected_config = configuration() if expected_config is None else expected_config
+    if (
+        not isinstance(expected_config, dict)
+        or configuration(expected_config.get('power_dbm')) != expected_config
+    ):
+        raise ValueError('Unsupported expected source configuration')
     if type(receiver_count) is not int or not 2 <= receiver_count <= 4:
         raise ValueError('Two to four expected receivers required')
     for state in (start, final):
@@ -86,7 +101,7 @@ def summarize(rows, start, final, receiver_count):
             or state.get('timing_saturated') is not False
         ):
             raise ValueError('Unsupported or unhealthy transmitter accounting')
-        if saved_config(state) != CONFIG:
+        if saved_config(state) != expected_config:
             raise ValueError('Source configuration changed')
     if start.get('running') is not True or any(
         type(start.get(key)) is not int or start[key] != 0
@@ -190,8 +205,9 @@ def capture(radio, receiver, index, condition, output):
     )
 
 
-def run(radios, tx, output, captures=8, duration_ms=8000):
-    report = dict(status='running', captures=[], note=NOTE)
+def run(radios, tx, output, captures=8, duration_ms=8000, *, power_dbm=-20):
+    expected_config = configuration(power_dbm)
+    report = dict(status='running', captures=[], note=NOTE, expected_config=expected_config)
     old = None
 
     def save():
@@ -207,7 +223,7 @@ def run(radios, tx, output, captures=8, duration_ms=8000):
         report['calibration_before'] = calibration(radios, 'campaign-before')
         for r in radios:
             r.configure(2440, 16000000, 12, 60, 10)
-        tx.configure(**CONFIG)
+        tx.configure(**expected_config)
         with ThreadPoolExecutor(len(radios)) as pool:
             for condition in ('OFF', 'ON'):
                 boundary = dict(
@@ -251,7 +267,11 @@ def run(radios, tx, output, captures=8, duration_ms=8000):
             row['decoder'] = decode(np.load(output / row['file']), 16000000, 2, 16)
             save()
         report['analysis'] = summarize(
-            report['captures'], report['tx_start'], report['tx_final_run'], len(radios)
+            report['captures'],
+            report['tx_start'],
+            report['tx_final_run'],
+            len(radios),
+            expected_config,
         )
         report['status'] = 'passed'
     except BaseException as exc:
@@ -287,6 +307,7 @@ def main():
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--captures', type=int, default=8)
     p.add_argument('--duration-ms', type=int, default=8000)
+    p.add_argument('--power-dbm', type=int, choices=POWERS_DBM, default=-20)
     p.add_argument('--run', action='store_true')
     a = p.parse_args()
     if not 2 <= len(a.port) <= 4 or len({str(Path(v).resolve()) for v in a.port}) != len(a.port):
@@ -299,7 +320,7 @@ def main():
                 dict(
                     mode='dry-run',
                     receivers=len(a.port),
-                    config=CONFIG,
+                    config=configuration(a.power_dbm),
                     captures=a.captures,
                     duration_ms=a.duration_ms,
                     note=NOTE,
@@ -310,7 +331,14 @@ def main():
     os.umask(0o077)
     a.output.mkdir(parents=True, exist_ok=False, mode=0o700)
     with Transmitter(serial_number=a.tx_serial) as tx:
-        report = run([Radio(port) for port in a.port], tx, a.output, a.captures, a.duration_ms)
+        report = run(
+            [Radio(port) for port in a.port],
+            tx,
+            a.output,
+            a.captures,
+            a.duration_ms,
+            power_dbm=a.power_dbm,
+        )
     print(json.dumps(dict(status=report['status'], analysis=report.get('analysis'))))
     return 0 if report['status'] == 'passed' else 1
 

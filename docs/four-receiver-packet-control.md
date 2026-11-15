@@ -56,3 +56,18 @@ before the final recorded first completion. It additionally requires first
 completion <= last completion <= final elapsed time. This uses observed event
 ordering, not a guessed 1000 us response ceiling: the initial scheduler deadline
 is `start_us`, not `start_us + interval_us`.
+
+### Controlled source power
+
+`--power-dbm` accepts -20 (default), -16, -12, -8, -4, or 0. All other source
+parameters remain fixed. Each new campaign records its exact `expected_config`;
+both START and final status must match it. Offline `summarize(...,
+expected_config=report['expected_config'])` reproduces the selected-power check.
+Older default-power results remain supported by omitting that argument.
+
+A same-setup 0 dBm run can serve as a known-signal positive control after a weak
+-20 dBm run. These are distinct power conditions, not evidence that software
+improved sensitivity or packet recovery. Keep their completed-transmission
+counts and per-receiver outcomes separate. Do not silently select only the
+better result or claim a controlled sensitivity measurement from nominal source
+power alone.

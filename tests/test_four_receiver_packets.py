@@ -302,3 +302,50 @@ def test_start_elapsed_must_precede_first_completed_packet(elapsed):
 def test_completion_time_ordering_rejected(change):
     with pytest.raises(ValueError, match='completion times'):
         summarize(empty_controls(), fresh_state(elapsed_us=7), state(**change), 4)
+
+
+@pytest.mark.parametrize('power', [-20, -16, -12, -8, -4, 0])
+def test_explicit_controlled_power(power):
+    from scripts.four_receiver_packets import configuration
+
+    expected = configuration(power)
+    result = summarize(
+        empty_controls(),
+        fresh_state(power_dbm=power),
+        state(power_dbm=power),
+        4,
+        expected_config=expected,
+    )
+    assert result['completed_transmissions'] == 10
+
+
+@pytest.mark.parametrize('power', [-40, 1, -10, True, '-20', None])
+def test_unsupported_power_rejected(power):
+    from scripts.four_receiver_packets import configuration
+
+    with pytest.raises(ValueError, match='power'):
+        configuration(power)
+
+
+@pytest.mark.parametrize('changed', ['start', 'final'])
+def test_power_drift_rejected(changed):
+    from scripts.four_receiver_packets import configuration
+
+    start, final = fresh_state(power_dbm=0), state(power_dbm=0)
+    (start if changed == 'start' else final)['power_dbm'] = -20
+    with pytest.raises(ValueError, match='configuration changed'):
+        summarize(empty_controls(), start, final, 4, expected_config=configuration(0))
+
+
+def test_expected_config_must_not_change_other_experiment_parameters():
+    from scripts.four_receiver_packets import configuration
+
+    expected = configuration(0)
+    expected['interval_us'] = 2000
+    with pytest.raises(ValueError, match='expected source'):
+        summarize(empty_controls(), fresh_state(), state(), 4, expected_config=expected)
+
+
+def test_nondefault_power_needs_explicit_expected_config():
+    with pytest.raises(ValueError, match='configuration changed'):
+        summarize(empty_controls(), fresh_state(power_dbm=0), state(power_dbm=0), 4)
