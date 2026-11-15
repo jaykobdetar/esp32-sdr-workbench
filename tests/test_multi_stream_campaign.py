@@ -352,9 +352,165 @@ def test_provenance_hashes_actual_sources_without_absolute_keys(tmp_path):
     import hashlib
 
     hashes = module.source_provenance()
-    assert len(hashes) == 7
+    assert len(hashes) == 8
     for name, path in module._SOURCE_FILES.items():
         assert not name.startswith('/') and '..' not in name
         assert hashes[name] == hashlib.sha256(Path(path).read_bytes()).hexdigest()
     campaign = module.Campaign([object(), object()], None, None, tmp_path)
     assert campaign.report['source_sha256'] == hashes
+
+
+@pytest.mark.parametrize('enabled', [False, True])
+def test_partial_submission_joins_before_gc_restore(monkeypatch, tmp_path, enabled):
+    import gc
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event
+
+    original_gc = gc.isenabled()
+    monkeypatch.setattr(gc, 'collect', lambda: 0)
+    monkeypatch.setattr(module, 'clock_probe', lambda r: {'offset_us': 0})
+    started, finished = Event(), Event()
+    error = RuntimeError('second submit failed')
+
+    def worker(r, **kwargs):
+        started.set()
+        assert not gc.isenabled()
+        assert kwargs['stop'].wait(2)
+        assert not gc.isenabled()
+        finished.set()
+        return {'summary': {}, 'transport_crc_valid': True}
+
+    monkeypatch.setattr(module, 'run_stream', worker)
+
+    class Tx:
+        def stop(self):
+            pass
+
+    try:
+        gc.enable() if enabled else gc.disable()
+        with ThreadPoolExecutor(1) as real:
+
+            class Pool:
+                calls = 0
+
+                def submit(self, *args, **kwargs):
+                    self.calls += 1
+                    if self.calls == 2:
+                        assert started.wait(2)
+                        raise error
+                    return real.submit(*args, **kwargs)
+
+            campaign = module.Campaign(
+                [object(), object()], Tx(), Pool(), tmp_path, defer_cyclic_gc=True
+            )
+            campaign.report['anchors'] = [dict(a, receiver_index=1) for a in anchors()]
+            with pytest.raises(RuntimeError) as caught:
+                campaign.run(1000, 2000000, [34, 34])
+            assert caught.value is error and finished.is_set()
+            assert gc.isenabled() == enabled
+            assert campaign.report['cyclic_gc_policy'][0]['restored_enabled'] == enabled
+    finally:
+        gc.enable() if original_gc else gc.disable()
+
+
+def test_default_gc_policy_does_not_collect(monkeypatch, tmp_path):
+    import gc
+
+    monkeypatch.setattr(gc, 'collect', lambda: pytest.fail('Default must not collect'))
+    campaign = module.Campaign([object(), object()], None, None, tmp_path)
+    monkeypatch.setattr(campaign, '_run_stream', lambda *a: 123)
+    assert campaign.run(1000, 2000000, [34, 34]) == 123
+    assert 'cyclic_gc_policy' not in campaign.report
+
+
+@pytest.mark.parametrize('extra', [['--seconds', '121'], ['--trials', '4'], ['--phase-sweep']])
+def test_gc_cli_bounds_before_hardware(monkeypatch, tmp_path, extra):
+    import sys
+
+    monkeypatch.setattr(module, 'Radio', lambda *a: pytest.fail('No hardware for invalid bounds'))
+    monkeypatch.setattr(
+        sys,
+        'argv',
+        [
+            'campaign',
+            '--port',
+            'mock0',
+            '--port',
+            'mock1',
+            '--tx-serial',
+            'mock',
+            '--output',
+            str(tmp_path / 'unused'),
+            '--defer-cyclic-gc',
+            '--run',
+            *extra,
+        ],
+    )
+    with pytest.raises(SystemExit) as caught:
+        module.main()
+    assert caught.value.code == 2
+
+
+def test_interrupted_join_waits_for_real_worker_before_restore(monkeypatch, tmp_path):
+    import gc
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event
+
+    monkeypatch.setattr(gc, 'collect', lambda: 0)
+    monkeypatch.setattr(module, 'clock_probe', lambda r: {'offset_us': 0})
+    started, release, finished = Event(), Event(), Event()
+    primary = RuntimeError('submission failed')
+    original_gc = gc.isenabled()
+
+    def worker(r, **kwargs):
+        started.set()
+        assert release.wait(2)
+        assert not gc.isenabled()
+        finished.set()
+        return {'summary': {}, 'transport_crc_valid': True}
+
+    monkeypatch.setattr(module, 'run_stream', worker)
+
+    class Tx:
+        def stop(self):
+            pass
+
+    class InterruptedFuture:
+        calls = 0
+
+        def __init__(self, real):
+            self.real = real
+
+        def done(self):
+            return self.real.done()
+
+        def result(self):
+            self.calls += 1
+            if self.calls <= 2:
+                assert not self.done()
+                raise KeyboardInterrupt('additional interrupt')
+            release.set()
+            return self.real.result()
+
+    with ThreadPoolExecutor(1) as executor:
+
+        class Pool:
+            calls = 0
+
+            def submit(self, *args, **kwargs):
+                self.calls += 1
+                if self.calls == 2:
+                    assert started.wait(2)
+                    raise primary
+                return InterruptedFuture(executor.submit(*args, **kwargs))
+
+        campaign = module.Campaign(
+            [object(), object()], Tx(), Pool(), tmp_path, defer_cyclic_gc=True
+        )
+        campaign.report['anchors'] = [dict(a, receiver_index=1) for a in anchors()]
+        with pytest.raises(RuntimeError) as caught:
+            campaign.run(1000, 2000000, [34, 34])
+        assert caught.value is primary
+        assert finished.is_set() and gc.isenabled() == original_gc
+    interruptions = campaign.report['rejected_runs'][0]['join_interruptions']
+    assert [x['error_type'] for x in interruptions] == ['KeyboardInterrupt'] * 2

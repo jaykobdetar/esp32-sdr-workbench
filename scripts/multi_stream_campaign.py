@@ -22,6 +22,7 @@ from nrf_tx.rf_tx import Transmitter
 from sdr_research.calibration import record_calibration
 from sdr_research.detector_stream import APERTURE_US, run_stream
 from sdr_research.dual_timing import clock_probe, coverage
+from sdr_research.gc_policy import deferred_cyclic_gc
 from sdr_research.protocol import Radio
 from sdr_research.stream_diagnostics import diagnose_failed_stream
 
@@ -40,6 +41,7 @@ from .dual_stream_campaign import (
 )
 
 _SOURCE_FILES = {
+    'sdr_research/gc_policy.py': inspect.getsourcefile(inspect.unwrap(deferred_cyclic_gc)),
     'scripts/multi_stream_campaign.py': __file__,
     'scripts/dual_stream_campaign.py': inspect.getsourcefile(DualCampaign),
     'sdr_research/detector_stream.py': inspect.getsourcefile(run_stream),
@@ -136,12 +138,14 @@ def analyze_run(row, anchors):
 
 
 class Campaign(DualCampaign):
-    def __init__(self, radios, tx, pool, output, *, source_hashes=None):
+    def __init__(self, radios, tx, pool, output, *, source_hashes=None, defer_cyclic_gc=False):
         if not 2 <= len(radios) <= 4 or len({id(r) for r in radios}) != len(radios):
             raise ValueError('Two to four distinct receiver objects required')
         hashes = source_provenance() if source_hashes is None else dict(source_hashes)
         super().__init__(radios, tx, pool, output)
         self.report['source_sha256'] = hashes
+        self.defer_cyclic_gc = defer_cyclic_gc
+        self.report['defer_cyclic_gc'] = defer_cyclic_gc
 
     def check_calibration(self, boundary):
         states = self.report.setdefault('calibration_by_receiver', [{} for _ in self.radios])
@@ -280,6 +284,28 @@ class Campaign(DualCampaign):
         raise RuntimeError('Insufficient independent RF-anchor pairs for every receiver')
 
     def run(self, duration_ms, period_ns, phases, compensate=True):
+        if not getattr(self, 'defer_cyclic_gc', False):
+            return self._run_stream(duration_ms, period_ns, phases, compensate)
+        policies = self.report.setdefault('cyclic_gc_policy', [])
+        if not 1000 <= duration_ms <= 120000 or len(policies) >= 3:
+            raise ValueError('GC deferral limited to three runs of 1..120 seconds')
+        observation = dict(attempt=len(policies), status='started')
+        policies.append(observation)
+        try:
+            with deferred_cyclic_gc(observation):
+                result = self._run_stream(duration_ms, period_ns, phases, compensate)
+            observation['status'] = 'returned'
+            return result
+        except BaseException as error:
+            observation.update(status='raised', error_type=type(error).__name__)
+            raise
+        finally:
+            try:
+                self.save()
+            except BaseException as error:
+                observation['persistence_error_type'] = type(error).__name__
+
+    def _run_stream(self, duration_ms, period_ns, phases, compensate=True):
         count = len(self.radios)
         if len(phases) != count or any(
             isinstance(p, bool) or not isinstance(p, int) or not 0 <= p <= 34 for p in phases
@@ -301,20 +327,23 @@ class Campaign(DualCampaign):
                 round(period_ns * (1 + models[k]['relative_drift'])) if compensate else period_ns
             )
         stop = Event()
-        futures = [
-            self.pool.submit(
-                run_stream,
-                r,
-                start_us=deadlines[k],
-                milliseconds=duration_ms,
-                period_ns=periods[k],
-                yield_phase=phases[k],
-                expected_background_policy=1,
-                stop=stop,
-            )
-            for k, r in enumerate(self.radios)
-        ]
+        futures = []
         try:
+            # Submission can fail after earlier workers have started. Keep those
+            # futures inside the same cancellation/join path before GC restoration.
+            for k, r in enumerate(self.radios):
+                futures.append(
+                    self.pool.submit(
+                        run_stream,
+                        r,
+                        start_us=deadlines[k],
+                        milliseconds=duration_ms,
+                        period_ns=periods[k],
+                        yield_phase=phases[k],
+                        expected_background_policy=1,
+                        stop=stop,
+                    )
+                )
             for f in as_completed(futures):
                 f.result()
             results = [f.result() for f in futures]
@@ -323,8 +352,25 @@ class Campaign(DualCampaign):
             stop.set()
             cancellation['event_set_returned_host_monotonic_ns'] = time.monotonic_ns()
             outcomes = []
+            join_interruptions = []
             for k, f in enumerate(futures):
                 outcome = dict(receiver_index=k, port=getattr(self.radios[k], 'port', None))
+                # A signal can interrupt Future.result while the worker is
+                # still running. Never interpret that as a completed worker.
+                while not f.done():
+                    try:
+                        f.result()
+                    except BaseException as join_error:
+                        if not f.done():
+                            join_interruptions.append(
+                                dict(
+                                    receiver_index=k,
+                                    error_type=type(join_error).__name__,
+                                    host_monotonic_ns=time.monotonic_ns(),
+                                )
+                            )
+                # Only inspect its outcome after positive completion. This also
+                # prevents diagnostic I/O racing the original serial reader.
                 try:
                     peer = f.result()
                     outcome.update(
@@ -358,6 +404,7 @@ class Campaign(DualCampaign):
                     yield_phases=phases,
                     host_failure_monotonic_ns=time.monotonic_ns(),
                     cancellation_timing=cancellation,
+                    join_interruptions=join_interruptions,
                     receivers=outcomes,
                     reason='At least one receiver failed; no union coverage is accepted.',
                 )
@@ -419,6 +466,7 @@ def main():
     p.add_argument('--tx-serial', required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--run', action='store_true')
+    p.add_argument('--defer-cyclic-gc', action='store_true')
     p.add_argument('--seconds', type=float, default=30)
     p.add_argument('--trials', type=int, default=3)
     p.add_argument('--period-ns', type=int, default=1875000)
@@ -437,11 +485,14 @@ def main():
         p.error('Seconds 1..600, trials 1..20')
     if not 1600000 <= args.period_ns <= 10000000:
         p.error('Period outside firmware range')
+    if args.defer_cyclic_gc and (args.seconds > 120 or args.trials > 3 or args.phase_sweep):
+        p.error('GC deferral requires <=120 seconds, <=3 trials, and no phase sweep')
     if not args.run:
         print(
             json.dumps(
                 dict(
                     mode='dry-run',
+                    defer_cyclic_gc=args.defer_cyclic_gc,
                     seconds=args.seconds,
                     trials=args.trials,
                     phase_sweep=args.phase_sweep,
@@ -456,7 +507,14 @@ def main():
     source_hashes = source_provenance()  # Before opening transmitter or receivers.
     radios = [Radio(x) for x in args.port]
     with Transmitter(serial_number=args.tx_serial) as tx, ThreadPoolExecutor(len(radios)) as pool:
-        campaign = Campaign(radios, tx, pool, args.output, source_hashes=source_hashes)
+        campaign = Campaign(
+            radios,
+            tx,
+            pool,
+            args.output,
+            source_hashes=source_hashes,
+            defer_cyclic_gc=args.defer_cyclic_gc,
+        )
         report = campaign.report
         try:
             tx.stop()
