@@ -16,7 +16,11 @@ from sdr_research.protocol import Radio
 from sdr_research.recording import atomic_write_json
 
 from .four_receiver_packets import calibration, check_calibration, configuration, saved_config
-from .packet_only_campaign import complete_end_before_source_deadline, validate_source
+from .packet_only_campaign import (
+    add_exception_note,
+    complete_end_before_source_deadline,
+    validate_source,
+)
 
 
 def plan_check(receivers, count, period_us, cap, duration_ms, stagger_ms):
@@ -166,7 +170,7 @@ def acquire(radios, output, condition, rows, count, period_us, cap, stagger_ms):
         except BaseException as exc:
             primary = primary or exc
     if primary is not None:
-        primary.add_note('All packet-only receiver workers joined before cleanup')
+        add_exception_note(primary, 'All packet-only receiver workers joined before cleanup')
         raise primary
 
 
@@ -341,7 +345,7 @@ def run(
             report.update(status='failed', receipt_error=repr(exc))
             if primary is None:
                 raise
-            primary.add_note('Final receipt save failed: ' + repr(exc))
+            add_exception_note(primary, 'Final receipt save failed: ' + repr(exc))
     return report
 
 

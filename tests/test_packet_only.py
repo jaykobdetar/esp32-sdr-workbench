@@ -511,3 +511,36 @@ def test_single_board_late_failure_has_no_accepted_analysis(tmp_path, monkeypatc
     receipt = json.loads((tmp_path / 'results.json').read_text())
     assert receipt['status'] == 'failed'
     assert 'analysis' not in receipt
+
+
+def test_exception_note_python310_fallback():
+    from scripts.packet_only_campaign import add_exception_note
+
+    class LegacyFailure(ValueError):
+        add_note = None
+
+    primary = LegacyFailure('primary')
+    add_exception_note(primary, 'cleanup diagnostic')
+    add_exception_note(primary, 'second diagnostic')
+    assert primary.__notes__ == ['cleanup diagnostic', 'second diagnostic']
+    assert str(primary) == 'primary'
+
+
+@pytest.mark.parametrize('mode', ['method', 'attribute'])
+def test_exception_note_cannot_replace_primary(mode):
+    from scripts.packet_only_campaign import add_exception_note
+
+    class DifficultFailure(ValueError):
+        def add_note(self, note):
+            raise KeyboardInterrupt('note method failed')
+
+        def __setattr__(self, name, value):
+            if name == '__notes__':
+                raise RuntimeError('notes attribute failed')
+            super().__setattr__(name, value)
+
+    primary = DifficultFailure('primary')
+    if mode == 'attribute':
+        primary.add_note = None
+    add_exception_note(primary, 'diagnostic')
+    assert str(primary) == 'primary'

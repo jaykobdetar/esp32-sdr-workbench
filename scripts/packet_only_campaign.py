@@ -20,6 +20,22 @@ from sdr_research.recording import atomic_write_json
 from .four_receiver_packets import calibration, check_calibration, configuration, saved_config
 
 
+def add_exception_note(primary, note):
+    """Best-effort diagnostics, never replace the primary failure (Python 3.10+)."""
+    try:
+        add_note = getattr(primary, 'add_note', None)
+        if callable(add_note):
+            add_note(note)
+        else:
+            # 3.10 lacks add_note; preserve diagnostics for callers without relying
+            # on interpreter traceback rendering or an available exception method.
+            notes = list(getattr(primary, '__notes__', ()))
+            notes.append(note)
+            primary.__notes__ = notes
+    except BaseException:
+        pass
+
+
 def validate_source(start, final, config):
     for state in (start, final):
         if (
@@ -276,7 +292,7 @@ def run(
             report.update(status='failed', receipt_error=repr(exc))
             if primary is None:
                 raise
-            primary.add_note('Final receipt save failed: ' + repr(exc))
+            add_exception_note(primary, 'Final receipt save failed: ' + repr(exc))
     return report
 
 
