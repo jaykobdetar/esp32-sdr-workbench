@@ -834,3 +834,8 @@ include tests/fixtures/packet-only-synthetic-wire.txt
 
 recursive-include experiments/packet-only-v1finish *.md *.json *.patch *.py *.c *.h
 include tests/test_packet_only_candidate_package.py
+
+include docs/evidence/packet-only-initial/REPORT.md
+include docs/evidence/packet-only-initial/summary.json
+include scripts/project_packet_only.py
+include tests/test_packet_only_projection.py
