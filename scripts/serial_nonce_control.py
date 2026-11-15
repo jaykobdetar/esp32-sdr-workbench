@@ -12,7 +12,6 @@ from nrf_campaigns.serial_integrity_control import (
     RawReplyError,
     clock_observation,
     parser,
-    read_line,
     validate_limits,
 )
 from nrf_tx.rf_tx import Transmitter
@@ -31,10 +30,28 @@ def exchange(port, nonce, deadline, count=16):
     # No flush/tcdrain: finite write_timeout bounds the write itself.
     if port.write(expected) != len(expected):
         raise RawReplyError('Incomplete nonce write', b'')
-    for reply in replies:
-        raw = read_line(port, deadline)
-        if raw != reply:
-            raise RawReplyError('Unique nonce exact-response mismatch', raw)
+    raw = bytearray()
+
+    def fail(message):
+        error = RawReplyError(message, raw)
+        error.first_mismatch_offset = next(
+            (i for i, (got, want) in enumerate(zip(raw, expected, strict=False)) if got != want),
+            len(raw) if len(raw) != len(expected) else None,
+        )
+        error.expected_bytes = len(expected)
+        error.received_bytes = len(raw)
+        return error
+
+    while len(raw) < len(expected):
+        if time.monotonic() >= deadline:
+            raise fail('Nonce batch reply timeout')
+        try:
+            chunk = port.read(min(256, len(expected) - len(raw)))
+        except Exception as error:
+            raise fail(f'Nonce batch read error: {type(error).__name__}') from error
+        raw.extend(chunk)
+    if raw != expected:
+        raise fail('Unique nonce exact-response mismatch')
     return len(expected)
 
 
@@ -89,6 +106,9 @@ def trial(port_name, seconds, target, index=0):
             error=str(error),
             failure_host_monotonic_ns=time.monotonic_ns(),
             failed_raw_hex=bytes(getattr(error, 'raw', b'')[:4096]).hex(),
+            first_mismatch_offset=getattr(error, 'first_mismatch_offset', None),
+            expected_batch_bytes=getattr(error, 'expected_bytes', None),
+            received_batch_bytes=getattr(error, 'received_bytes', None),
         )
         # Measure workload elapsed before potentially slow failure diagnosis.
         if start is not None:
