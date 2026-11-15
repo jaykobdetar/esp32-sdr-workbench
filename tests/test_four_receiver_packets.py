@@ -21,6 +21,8 @@ def state(**extra):
         scheduled=12,
         missed_slots=2,
         elapsed_us=10000,
+        first_end_us=500,
+        last_end_us=9000,
     )
     value.update(extra)
     return value
@@ -268,11 +270,35 @@ def test_empty_campaign_rejected():
         dict(completed=1),
         dict(scheduled=1),
         dict(missed_slots=1),
-        dict(elapsed_us=1),
         dict(attempted=False),
-        dict(elapsed_us=0.0),
     ],
 )
 def test_start_must_prove_fresh_run(change):
     with pytest.raises(ValueError, match='Fresh running'):
         summarize(empty_controls(), fresh_state(**change), state(), 4)
+
+
+@pytest.mark.parametrize('elapsed', [0, 1, 7, 499])
+def test_start_elapsed_is_live_clock_not_reset_variable(elapsed):
+    result = summarize(empty_controls(), fresh_state(elapsed_us=elapsed), state(), 4)
+    assert result['completed_transmissions'] == 10
+
+
+@pytest.mark.parametrize('elapsed', [-1, True, 0.0, None, 500, 501])
+def test_start_elapsed_must_precede_first_completed_packet(elapsed):
+    with pytest.raises(ValueError, match='completion times'):
+        summarize(empty_controls(), fresh_state(elapsed_us=elapsed), state(), 4)
+
+
+@pytest.mark.parametrize(
+    'change',
+    [
+        dict(first_end_us=0),
+        dict(first_end_us=9001),
+        dict(last_end_us=10001),
+        dict(elapsed_us=False),
+    ],
+)
+def test_completion_time_ordering_rejected(change):
+    with pytest.raises(ValueError, match='completion times'):
+        summarize(empty_controls(), fresh_state(elapsed_us=7), state(**change), 4)

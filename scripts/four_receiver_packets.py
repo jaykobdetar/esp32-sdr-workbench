@@ -90,9 +90,24 @@ def summarize(rows, start, final, receiver_count):
             raise ValueError('Source configuration changed')
     if start.get('running') is not True or any(
         type(start.get(key)) is not int or start[key] != 0
-        for key in ('attempted', 'completed', 'scheduled', 'missed_slots', 'elapsed_us')
+        for key in ('attempted', 'completed', 'scheduled', 'missed_slots')
     ):
         raise ValueError('Fresh running source with reset counters required')
+    # START calls status() synchronously before returning to radio_task(), but
+    # status() computes now_us() - start_us, not the reset elapsed_us variable.
+    # Thus elapsed can be nonzero. Bound it by the observed first completion,
+    # not an arbitrary interval: the scheduler's initial deadline is start_us.
+    times = [
+        start.get('elapsed_us'),
+        final.get('first_end_us'),
+        final.get('last_end_us'),
+        final.get('elapsed_us'),
+    ]
+    if (
+        any(type(value) is not int or value < 0 for value in times)
+        or not times[0] < times[1] <= times[2] <= times[3]
+    ):
+        raise ValueError('Inconsistent START and transmission completion times')
     if final.get('running') is not False or final['uptime_ms'] < start['uptime_ms']:
         raise ValueError('Source still running or reset')
     counts = [final[k] for k in ('attempted', 'completed', 'scheduled', 'missed_slots')]

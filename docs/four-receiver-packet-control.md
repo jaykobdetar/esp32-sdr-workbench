@@ -44,3 +44,15 @@ instantaneous RF-window recall, phase-coherent combining, or evidence of real
 Quest-controller compatibility. A low recovery fraction is expected when raw
 UART transfer dominates. Hardware results must be reported separately from
 successful offline tests.
+
+### START timing accounting
+
+The 0.2.2 `START` handler resets attempted/completed/scheduled/missed counters
+and calls `status()` synchronously before the main loop returns to `radio_task()`.
+However, a running `status()` computes `now_us() - start_us`; its `elapsed_us`
+need not be zero. The analyzer requires zero integer transmission counters and
+`running=true`, but allows a nonnegative integer START elapsed time strictly
+before the final recorded first completion. It additionally requires first
+completion <= last completion <= final elapsed time. This uses observed event
+ordering, not a guessed 1000 us response ceiling: the initial scheduler deadline
+is `start_us`, not `start_us + interval_us`.
