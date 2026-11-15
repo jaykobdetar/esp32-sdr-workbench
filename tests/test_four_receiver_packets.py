@@ -497,6 +497,7 @@ def test_exact_iq8_quantization_matches_packer_all_signed_values():
     packed = np.column_stack(((words >> 2) & 255, (words >> 12) & 255)).astype(np.uint8)
     expected = decode_iq(packed.tobytes(), len(i), 8)
     actual = quantize_iq8((i - 1j * q) / 512)
+    assert actual.dtype == expected.dtype == np.dtype(np.complex64)
     assert np.array_equal(actual, expected)
 
 

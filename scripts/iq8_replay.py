@@ -28,7 +28,7 @@ def quantize_iq8(iq):
         or not np.array_equal(x, (i - 1j * q) / 512)
     ):
         raise ValueError('Input is not exact decoded signed IQ10')
-    return ((i.astype(np.int16) >> 2) - 1j * (q.astype(np.int16) >> 2)) / 128
+    return (((i.astype(np.int16) >> 2) - 1j * (q.astype(np.int16) >> 2)) / 128).astype(np.complex64)
 
 
 def replay(directory):
