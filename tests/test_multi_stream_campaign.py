@@ -15,9 +15,29 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
 
+def set_begin_echoes(data):
+    for receiver, start, period, phase in zip(
+        data['receivers'],
+        data['scheduled_device_us'],
+        data['periods_ns'],
+        data['yield_phases'],
+        strict=True,
+    ):
+        receiver['begin'] = (
+            f'DSTREAM BEGIN 1 {start} {data["duration_ms"]} {period} {phase} 4000 2440 1'
+        )
+
+
 def fixture(count=4):
     data = row()
+    secondary_start = data.pop('scheduled_b_us')
+    data['scheduled_device_us'] = [data['scheduled_a_us'], secondary_start]
     data['receivers'] += [copy.deepcopy(data['receivers'][1]) for _ in range(count - 2)]
+    for k in range(2, count):
+        data['scheduled_device_us'].append(secondary_start - k)
+        data['periods_ns'].append(2_000_000 + k)
+        data['yield_phases'].append(k)
+    set_begin_echoes(data)
     values = [dict(a, receiver_index=k) for k in range(1, count) for a in anchors()]
     return data, values
 
@@ -47,6 +67,23 @@ def test_bad_fourth_stream_fails_whole_union():
     assert module.analyze_run(data, values)['status'] == 'unverified'
 
 
+@pytest.mark.parametrize('field', ['scheduled_device_us', 'periods_ns', 'yield_phases'])
+def test_fourth_receiver_schedule_bound_to_its_own_firmware_echo(field):
+    data, values = fixture()
+    data[field][3] += 1
+    result = module.analyze_run(data, values)
+    assert result['status'] == 'unverified'
+    assert 'Receiver 3 clock/telemetry: Saved firmware BEGIN disagrees' in result['reason']
+
+
+def test_reference_window_cannot_disagree_with_reference_deadline():
+    data, values = fixture()
+    data['scheduled_a_us'] += 1
+    result = module.analyze_run(data, values)
+    assert result['status'] == 'unverified'
+    assert 'Reference deadline disagrees' in result['reason']
+
+
 def test_fourth_clock_without_after_bracket_fails():
     data, values = fixture()
     values = [a for a in values if a['receiver_index'] != 3 or a['a_us'] < 1000000]
@@ -56,7 +93,9 @@ def test_fourth_clock_without_after_bracket_fails():
 def test_requested_start_edge_is_not_trimmed():
     data, values = fixture()
     data['scheduled_a_us'] -= 500
-    data['duration_ms'] += 0.5
+    data['scheduled_device_us'][0] = data['scheduled_a_us']
+    data['duration_ms'] += 1
+    set_begin_echoes(data)
     result = module.analyze_run(data, values)
     assert result['status'] == 'verified-telemetry'
     assert result['nominal_union']['max_gap_us'] >= 499

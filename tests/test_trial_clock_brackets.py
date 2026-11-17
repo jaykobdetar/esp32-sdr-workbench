@@ -18,6 +18,7 @@ def reseal(row, anchors):
 
 def fixture():
     row = dual_row()
+    row['scheduled_device_us'] = [row['scheduled_a_us'], row.pop('scheduled_b_us')]
     row.update(index=0, clock_brackets=trial_spec(0))
     anchors, receipts = [], []
     for role, offset in [('before', 0), ('after', 8)]:

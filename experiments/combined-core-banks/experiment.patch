@@ -1,0 +1,521 @@
+diff --git a/MANIFEST.in b/MANIFEST.in
+index a520826..147b0ef 100644
+--- a/MANIFEST.in
++++ b/MANIFEST.in
+@@ -794,3 +794,8 @@ prune backups
+ prune nrf52840-transmitter/vendor
+ prune nrf52840-transmitter/artifacts
+ prune nrf52840-transmitter/backups
++
++include firmware/main/targets/esp32/bank_probe.h
++include firmware/main/targets/esp32/bank_bench.h
++include firmware/main/targets/esp32/bank_energy_clear.h
++include firmware/tests/test_bank_combined.py
+diff --git a/firmware/FIRMWARE_VARIANT b/firmware/FIRMWARE_VARIANT
+index 6c67ae7..39b3878 100644
+--- a/firmware/FIRMWARE_VARIANT
++++ b/firmware/FIRMWARE_VARIANT
+@@ -1 +1 @@
+-esp32-dual-sparse-iq-experimental-v7
++esp32-bank-core1-combined-v5
+diff --git a/firmware/main/targets/esp32/receiver.c b/firmware/main/targets/esp32/receiver.c
+index e7a1fe1..e6aef49 100644
+--- a/firmware/main/targets/esp32/receiver.c
++++ b/firmware/main/targets/esp32/receiver.c
+@@ -33,6 +33,8 @@
+ 
+ /* Reserve both SRAM banks, including their instruction aliases. Mode 2 only
+  * exposes 32 KiB to MAC; mode 3 exposes the entire 64 KiB capture aperture. */
++/* Pinned IDF memory_layout.c identifies ONLY pools 7 and 8 for MAC dump.
++ * Reserve both, leaving ROM data/stack in pool 9 untouched. */
+ SOC_RESERVE_MEMORY_REGION(0x3ffe8000, 0x3fff8000, esp32_rf_dump);
+ #define DUMP_CTRL   0x60033d90u
+ #define DUMP_STATUS 0x60033d94u
+@@ -193,6 +195,7 @@ static bool acquire_iq(unsigned n, unsigned source, unsigned clock, unsigned *ca
+     return acquire_iq_with_work(n, source, clock, capture_us, NULL, NULL);
+ }
+ 
++#include "bank_probe.h"
+ #include "profile_acquire.h"
+ 
+ static bool spectrum_acquire(unsigned n, unsigned rate, const uint32_t **data, unsigned *elapsed) {
+@@ -284,6 +287,8 @@ static void command(char *line) {
+     if (ring_probe_command(line)) return;
+ #endif
+     if (spectrum_command(line, frequency_mhz, spectrum_acquire)) return;
++    if (bank_probe_command(line)) return;
++    if (!strcmp(line, "CORE?")) { reply("CORE %d %d\n", xPortGetCoreID(), portNUM_PROCESSORS); return; }
+     if (burst_common_command(line)) return;
+     unsigned n;
+     char extra;
+@@ -324,6 +329,15 @@ static void command(char *line) {
+ 
+ void app_main(void) {
+     esp_log_level_set("*", ESP_LOG_NONE);
++    /* Keep one full-size DMA slot contiguous across dual-core PHY/UART startup.
++     * Release it only after startup allocations finish: ordinary finite and
++     * streaming commands then share the normal allocator, no permanently held
++     * stream-only buffer and no extra per-capture coordination. */
++    void *startup_slot=heap_caps_malloc(MAX_SAMPLES*sizeof(uint32_t),DETPIPE_ALLOC_CAPS);
++    if(!detpipe_safe_buffer(startup_slot,MAX_SAMPLES*sizeof(uint32_t))) {
++        if(startup_slot) heap_caps_free(startup_slot);
++        for(;;) {printf("ERR startup_capture_reservation; radio_not_started\n");fflush(stdout);vTaskDelay(5000);}
++    }
+     /* NVS may contain device calibration and owner settings. Never erase it
+      * to recover from incompatible/full/corrupt storage. Fail before radio
+      * initialization; recovery requires a separately reviewed backup/migration. */
+@@ -352,5 +366,6 @@ void app_main(void) {
+     REG_CLR_BIT(RX_GAIN, BIT(23)); /* Hardware AGC is the default. */
+     fflush(stdout);
+     burst_serial_init();
++    heap_caps_free(startup_slot);
+     burst_serial_serve(command);
+ }
+diff --git a/firmware/sdkconfig.defaults.esp32 b/firmware/sdkconfig.defaults.esp32
+index 8b5354d..1d2cfd9 100644
+--- a/firmware/sdkconfig.defaults.esp32
++++ b/firmware/sdkconfig.defaults.esp32
+@@ -7,7 +7,8 @@ CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+ CONFIG_FREERTOS_HZ=1000
+ CONFIG_COMPILER_OPTIMIZATION_PERF=y
+ CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y
+-CONFIG_FREERTOS_UNICORE=y
++# CONFIG_FREERTOS_UNICORE is not set
++CONFIG_ESP_MAIN_TASK_AFFINITY_CPU1=y
+ # CONFIG_ESP_WIFI_IRAM_OPT is not set
+ # CONFIG_ESP_WIFI_RX_IRAM_OPT is not set
+ # CONFIG_ESP_PHY_IRAM_OPT is not set
+diff --git a/firmware/tests/test_nvs_preservation.py b/firmware/tests/test_nvs_preservation.py
+index ec1f7ce..921e9ac 100644
+--- a/firmware/tests/test_nvs_preservation.py
++++ b/firmware/tests/test_nvs_preservation.py
+@@ -17,6 +17,15 @@ def test_nvs_init_failures_preserve_storage_and_do_not_start_radio(tmp_path, opt
+ #include <stdio.h>
+ #include <string.h>
+ #include <setjmp.h>
++#include <stdint.h>
++#define MAX_SAMPLES 16380u
++#define DETPIPE_ALLOC_CAPS 7
++static bool reservation_fail;
++static unsigned freed;
++static uint32_t reservation[MAX_SAMPLES];
++static void *heap_caps_malloc(size_t n,unsigned caps){assert(n==sizeof(reservation)&&caps==7);return reservation_fail?NULL:reservation;}
++static bool detpipe_safe_buffer(void *p,size_t n){return p==reservation && n==sizeof(reservation);}
++static void heap_caps_free(void *p){assert(p==reservation);freed++;}
+ typedef int esp_err_t;
+ typedef int wifi_init_config_t;
+ #define ESP_OK 0
+@@ -56,7 +65,7 @@ static void prepare_rx(void){radio_calls++;}
+ #define REG_CLR_BIT(addr,bit) do{(void)(addr);(void)(bit);radio_calls++;}while(0)
+ static void burst_serial_init(void){serial_calls++;}
+ static void command(char*line){(void)line;}
+-static void burst_serial_serve(void(*handler)(char*)){assert(handler==command);serial_calls++;}
++static void burst_serial_serve(void(*handler)(char*)){assert(handler==command && freed==1);serial_calls++;}
+ """
+     checks = r"""
+ int main(void){
+@@ -74,6 +83,10 @@ int main(void){
+  if(!setjmp(halted)){app_main();}else{assert(!"Normal boot must not abort");}
+  assert(init_calls==1 && erase_calls==0 && radio_calls>0 && serial_calls==2);
+  assert(!memcmp(storage,expected,sizeof(storage)));
++ reservation_fail=true;init_calls=erase_calls=radio_calls=serial_calls=idle_delays=0;
++ if(!setjmp(halted)){app_main();assert(!"Reservation failure must idle");}
++ assert(idle_delays==3 && init_calls==0 && erase_calls==0 && radio_calls==0 && serial_calls==0);
++ assert(!memcmp(storage,expected,sizeof(storage)));
+ }
+ """
+     source = tmp_path / 'startup.c'
+diff --git a/firmware/tests/test_release_variant.py b/firmware/tests/test_release_variant.py
+index 363bdc0..eae1cc0 100644
+--- a/firmware/tests/test_release_variant.py
++++ b/firmware/tests/test_release_variant.py
+@@ -34,7 +34,7 @@ def test_current_variant_distinguishes_tie_fix_and_calibration_observer():
+     from sdr_research.calibration import CURRENT_VARIANT
+ 
+     assert (ROOT / 'FIRMWARE_VARIANT').read_text().strip() == CURRENT_VARIANT
+-    assert CURRENT_VARIANT == 'esp32-dual-sparse-iq-experimental-v7'
++    assert CURRENT_VARIANT == 'esp32-bank-core1-combined-v5'
+ 
+ 
+ def test_calibration_variants_remain_required_for_v4_through_v8():
+@@ -60,5 +60,6 @@ def test_calibration_variants_remain_required_for_v4_through_v8():
+         'esp32-dual-sparse-iq-experimental-v5',
+         'esp32-dual-sparse-iq-experimental-v6',
+         'esp32-dual-sparse-iq-experimental-v7',
++        'esp32-bank-core1-combined-v5',
+     )
+     assert set(CALIBRATION_VARIANTS) < set(ADAPTIVE_VARIANTS)
+diff --git a/sdr_research/calibration.py b/sdr_research/calibration.py
+index 911b4ae..258b286 100644
+--- a/sdr_research/calibration.py
++++ b/sdr_research/calibration.py
+@@ -8,7 +8,7 @@ import json
+ import re
+ from datetime import datetime, timezone
+ 
+-CURRENT_VARIANT = 'esp32-dual-sparse-iq-experimental-v7'
++CURRENT_VARIANT = 'esp32-bank-core1-combined-v5'
+ CALIBRATION_VARIANTS = (
+     'esp32-pipeline-adaptive-q16-v4',
+     'esp32-pipeline-adaptive-q16-v5',
+@@ -28,6 +28,7 @@ CALIBRATION_VARIANTS = (
+     'esp32-dual-sparse-iq-experimental-v4',
+     'esp32-dual-sparse-iq-experimental-v5',
+     'esp32-dual-sparse-iq-experimental-v6',
++    'esp32-dual-sparse-iq-experimental-v7',
+     CURRENT_VARIANT,
+ )
+ ADAPTIVE_VARIANTS = ('esp32-pipeline-adaptive-q16-v3', *CALIBRATION_VARIANTS)
+diff --git a/tests/test_dstream_c_review.py b/tests/test_dstream_c_review.py
+index 5269338..539c899 100644
+--- a/tests/test_dstream_c_review.py
++++ b/tests/test_dstream_c_review.py
+@@ -51,6 +51,7 @@ def test_actual_dstream_queue_partial_writes_wrap_and_overflow(tmp_path):
+ #include <stddef.h>
+ #include <string.h>
+ #include <assert.h>
++#define MAX_SAMPLES 16380u
+ static unsigned char wire[100000];
+ static size_t used, budget;
+ static uint32_t esp_rom_crc32_le(uint32_t initial,const uint8_t *p,size_t n) {
+diff --git a/firmware/main/targets/esp32/bank_bench.h b/firmware/main/targets/esp32/bank_bench.h
+new file mode 100644
+index 0000000..2633a0f
+--- /dev/null
++++ b/firmware/main/targets/esp32/bank_bench.h
+@@ -0,0 +1,96 @@
++#pragma once
++#include "esp_memory_utils.h"
++#include "pipeline_energy3.h"
++#include "bank_energy_clear.h"
++#include "dstream_idle.h"
++#include "dstream_idle_wake.h"
++typedef struct {uint64_t trigger;uint32_t mean,peak;} bank_row_t;
++_Static_assert(sizeof(bank_row_t)==16,"bank trace wire size");
++static uint32_t *bank_keep;
++static bool bank_keep_valid;
++static uint64_t bank_keep_trigger;
++static bool bank_ptr_ok(void *p,size_t n) {
++    uintptr_t a=(uintptr_t)p,b=a+n-1;
++    return p && b>=a && esp_ptr_in_dram(p) && esp_ptr_in_dram((void *)b) &&
++        (b<0x3ffe8000 || a>=0x3fff8000);
++}
++static bool bank_process(uint32_t *w,unsigned fused,bank_row_t *row) {
++    if(fused)return bank_energy_clear(w,&row->mean,&row->peak);
++    uint32_t bad=0;
++    for(unsigned j=0;j<8188;j++)bad|=w[j]==SENTINEL;
++    for(unsigned j=8188;j<8192;j++)bad|=w[j]^SENTINEL;
++    if(bad)return false;
++    pipeline_energy_flash_3(w,8188,&row->mean,&row->peak);
++    for(unsigned j=0;j<8192;j++)w[j]=SENTINEL;
++    return true;
++}
++static bool bank_bench_command(const char *line) {
++    if(!strcmp(line,"BANKGET")) {
++        if(!bank_keep_valid){reply("ERR bank_empty\n");return true;}
++        uint32_t crc=esp_rom_crc32_le(0,(void *)bank_keep,8188*4);
++        reply("BANKDATA 8188 %08lx %" PRIu64 "\n",(unsigned long)crc,bank_keep_trigger);
++        burst_serial_send(bank_keep,8188*4);heap_caps_free(bank_keep);bank_keep=NULL;bank_keep_valid=false;return true;
++    }
++    if(!strcmp(line,"BANKDROP")){if(bank_keep)heap_caps_free(bank_keep);bank_keep=NULL;bank_keep_valid=false;reply("OK\n");return true;}
++    bool scheduled=!strncmp(line,"BANKAT ",7);
++    if(!scheduled && strncmp(line,"BANKRUN",7))return false;
++    unsigned count,fused,period_ns=0;uint64_t deadline=0;char extra;
++    int fields=scheduled?sscanf(line,"BANKAT %u %u %" SCNu64 " %u %c",&count,&fused,&deadline,&period_ns,&extra):sscanf(line,"BANKRUN %u %u %c",&count,&fused,&extra);
++    uint64_t now=esp_timer_get_time();
++    if(fields!=(scheduled?4:2) || count<2 || count>1024 || fused>1 || dual_armed || dual_next || (scheduled && (period_ns<750000 || period_ns>2000000 || deadline<now+1000 || deadline>now+2000000))) {reply("ERR bank_args\n");return true;}
++    bank_keep_valid=false;
++    if(!bank_keep)bank_keep=heap_caps_malloc(8188*4,MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT|MALLOC_CAP_DMA);
++    bank_row_t *rows=heap_caps_malloc(count*sizeof(bank_row_t),MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT|MALLOC_CAP_DMA);
++    if(!bank_ptr_ok(bank_keep,8188*4)||!bank_ptr_ok(rows,count*sizeof(bank_row_t))) {if(rows)heap_caps_free(rows);reply("ERR bank_memory\n");return true;}
++    dstream_idle_t idle={0};if(!dstream_wake_begin(&idle)){heap_caps_free(rows);reply("ERR bank_idle\n");return true;}
++    prepare_rx();REG_WRITE(DUMP_CTRL,0);for(unsigned j=0;j<16384;j++)samples[j]=SENTINEL;
++    unsigned status=0,completed=0,processed=0,max_work=0;uint64_t start=esp_timer_get_time();
++    for(unsigned k=0;k<count;k++) {
++        /* Do not use an unvalidated pending bank across a recalibration. */
++        if(rx_recalibration_stale()){status=5;break;}
++        uint64_t target=scheduled?deadline+(uint64_t)k*period_ns/1000:0;
++        while(target && (uint64_t)esp_timer_get_time()+2000<target) {
++            if(burst_serial_stop_requested()){status=3;break;}
++            vTaskDelay(1);
++        }
++        if(status)break;
++        unsigned bank=k&1u,mode=bank?1:2;
++        filter_apply();uint32_t adc=DPORT_REG_READ(ADC_CTRL)&ADC_ON_FORCE;
++        DPORT_REG_WRITE(ADC_CTRL,DPORT_REG_READ(ADC_CTRL)|ADC_ON_FORCE);esp_rom_delay_us(2);
++        uint32_t own=DPORT_REG_READ(DPORT_IRAM_DRAM_AHB_SEL_REG),bytes=REG_READ(DUMP_BYTES);
++        DPORT_REG_WRITE(DPORT_IRAM_DRAM_AHB_SEL_REG,(own&~DPORT_MAC_DUMP_MODE_M)|(mode<<DPORT_MAC_DUMP_MODE_S));
++        REG_WRITE(DUMP_BYTES,0x03020100);REG_WRITE(DUMP_CTRL,8188|BIT(16)|BIT(31));
++        while(target && (uint64_t)esp_timer_get_time()<target) {}
++        uint64_t trigger=esp_timer_get_time();rows[k].trigger=trigger;
++        REG_SET_BIT(DUMP_CTRL,BIT(19));REG_CLR_BIT(DUMP_CTRL,BIT(19));
++        bool valid=true;
++        if(k) {valid=bank_process(samples+8192*(1-bank),fused,&rows[k-1]);if(valid)processed++;}
++        unsigned work=esp_timer_get_time()-trigger;if(work>max_work)max_work=work;
++        while(!(REG_READ(DUMP_CTRL)&BIT(18)) && esp_timer_get_time()-trigger<20000) {}
++        uint32_t ctrl=REG_READ(DUMP_CTRL),dump_status=REG_READ(DUMP_STATUS);
++        unsigned elapsed=esp_timer_get_time()-trigger;
++        REG_WRITE(DUMP_CTRL,0);esp_rom_delay_us(10);
++        DPORT_REG_WRITE(DPORT_IRAM_DRAM_AHB_SEL_REG,own);REG_WRITE(DUMP_BYTES,bytes);
++        DPORT_REG_WRITE(ADC_CTRL,(DPORT_REG_READ(ADC_CTRL)&~ADC_ON_FORCE)|adc);filter_restore();
++        if(!valid){status=2;break;}
++        if(!(ctrl&BIT(18)) || (dump_status&0x7fff)!=8188 || elapsed>=20000){status=1;break;}
++        completed++;
++        if(burst_serial_stop_requested()){status=3;break;}
++        dstream_wake_service(&idle);
++        if(esp_timer_get_time()-start>5000000){status=4;break;}
++    }
++    dstream_wake_end(&idle);
++    /* Keep an immutable copy of the last capture. It is still checked over its
++     * entire bank before any successful BANKGET becomes available. */
++    if(!status && completed==count) {
++        uint32_t *last=samples+8192*((count-1)&1u);
++        memcpy(bank_keep,last,8188*4);
++        if(!bank_process(last,fused,&rows[count-1]))status=2;
++        else {processed++;bank_keep_valid=true;bank_keep_trigger=rows[count-1].trigger;}
++    }
++    uint64_t end=esp_timer_get_time();
++    if(status || processed!=count){heap_caps_free(rows);reply("ERR bank_run %u %u %u\n",status,completed,processed);return true;}
++    uint32_t crc=esp_rom_crc32_le(0,(void *)rows,count*sizeof(bank_row_t));
++    reply("BANKRUN %u 8188 %08lx %" PRIu64 " %" PRIu64 " %u %u %u\n",count,(unsigned long)crc,start,end,max_work,idle.observed,idle.fallbacks);
++    burst_serial_send(rows,count*sizeof(bank_row_t));heap_caps_free(rows);reply("BANKEND\n");return true;
++}
+diff --git a/firmware/main/targets/esp32/bank_energy_clear.h b/firmware/main/targets/esp32/bank_energy_clear.h
+new file mode 100644
+index 0000000..abe0d89
+--- /dev/null
++++ b/firmware/main/targets/esp32/bank_energy_clear.h
+@@ -0,0 +1,22 @@
++#pragma once
++#include <stdint.h>
++#include <stdbool.h>
++/* Fixed half-bank contract. Same 64-sample DC-removed arithmetic and 60-sample
++ * unused tail as the exact reference. All 8192 integrity words checked, all
++ * 8188 payload words reset. Outputs are unpublished unless return is true. */
++static bool bank_energy_clear(uint32_t *w,uint32_t *mean,uint32_t *peak) {
++    uint32_t bad=0,total=0,maximum=0;
++    for(unsigned b=0;b<127;b++) {
++        int32_t si=0,sq=0;uint32_t squares=0;
++        for(unsigned j=0;j<64;j++) {
++            unsigned at=b*64+j;uint32_t v=w[at];bad|=v==UINT32_C(0xa55aa55a);
++            int32_t i=(int32_t)(v<<22)>>22,q=(int32_t)(v<<12)>>22;
++            si+=i;sq+=q;squares+=(uint32_t)(i*i+q*q);w[at]=UINT32_C(0xa55aa55a);
++        }
++        uint32_t e=((squares<<6)-((uint32_t)(si*si)+(uint32_t)(sq*sq)))>>12;
++        total+=e;if(e>maximum)maximum=e;
++    }
++    for(unsigned j=8128;j<8188;j++){bad|=w[j]==UINT32_C(0xa55aa55a);w[j]=UINT32_C(0xa55aa55a);}
++    for(unsigned j=8188;j<8192;j++)bad|=w[j]^UINT32_C(0xa55aa55a);
++    *mean=total/127;*peak=maximum;return !bad;
++}
+diff --git a/firmware/main/targets/esp32/bank_probe.h b/firmware/main/targets/esp32/bank_probe.h
+new file mode 100644
+index 0000000..28d631e
+--- /dev/null
++++ b/firmware/main/targets/esp32/bank_probe.h
+@@ -0,0 +1,76 @@
++#pragma once
++/* Isolated finite map diagnostic. Both IDF-identified MAC pools, 64 KiB plus instruction aliases
++ * are reserved, including the complete production aperture. Never read live SRAM.
++ * No changing an ownership mode while enabled. No persistent/NVS writes. */
++
++static bool bank_live_command(const char *line) {
++    if(strncmp(line,"BANKLIVE",8)) return false;
++    unsigned mode;char extra;
++    if(sscanf(line,"BANKLIVE %u %c",&mode,&extra)!=1 || (mode!=1 && mode!=2)) {reply("ERR bank_args\n");return true;}
++    prepare_rx();REG_WRITE(DUMP_CTRL,0);
++    volatile uint32_t *all=(volatile uint32_t *)0x3ffe8000;
++    unsigned bank=mode==1?1:0;
++    volatile uint32_t *active=all+8192*bank,*inactive=all+8192*(1-bank);
++    for(unsigned i=0;i<8192;i++){active[i]=SENTINEL;inactive[i]=UINT32_C(0x5a000000)^i;}
++    filter_apply();
++    uint32_t adc=DPORT_REG_READ(ADC_CTRL)&ADC_ON_FORCE;
++    DPORT_REG_WRITE(ADC_CTRL,DPORT_REG_READ(ADC_CTRL)|ADC_ON_FORCE);esp_rom_delay_us(2);
++    uint32_t own=DPORT_REG_READ(DPORT_IRAM_DRAM_AHB_SEL_REG),bytes=REG_READ(DUMP_BYTES);
++    DPORT_REG_WRITE(DPORT_IRAM_DRAM_AHB_SEL_REG,(own&~DPORT_MAC_DUMP_MODE_M)|(mode<<DPORT_MAC_DUMP_MODE_S));
++    REG_WRITE(DUMP_BYTES,0x03020100);REG_WRITE(DUMP_CTRL,8188|BIT(16)|BIT(31));
++    int64_t start=esp_timer_get_time();REG_SET_BIT(DUMP_CTRL,BIT(19));REG_CLR_BIT(DUMP_CTRL,BIT(19));
++    bool done_before=!!(REG_READ(DUMP_CTRL)&BIT(18));
++    unsigned read_bad=0;
++    for(unsigned i=0;i<8192;i++) if(inactive[i]!=(UINT32_C(0x5a000000)^i))read_bad++;
++    unsigned read_us=esp_timer_get_time()-start;
++    for(unsigned i=0;i<8192;i++)inactive[i]=UINT32_C(0x6b000000)^i;
++    unsigned work_us=esp_timer_get_time()-start;
++    while(!(REG_READ(DUMP_CTRL)&BIT(18)) && esp_timer_get_time()-start<20000) {}
++    uint32_t ctrl=REG_READ(DUMP_CTRL),status=REG_READ(DUMP_STATUS);unsigned elapsed=esp_timer_get_time()-start;
++    REG_WRITE(DUMP_CTRL,0);esp_rom_delay_us(10);
++    DPORT_REG_WRITE(DPORT_IRAM_DRAM_AHB_SEL_REG,own);REG_WRITE(DUMP_BYTES,bytes);
++    DPORT_REG_WRITE(ADC_CTRL,(DPORT_REG_READ(ADC_CTRL)&~ADC_ON_FORCE)|adc);filter_restore();
++    unsigned final_bad=0,active_bad=0;
++    for(unsigned i=0;i<8192;i++) {
++        if(inactive[i]!=(UINT32_C(0x6b000000)^i))final_bad++;
++        if(i<8188?(active[i]==SENTINEL):(active[i]!=SENTINEL))active_bad++;
++    }
++    reply("BANKLIVE %u %u %u %u %u %u %u %u %u %u\n",mode,!!(ctrl&BIT(18)),status&0x7fff,done_before,read_bad,final_bad,active_bad,read_us,work_us,elapsed);
++    return true;
++}
++#include "bank_bench.h"
++static bool bank_probe_command(const char *line) {
++    if(bank_bench_command(line))return true;
++    if(bank_live_command(line))return true;
++    if(strncmp(line,"BANKPROBE",9)) return false;
++    unsigned mode,n; char extra;
++    if(sscanf(line,"BANKPROBE %u %u %c",&mode,&n,&extra)!=2 || mode>3 || n<256 || n>8188) {
++        reply("ERR bank_args\n");return true;
++    }
++    prepare_rx();
++    volatile uint32_t *all=(volatile uint32_t *)0x3ffe8000;
++    REG_WRITE(DUMP_CTRL,0);
++    for(unsigned i=0;i<16384;i++) all[i]=SENTINEL;
++    filter_apply();
++    uint32_t adc=DPORT_REG_READ(ADC_CTRL)&ADC_ON_FORCE;
++    DPORT_REG_WRITE(ADC_CTRL,DPORT_REG_READ(ADC_CTRL)|ADC_ON_FORCE);
++    esp_rom_delay_us(2);
++    uint32_t own=DPORT_REG_READ(DPORT_IRAM_DRAM_AHB_SEL_REG),bytes=REG_READ(DUMP_BYTES);
++    DPORT_REG_WRITE(DPORT_IRAM_DRAM_AHB_SEL_REG,(own&~DPORT_MAC_DUMP_MODE_M)|(mode<<DPORT_MAC_DUMP_MODE_S));
++    REG_WRITE(DUMP_BYTES,0x03020100);
++    REG_WRITE(DUMP_CTRL,n|BIT(16)|BIT(31));
++    int64_t start=esp_timer_get_time();
++    REG_SET_BIT(DUMP_CTRL,BIT(19));REG_CLR_BIT(DUMP_CTRL,BIT(19));
++    while(!(REG_READ(DUMP_CTRL)&BIT(18)) && esp_timer_get_time()-start<2000) {}
++    uint32_t ctrl=REG_READ(DUMP_CTRL),status=REG_READ(DUMP_STATUS);
++    unsigned elapsed=esp_timer_get_time()-start;
++    REG_WRITE(DUMP_CTRL,0);esp_rom_delay_us(10);
++    DPORT_REG_WRITE(DPORT_IRAM_DRAM_AHB_SEL_REG,own);REG_WRITE(DUMP_BYTES,bytes);
++    DPORT_REG_WRITE(ADC_CTRL,(DPORT_REG_READ(ADC_CTRL)&~ADC_ON_FORCE)|adc);filter_restore();
++    unsigned changed[2]={0},first[2]={8192,8192},last[2]={0};
++    for(unsigned i=0;i<16384;i++) if(all[i]!=SENTINEL){unsigned b=i/8192,j=i%8192;changed[b]++;if(j<first[b])first[b]=j;last[b]=j+1;}
++    reply("BANKPROBE %u %u %u %u %u\n",mode,n,!!(ctrl&BIT(18)),status&0x7fff,elapsed);
++    for(unsigned b=0;b<2;b++) reply("BANK %u %u %u %u\n",b,changed[b],first[b],last[b]);
++    reply("BANKEND\n");
++    return true;
++}
+diff --git a/firmware/tests/test_bank_combined.py b/firmware/tests/test_bank_combined.py
+new file mode 100644
+index 0000000..77faa9c
+--- /dev/null
++++ b/firmware/tests/test_bank_combined.py
+@@ -0,0 +1,123 @@
++"""Finite bank command lifecycle and failure cleanup, with hardware ownership mocks."""
++import subprocess
++from pathlib import Path
++
++import pytest
++
++ROOT = Path(__file__).parents[1]
++TARGET = ROOT / 'main/targets/esp32'
++
++
++@pytest.mark.parametrize('optimization', ['-O0', '-O2'])
++def test_bank_lifecycle_and_fail_closed(tmp_path, optimization):
++    header = '\n'.join(line for line in (TARGET / 'bank_bench.h').read_text().splitlines()
++                       if not line.startswith(('#include', '#pragma')))
++    mocks = r'''
++#include <assert.h>
++#include <stdint.h>
++#include <stdbool.h>
++#include <stdlib.h>
++#include <stdio.h>
++#include <string.h>
++#include <stdarg.h>
++#include <inttypes.h>
++#include "pipeline_energy3.h"
++#include "bank_energy_clear.h"
++#define BIT(n) (1u<<(n))
++#define SENTINEL 0xa55aa55au
++#define DUMP_CTRL 1
++#define DUMP_STATUS 2
++#define DUMP_BYTES 3
++#define ADC_CTRL 4
++#define ADC_ON_FORCE 0x300
++#define DPORT_IRAM_DRAM_AHB_SEL_REG 5
++#define DPORT_MAC_DUMP_MODE_M 0x60
++#define DPORT_MAC_DUMP_MODE_S 5
++#define MALLOC_CAP_INTERNAL 1
++#define MALLOC_CAP_8BIT 2
++#define MALLOC_CAP_DMA 4
++static uint32_t storage[16384],*samples=storage,ctrl,own,adc,bytes;
++static uint64_t clock_us=100000,trigger_time;
++static unsigned triggers,allocs,frees,filter_on,filter_off,corrupt_after,stale_after;
++static bool dual_armed,dual_next,timeout_fault,stop_now,memory_fault;
++static char message[256];
++static uint64_t esp_timer_get_time(void){return clock_us+=50;}
++static void esp_rom_delay_us(unsigned us){clock_us+=us;}
++static uint32_t reg_read(unsigned r){
++ if(r==DUMP_CTRL)return ctrl|(!timeout_fault && triggers && clock_us-trigger_time>=512?BIT(18):0);
++ if(r==DUMP_STATUS)return 8188;
++ if(r==DUMP_BYTES)return bytes;
++ if(r==ADC_CTRL)return adc;
++ if(r==DPORT_IRAM_DRAM_AHB_SEL_REG)return own;
++ assert(false);return 0;
++}
++static void reg_write(unsigned r,uint32_t v){
++ if(r==DUMP_CTRL)ctrl=v;
++ else if(r==DUMP_BYTES)bytes=v;
++ else if(r==ADC_CTRL)adc=v;
++ else if(r==DPORT_IRAM_DRAM_AHB_SEL_REG)own=v;
++ else assert(false);
++}
++static void reg_set(unsigned r,uint32_t v){
++ assert(r==DUMP_CTRL);
++ if(v==BIT(19)){
++  unsigned mode=(own>>5)&3;assert(mode==1||mode==2);unsigned b=mode==1?1:0;
++  for(unsigned i=0;i<8188;i++)samples[b*8192+i]=0x12345u+i;
++  triggers++;trigger_time=clock_us;
++  if(corrupt_after==triggers)samples[b*8192+8191]=1;
++ }
++ ctrl|=v;
++}
++#define REG_READ(r) reg_read(r)
++#define REG_WRITE(r,v) reg_write(r,v)
++#define REG_SET_BIT(r,v) reg_set(r,v)
++#define REG_CLR_BIT(r,v) reg_write(r,reg_read(r)&~(v))
++#define DPORT_REG_READ(r) reg_read(r)
++#define DPORT_REG_WRITE(r,v) reg_write(r,v)
++static void prepare_rx(void){assert(own==0);}
++static bool rx_recalibration_stale(void){assert(own==0);return stale_after && triggers>=stale_after;}
++static void filter_apply(void){assert(own==0);filter_on++;}
++static void filter_restore(void){assert(own==0);filter_off++;}
++static bool esp_ptr_in_dram(const void*p){return p!=NULL;}
++static void *heap_caps_malloc(size_t n,unsigned caps){assert(own==0 && caps==7);allocs++;return memory_fault?NULL:malloc(n);}
++static void heap_caps_free(void*p){assert(own==0 && p);frees++;free(p);}
++static bool burst_serial_stop_requested(void){assert(own==0);return stop_now;}
++static void burst_serial_send(void*p,size_t n){assert(own==0 && p && n);}
++static void reply(const char *fmt,...){assert(own==0);if(!strcmp(fmt,"BANKEND\n"))return;va_list a;va_start(a,fmt);vsnprintf(message,sizeof(message),fmt,a);va_end(a);}
++static void vTaskDelay(unsigned n){assert(own==0);clock_us+=n*1000;}
++static uint32_t esp_rom_crc32_le(uint32_t c,const void*p,size_t n){assert(p&&n);return c+123;}
++typedef struct {unsigned observed,fallbacks;} dstream_idle_t;
++static bool dstream_wake_begin(dstream_idle_t*s){(void)s;assert(own==0);return true;}
++static void dstream_wake_end(dstream_idle_t*s){(void)s;assert(own==0);}
++static void dstream_wake_service(dstream_idle_t*s){assert(own==0);s->observed++;}
++'''
++    checks = r'''
++static void reset(void){
++ if(bank_keep){bank_bench_command("BANKDROP");}
++ clock_us=100000;ctrl=own=adc=bytes=triggers=filter_on=filter_off=corrupt_after=stale_after=0;
++ timeout_fault=stop_now=memory_fault=false;message[0]=0;
++}
++int main(void){
++ assert(!bank_bench_command("UNRELATED"));
++ const char *bad[]={"BANKRUN 0 0","BANKRUN 1025 0","BANKRUN 8 2","BANKRUN 8 0 extra","BANKAT 8 0 500000 749999","BANKAT 8 0 100100 800000","BANKAT 8 0 3000000 800000","BANKAT 8 0 500000 800000 extra"};
++ for(unsigned i=0;i<sizeof(bad)/sizeof(*bad);i++){reset();assert(bank_bench_command(bad[i]));assert(!strcmp(message,"ERR bank_args\n"));assert(!triggers);}
++ for(unsigned fused=0;fused<2;fused++){
++  reset();char cmd[64];snprintf(cmd,sizeof(cmd),"BANKRUN 8 %u",fused);assert(bank_bench_command(cmd));assert(!strncmp(message,"BANKRUN 8 8188",14));assert(triggers==8 && bank_keep_valid && own==0 && filter_on==filter_off && !ctrl);
++  assert(bank_bench_command("BANKGET"));assert(!bank_keep && !bank_keep_valid);assert(bank_bench_command("BANKGET"));assert(!strcmp(message,"ERR bank_empty\n"));
++ }
++ reset();assert(bank_bench_command("BANKAT 8 0 200000 800000"));assert(!strncmp(message,"BANKRUN 8 8188",14));assert(bank_keep_trigger>=205600 && triggers==8);bank_bench_command("BANKDROP");
++ reset();corrupt_after=2;bank_bench_command("BANKRUN 8 0");assert(!strncmp(message,"ERR bank_run 2",14) && !bank_keep_valid && own==0 && filter_on==filter_off && !ctrl);
++ reset();stale_after=2;bank_bench_command("BANKRUN 8 0");assert(!strncmp(message,"ERR bank_run 5",14) && triggers==2 && own==0 && !ctrl);
++ reset();timeout_fault=true;bank_bench_command("BANKRUN 8 0");assert(!strncmp(message,"ERR bank_run 1",14) && own==0 && filter_on==filter_off && !ctrl);
++ reset();stop_now=true;bank_bench_command("BANKAT 8 0 200000 800000");assert(!strncmp(message,"ERR bank_run 3",14) && !triggers && own==0 && !ctrl);
++ reset();memory_fault=true;bank_bench_command("BANKRUN 8 0");assert(!strcmp(message,"ERR bank_memory\n") && !triggers);
++ reset();return 0;
++}
++'''
++    source = tmp_path / 'bank.c'
++    source.write_text(mocks + header + checks)
++    exe = tmp_path / 'bank'
++    subprocess.run(['cc', '-std=c11', optimization, '-Wall', '-Wextra', '-Werror',
++                    '-fsanitize=undefined', '-fno-sanitize-recover=all', '-I', str(TARGET),
++                    str(source), '-o', str(exe)], check=True)
++    subprocess.run([str(exe)], check=True)

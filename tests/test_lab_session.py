@@ -311,3 +311,44 @@ def test_configuration_snapshot_not_changed_by_ui(mocked, tmp_path):
     session = LabSession(receivers, transmitters, tmp_path / 'session')
     transmitters[0].settings['power_dbm'] = 0
     assert session.transmitters[0].settings['power_dbm'] == -20
+
+
+@pytest.mark.parametrize('interrupt', ['stop', 'receiver-error'])
+def test_interruption_during_config_prevents_transmitter_start(
+    mocked, tmp_path, monkeypatch, interrupt
+):
+    session = LabSession(*configs(), tmp_path / 'session', duration_s=0.1)
+    original = FakeTX.configure
+
+    def interrupted(self, **kwargs):
+        if interrupt == 'stop':
+            session.stop()
+        else:
+            next(iter(session.workers.values())).error = RuntimeError('receiver failed in CONFIG')
+        return original(self, **kwargs)
+
+    monkeypatch.setattr(FakeTX, 'configure', interrupted)
+    session.run()
+    tx = FakeTX.instances[0]
+    assert not any(name == 'start' for name, _ in tx.calls)
+    assert ('stop', None) in tx.calls and tx.closed
+    assert session.state == ('stopped' if interrupt == 'stop' else 'error')
+
+
+def test_final_manifest_write_error_reaches_studio(mocked, tmp_path, monkeypatch):
+    from sdr_research.studio_model import describe_result
+
+    save = lab_session.atomic_write_json
+
+    def final_write_fails(path, manifest):
+        if manifest['status'] == 'complete':
+            raise OSError('disk full (test)')
+        save(path, manifest)
+
+    monkeypatch.setattr(lab_session, 'atomic_write_json', final_write_fails)
+    session = LabSession(configs()[0], [], tmp_path / 'session', duration_s=0.1)
+    session.run()
+    assert session.state == session.manifest['status'] == 'error'
+    title, detail = describe_result(session.manifest)
+    assert title == 'Session needs attention' and 'disk full' in detail
+    assert json.loads((session.output_dir / 'session.json').read_text())['status'] == 'running'

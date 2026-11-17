@@ -81,10 +81,26 @@ def analyze_run(row, anchors):
         bracket_diagnostics = None
         if 'clock_brackets' in row:
             anchors, bracket_diagnostics = select_trial_anchors(row, anchors)
+        schedules = {}
+        for key in ('scheduled_device_us', 'periods_ns', 'yield_phases'):
+            values = row[key]
+            if not isinstance(values, (list, tuple)) or len(values) != count:
+                raise ValueError(f'One {key} value per receiver required')
+            schedules[key] = values
+        deadlines = schedules['scheduled_device_us']
+        if deadlines[0] != row['scheduled_a_us']:
+            raise ValueError('Reference deadline disagrees with the requested window')
         models = [None]
         pair_diagnostics = []
         for k in range(1, count):
-            pair_row = dict(row, receivers=[row['receivers'][0], row['receivers'][k]])
+            # Bind each pair to the original requests for receivers zero and k.
+            pair_row = dict(
+                row,
+                scheduled_b_us=deadlines[k],
+                periods_ns=[schedules['periods_ns'][0], schedules['periods_ns'][k]],
+                yield_phases=[schedules['yield_phases'][0], schedules['yield_phases'][k]],
+                receivers=[row['receivers'][0], row['receivers'][k]],
+            )
             selected = [a for a in anchors if a.get('receiver_index') == k]
             result = analyze_pair(
                 pair_row, selected, use_all_bracketing=bracket_diagnostics is not None

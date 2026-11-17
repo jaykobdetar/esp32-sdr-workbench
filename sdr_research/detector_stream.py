@@ -269,6 +269,8 @@ def run_stream(
                 or summary.get('iq_produced') != assembler.completed
             ):
                 raise ProtocolError(f'Incomplete sparse snapshot stream{detail}')
+        if summary['status'] == 3 and not stopped:
+            raise ProtocolError('Stream stopped without a host STOP request; reconnect required')
         if summary['status'] not in (0, 3):
             raise ProtocolError(f'Stream failed with status {summary["status"]}{detail}')
     except BaseException as exc:

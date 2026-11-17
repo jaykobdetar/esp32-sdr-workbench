@@ -26,6 +26,11 @@ from sdr_research.recording import atomic_write_json
 from .analyze_nrf_iq import decode
 from .dual_stream_campaign import Campaign, analyze_run, delta_at, fit_clock
 
+# Firmware safety limits count=0 to 20,000 attempts. Even with every jitter
+# interval at its minimum (887 us), the last attempt cannot precede 17.739 s.
+# Leave the existing two-second start/drain margin; never weaken that cap.
+MAX_SOURCE_WINDOW_MS = 15_000
+
 
 def packet_union(run_id: str, decoded: list[dict]) -> dict:
     """Deduplicate CRC-valid known payloads within ONE transmitter START only.
@@ -107,6 +112,8 @@ def decode_saved(directory: Path, row: dict) -> dict:
 
 class SparseCampaign(Campaign):
     def run_sparse(self, duration_ms, period_ns, every, source_on, trial, yield_phase=32):
+        if type(duration_ms) is not int or not 1000 <= duration_ms <= MAX_SOURCE_WINDOW_MS:
+            raise ValueError('Sparse source comparison requires a 1..15 second window')
         self.tx.stop()
         model = fit_clock(self.report['anchors'][-24:])
         clock = clock_probe(self.radios[0])
@@ -136,8 +143,15 @@ class SparseCampaign(Campaign):
         futures = []
         try:
             row['tx_before'] = self.tx.status()
+            if row['tx_before'].get('running') is not False:
+                raise RuntimeError('Source not confirmed idle before trial')
             if source_on:
                 row['tx_start'] = self.tx.start(count=0, duration_ms=duration_ms + 2000)
+                if row['tx_start'].get('running') is not True:
+                    raise RuntimeError('Source START not confirmed')
+            # Both receiver requests follow this confirmation. Their firmware
+            # rejects deadlines that already passed rather than starting late.
+            row['source_confirmed_before_receivers_ns'] = time.monotonic_ns()
             for k, (radio, deadline) in enumerate(zip(self.radios, [a, b], strict=True)):
 
                 def retain(snapshot, receiver=k):
@@ -161,6 +175,18 @@ class SparseCampaign(Campaign):
             for future in as_completed(futures):
                 future.result()
             row['receivers'] = [f.result() for f in futures]
+            # Check BEFORE STOP: STOP itself would obscure an early autonomous
+            # stop at the packet or time limit. Raw evidence survives a failure.
+            row['source_checked_after_receivers_ns'] = time.monotonic_ns()
+            final = row['tx_before_stop'] = self.tx.status()
+            if final.get('running') is not source_on:
+                raise RuntimeError('Source did not remain in the requested state through readout')
+            if source_on and (
+                final.get('healthy') is not True
+                or type(final.get('completed')) is not int
+                or final['completed'] < 1
+            ):
+                raise RuntimeError('Source failed to confirm healthy packet completions')
             row['status'] = 'captured'
         except BaseException as exc:
             stop.set()
@@ -198,7 +224,7 @@ def main():
     p.add_argument('--tx-serial', required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--run', action='store_true')
-    p.add_argument('--seconds', type=float, default=30)
+    p.add_argument('--seconds', type=float, default=15)
     p.add_argument('--trials', type=int, default=1)
     p.add_argument('--period-ns', type=int, default=1875000)
     p.add_argument('--snapshot-every', type=int, default=1024)
@@ -208,8 +234,8 @@ def main():
     args = p.parse_args()
     if len(args.port) != 2 or len({str(Path(x).resolve()) for x in args.port}) != 2:
         p.error('Exactly two distinct verified receiver ports required')
-    if not 1 <= args.seconds <= 55 or not 1 <= args.trials <= 10:
-        p.error('Seconds 1..55 and trials 1..10 required')
+    if not 1 <= args.seconds <= MAX_SOURCE_WINDOW_MS / 1000 or not 1 <= args.trials <= 10:
+        p.error('Seconds 1..15 and trials 1..10 required')
     if not 1600000 <= args.period_ns <= 10000000 or not 1024 <= args.snapshot_every <= 1000000:
         p.error('Period or sparse interval outside supported limits')
     if not 0 <= args.gain <= 81:
