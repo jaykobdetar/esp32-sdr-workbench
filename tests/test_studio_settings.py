@@ -72,6 +72,26 @@ def test_reject_bad_documents(text):
         parse_settings(text)
 
 
+def test_portable_settings_parse_without_runtime_dependencies():
+    """A settings exchange does not need Qt, a serial driver or the acquisition stack."""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    check = (
+        'import sys; from sdr_research.studio_settings import parse_settings; '
+        'assert parse_settings(sys.stdin.read())["task"] == "listen"; '
+        'assert "sdr_research.lab_session" not in sys.modules'
+    )
+    subprocess.run(
+        [sys.executable, '-E', '-S', '-c', check],
+        cwd=Path(__file__).resolve().parents[1],
+        input=json.dumps(BASE),
+        text=True,
+        check=True,
+    )
+
+
 def test_missing_unknown_and_combination():
     for doc in [
         {},

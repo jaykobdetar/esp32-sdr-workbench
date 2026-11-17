@@ -6,7 +6,13 @@ Run everything from the repository root. Only the campaign scripts and the multi
 
 | Script | Purpose |
 |---|---|
-| `launch.sh` | Start the viewer from a source checkout. |
+| `launch-studio.sh` | Start the task-oriented RF Studio. |
+| `launch-lab.sh` | Start the bench console. |
+| `launch.sh` | Start the original burst viewer. |
+
+All three forward arguments such as `--demo`. From any working directory they
+select `$PYTHON`, then the checkout's `.venv/bin/python`, then `python3`.
+The shared source-tree setup lives in `launcher-common.sh`.
 
 ## Check the published evidence (offline)
 

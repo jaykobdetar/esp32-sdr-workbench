@@ -50,38 +50,31 @@ def firmware_version(data):
         raise ValueError('Invalid embedded firmware version') from exc
 
 
-def export(build, output, board, label, version, allow_larger_flash=False):
-    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', board):
-        raise ValueError(
-            'Board ID must contain only letters, numbers, dots, underscores or hyphens'
-        )
-    cache = (build / 'CMakeCache.txt').read_text()
+# A release build disables these probes; export also rejects a stale enabled cache entry.
+DIAGNOSTIC_PROBES = (
+    'RING_PROBE',
+    'SAMPLE_RATE_PROBE',
+    'FILTER_REGISTER_PROBE',
+    'S3_RF_PROBE',
+    'C5_TUNE_PROBE',
+    'S2_RF_PROBE',
+)
+_DISABLED_CMAKE_VALUES = {'OFF', 'FALSE', '0', 'NO', ''}
+
+
+def _check_release_cache(cache: str) -> None:
     for line in cache.splitlines():
-        if re.match(
-            r'(RING_PROBE|SAMPLE_RATE_PROBE|FILTER_REGISTER_PROBE|S3_RF_PROBE|S2_RF_PROBE|C5_TUNE_PROBE):',
-            line,
-        ):
-            if line.rsplit('=', 1)[-1].upper() not in ('OFF', 'FALSE', '0', 'NO', ''):
+        name, separator, _ = line.partition(':')
+        if separator and name in DIAGNOSTIC_PROBES:
+            if line.rsplit('=', 1)[-1].upper() not in _DISABLED_CMAKE_VALUES:
                 raise ValueError('Refusing to export diagnostic probe firmware')
-    config = json.loads((build / 'config/sdkconfig.json').read_text())
-    args = json.loads((build / 'flasher_args.json').read_text())
-    target = config['IDF_TARGET']
-    if args['extra_esptool_args']['chip'] != target:
-        raise ValueError('Build target differs from flashing target')
-    if not re.fullmatch(r'esp32[a-z0-9]*', target):
-        raise ValueError('Expected an ESP32 target')
-    settings = dict(args['flash_settings'])
-    if settings['flash_size'] == 'detect':
-        settings['flash_size'] = config.get('ESPTOOLPY_FLASHSIZE', '')
-    size = re.fullmatch(r'(\d+)MB', settings['flash_size'])
-    if not size:
-        raise ValueError('Build must specify a concrete flash size in MB')
-    limit = int(size[1]) * 1024 * 1024
+
+
+def _read_image_parts(build: Path, flash_files: dict, limit: int) -> tuple[list, list]:
+    """Read images in flash order, validating bounds before publishing any files."""
     parts, payloads = [], []
     end = 0
-    for i, (address, name) in enumerate(
-        sorted(args['flash_files'].items(), key=lambda p: int(p[0], 0))
-    ):
+    for i, (address, name) in enumerate(sorted(flash_files.items(), key=lambda p: int(p[0], 0))):
         source = (build / name).resolve()
         if not source.is_relative_to(build.resolve()):
             raise ValueError('Flash image must be inside the build directory')
@@ -103,6 +96,31 @@ def export(build, output, board, label, version, allow_larger_flash=False):
         payloads.append((filename, data))
     if not parts:
         raise ValueError('No firmware images in flasher_args.json')
+    return parts, payloads
+
+
+def export(build, output, board, label, version, allow_larger_flash=False):
+    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', board):
+        raise ValueError(
+            'Board ID must contain only letters, numbers, dots, underscores or hyphens'
+        )
+    cache = (build / 'CMakeCache.txt').read_text()
+    _check_release_cache(cache)
+    config = json.loads((build / 'config/sdkconfig.json').read_text())
+    args = json.loads((build / 'flasher_args.json').read_text())
+    target = config['IDF_TARGET']
+    if args['extra_esptool_args']['chip'] != target:
+        raise ValueError('Build target differs from flashing target')
+    if not re.fullmatch(r'esp32[a-z0-9]*', target):
+        raise ValueError('Expected an ESP32 target')
+    settings = dict(args['flash_settings'])
+    if settings['flash_size'] == 'detect':
+        settings['flash_size'] = config.get('ESPTOOLPY_FLASHSIZE', '')
+    size = re.fullmatch(r'(\d+)MB', settings['flash_size'])
+    if not size:
+        raise ValueError('Build must specify a concrete flash size in MB')
+    limit = int(size[1]) * 1024 * 1024
+    parts, payloads = _read_image_parts(build, args['flash_files'], limit)
     chip = 'ESP32' + ('-' + target[5:].upper() if target[5:] else '')
     manifest = dict(
         schema_version=1,

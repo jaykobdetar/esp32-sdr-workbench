@@ -6,24 +6,49 @@ import struct
 from pathlib import Path
 
 if __package__:
-    from .flash_uf2 import validate_image
+    from .flash_uf2 import APP_START, validate_image
 else:  # Preserve documented direct-script invocation.
-    from flash_uf2 import validate_image
+    from flash_uf2 import APP_START, validate_image
 
-p = argparse.ArgumentParser(description=__doc__)
-p.add_argument('binary', type=Path)
-a = p.parse_args()
-b = a.binary.read_bytes()
-b += b'\xff' * ((-len(b)) % 256)
-n = len(b) // 256
-out = bytearray()
-for i in range(n):
-    out += (
-        struct.pack('<8I', 0x0A324655, 0x9E5D5157, 0x2000, 0x23000 + 256 * i, 256, i, n, 0xADA52840)
-        + b[256 * i : 256 * (i + 1)]
-        + bytes(220)
-        + struct.pack('<I', 0x0AB16F30)
-    )
-f = a.binary.with_suffix('.uf2')
-f.write_bytes(out)
-print(f, validate_image(f))
+PAYLOAD_BYTES = 256
+BLOCK_BYTES = 512
+HEADER = struct.Struct('<8I')
+TRAILER = struct.Struct('<I')
+
+
+def encode_blocks(binary: bytes) -> bytes:
+    """Encode contiguous application blocks; the updater remains the validation authority."""
+    padded = binary + b'\xff' * ((-len(binary)) % PAYLOAD_BYTES)
+    total = len(padded) // PAYLOAD_BYTES
+    out = bytearray()
+    for index in range(total):
+        offset = index * PAYLOAD_BYTES
+        out.extend(
+            HEADER.pack(
+                0x0A324655,
+                0x9E5D5157,
+                0x2000,
+                APP_START + offset,
+                PAYLOAD_BYTES,
+                index,
+                total,
+                0xADA52840,
+            )
+        )
+        out.extend(padded[offset : offset + PAYLOAD_BYTES])
+        out.extend(bytes(BLOCK_BYTES - HEADER.size - PAYLOAD_BYTES - TRAILER.size))
+        out.extend(TRAILER.pack(0x0AB16F30))
+    return bytes(out)
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('binary', type=Path)
+    args = parser.parse_args(argv)
+    output = args.binary.with_suffix('.uf2')
+    output.write_bytes(encode_blocks(args.binary.read_bytes()))
+    print(output, validate_image(output))
+
+
+if __name__ == '__main__':
+    main()
