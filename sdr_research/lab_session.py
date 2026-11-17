@@ -202,6 +202,7 @@ class LabSession(threading.Thread):
         self.state = 'ready'
         self.error: str | None = None
         self.stop_requested = threading.Event()
+        self._start_gate = threading.Lock()
         self.notices: queue.Queue = queue.Queue(maxsize=1024)
         self.notices_dropped = 0
         self.workers: dict[str, AcquisitionWorker] = {}
@@ -229,7 +230,10 @@ class LabSession(threading.Thread):
             self.notices_dropped += 1
 
     def stop(self) -> None:
-        self.stop_requested.set()
+        # Linearize cancellation with each START reservation, never hold the gate
+        # during a serial round trip (stop() is also called by the GUI thread).
+        with self._start_gate:
+            self.stop_requested.set()
 
     def _state(self, state: str) -> None:
         self.state = state
@@ -339,10 +343,21 @@ class LabSession(threading.Thread):
                         configured=configured,
                         original_config=self._original_tx[config.label],
                     )
+                    # A receiver can fail, or the user can cancel, while HELLO,
+                    # STATUS or CONFIG is waiting on the serial link.
+                    self._drain_receivers()
+                    if any(not worker.is_alive() for worker in self.workers.values()):
+                        raise RuntimeError('Receiver stopped before transmitter START')
+                    with self._start_gate:
+                        if self.stop_requested.is_set():
+                            return  # finally still stops/restores all opened devices
+                        result['start_committed_monotonic_ns'] = time.monotonic_ns()
                     result['start'] = tx.start(
                         count=count, duration_ms=round(self.duration_s * 1000)
                     )
                     self.notice('transmitter', dict(label=config.label, status=result['start']))
+                if self.stop_requested.is_set():
+                    return
                 self._state('running')
                 self.manifest['status'] = self.state
                 self.manifest['run_started_monotonic_ns'] = time.monotonic_ns()
@@ -417,5 +432,6 @@ class LabSession(threading.Thread):
                     self._save()
                 except Exception as error:
                     self.error = f'Manifest write failed: {error}'
+                    self.manifest.update(status='error', error=self.error)
                     self._state('error')
                     self.notice('error', self.error)

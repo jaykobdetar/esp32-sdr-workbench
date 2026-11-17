@@ -214,15 +214,22 @@ class Radio:
             bits=bits,
         )
         started = time.monotonic_ns()
-        for key, cmd in [
-            ('frequency_mhz', f'FREQ {frequency_mhz}'),
-            ('bandwidth_mhz', f'BANDWIDTH {bandwidth_mhz}'),
-            ('gain', 'GAIN HARDWARE' if gain is None else f'GAIN MANUAL {gain}'),
-        ]:
-            if key not in self.settings or self.settings[key] != new[key]:
-                reply = self.command(cmd)
-                if not (reply == 'OK' or reply.startswith(('GAIN ', 'FREQ ', 'BANDWIDTH '))):
-                    raise ProtocolError(f'Unexpected configuration reply {reply!r}')
+        try:
+            for key, cmd in [
+                ('frequency_mhz', f'FREQ {frequency_mhz}'),
+                ('bandwidth_mhz', f'BANDWIDTH {bandwidth_mhz}'),
+                ('gain', 'GAIN HARDWARE' if gain is None else f'GAIN MANUAL {gain}'),
+            ]:
+                if key not in self.settings or self.settings[key] != new[key]:
+                    reply = self.command(cmd)
+                    if not (reply == 'OK' or reply.startswith(('GAIN ', 'FREQ ', 'BANDWIDTH '))):
+                        raise ProtocolError(f'Unexpected configuration reply {reply!r}')
+        except BaseException:
+            # Earlier commands may have succeeded. Never tag samples with the old
+            # tuning, or skip reapplying it on a retry.
+            self.settings.clear()
+            self.failed = True
+            raise
         new['configure_ns'] = time.monotonic_ns() - started
         self.settings = new
 
