@@ -1,0 +1,90 @@
+{
+  "status": "passed",
+  "receiver_count": 4,
+  "source_final_running": false,
+  "source_sha256": {
+    "sdr_research/gc_policy.py": "97786142dbaf71753ae305a56049a295ce817006535b6e784b97a93ffd545b9e",
+    "scripts/multi_stream_campaign.py": "80215a2ce1323789b2303ca0b7e897beb27e1f88f33f90d5538c5d565d7e7670",
+    "scripts/dual_stream_campaign.py": "ef31ba64cc84d06258e03d5cb3604b0d48d319b91c4a2727f4aef8e5b63b23cf",
+    "sdr_research/detector_stream.py": "ce1d37697a4cb4708651e3aea85db94829cab35fee1b4ad126b560487efa357f",
+    "sdr_research/protocol.py": "470b7f8e9327a59cc180f8630bfe7ee8a5d720d0b1447629791ce3d9c9e56507",
+    "scripts/analyze_nrf_iq.py": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e",
+    "sdr_research/calibration.py": "4774359016c125f998c3eb028dcb6217b2bc8b29145dddb87344eac89a2249c5",
+    "sdr_research/stream_diagnostics.py": "c27381f0ccc8828a8264da543127098d477fb2a27d5589a303f8db6a6efc3d8b"
+  },
+  "clock_policy": "legacy-global-affine-selector",
+  "defer_cyclic_gc": true,
+  "trials": [
+    {
+      "duration_ms": 120000,
+      "periods_ns": [
+        3750000,
+        3749916,
+        3750021,
+        3750003
+      ],
+      "analysis_status": "verified-telemetry",
+      "nominal_union": {
+        "coverage_percent": 99.99998916666667,
+        "covered_us": 119999987,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 13,
+        "first_gaps_relative_us": [
+          [
+            0,
+            13
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_decision_union": {
+        "coverage_percent": 99.94999916666667,
+        "covered_us": 119939999,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 60001,
+        "first_gaps_relative_us": [
+          [
+            0,
+            60001
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "transport_record_counts": [
+        32001,
+        32002,
+        32001,
+        32001
+      ],
+      "skipped": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "overflow": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "idle_fallbacks": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "max_late_us": [
+        2,
+        4,
+        4,
+        3
+      ],
+      "clock_fit_max_heldout_error_us": 1.390941321849823
+    }
+  ],
+  "note": "One bounded 120-second lower-load trial at nominal3.75ms period, half the nominal record rate of1.875ms. Not sustained reliability, packet recall, continuous retained IQ, or validation of the later prospective bracket policy.",
+  "gc_restored": true
+}

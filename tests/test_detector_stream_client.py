@@ -333,6 +333,88 @@ def test_overflow_diagnostic_does_not_bypass_counter_validation():
     assert_failed(radio)
 
 
+def test_failed_frame_has_bounded_private_diagnostics_not_error_text():
+    radio, frames, _ = fake_radio()
+    damaged = frames[2][:-1] + bytes([frames[2][-1] ^ 1])
+    frames[2] = damaged
+    radio._read.side_effect = frames
+    with pytest.raises(ProtocolError) as caught:
+        run_stream(radio, start_us=START, keep_records=False)
+    diagnostics = caught.value.stream_diagnostics
+    assert diagnostics['stage'] == 'frame'
+    assert diagnostics['validated_record_count'] == 2
+    assert diagnostics['expected_sequence'] == 3
+    assert diagnostics['last_valid_record']['sequence'] == 2
+    assert diagnostics['frame_hex'] == damaged.hex()
+    assert len(diagnostics['frame_hex']) == 96
+    assert diagnostics['magic_valid'] is True
+    assert diagnostics['received_crc32'] != diagnostics['computed_crc32']
+    assert diagnostics['host_monotonic_ns'] > 0
+    assert damaged.hex() not in str(caught.value)
+    assert_failed(radio)
+
+
+def test_timeout_does_not_mislabel_previous_frame_as_bad():
+    radio, frames, _ = fake_radio()
+    radio._read.side_effect = [frames[0], TimeoutError('injected read timeout')]
+    with pytest.raises(TimeoutError) as caught:
+        run_stream(radio, start_us=START)
+    diagnostics = caught.value.stream_diagnostics
+    assert diagnostics['validated_record_count'] == 1
+    assert diagnostics['last_valid_record']['sequence'] == 1
+    assert 'frame_hex' not in diagnostics
+    assert_failed(radio)
+
+
+def test_begin_failure_has_no_raw_frame():
+    radio, _, _ = fake_radio()
+    radio.command.return_value = 'unexpected'
+    with pytest.raises(ProtocolError) as caught:
+        run_stream(radio, start_us=START)
+    assert caught.value.stream_diagnostics['stage'] == 'begin'
+    assert caught.value.stream_diagnostics['validated_record_count'] == 0
+    assert 'frame_hex' not in caught.value.stream_diagnostics
+
+
+@pytest.mark.parametrize('operation', ['write', 'flush'])
+@pytest.mark.parametrize('cleanup_error', [OSError('injected STOP failure'), KeyboardInterrupt()])
+def test_cleanup_stop_error_never_masks_primary_crc_error(operation, cleanup_error):
+    radio, frames, _ = fake_radio()
+    frames[0] = b'\xff' * 48
+    radio._read.side_effect = frames
+    getattr(radio.serial, operation).side_effect = cleanup_error
+    with pytest.raises(ProtocolError, match='framing/CRC') as caught:
+        run_stream(radio, start_us=START)
+    d = caught.value.stream_diagnostics
+    assert d['cleanup_stop_error_type'] == type(cleanup_error).__name__
+    assert d['frame_hex'] == 'ff' * 48
+    assert d['frame_bytes_received'] == 48
+    assert d['magic_valid'] is False
+    assert d['received_crc32'] == 0xFFFFFFFF
+    assert d['computed_crc32'] != d['received_crc32']
+    assert d['stop_command_timing'][0]['reason'] == 'primary-error-cleanup'
+    assert (
+        d['stop_command_timing'][0]['error_host_monotonic_ns']
+        >= d['stop_command_timing'][0]['write_started_host_monotonic_ns']
+    )
+    assert radio.failed
+
+
+def test_shared_stop_write_has_ordered_host_timestamps():
+    radio, _, _ = fake_radio(status=3)
+    radio.serial.write.return_value = 5
+    stop = Event()
+    stop.set()
+    result = run_stream(radio, start_us=START, stop=stop)
+    action = result['stop_command_timing'][0]
+    assert action['reason'] == 'shared-event-observed' and action['bytes_written'] == 5
+    assert (
+        action['write_started_host_monotonic_ns']
+        <= action['write_returned_host_monotonic_ns']
+        <= action['flush_returned_host_monotonic_ns']
+    )
+
+
 def test_unsolicited_stop_is_not_a_completed_chunk():
     radio, _, _ = fake_radio(status=3)
     with pytest.raises(ProtocolError, match='without a host STOP'):

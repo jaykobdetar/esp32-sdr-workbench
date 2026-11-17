@@ -130,3 +130,24 @@ questions, not a lack of permission to test the existing devices.
 ## Evidence and source identity
 
 Use the [streaming evaluation index](evidence/dual-stream-evaluation/README.md) for accepted measurements, unsuccessful candidates, binary identities and caveats. The [RF Studio guide](rf-studio.md) explains the interactive controls. Studio streams start independently; they do not perform the RF-clock alignment and staggered scheduling of this explicit campaign. No current installation state or performance result should be inferred from the source branch name.
+
+## Four-receiver viewer
+
+RF Studio accepts four distinct receiver connections and keeps their individual
+spectra in a scrollable two-column grid. Select **Individual** or **Both** to see
+those plots. A per-connection health summary remains visible even in **Combined**
+mode, showing the selected port, last retained I/Q age, and stopped/error state.
+Failed or stopped receivers are excluded from the live combined spectrum. A
+stopped session's individual plots are historical captures, not live RF.
+
+Connection paths are not chip identities. Identical CP210x USB serial labels must
+not be used to distinguish boards; discovery prefers USB location paths. Moving
+a board to another socket can change its path and its session-local Receiver
+number. Verify chip identity and board-specific firmware/calibration separately
+before flashing. The viewer never flashes or aligns receiver clocks.
+
+For an offline four-device preview, enable **Explore with simulated data**, then
+choose **4 simulated receivers**. This opens no serial devices and cannot start
+the transmitter. Physical and simulated four-device operation still uses
+asynchronous, independent acquisition: neither four plots nor their combined
+power establishes gap-free coverage, phase coherence, or packet recovery.

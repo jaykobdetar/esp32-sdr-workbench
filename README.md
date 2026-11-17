@@ -9,6 +9,12 @@
 
 Read the [RF Studio guide](docs/rf-studio.md), [combined-receiver concepts and campaign guide](docs/continuous-dual-receivers.md), [sparse-I/Q protocol](docs/sparse-iq-stream.md), and [build-specific streaming evidence](docs/evidence/dual-stream-evaluation/README.md). The earlier [RF Bench](docs/shared-rf-console.md) remains available through `./scripts/launch-lab.sh`. No launcher flashes firmware.
 
+## Four-receiver experimental work
+
+The viewer supports four physical receivers and a selectable two/four-receiver simulation, with per-connection freshness and failure labels. The [four-board setup guide](docs/four-receiver-setup.md), [RF-anchored timing campaign](docs/multi-receiver-timing.md), [separate packet-recovery control](docs/four-receiver-packet-control.md), and [acquisition-free serial diagnostic](docs/serial-integrity-control.md) keep the different measurements explicit.
+
+The [physical evaluation](docs/evidence/four-receiver-evaluation/REPORT.md) includes successful bounded trials **and rejected sustained-transport trials**. Near-complete nominal no-retention window coverage did not produce continuous retained I/Q or high packet recall. Sustained multi-receiver reliability remains unresolved. This work uses the preserved opt-in v9 application; it does not change the default firmware source or flash through the viewer.
+
 **A native RF viewer and optimized, burst-aware energy detector for the original ESP32.**
 
 Explore the ESP32 receiver's raw I/Q, inspect spectra and recorded events, and compare honest acquisition duty with end-to-end host coverage. This project builds on [ESPARGOS/esp-sdr](https://github.com/ESPARGOS/esp-sdr), adding a Python/Qt workbench and an experimental guarded acquisition/processing pipeline.

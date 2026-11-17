@@ -1,0 +1,120 @@
+{
+  "note": "C kept same board/cable and moved USB port on same controller; transmitter removal and power-cycle also changed conditions. Source physically absent during new-port-control. Passing bounded controls does not uniquely identify root cause or establish sustained reliability.",
+  "attempts": [
+    {
+      "cohort": "awake-c-baseline",
+      "status": "passed",
+      "trial_count": 1,
+      "source_condition": "connected-stopped",
+      "note": "Completed individual exact-response trials; not a reliability guarantee."
+    },
+    {
+      "cohort": "awake-ca-long-control",
+      "status": "failed",
+      "trial_count": 2,
+      "source_condition": "connected-stopped",
+      "note": "Completed individual exact-response trials; not a reliability guarantee."
+    },
+    {
+      "cohort": "awake-c-new-port-control",
+      "status": "completed-individual-trials",
+      "trial_count": 2,
+      "source_condition": "physically-absent",
+      "note": "Completed individual exact-response trials; not a reliability guarantee."
+    },
+    {
+      "cohort": "awake-c-new-port-with-source-control",
+      "status": "failed",
+      "trial_count": 0,
+      "source_condition": "not-found-before-trial",
+      "note": "No receiver trial occurred: transmitter was not detected; retained failed setup attempt."
+    },
+    {
+      "cohort": "awake-c-new-port-with-source-control-retry1",
+      "status": "passed",
+      "trial_count": 1,
+      "source_condition": "connected-stopped",
+      "note": "Completed individual exact-response trials; not a reliability guarantee."
+    }
+  ],
+  "trials": [
+    {
+      "cohort": "awake-c-baseline",
+      "receiver_label": "C",
+      "status": "passed-exact-response-control",
+      "elapsed_seconds": 60.00251701500383,
+      "actual_validated_bytes_per_second": 25602.12598441279,
+      "validated_response_bytes": 1536192,
+      "failed_response_bytes": 0,
+      "leading_ff_bytes": 0,
+      "remainder_after_64_exact": false,
+      "same_descriptor_resynchronized": null,
+      "calibration_hash_unchanged": null
+    },
+    {
+      "cohort": "awake-ca-long-control",
+      "receiver_label": "C",
+      "status": "failed",
+      "elapsed_seconds": 8.190083686000435,
+      "actual_validated_bytes_per_second": 25585.81914836723,
+      "validated_response_bytes": 209550,
+      "failed_response_bytes": 254,
+      "leading_ff_bytes": 64,
+      "remainder_after_64_exact": true,
+      "same_descriptor_resynchronized": true,
+      "calibration_hash_unchanged": true
+    },
+    {
+      "cohort": "awake-ca-long-control",
+      "receiver_label": "A",
+      "status": "passed-exact-response-control",
+      "elapsed_seconds": 120.00009346299339,
+      "actual_validated_bytes_per_second": 25601.063393733177,
+      "validated_response_bytes": 3072130,
+      "failed_response_bytes": 0,
+      "leading_ff_bytes": 0,
+      "remainder_after_64_exact": false,
+      "same_descriptor_resynchronized": null,
+      "calibration_hash_unchanged": null
+    },
+    {
+      "cohort": "awake-c-new-port-control",
+      "receiver_label": "C",
+      "status": "passed-exact-response-control",
+      "elapsed_seconds": 120.00005857099313,
+      "actual_validated_bytes_per_second": 25601.070837665466,
+      "validated_response_bytes": 3072130,
+      "failed_response_bytes": 0,
+      "leading_ff_bytes": 0,
+      "remainder_after_64_exact": false,
+      "same_descriptor_resynchronized": null,
+      "calibration_hash_unchanged": null
+    },
+    {
+      "cohort": "awake-c-new-port-control",
+      "receiver_label": "C",
+      "status": "passed-exact-response-control",
+      "elapsed_seconds": 120.00030056599644,
+      "actual_validated_bytes_per_second": 25601.019210034592,
+      "validated_response_bytes": 3072130,
+      "failed_response_bytes": 0,
+      "leading_ff_bytes": 0,
+      "remainder_after_64_exact": false,
+      "same_descriptor_resynchronized": null,
+      "calibration_hash_unchanged": null
+    },
+    {
+      "cohort": "awake-c-new-port-with-source-control-retry1",
+      "receiver_label": "C",
+      "status": "passed-exact-response-control",
+      "elapsed_seconds": 120.00044087000424,
+      "actual_validated_bytes_per_second": 25600.98927743124,
+      "validated_response_bytes": 3072130,
+      "failed_response_bytes": 0,
+      "leading_ff_bytes": 0,
+      "remainder_after_64_exact": false,
+      "same_descriptor_resynchronized": null,
+      "calibration_hash_unchanged": null
+    }
+  ]
+}

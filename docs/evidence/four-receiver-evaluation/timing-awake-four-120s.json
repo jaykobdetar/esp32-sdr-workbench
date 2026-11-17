@@ -1,0 +1,149 @@
+{
+  "status": "failed",
+  "receiver_count": 4,
+  "source_final_running": false,
+  "source_sha256": {
+    "scripts/multi_stream_campaign.py": "30c868835e263f67bcafe5ced54e854857d5b41ce21099dc1e087b795f6b12a4",
+    "scripts/dual_stream_campaign.py": "ef31ba64cc84d06258e03d5cb3604b0d48d319b91c4a2727f4aef8e5b63b23cf",
+    "sdr_research/detector_stream.py": "ce1d37697a4cb4708651e3aea85db94829cab35fee1b4ad126b560487efa357f",
+    "sdr_research/protocol.py": "470b7f8e9327a59cc180f8630bfe7ee8a5d720d0b1447629791ce3d9c9e56507",
+    "scripts/analyze_nrf_iq.py": "8884d783847ca0bed5600273467310f2f3f26ea5bded40e77cb8543e23e8538e",
+    "sdr_research/calibration.py": "4774359016c125f998c3eb028dcb6217b2bc8b29145dddb87344eac89a2249c5",
+    "sdr_research/stream_diagnostics.py": "c27381f0ccc8828a8264da543127098d477fb2a27d5589a303f8db6a6efc3d8b"
+  },
+  "initial_startup_attempt": {
+    "status": "failed",
+    "failure_stage": "receiver synchronization before RF anchors or streaming",
+    "accepted_trial_count": 0,
+    "source_final_running": false,
+    "note": "Preserved separate aborted attempt; A recovered after normal reset and passive capture. Not a timed streaming failure."
+  },
+  "trials": [
+    {
+      "duration_ms": 120000,
+      "analysis_status": "verified-telemetry",
+      "nominal_union": {
+        "coverage_percent": 99.99998916666667,
+        "covered_us": 119999987,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 13,
+        "first_gaps_relative_us": [
+          [
+            0,
+            13
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_decision_union": {
+        "coverage_percent": 99.97499916666666,
+        "covered_us": 119969999,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 30001,
+        "first_gaps_relative_us": [
+          [
+            0,
+            30001
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "clock_fit_max_heldout_error_us": 12.771905213594437
+    },
+    {
+      "duration_ms": 120000,
+      "analysis_status": "verified-telemetry",
+      "nominal_union": {
+        "coverage_percent": 99.99999583333333,
+        "covered_us": 119999995,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 5,
+        "first_gaps_relative_us": [
+          [
+            0,
+            5
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_decision_union": {
+        "coverage_percent": 99.97499916666666,
+        "covered_us": 119969999,
+        "duration_us": 120000000,
+        "gap_count": 1,
+        "max_gap_us": 30001,
+        "first_gaps_relative_us": [
+          [
+            0,
+            30001
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "clock_fit_max_heldout_error_us": 12.307680755853653
+    }
+  ],
+  "rejected_trials": [
+    {
+      "status": "rejected",
+      "requested_duration_ms": 120000,
+      "after_accepted_trials": 2,
+      "peer_diagnostics": [
+        {
+          "receiver_label": "A",
+          "validated_record_count": 34530,
+          "expected_sequence": 34531,
+          "received_sequence": 34567,
+          "sequence_gap": 36,
+          "failed_frame_crc_valid": true,
+          "error_observed_relative_to_shared_stop_us": -351.289,
+          "same_descriptor_resynchronized": true,
+          "clock_regressed": false,
+          "calibration_hash_unchanged": true
+        },
+        {
+          "receiver_label": "B",
+          "validated_record_count": 34530,
+          "expected_sequence": 34531,
+          "received_sequence": 34571,
+          "sequence_gap": 40,
+          "failed_frame_crc_valid": true,
+          "error_observed_relative_to_shared_stop_us": 3184.479,
+          "same_descriptor_resynchronized": true,
+          "clock_regressed": false,
+          "calibration_hash_unchanged": true
+        },
+        {
+          "receiver_label": "C",
+          "validated_record_count": 34530,
+          "expected_sequence": 34531,
+          "received_sequence": 34567,
+          "sequence_gap": 36,
+          "failed_frame_crc_valid": true,
+          "error_observed_relative_to_shared_stop_us": -1826.504,
+          "same_descriptor_resynchronized": true,
+          "clock_regressed": false,
+          "calibration_hash_unchanged": true
+        },
+        {
+          "receiver_label": "D",
+          "validated_record_count": 34529,
+          "expected_sequence": 34530,
+          "received_sequence": 34570,
+          "sequence_gap": 40,
+          "failed_frame_crc_valid": true,
+          "error_observed_relative_to_shared_stop_us": 2739.311,
+          "same_descriptor_resynchronized": true,
+          "clock_regressed": false,
+          "calibration_hash_unchanged": true
+        }
+      ],
+      "earliest_observed_error_receiver": "C",
+      "note": "No coverage result for this incomplete trial. Host error timestamps order observations, not physical causality; C and A precede shared STOP request, B and D follow it."
+    }
+  ],
+  "note": "After C relocation: two accepted bounded nominal-window trials and a rejected third trial, not a sustained fix. Private raw streams and identities omitted."
+}

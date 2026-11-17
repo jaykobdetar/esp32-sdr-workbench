@@ -1,0 +1,38 @@
+{
+  "note": "Acquisition-free CAPS integrity control, not DSTREAM equivalence, RF coverage, or packet recall. Actual response throughput is measured; target throughput is not assumed.",
+  "trials": [
+    {
+      "receiver_label": "C",
+      "status": "failed",
+      "elapsed_seconds": 43.26426251101657,
+      "actual_validated_bytes_per_second": 25597.107999194664,
+      "validated_response_bytes": 1107440,
+      "attempts": 4361,
+      "expected_response_bytes": 254,
+      "failed_response_bytes": 254,
+      "leading_ff_bytes": 64,
+      "remainder_after_64_bytes_exact": true,
+      "same_fd_resynchronized": true,
+      "clock_regressed": false,
+      "elapsed_inconsistent": false,
+      "calibration_hash_unchanged": true
+    },
+    {
+      "receiver_label": "A",
+      "status": "passed-exact-response-control",
+      "elapsed_seconds": 60.00250443999539,
+      "actual_validated_bytes_per_second": 25602.131349971332,
+      "validated_response_bytes": 1536192,
+      "attempts": 6048,
+      "expected_response_bytes": 254,
+      "failed_response_bytes": 0,
+      "leading_ff_bytes": 0,
+      "remainder_after_64_bytes_exact": false,
+      "same_fd_resynchronized": null,
+      "clock_regressed": null,
+      "elapsed_inconsistent": null,
+      "calibration_hash_unchanged": null
+    }
+  ],
+  "source_final_running": false
+}

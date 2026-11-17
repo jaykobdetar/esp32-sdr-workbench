@@ -1,0 +1,35 @@
+{
+  "status": "failed",
+  "error": "ValueError('Fresh running source with reset counters required')",
+  "analysis": null,
+  "captures_by_condition": {
+    "ON": 32,
+    "OFF": 32
+  },
+  "expected_config": null,
+  "capture_plan": null,
+  "source_final_running": false,
+  "separate_reanalysis": {
+    "original_status": "failed",
+    "original_error": "ValueError('Fresh running source with reset counters required')",
+    "reason": "Corrected START elapsed-time assumption against firmware source; original data unchanged",
+    "analysis": {
+      "unique_packets": 2,
+      "completed_transmissions": 7952,
+      "attempted_transmissions": 7952,
+      "scheduled_slots": 8001,
+      "missed_slots": 49,
+      "recovery_percent": 0.025150905432595575,
+      "per_receiver_unique": [
+        0,
+        2,
+        0,
+        0
+      ],
+      "accepted_observations": 2,
+      "duplicate_observations": 0,
+      "source_off_packets": 0,
+      "note": "Unique CRC/address/full-known-payload packets divided by completed source transmissions during the entire finite ON run. Sparse raw snapshots include large transfer gaps. This is not nominal RF coverage, continuous reception, an instantaneous capture-window recall estimate, or Quest compatibility."
+    }
+  }
+}

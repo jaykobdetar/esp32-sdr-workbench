@@ -812,3 +812,59 @@ prune backups
 prune nrf52840-transmitter/vendor
 prune nrf52840-transmitter/artifacts
 prune nrf52840-transmitter/backups
+
+include docs/evidence/four-receiver-evaluation/awake-serial-controls.json
+
+include docs/evidence/four-receiver-evaluation/iq8-offline-replay.json
+
+include docs/evidence/four-receiver-evaluation/timing-awake-four-120s.json
+
+include docs/evidence/iq-format-initial/summary.json
+
+include docs/evidence/four-receiver-evaluation/timing-awake-gc-observed.json
+
+include docs/evidence/four-receiver-evaluation/awake-nonce-controls.json
+
+include docs/evidence/four-receiver-evaluation/timing-awake-gc-deferred.json
+
+include docs/evidence/four-receiver-evaluation/awake-nonce-batch-control.json
+
+include docs/evidence/iq-stagger-matched/REPORT.md
+
+include docs/evidence/iq-stagger-matched/summary.json
+include scripts/trial_clock_brackets.py
+
+include docs/trial-clock-brackets.md
+
+include tests/test_trial_clock_brackets.py
+
+include docs/evidence/four-receiver-evaluation/timing-awake-lowrate-120s.json
+
+include docs/evidence/four-receiver-evaluation/timing-awake-prospective-brackets.json
+
+include docs/evidence/four-receiver-evaluation/awake-iq8-viewer-closeout.json
+include tests/test_measurement_trial_gate.py
+
+include scripts/packet_only_campaign.py
+include docs/packet-only-prototype.md
+include tests/test_packet_only.py
+include tests/fixtures/packet-only-synthetic-wire.txt
+
+recursive-include experiments/packet-only-v1finish *.md *.json *.patch *.py *.c *.h
+include tests/test_packet_only_candidate_package.py
+
+include docs/evidence/packet-only-initial/REPORT.md
+include docs/evidence/packet-only-initial/summary.json
+include scripts/project_packet_only.py
+include tests/test_packet_only_projection.py
+
+include docs/multi-packet-only-prototype.md
+include scripts/multi_packet_only_campaign.py
+include tests/test_multi_packet_only.py
+
+include docs/evidence/multi-packet-initial/REPORT.md
+include docs/evidence/multi-packet-initial/summary.json
+include scripts/project_multi_packet_only.py
+include tests/test_multi_packet_projection.py
+
+include docs/evidence/multi-packet-initial/closeout.json

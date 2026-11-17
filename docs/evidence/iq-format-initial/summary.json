@@ -1,0 +1,723 @@
+{
+  "schema": 1,
+  "scope": "Completed JSON revalidation only; no I/Q re-decode.",
+  "runs": [
+    {
+      "run": "fixed-1-iq10",
+      "status": "passed",
+      "capture_mode": "fixed-count",
+      "bits_per_component": 10,
+      "complex_samples": 16380,
+      "sample_rate_hz": 16000000,
+      "packed_payload_bytes": 40950,
+      "source_duration_ms": 16000,
+      "power_dbm": 0,
+      "stagger_ms": 100,
+      "conditions": [
+        {
+          "condition": "OFF",
+          "captures": 64,
+          "per_receiver_captures": [
+            16,
+            16,
+            16,
+            16
+          ],
+          "skipped_calls": 0,
+          "round_cap": 16,
+          "round_cap_reached": true,
+          "rounds_started": 16,
+          "requested_acquisition_budget_ms": null,
+          "actual_host_condition_ms": 11573.511493,
+          "median_capture_ms": 416.8924705,
+          "median_payload_transfer_ms": 407.027057,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        },
+        {
+          "condition": "ON",
+          "captures": 64,
+          "per_receiver_captures": [
+            16,
+            16,
+            16,
+            16
+          ],
+          "skipped_calls": 0,
+          "round_cap": 16,
+          "round_cap_reached": true,
+          "rounds_started": 16,
+          "requested_acquisition_budget_ms": null,
+          "actual_host_condition_ms": 11689.641794,
+          "median_capture_ms": 416.866391,
+          "median_payload_transfer_ms": 407.02682200000004,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        }
+      ],
+      "packet_analysis": {
+        "unique_packets": 51,
+        "completed_transmissions": 15944,
+        "attempted_transmissions": 15944,
+        "scheduled_slots": 15996,
+        "missed_slots": 52,
+        "recovery_percent": 0.31986954340190665,
+        "per_receiver_unique": [
+          13,
+          14,
+          10,
+          14
+        ],
+        "accepted_observations": 51,
+        "duplicate_observations": 0,
+        "source_off_packets": 0,
+        "note": "Unique CRC/address/full-known-payload packets divided by completed source transmissions during the entire finite ON run. Sparse raw snapshots include large transfer gaps. This is not nominal RF coverage, continuous reception, an instantaneous capture-window recall estimate, or Quest compatibility."
+      },
+      "calibration_unchanged": true,
+      "source_stopped": true,
+      "source_config_restored": true
+    },
+    {
+      "run": "fixed-2-iq8",
+      "status": "passed",
+      "capture_mode": "fixed-count",
+      "bits_per_component": 8,
+      "complex_samples": 16380,
+      "sample_rate_hz": 16000000,
+      "packed_payload_bytes": 32760,
+      "source_duration_ms": 16000,
+      "power_dbm": 0,
+      "stagger_ms": 100,
+      "conditions": [
+        {
+          "condition": "OFF",
+          "captures": 64,
+          "per_receiver_captures": [
+            16,
+            16,
+            16,
+            16
+          ],
+          "skipped_calls": 0,
+          "round_cap": 16,
+          "round_cap_reached": true,
+          "rounds_started": 16,
+          "requested_acquisition_budget_ms": null,
+          "actual_host_condition_ms": 10244.320806,
+          "median_capture_ms": 334.53126499999996,
+          "median_payload_transfer_ms": 326.5502745,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        },
+        {
+          "condition": "ON",
+          "captures": 64,
+          "per_receiver_captures": [
+            16,
+            16,
+            16,
+            16
+          ],
+          "skipped_calls": 0,
+          "round_cap": 16,
+          "round_cap_reached": true,
+          "rounds_started": 16,
+          "requested_acquisition_budget_ms": null,
+          "actual_host_condition_ms": 10351.071521,
+          "median_capture_ms": 334.3905015,
+          "median_payload_transfer_ms": 326.5701085,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        }
+      ],
+      "packet_analysis": {
+        "unique_packets": 50,
+        "completed_transmissions": 15945,
+        "attempted_transmissions": 15945,
+        "scheduled_slots": 15996,
+        "missed_slots": 51,
+        "recovery_percent": 0.31357792411414237,
+        "per_receiver_unique": [
+          14,
+          12,
+          12,
+          12
+        ],
+        "accepted_observations": 50,
+        "duplicate_observations": 0,
+        "source_off_packets": 0,
+        "note": "Unique CRC/address/full-known-payload packets divided by completed source transmissions during the entire finite ON run. Sparse raw snapshots include large transfer gaps. This is not nominal RF coverage, continuous reception, an instantaneous capture-window recall estimate, or Quest compatibility."
+      },
+      "calibration_unchanged": true,
+      "source_stopped": true,
+      "source_config_restored": true
+    },
+    {
+      "run": "fixed-3-iq8",
+      "status": "passed",
+      "capture_mode": "fixed-count",
+      "bits_per_component": 8,
+      "complex_samples": 16380,
+      "sample_rate_hz": 16000000,
+      "packed_payload_bytes": 32760,
+      "source_duration_ms": 16000,
+      "power_dbm": 0,
+      "stagger_ms": 100,
+      "conditions": [
+        {
+          "condition": "OFF",
+          "captures": 64,
+          "per_receiver_captures": [
+            16,
+            16,
+            16,
+            16
+          ],
+          "skipped_calls": 0,
+          "round_cap": 16,
+          "round_cap_reached": true,
+          "rounds_started": 16,
+          "requested_acquisition_budget_ms": null,
+          "actual_host_condition_ms": 10245.447308,
+          "median_capture_ms": 334.287066,
+          "median_payload_transfer_ms": 326.550347,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        },
+        {
+          "condition": "ON",
+          "captures": 64,
+          "per_receiver_captures": [
+            16,
+            16,
+            16,
+            16
+          ],
+          "skipped_calls": 0,
+          "round_cap": 16,
+          "round_cap_reached": true,
+          "rounds_started": 16,
+          "requested_acquisition_budget_ms": null,
+          "actual_host_condition_ms": 10351.832868,
+          "median_capture_ms": 334.519591,
+          "median_payload_transfer_ms": 326.565351,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        }
+      ],
+      "packet_analysis": {
+        "unique_packets": 46,
+        "completed_transmissions": 15933,
+        "attempted_transmissions": 15933,
+        "scheduled_slots": 15996,
+        "missed_slots": 63,
+        "recovery_percent": 0.2887089688068788,
+        "per_receiver_unique": [
+          10,
+          12,
+          14,
+          10
+        ],
+        "accepted_observations": 46,
+        "duplicate_observations": 0,
+        "source_off_packets": 0,
+        "note": "Unique CRC/address/full-known-payload packets divided by completed source transmissions during the entire finite ON run. Sparse raw snapshots include large transfer gaps. This is not nominal RF coverage, continuous reception, an instantaneous capture-window recall estimate, or Quest compatibility."
+      },
+      "calibration_unchanged": true,
+      "source_stopped": true,
+      "source_config_restored": true
+    },
+    {
+      "run": "fixed-4-iq10",
+      "status": "passed",
+      "capture_mode": "fixed-count",
+      "bits_per_component": 10,
+      "complex_samples": 16380,
+      "sample_rate_hz": 16000000,
+      "packed_payload_bytes": 40950,
+      "source_duration_ms": 16000,
+      "power_dbm": 0,
+      "stagger_ms": 100,
+      "conditions": [
+        {
+          "condition": "OFF",
+          "captures": 64,
+          "per_receiver_captures": [
+            16,
+            16,
+            16,
+            16
+          ],
+          "skipped_calls": 0,
+          "round_cap": 16,
+          "round_cap_reached": true,
+          "rounds_started": 16,
+          "requested_acquisition_budget_ms": null,
+          "actual_host_condition_ms": 11576.685019,
+          "median_capture_ms": 417.010018,
+          "median_payload_transfer_ms": 407.0215245,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        },
+        {
+          "condition": "ON",
+          "captures": 64,
+          "per_receiver_captures": [
+            16,
+            16,
+            16,
+            16
+          ],
+          "skipped_calls": 0,
+          "round_cap": 16,
+          "round_cap_reached": true,
+          "rounds_started": 16,
+          "requested_acquisition_budget_ms": null,
+          "actual_host_condition_ms": 11716.244139,
+          "median_capture_ms": 416.938222,
+          "median_payload_transfer_ms": 407.034947,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        }
+      ],
+      "packet_analysis": {
+        "unique_packets": 47,
+        "completed_transmissions": 15956,
+        "attempted_transmissions": 15956,
+        "scheduled_slots": 15996,
+        "missed_slots": 40,
+        "recovery_percent": 0.29456004011030334,
+        "per_receiver_unique": [
+          13,
+          14,
+          9,
+          11
+        ],
+        "accepted_observations": 47,
+        "duplicate_observations": 0,
+        "source_off_packets": 0,
+        "note": "Unique CRC/address/full-known-payload packets divided by completed source transmissions during the entire finite ON run. Sparse raw snapshots include large transfer gaps. This is not nominal RF coverage, continuous reception, an instantaneous capture-window recall estimate, or Quest compatibility."
+      },
+      "calibration_unchanged": true,
+      "source_stopped": true,
+      "source_config_restored": true
+    },
+    {
+      "run": "budget-1-iq10",
+      "status": "passed",
+      "capture_mode": "host-time-budget",
+      "bits_per_component": 10,
+      "complex_samples": 16380,
+      "sample_rate_hz": 16000000,
+      "packed_payload_bytes": 40950,
+      "source_duration_ms": 16000,
+      "power_dbm": 0,
+      "stagger_ms": 100,
+      "conditions": [
+        {
+          "condition": "OFF",
+          "captures": 79,
+          "per_receiver_captures": [
+            20,
+            20,
+            20,
+            19
+          ],
+          "skipped_calls": 1,
+          "round_cap": 32,
+          "round_cap_reached": false,
+          "rounds_started": 20,
+          "requested_acquisition_budget_ms": 14000,
+          "actual_host_condition_ms": 14389.149286,
+          "median_capture_ms": 417.001991,
+          "median_payload_transfer_ms": 407.030542,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        },
+        {
+          "condition": "ON",
+          "captures": 77,
+          "per_receiver_captures": [
+            20,
+            19,
+            19,
+            19
+          ],
+          "skipped_calls": 3,
+          "round_cap": 32,
+          "round_cap_reached": false,
+          "rounds_started": 20,
+          "requested_acquisition_budget_ms": 14000,
+          "actual_host_condition_ms": 14365.325378,
+          "median_capture_ms": 416.92676,
+          "median_payload_transfer_ms": 407.029607,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        }
+      ],
+      "packet_analysis": {
+        "unique_packets": 59,
+        "completed_transmissions": 15976,
+        "attempted_transmissions": 15976,
+        "scheduled_slots": 15996,
+        "missed_slots": 20,
+        "recovery_percent": 0.36930395593390086,
+        "per_receiver_unique": [
+          16,
+          16,
+          14,
+          13
+        ],
+        "accepted_observations": 59,
+        "duplicate_observations": 0,
+        "source_off_packets": 0,
+        "note": "Unique CRC/address/full-known-payload packets divided by completed source transmissions during the entire finite ON run. Sparse raw snapshots include large transfer gaps. This is not nominal RF coverage, continuous reception, an instantaneous capture-window recall estimate, or Quest compatibility."
+      },
+      "calibration_unchanged": true,
+      "source_stopped": true,
+      "source_config_restored": true
+    },
+    {
+      "run": "budget-2-iq8",
+      "status": "passed",
+      "capture_mode": "host-time-budget",
+      "bits_per_component": 8,
+      "complex_samples": 16380,
+      "sample_rate_hz": 16000000,
+      "packed_payload_bytes": 32760,
+      "source_duration_ms": 16000,
+      "power_dbm": 0,
+      "stagger_ms": 100,
+      "conditions": [
+        {
+          "condition": "OFF",
+          "captures": 88,
+          "per_receiver_captures": [
+            22,
+            22,
+            22,
+            22
+          ],
+          "skipped_calls": 0,
+          "round_cap": 32,
+          "round_cap_reached": false,
+          "rounds_started": 22,
+          "requested_acquisition_budget_ms": 14000,
+          "actual_host_condition_ms": 14111.636069,
+          "median_capture_ms": 334.462623,
+          "median_payload_transfer_ms": 326.5646805,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        },
+        {
+          "condition": "ON",
+          "captures": 88,
+          "per_receiver_captures": [
+            22,
+            22,
+            22,
+            22
+          ],
+          "skipped_calls": 0,
+          "round_cap": 32,
+          "round_cap_reached": false,
+          "rounds_started": 22,
+          "requested_acquisition_budget_ms": 14000,
+          "actual_host_condition_ms": 14317.694191,
+          "median_capture_ms": 334.4561875,
+          "median_payload_transfer_ms": 326.56647250000003,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        }
+      ],
+      "packet_analysis": {
+        "unique_packets": 67,
+        "completed_transmissions": 15977,
+        "attempted_transmissions": 15977,
+        "scheduled_slots": 15996,
+        "missed_slots": 19,
+        "recovery_percent": 0.4193528196782875,
+        "per_receiver_unique": [
+          18,
+          19,
+          14,
+          16
+        ],
+        "accepted_observations": 67,
+        "duplicate_observations": 0,
+        "source_off_packets": 0,
+        "note": "Unique CRC/address/full-known-payload packets divided by completed source transmissions during the entire finite ON run. Sparse raw snapshots include large transfer gaps. This is not nominal RF coverage, continuous reception, an instantaneous capture-window recall estimate, or Quest compatibility."
+      },
+      "calibration_unchanged": true,
+      "source_stopped": true,
+      "source_config_restored": true
+    },
+    {
+      "run": "budget-3-iq8",
+      "status": "passed",
+      "capture_mode": "host-time-budget",
+      "bits_per_component": 8,
+      "complex_samples": 16380,
+      "sample_rate_hz": 16000000,
+      "packed_payload_bytes": 32760,
+      "source_duration_ms": 16000,
+      "power_dbm": 0,
+      "stagger_ms": 100,
+      "conditions": [
+        {
+          "condition": "OFF",
+          "captures": 88,
+          "per_receiver_captures": [
+            22,
+            22,
+            22,
+            22
+          ],
+          "skipped_calls": 0,
+          "round_cap": 32,
+          "round_cap_reached": false,
+          "rounds_started": 22,
+          "requested_acquisition_budget_ms": 14000,
+          "actual_host_condition_ms": 14113.614015,
+          "median_capture_ms": 334.4387525,
+          "median_payload_transfer_ms": 326.5670075,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        },
+        {
+          "condition": "ON",
+          "captures": 88,
+          "per_receiver_captures": [
+            22,
+            22,
+            22,
+            22
+          ],
+          "skipped_calls": 0,
+          "round_cap": 32,
+          "round_cap_reached": false,
+          "rounds_started": 22,
+          "requested_acquisition_budget_ms": 14000,
+          "actual_host_condition_ms": 14319.320549,
+          "median_capture_ms": 334.384381,
+          "median_payload_transfer_ms": 326.558207,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        }
+      ],
+      "packet_analysis": {
+        "unique_packets": 55,
+        "completed_transmissions": 15979,
+        "attempted_transmissions": 15979,
+        "scheduled_slots": 15996,
+        "missed_slots": 17,
+        "recovery_percent": 0.3442017648163214,
+        "per_receiver_unique": [
+          9,
+          20,
+          11,
+          15
+        ],
+        "accepted_observations": 55,
+        "duplicate_observations": 0,
+        "source_off_packets": 0,
+        "note": "Unique CRC/address/full-known-payload packets divided by completed source transmissions during the entire finite ON run. Sparse raw snapshots include large transfer gaps. This is not nominal RF coverage, continuous reception, an instantaneous capture-window recall estimate, or Quest compatibility."
+      },
+      "calibration_unchanged": true,
+      "source_stopped": true,
+      "source_config_restored": true
+    },
+    {
+      "run": "budget-4-iq10",
+      "status": "passed",
+      "capture_mode": "host-time-budget",
+      "bits_per_component": 10,
+      "complex_samples": 16380,
+      "sample_rate_hz": 16000000,
+      "packed_payload_bytes": 40950,
+      "source_duration_ms": 16000,
+      "power_dbm": 0,
+      "stagger_ms": 100,
+      "conditions": [
+        {
+          "condition": "OFF",
+          "captures": 79,
+          "per_receiver_captures": [
+            20,
+            20,
+            20,
+            19
+          ],
+          "skipped_calls": 1,
+          "round_cap": 32,
+          "round_cap_reached": false,
+          "rounds_started": 20,
+          "requested_acquisition_budget_ms": 14000,
+          "actual_host_condition_ms": 14385.829674,
+          "median_capture_ms": 416.971173,
+          "median_payload_transfer_ms": 407.028789,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        },
+        {
+          "condition": "ON",
+          "captures": 77,
+          "per_receiver_captures": [
+            20,
+            19,
+            19,
+            19
+          ],
+          "skipped_calls": 3,
+          "round_cap": 32,
+          "round_cap_reached": false,
+          "rounds_started": 20,
+          "requested_acquisition_budget_ms": 14000,
+          "actual_host_condition_ms": 14354.974111,
+          "median_capture_ms": 416.906132,
+          "median_payload_transfer_ms": 407.026665,
+          "calls_started_after_latest_source_duration_deadline": 0,
+          "calls_ended_after_latest_source_duration_deadline": 0
+        }
+      ],
+      "packet_analysis": {
+        "unique_packets": 52,
+        "completed_transmissions": 15981,
+        "attempted_transmissions": 15981,
+        "scheduled_slots": 15996,
+        "missed_slots": 15,
+        "recovery_percent": 0.32538639634566047,
+        "per_receiver_unique": [
+          12,
+          15,
+          10,
+          15
+        ],
+        "accepted_observations": 52,
+        "duplicate_observations": 0,
+        "source_off_packets": 0,
+        "note": "Unique CRC/address/full-known-payload packets divided by completed source transmissions during the entire finite ON run. Sparse raw snapshots include large transfer gaps. This is not nominal RF coverage, continuous reception, an instantaneous capture-window recall estimate, or Quest compatibility."
+      },
+      "calibration_unchanged": true,
+      "source_stopped": true,
+      "source_config_restored": true
+    }
+  ],
+  "groups": [
+    {
+      "capture_mode": "fixed-count",
+      "bits_per_component": 8,
+      "power_dbm": 0,
+      "stagger_ms": 100,
+      "source_duration_ms": 16000,
+      "acquisition_budget_ms": null,
+      "round_caps_off_on": [
+        16,
+        16
+      ],
+      "runs": 2,
+      "on_captures": 128,
+      "off_captures": 128,
+      "sum_run_unique_packets": 96,
+      "sum_completed_transmissions": 31878,
+      "pooled_descriptive_recovery_percent": 0.3011481272350838,
+      "median_run_on_capture_ms": 334.45504625,
+      "cap_reached_any": true
+    },
+    {
+      "capture_mode": "fixed-count",
+      "bits_per_component": 10,
+      "power_dbm": 0,
+      "stagger_ms": 100,
+      "source_duration_ms": 16000,
+      "acquisition_budget_ms": null,
+      "round_caps_off_on": [
+        16,
+        16
+      ],
+      "runs": 2,
+      "on_captures": 128,
+      "off_captures": 128,
+      "sum_run_unique_packets": 98,
+      "sum_completed_transmissions": 31900,
+      "pooled_descriptive_recovery_percent": 0.3072100313479624,
+      "median_run_on_capture_ms": 416.9023065,
+      "cap_reached_any": true
+    },
+    {
+      "capture_mode": "host-time-budget",
+      "bits_per_component": 8,
+      "power_dbm": 0,
+      "stagger_ms": 100,
+      "source_duration_ms": 16000,
+      "acquisition_budget_ms": 14000,
+      "round_caps_off_on": [
+        32,
+        32
+      ],
+      "runs": 2,
+      "on_captures": 176,
+      "off_captures": 176,
+      "sum_run_unique_packets": 122,
+      "sum_completed_transmissions": 31956,
+      "pooled_descriptive_recovery_percent": 0.38177494054324695,
+      "median_run_on_capture_ms": 334.42028425,
+      "cap_reached_any": false
+    },
+    {
+      "capture_mode": "host-time-budget",
+      "bits_per_component": 10,
+      "power_dbm": 0,
+      "stagger_ms": 100,
+      "source_duration_ms": 16000,
+      "acquisition_budget_ms": 14000,
+      "round_caps_off_on": [
+        32,
+        32
+      ],
+      "runs": 2,
+      "on_captures": 154,
+      "off_captures": 158,
+      "sum_run_unique_packets": 111,
+      "sum_completed_transmissions": 31957,
+      "pooled_descriptive_recovery_percent": 0.34734174046374816,
+      "median_run_on_capture_ms": 416.916446,
+      "cap_reached_any": false
+    }
+  ],
+  "input_provenance": [
+    {
+      "run": "fixed-1-iq10",
+      "input_json_sha256": "3af97035594bada38ee07954a3db4bea4183a78117cc19c36200f8017777404b"
+    },
+    {
+      "run": "fixed-2-iq8",
+      "input_json_sha256": "52da4bab9a3125799cbaeb4703abb61904dbabdf98468c5d5bf2fb6077f92d95"
+    },
+    {
+      "run": "fixed-3-iq8",
+      "input_json_sha256": "b9c8e15268aa238efc823ce4df25a950c4e57bc0adbd662af8cbdf02983579e5"
+    },
+    {
+      "run": "fixed-4-iq10",
+      "input_json_sha256": "cb04bc3ef478feacfd96ca18bd97f09e010edabe8a8c0d65e47792040a4791a5"
+    },
+    {
+      "run": "budget-1-iq10",
+      "input_json_sha256": "8cc969dacd81560074199b9c1b7f9beee10f8b023944f56ade6eedf33112141d"
+    },
+    {
+      "run": "budget-2-iq8",
+      "input_json_sha256": "10009ccc96c438d3bcdf126048a91a7ff74a26ecdec6f0f6d0ecec0367405741"
+    },
+    {
+      "run": "budget-3-iq8",
+      "input_json_sha256": "7e294dbb6f8f72e068650a41b24110fe104b1df0d32732bf0f47249cf8c3b773"
+    },
+    {
+      "run": "budget-4-iq10",
+      "input_json_sha256": "f05f10fbb29bbac1d36bd98e0fe3fb32266ba6234a13d20172a9994c401f5538"
+    }
+  ],
+  "limitations": "Small balanced ABBA controls, not statistical superiority or continuous coverage. Fixed-count tests measure service-time savings; equal-budget counts measure retained-snapshot throughput. Packet percentages retain the entire completed-source denominator and are not window recall. No device identifiers, RF samples, calibration hashes, or local paths included."
+}

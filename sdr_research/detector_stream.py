@@ -15,6 +15,7 @@ from threading import Event
 from typing import Any
 
 from .protocol import ProtocolError, Radio
+from .stream_diagnostics import serial_error_counts
 from .stream_snapshots import SnapshotAssembler
 
 WIRE = struct.Struct('<4sIQIIIIIIII')
@@ -141,6 +142,26 @@ def run_stream(
     count, events, first, last, stopped = 0, 0, 0, 0, False
     deadline = time.monotonic() + milliseconds / 1000 + 10
     started_host = time.monotonic()
+    frame = None
+    last_valid_record = None
+    validated_count = 0
+    stage = 'begin'
+    stop_timing = []
+    counters_before = serial_error_counts(radio.serial)
+
+    def send_stop(reason):
+        action = dict(reason=reason, write_started_host_monotonic_ns=time.monotonic_ns())
+        stop_timing.append(action)
+        try:
+            action['bytes_written'] = radio.serial.write(b'STOP\n')
+            action['write_returned_host_monotonic_ns'] = time.monotonic_ns()
+            radio.serial.flush()
+            action['flush_returned_host_monotonic_ns'] = time.monotonic_ns()
+        except BaseException as error:
+            action['error_type'] = type(error).__name__
+            action['error_host_monotonic_ns'] = time.monotonic_ns()
+            raise
+
     try:
         begin = radio.command(requested)
         fields = begin.split()
@@ -175,10 +196,11 @@ def run_stream(
             raise ProtocolError('Snapshot BEGIN does not match request')
         while True:
             if stop and stop.is_set() and not stopped:
-                radio.serial.write(b'STOP\n')
-                radio.serial.flush()
+                send_stop('shared-event-observed')
                 stopped = True
             # At least one frame per second even at the slowest supported period.
+            stage = 'frame'
+            frame = None
             frame = radio._read(WIRE.size, min(deadline, time.monotonic() + 7))
             if assembler is not None and frame[:4] in (b'DSI1', b'DSQ1'):
                 snapshot = assembler.feed(frame, recent)
@@ -199,6 +221,8 @@ def run_stream(
             if not first:
                 first = record['trigger_us']
             last = record['trigger_us']
+            last_valid_record = dict(record)
+            validated_count = count
             if assembler is not None:
                 recent[count] = record
                 recent.pop(count - 4096, None)
@@ -206,6 +230,7 @@ def run_stream(
                 records.append(record)
             if on_record:
                 on_record(record)
+        stage = 'summary'
         line = radio._line(time.monotonic() + 5)
         if not line.startswith('DSTREAM END '):
             raise ProtocolError('Missing stream END summary')
@@ -248,11 +273,31 @@ def run_stream(
             raise ProtocolError('Stream stopped without a host STOP request; reconnect required')
         if summary['status'] not in (0, 3):
             raise ProtocolError(f'Stream failed with status {summary["status"]}{detail}')
-    except BaseException:
+    except BaseException as exc:
+        # Private bounded evidence only: never put raw bytes in ordinary error text.
+        # This is diagnostic context, not a partial accepted stream or resync path.
+        diagnostics = dict(
+            stage=stage,
+            host_monotonic_ns=time.monotonic_ns(),
+            validated_record_count=validated_count,
+            expected_sequence=validated_count + 1,
+            last_valid_record=last_valid_record,
+            stop_command_timing=stop_timing,
+            serial_counts_before=counters_before,
+        )
+        if stage == 'frame' and isinstance(frame, bytes):
+            diagnostics['frame_bytes_received'] = len(frame)
+            diagnostics['frame_hex'] = frame[: WIRE.size].hex()
+            diagnostics['magic_valid'] = frame[:4] == MAGIC
+            if len(frame) == WIRE.size:
+                diagnostics['received_crc32'] = struct.unpack('<I', frame[-4:])[0]
+                diagnostics['computed_crc32'] = zlib.crc32(frame[:-4])
+        exc.stream_diagnostics = diagnostics
         # No further commands except stop: framing may already be uncertain.
         try:
-            radio.serial.write(b'STOP\n')
-            radio.serial.flush()
+            send_stop('primary-error-cleanup')
+        except BaseException as stop_error:
+            diagnostics['cleanup_stop_error_type'] = type(stop_error).__name__
         finally:
             radio.failed = True
         raise
@@ -264,6 +309,9 @@ def run_stream(
         transport_crc_valid=True,
         host_elapsed_s=time.monotonic() - started_host,
         stop_requested=stopped,
+        stop_command_timing=stop_timing,
+        serial_counts_before=counters_before,
+        serial_counts_after=serial_error_counts(radio.serial),
         nominal_aperture_us=APERTURE_US,
         retention=bool(snapshot_every),
         snapshots_received=assembler.completed if assembler else 0,

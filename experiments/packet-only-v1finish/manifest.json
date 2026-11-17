@@ -1,0 +1,33 @@
+{
+  "base": "d23ddddeaabee46d340caba60b038f39946cd534 plus frozen core-bank-v9 materialize overlay",
+  "variant": "esp32-packet-only-bounded-v1finish",
+  "idf_commit": "25fe69f946311abdaf9ad56591f25fedbc20ac98",
+  "source_sha256": {
+    "firmware/FIRMWARE_VARIANT": "52e195c7b76e74be90dd811d97892131f24e2800289288627c78930f9a15322b",
+    "firmware/main/CMakeLists.txt": "50400a591495f4c56ab185e39ffb0128231158e38acd9499ed8e73db093e89c1",
+    "firmware/main/targets/esp32/receiver.c": "fc4873b6bd5f436dc88e9472705d1c41c8fc484d6f8c984acd0d9dabb1a57e55",
+    "firmware/main/targets/esp32/receiver_caps.h": "45a89ace95d3541451bb7397f1a3a19d2d6e9e03766b8274e24d04f3579b8871",
+    "firmware/main/targets/esp32/packet.c": "87b94c1d4ce7313d19d355beb22a4c0f51cc92622ab31171ab800e8a169da614",
+    "firmware/main/targets/esp32/packet.h": "06f9396d6d28c95042ce42b41f1e623c23ed08f0194ee0882a53220b8d2ddbd8",
+    "firmware/main/targets/esp32/slot_audit.h": "9865bffe967f1e78c5b66f74d795631546428929ec244b6f64beb6da9db509ef",
+    "firmware/main/targets/esp32/packet_only.h": "4dc0f85fdf5032923f4b6ba6687e27660d47dda097032e3b78eded9fd6d40acc"
+  },
+  "patch_sha256": "89853169cdbf875ac2200e0007c3d2eaea1371a6a7fd6be61b2ec2dcfa7208b8",
+  "app_bytes": 720160,
+  "app_sha256": "bb3a3d7e14d0851c4d35793a6d4ee4b6172bfa091e15f7980ded7e04319310c5",
+  "sdkconfig_sha256": "d1d04be8d925bc93f98fea977b3f09ab2afa0ec16323d143c1e30f7839538d8a",
+  "decoder_provenance": {
+    "c": "supporting-history/source-reports-fixtures/esp32-packet-bench-candidate/firmware/main/targets/esp32/packet.c",
+    "header": "supporting-history/source-reports-fixtures/esp32-dsp-next/packet.h",
+    "license": "GPL-3.0-or-later, SPDX retained"
+  },
+  "qualification": "Opt-in research candidate. Build and mock evidence only in this package; physical qualification must be reported separately.",
+  "local_build_app_note": "App hash identifies one local pinned-toolchain build, not a claim of bit-for-bit reproducibility across build paths/timestamps. No binary included.",
+  "tests_sha256": {
+    "tests/test_packet.c": "9623c8b37735871a54b990d6d1e67979771c411aac3dc60ae180fe0c21f9cf66",
+    "tests/test_slot_audit.c": "e45c9208f4f2e55763a6e3f6644a93ef3875bb99ffa87c926ae123f7547badad",
+    "tests/test_command.c": "433c007931477e9a34ea42b489b066183ad14c0e009708f490cc45a64e9860ea",
+    "tests/mocks/esp_cpu.h": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/mocks/esp_private/esp_clk.h": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

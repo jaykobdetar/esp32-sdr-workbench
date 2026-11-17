@@ -1,0 +1,152 @@
+{
+  "app_bytes": 720160,
+  "installs": [
+    {
+      "all_nonwritten_bytes_verified": true,
+      "app_sha256": "bb3a3d7e14d0851c4d35793a6d4ee4b6172bfa091e15f7980ded7e04319310c5",
+      "app_verified": true,
+      "erase_end": 786432,
+      "offset": 65536,
+      "receiver": "A",
+      "status": "verified"
+    },
+    {
+      "all_nonwritten_bytes_verified": true,
+      "app_sha256": "bb3a3d7e14d0851c4d35793a6d4ee4b6172bfa091e15f7980ded7e04319310c5",
+      "app_verified": true,
+      "erase_end": 1769472,
+      "offset": 1048576,
+      "receiver": "B",
+      "status": "verified"
+    },
+    {
+      "all_nonwritten_bytes_verified": true,
+      "app_sha256": "bb3a3d7e14d0851c4d35793a6d4ee4b6172bfa091e15f7980ded7e04319310c5",
+      "app_verified": true,
+      "erase_end": 1769472,
+      "offset": 1048576,
+      "receiver": "C",
+      "status": "verified"
+    },
+    {
+      "all_nonwritten_bytes_verified": true,
+      "app_sha256": "bb3a3d7e14d0851c4d35793a6d4ee4b6172bfa091e15f7980ded7e04319310c5",
+      "app_verified": true,
+      "erase_end": 1769472,
+      "offset": 1048576,
+      "receiver": "D",
+      "status": "verified"
+    }
+  ],
+  "note": "Per-device original and fresh recovery images remain private. Protected bytes were checked before application boot; runtime calibration is not asserted unchanged across resets.",
+  "passive_health": [
+    {
+      "crc_ok": true,
+      "receiver": "A",
+      "release": "OK",
+      "samples": 256,
+      "status": "passed"
+    },
+    {
+      "crc_ok": true,
+      "receiver": "B",
+      "release": "OK",
+      "samples": 256,
+      "status": "passed"
+    },
+    {
+      "crc_ok": true,
+      "receiver": "C",
+      "release": "OK",
+      "samples": 256,
+      "status": "passed"
+    },
+    {
+      "crc_ok": true,
+      "receiver": "D",
+      "release": "OK",
+      "samples": 256,
+      "status": "passed"
+    }
+  ],
+  "preserved_failed_install": {
+    "receiver": "A",
+    "rollback": "whole-original-flash-verified",
+    "status": "failed"
+  },
+  "schema": 1,
+  "scope": "Bounded receive-only GUI regression and passive closeout, not packet recall or continuous coverage.",
+  "source_healthy": true,
+  "source_running": false,
+  "variant": "esp32-packet-only-bounded-v1finish",
+  "viewer": {
+    "card_order_note": "GUI cards are not mapped to timing receiver labels in this projection.",
+    "final_workers_joined": true,
+    "qt_window_disposed": true,
+    "sessions": [
+      {
+        "all_workers_joined": true,
+        "cards": [
+          {
+            "bits": 8,
+            "capture_count": 7,
+            "crc_ok": true,
+            "samples": 1024
+          },
+          {
+            "bits": 8,
+            "capture_count": 7,
+            "crc_ok": true,
+            "samples": 1024
+          },
+          {
+            "bits": 8,
+            "capture_count": 6,
+            "crc_ok": true,
+            "samples": 1024
+          },
+          {
+            "bits": 8,
+            "capture_count": 7,
+            "crc_ok": true,
+            "samples": 1024
+          }
+        ],
+        "index": 1,
+        "state": "stopped"
+      },
+      {
+        "all_workers_joined": true,
+        "cards": [
+          {
+            "bits": 8,
+            "capture_count": 4,
+            "crc_ok": true,
+            "samples": 1024
+          },
+          {
+            "bits": 8,
+            "capture_count": 4,
+            "crc_ok": true,
+            "samples": 1024
+          },
+          {
+            "bits": 8,
+            "capture_count": 3,
+            "crc_ok": true,
+            "samples": 1024
+          },
+          {
+            "bits": 8,
+            "capture_count": 3,
+            "crc_ok": true,
+            "samples": 1024
+          }
+        ],
+        "index": 2,
+        "state": "complete"
+      }
+    ],
+    "status": "passed"
+  }
+}

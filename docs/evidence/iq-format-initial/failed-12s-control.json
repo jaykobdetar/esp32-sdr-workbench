@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "run": "matched-12s-initial-iq10-stagger100",
+  "status": "failed",
+  "failure_class": "inconsistent-transmission-denominator",
+  "recall_analysis_accepted": false,
+  "input_json_sha256": "2a2344b9c424865787c690f80311e92f8c549ea79f736295c9b5b0e441cfa665",
+  "source_duration_ms": 12000,
+  "acquisition_budget_ms": 10000,
+  "bits_per_component": 10,
+  "stagger_ms": 100,
+  "power_dbm": 0,
+  "conditions": [
+    {
+      "condition": "OFF",
+      "retained_captures": 56,
+      "per_receiver_captures": [
+        14,
+        14,
+        14,
+        14
+      ],
+      "rounds_started": 14,
+      "round_cap_reached": false,
+      "all_transport_crc_valid": true
+    },
+    {
+      "condition": "ON",
+      "retained_captures": 56,
+      "per_receiver_captures": [
+        14,
+        14,
+        14,
+        14
+      ],
+      "rounds_started": 14,
+      "round_cap_reached": false,
+      "all_transport_crc_valid": true
+    }
+  ],
+  "transmitter_final": {
+    "attempted": 11979,
+    "completed": 11978,
+    "scheduled": 12000,
+    "missed_slots": 21,
+    "errors": 0,
+    "running": false,
+    "healthy": true,
+    "timing_saturated": false,
+    "first_end_us": 1552,
+    "last_end_us": 11999133,
+    "elapsed_us": 12000013
+  },
+  "calibration_unchanged": true,
+  "source_stopped": true,
+  "source_config_restored": true,
+  "interpretation": "One attempted transmission lacks recorded completion. Firmware duration stop can disable an in-flight transmission without an END event and without a device error. This is consistent with a stop-boundary interruption, not proof of its cause or of over-air receiver loss. Strict accounting remains unchanged; no recall percentage is accepted.",
+  "followup": "Original batch aborted. New balanced series uses 16 s source and 10 s acquisition budget for every format/stagger condition. Every run still requires fresh accounting verification; 16 s is not a guarantee. Percentages are not directly comparable with the earlier 14 s / 16 s acquisition/source controls."
+}

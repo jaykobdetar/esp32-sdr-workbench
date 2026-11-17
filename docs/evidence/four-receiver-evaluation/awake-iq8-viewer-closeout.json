@@ -1,0 +1,109 @@
+{
+  "status": "passed",
+  "scope": "Completed receive-only IQ8 GUI smoke and separate passive closeout checks, not coverage/packet recall/calibration qualification. GUI card order is not the timing receiver-label order.",
+  "viewer_sessions": [
+    {
+      "index": 1,
+      "state": "stopped",
+      "all_workers_joined": true,
+      "cards": [
+        {
+          "card": "Receiver 1",
+          "crc_ok": true,
+          "bits": 8,
+          "samples": 1024,
+          "capture_count": 5
+        },
+        {
+          "card": "Receiver 2",
+          "crc_ok": true,
+          "bits": 8,
+          "samples": 1024,
+          "capture_count": 5
+        },
+        {
+          "card": "Receiver 3",
+          "crc_ok": true,
+          "bits": 8,
+          "samples": 1024,
+          "capture_count": 5
+        },
+        {
+          "card": "Receiver 4",
+          "crc_ok": true,
+          "bits": 8,
+          "samples": 1024,
+          "capture_count": 5
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "state": "complete",
+      "all_workers_joined": true,
+      "cards": [
+        {
+          "card": "Receiver 1",
+          "crc_ok": true,
+          "bits": 8,
+          "samples": 1024,
+          "capture_count": 6
+        },
+        {
+          "card": "Receiver 2",
+          "crc_ok": true,
+          "bits": 8,
+          "samples": 1024,
+          "capture_count": 6
+        },
+        {
+          "card": "Receiver 3",
+          "crc_ok": true,
+          "bits": 8,
+          "samples": 1024,
+          "capture_count": 6
+        },
+        {
+          "card": "Receiver 4",
+          "crc_ok": true,
+          "bits": 8,
+          "samples": 1024,
+          "capture_count": 6
+        }
+      ]
+    }
+  ],
+  "final_workers_joined": true,
+  "qt_window_disposed": true,
+  "passive_health": [
+    {
+      "receiver_index": 0,
+      "status": "passed",
+      "crc_ok": true,
+      "samples": 256,
+      "release": "OK"
+    },
+    {
+      "receiver_index": 1,
+      "status": "passed",
+      "crc_ok": true,
+      "samples": 256,
+      "release": "OK"
+    },
+    {
+      "receiver_index": 2,
+      "status": "passed",
+      "crc_ok": true,
+      "samples": 256,
+      "release": "OK"
+    },
+    {
+      "receiver_index": 3,
+      "status": "passed",
+      "crc_ok": true,
+      "samples": 256,
+      "release": "OK"
+    }
+  ],
+  "source_final_running": false
+}

@@ -1,0 +1,413 @@
+{
+  "status": "failed",
+  "receiver_count": 4,
+  "error": "ProtocolError('DSTREAM framing/CRC failure; coverage is unverified')",
+  "trials": [
+    {
+      "duration_ms": 30000,
+      "periods_ns": [
+        1875000,
+        1874958,
+        1875007,
+        1875001
+      ],
+      "yield_phases": [
+        34,
+        34,
+        34,
+        34
+      ],
+      "analysis_status": "verified-telemetry",
+      "reason": null,
+      "captures": [
+        16001,
+        16001,
+        16001,
+        16001
+      ],
+      "skipped": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "max_late_us": [
+        0,
+        3,
+        3,
+        0
+      ],
+      "nominal_union": {
+        "coverage_percent": 99.99995666666666,
+        "covered_us": 29999987,
+        "duration_us": 30000000,
+        "gap_count": 1,
+        "max_gap_us": 13,
+        "first_gaps_relative_us": [
+          [
+            0,
+            13
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_decision_union": {
+        "coverage_percent": 99.89999666666667,
+        "covered_us": 29969999,
+        "duration_us": 30000000,
+        "gap_count": 1,
+        "max_gap_us": 30001,
+        "first_gaps_relative_us": [
+          [
+            0,
+            30001
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_completion_inclusive_union": {
+        "coverage_percent": 99.99509313887263,
+        "covered_us": 30002421.926385917,
+        "duration_us": 30003894.175805926,
+        "gap_count": 2,
+        "max_gap_us": 1459.2494200095534,
+        "first_gaps_relative_us": [
+          [
+            0,
+            13
+          ],
+          [
+            30002434.926385917,
+            30003894.175805926
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "full_burst_opportunities": [
+        {
+          "burst_duration_us": 50,
+          "opportunity_percent": 99.99995666659444,
+          "eligible_start_time_us": 29999937,
+          "denominator_us": 29999950,
+          "max_ineligible_start_gap_us": 13,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 100,
+          "opportunity_percent": 99.99995666652222,
+          "eligible_start_time_us": 29999887,
+          "denominator_us": 29999900,
+          "max_ineligible_start_gap_us": 13,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 250,
+          "opportunity_percent": 99.99995666630555,
+          "eligible_start_time_us": 29999737,
+          "denominator_us": 29999750,
+          "max_ineligible_start_gap_us": 13,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 500,
+          "opportunity_percent": 99.99995666594444,
+          "eligible_start_time_us": 29999487,
+          "denominator_us": 29999500,
+          "max_ineligible_start_gap_us": 13,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        }
+      ],
+      "clock_fit_screens": [
+        {
+          "relative_drift": -2.257723297454731e-05,
+          "max_residual_us": 0.8849094002507627,
+          "heldout_max_error_us": 0.9599283561110497,
+          "independent_capture_pair_count": 14,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 6
+        },
+        {
+          "relative_drift": 3.7626069634348753e-06,
+          "max_residual_us": 2.117000444792211,
+          "heldout_max_error_us": 2.296410493552685,
+          "independent_capture_pair_count": 14,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 6
+        },
+        {
+          "relative_drift": 3.974537112985169e-07,
+          "max_residual_us": 1.1569610768929124,
+          "heldout_max_error_us": 1.2550146207213402,
+          "independent_capture_pair_count": 14,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 6
+        }
+      ],
+      "sensitivity_eroded": [
+        {
+          "assumed_endpoint_error_us": 1,
+          "union": {
+            "coverage_percent": 99.99995333333334,
+            "covered_us": 29999986,
+            "duration_us": 30000000,
+            "gap_count": 1,
+            "max_gap_us": 14,
+            "first_gaps_relative_us": [
+              [
+                0,
+                14
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        },
+        {
+          "assumed_endpoint_error_us": 5,
+          "union": {
+            "coverage_percent": 99.99994,
+            "covered_us": 29999982,
+            "duration_us": 30000000,
+            "gap_count": 1,
+            "max_gap_us": 18,
+            "first_gaps_relative_us": [
+              [
+                0,
+                18
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        },
+        {
+          "assumed_endpoint_error_us": 20,
+          "union": {
+            "coverage_percent": 99.99989,
+            "covered_us": 29999967,
+            "duration_us": 30000000,
+            "gap_count": 1,
+            "max_gap_us": 33,
+            "first_gaps_relative_us": [
+              [
+                0,
+                33
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        }
+      ]
+    },
+    {
+      "duration_ms": 30000,
+      "periods_ns": [
+        1875000,
+        1874958,
+        1875007,
+        1875001
+      ],
+      "yield_phases": [
+        34,
+        34,
+        34,
+        34
+      ],
+      "analysis_status": "verified-telemetry",
+      "reason": null,
+      "captures": [
+        16001,
+        16001,
+        16001,
+        16001
+      ],
+      "skipped": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "max_late_us": [
+        0,
+        3,
+        3,
+        2
+      ],
+      "nominal_union": {
+        "coverage_percent": 99.99998333333333,
+        "covered_us": 29999995,
+        "duration_us": 30000000,
+        "gap_count": 1,
+        "max_gap_us": 5,
+        "first_gaps_relative_us": [
+          [
+            0,
+            5
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_decision_union": {
+        "coverage_percent": 99.89999666666667,
+        "covered_us": 29969999,
+        "duration_us": 30000000,
+        "gap_count": 1,
+        "max_gap_us": 30001,
+        "first_gaps_relative_us": [
+          [
+            0,
+            30001
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "nominal_completion_inclusive_union": {
+        "coverage_percent": 99.99522644984825,
+        "covered_us": 30002430.45663853,
+        "duration_us": 30003862.70607227,
+        "gap_count": 2,
+        "max_gap_us": 1427.2494337409735,
+        "first_gaps_relative_us": [
+          [
+            0,
+            5
+          ],
+          [
+            30002435.45663853,
+            30003862.70607227
+          ]
+        ],
+        "gap_list_truncated": false
+      },
+      "full_burst_opportunities": [
+        {
+          "burst_duration_us": 50,
+          "opportunity_percent": 99.99998333330555,
+          "eligible_start_time_us": 29999945,
+          "denominator_us": 29999950,
+          "max_ineligible_start_gap_us": 5,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 100,
+          "opportunity_percent": 99.99998333327778,
+          "eligible_start_time_us": 29999895,
+          "denominator_us": 29999900,
+          "max_ineligible_start_gap_us": 5,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 250,
+          "opportunity_percent": 99.99998333319445,
+          "eligible_start_time_us": 29999745,
+          "denominator_us": 29999750,
+          "max_ineligible_start_gap_us": 5,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        },
+        {
+          "burst_duration_us": 500,
+          "opportunity_percent": 99.99998333305555,
+          "eligible_start_time_us": 29999495,
+          "denominator_us": 29999500,
+          "max_ineligible_start_gap_us": 5,
+          "ineligible_start_gap_count": 1,
+          "note": "Nominal full-burst start-time opportunity within one capture; not packet recall, retained-IQ availability, coherent combining, or an RF guarantee."
+        }
+      ],
+      "clock_fit_screens": [
+        {
+          "relative_drift": -2.257538216182425e-05,
+          "max_residual_us": 0.834128400310874,
+          "heldout_max_error_us": 0.9180763959884644,
+          "independent_capture_pair_count": 11,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 3
+        },
+        {
+          "relative_drift": 3.7652881743637315e-06,
+          "max_residual_us": 2.0418992172926664,
+          "heldout_max_error_us": 2.2473399564623833,
+          "independent_capture_pair_count": 11,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 3
+        },
+        {
+          "relative_drift": 3.9675228315407405e-07,
+          "max_residual_us": 1.1770567325875163,
+          "heldout_max_error_us": 1.2954877987504005,
+          "independent_capture_pair_count": 11,
+          "before_capture_pair_count": 8,
+          "after_capture_pair_count": 3
+        }
+      ],
+      "sensitivity_eroded": [
+        {
+          "assumed_endpoint_error_us": 1,
+          "union": {
+            "coverage_percent": 99.99998,
+            "covered_us": 29999994,
+            "duration_us": 30000000,
+            "gap_count": 1,
+            "max_gap_us": 6,
+            "first_gaps_relative_us": [
+              [
+                0,
+                6
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        },
+        {
+          "assumed_endpoint_error_us": 5,
+          "union": {
+            "coverage_percent": 99.99996666666667,
+            "covered_us": 29999990,
+            "duration_us": 30000000,
+            "gap_count": 1,
+            "max_gap_us": 10,
+            "first_gaps_relative_us": [
+              [
+                0,
+                10
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        },
+        {
+          "assumed_endpoint_error_us": 20,
+          "union": {
+            "coverage_percent": 99.99991666666666,
+            "covered_us": 29999975,
+            "duration_us": 30000000,
+            "gap_count": 1,
+            "max_gap_us": 25,
+            "first_gaps_relative_us": [
+              [
+                0,
+                25
+              ]
+            ],
+            "gap_list_truncated": false
+          }
+        }
+      ]
+    }
+  ],
+  "source_final_running": false,
+  "source_sha256": null,
+  "note": "Numeric projection only. Complete raw I/Q, telemetry, board identifiers/calibration fingerprints and recovery remain private. Reanalysis cannot be reproduced from this summary alone.",
+  "receiver_labels_in_order": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "rejected_trials": []
+}

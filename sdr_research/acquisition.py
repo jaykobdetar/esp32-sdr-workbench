@@ -90,6 +90,12 @@ class AcquisitionWorker(threading.Thread):
             left, right = n // 4, 3 * n // 4
             t = np.arange(right - left) / rate
             iq[left:right] += 0.16 * np.exp(2j * np.pi * 1_500_000 * t)
+        # Match the signed ADC grid and CAP16's upper-eight-bit truncation.
+        # Synthetic values must not advertise precision they do not represent.
+        i = np.clip(np.rint(iq.real * 512), -512, 511).astype(np.int16)
+        q = np.clip(np.rint(-iq.imag * 512), -512, 511).astype(np.int16)
+        shift = 2 if s['bits'] == 8 else 0
+        iq = (((i >> shift) - 1j * (q >> shift)) / (1 << (s['bits'] - 1))).astype(np.complex64)
         self.stop_requested.wait(0.09)
         end = time.monotonic_ns()
         return Capture(
@@ -102,7 +108,12 @@ class AcquisitionWorker(threading.Thread):
             firmware_capture_us=round(n / rate * 1e6),
             bits=s['bits'],
             crc_ok=True,
-            metadata={'synthetic': True, 'device': self.port},
+            metadata={
+                'synthetic': True,
+                'device': self.port,
+                'settings': receiver_settings(s, frequency),
+                'quantization': 'signed IQ10 grid; upper-eight-bit truncation for IQ8',
+            },
         )
 
     def detector_run(self, radio: Radio, frequency: int) -> None:

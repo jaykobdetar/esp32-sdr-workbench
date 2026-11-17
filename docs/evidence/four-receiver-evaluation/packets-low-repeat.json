@@ -1,0 +1,42 @@
+{
+  "status": "passed",
+  "error": null,
+  "analysis": {
+    "unique_packets": 7,
+    "completed_transmissions": 7947,
+    "attempted_transmissions": 7947,
+    "scheduled_slots": 8001,
+    "missed_slots": 54,
+    "recovery_percent": 0.08808355354221718,
+    "per_receiver_unique": [
+      0,
+      5,
+      0,
+      3
+    ],
+    "accepted_observations": 8,
+    "duplicate_observations": 1,
+    "source_off_packets": 0,
+    "note": "Unique CRC/address/full-known-payload packets divided by completed source transmissions during the entire finite ON run. Sparse raw snapshots include large transfer gaps. This is not nominal RF coverage, continuous reception, an instantaneous capture-window recall estimate, or Quest compatibility."
+  },
+  "captures_by_condition": {
+    "ON": 32,
+    "OFF": 32
+  },
+  "expected_config": {
+    "frequency_mhz": 2440,
+    "mode_mbps": 2,
+    "power_dbm": -20,
+    "payload_len": 16,
+    "interval_us": 1000,
+    "jitter_us": 113,
+    "seed": 52840,
+    "burst_count": 0,
+    "burst_gap_us": 0,
+    "hop_every": 1,
+    "hop_list": "off",
+    "payload_hex": "off"
+  },
+  "capture_plan": null,
+  "source_final_running": false
+}
