@@ -11,7 +11,7 @@ import pyqtgraph as pg
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from .analysis import endpoint_counts, spectrum
-from .gui import InspectionWindow
+from .capture_inspection import InspectionWindow
 from .lab_devices import discover_devices
 from .lab_session import LabSession, ReceiverConfig, TransmitterConfig
 

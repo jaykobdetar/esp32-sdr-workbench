@@ -53,6 +53,55 @@ def require_source_checkout(parser):
         )
 
 
+def hash_sources(sources):
+    return {str(path.relative_to(ROOT)): sha(path) for path in sources}
+
+
+def copy_package_inputs(sources, destination):
+    """Archive the source snapshot and compiler outputs; derive UF2 from the packaged binary."""
+    for source in sources:
+        target = destination / 'source' / source.relative_to(ROOT)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target)
+    for ext in ('bin', 'hex'):
+        shutil.copyfile(
+            ROOT / 'firmware/build' / f'rf-test-tx.{ext}', destination / f'rf-test-tx.{ext}'
+        )
+    subprocess.run(
+        [
+            os.sys.executable,
+            str(ROOT / 'host/make_uf2.py'),
+            str(destination / 'rf-test-tx.bin'),
+        ],
+        check=True,
+    )
+
+
+def write_manifest(destination, version, vendors, source_hashes):
+    """Validate the UF2 and record the source, dependencies and exact package checksums."""
+    manifest = {
+        'version': version,
+        'hardware_accessed': False,
+        'automatic_flashing': False,
+        'validation': 'built_not_hardware_validated',
+        'dependencies': vendors,
+        'source_sha256': source_hashes,
+        'uf2': validate_image(destination / 'rf-test-tx.uf2'),
+        'compiler': subprocess.check_output(
+            [os.environ.get('CROSS_COMPILE', 'arm-none-eabi-') + 'gcc', '--version'],
+            text=True,
+        ).splitlines()[0],
+    }
+    (destination / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    (destination / 'SHA256SUMS').write_text(
+        ''.join(
+            f'{sha(p)}  {p.relative_to(destination)}\n'
+            for p in sorted(destination.rglob('*'))
+            if p.is_file()
+        )
+    )
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--version', required=True)
@@ -74,53 +123,16 @@ def main():
         sources = sorted(
             p for folder in ('firmware', 'host') for p in (ROOT / folder).iterdir() if p.is_file()
         )
-        before = {str(p.relative_to(ROOT)): sha(p) for p in sources}
+        before = hash_sources(sources)
         destination.mkdir(parents=True)  # atomic reservation; never overwrite
         try:
             subprocess.run(
                 ['make', '-C', str(ROOT / 'firmware'), f'VERSION={a.version}'], check=True
             )
-            if vendors != vendor_state() or before != {
-                str(p.relative_to(ROOT)): sha(p) for p in sources
-            }:
+            if vendors != vendor_state() or before != hash_sources(sources):
                 raise RuntimeError('Build inputs changed during build')
-            for source in sources:
-                target = destination / 'source' / source.relative_to(ROOT)
-                target.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copyfile(source, target)
-            for ext in ('bin', 'hex'):
-                shutil.copyfile(
-                    ROOT / 'firmware/build' / f'rf-test-tx.{ext}', destination / f'rf-test-tx.{ext}'
-                )
-            subprocess.run(
-                [
-                    os.sys.executable,
-                    str(ROOT / 'host/make_uf2.py'),
-                    str(destination / 'rf-test-tx.bin'),
-                ],
-                check=True,
-            )
-            manifest = {
-                'version': a.version,
-                'hardware_accessed': False,
-                'automatic_flashing': False,
-                'validation': 'built_not_hardware_validated',
-                'dependencies': vendors,
-                'source_sha256': before,
-                'uf2': validate_image(destination / 'rf-test-tx.uf2'),
-                'compiler': subprocess.check_output(
-                    [os.environ.get('CROSS_COMPILE', 'arm-none-eabi-') + 'gcc', '--version'],
-                    text=True,
-                ).splitlines()[0],
-            }
-            (destination / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-            (destination / 'SHA256SUMS').write_text(
-                ''.join(
-                    f'{sha(p)}  {p.relative_to(destination)}\n'
-                    for p in sorted(destination.rglob('*'))
-                    if p.is_file()
-                )
-            )
+            copy_package_inputs(sources, destination)
+            write_manifest(destination, a.version, vendors, before)
         except Exception:
             (destination / 'FAILED.txt').write_text(
                 'Incomplete package. No flash attempted. Inspect and choose a new version.\n'

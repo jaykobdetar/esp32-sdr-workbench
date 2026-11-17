@@ -14,75 +14,8 @@ from serial.tools import list_ports
 
 from .acquisition import DETECTOR_MODES, AcquisitionWorker
 from .analysis import NoiseCalibration, endpoint_counts, spectrum
+from .capture_inspection import CLIP_WARN_PERCENT, InspectionWindow, endpoint_text
 from .recording import load_capture, save_capture
-
-# Share of samples on an ADC endpoint code above which the viewer flags likely clipping.
-CLIP_WARN_PERCENT = 1.0
-
-
-def endpoint_text(capture):
-    """Status fragment giving one capture's ADC endpoint share; flags likely clipping."""
-    percent = endpoint_counts(capture.iq, capture.bits)['either_component_endpoint_percent']
-    warning = ' · LIKELY CLIPPING' if percent >= CLIP_WARN_PERCENT else ''
-    return f'ADC endpoints {percent:.2f}%{warning}'
-
-
-class InspectionWindow(QtWidgets.QDialog):
-    def __init__(self, capture, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle('Capture inspection · no transmitter attribution')
-        self.resize(1100, 760)
-        layout = QtWidgets.QVBoxLayout(self)
-        label = QtWidgets.QLabel(
-            f'{capture.timestamp} · {capture.frequency_hz / 1e6:.3f} MHz · '
-            f'{capture.sample_rate_hz / 1e6:g} MS/s · {len(capture.iq):,} samples · '
-            f'{endpoint_text(capture)}'
-        )
-        layout.addWidget(label)
-        if capture.metadata.get('detector_summary'):
-            layout.addWidget(
-                QtWidgets.QLabel(
-                    'Detector strongest retained capture. Timestamp is host run start, NOT exact RF event time.'
-                )
-            )
-        plots = pg.GraphicsLayoutWidget()
-        layout.addWidget(plots)
-        iq = np.asarray(capture.iq)
-        # Bound drawing cost for unusually large replay recordings.
-        stride = max(1, len(iq) // 30000)
-        t = np.arange(len(iq))[::stride] / capture.sample_rate_hz * 1e6
-        p = plots.addPlot(title='Raw I/Q')
-        p.setLabel('bottom', 'Time', units='µs')
-        p.addLegend()
-        p.plot(t, iq.real[::stride], pen='#58b9ff', name='I')
-        p.plot(t, iq.imag[::stride], pen='#ffb454', name='Q')
-        p = plots.addPlot(title='Power versus time')
-        p.setLabel('bottom', 'Time', units='µs')
-        p.setLabel('left', 'Power', units='dBFS')
-        p.plot(t, 10 * np.log10(np.maximum(np.abs(iq[::stride]) ** 2, 1e-14)), pen='#83e1ab')
-        plots.nextRow()
-        p = plots.addPlot(title='FFT (mean DC removed)')
-        p.setLabel('bottom', 'Frequency offset', units='MHz')
-        p.setLabel('left', 'Power', units='dBFS')
-        offsets, power = spectrum(
-            iq, capture.sample_rate_hz, nfft=min(1024, len(iq)), remove_dc=True
-        )
-        p.plot(offsets / 1e6, power, pen='#58b9ff')
-        p = plots.addPlot(title='Constellation · not a decoded modulation')
-        p.setLabel('bottom', 'I')
-        p.setLabel('left', 'Q')
-        p.plot(
-            iq.real[::stride],
-            iq.imag[::stride],
-            pen=None,
-            symbol='o',
-            symbolSize=2,
-            symbolBrush='#58b9ff80',
-        )
-        p.setAspectLocked()
-        close = QtWidgets.QPushButton('Close')
-        close.clicked.connect(self.accept)
-        layout.addWidget(close)
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -134,6 +67,18 @@ class MainWindow(QtWidgets.QMainWindow):
         warning.setWordWrap(True)
         warning.setStyleSheet('color: ' + ('#855309' if light_theme else '#e3bd78') + ';')
         root.addWidget(warning)
+        self._build_acquisition_controls(root)
+        self._build_display_controls(root)
+        splitter = QtWidgets.QSplitter(QtCore.Qt.Orientation.Vertical)
+        root.addWidget(splitter, 1)
+        self._build_spectrum_plots(splitter)
+        self._build_activity_tabs(splitter)
+        splitter.setSizes([560, 220])
+        self.status_label = QtWidgets.QLabel('Idle. No hardware modified.')
+        self.status_label.setWordWrap(True)
+        root.addWidget(self.status_label)
+
+    def _build_acquisition_controls(self, root):
         controls = QtWidgets.QGroupBox('Acquisition · settings apply on Start')
         root.addWidget(controls)
         grid = QtWidgets.QGridLayout(controls)
@@ -263,6 +208,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.gain.valueChanged.connect(self.update_mode_controls)
         self.mode.currentIndexChanged.connect(self.update_mode_controls)
         self.update_mode_controls()
+
+    def _build_display_controls(self, root):
         display = QtWidgets.QHBoxLayout()
         root.addLayout(display)
         self.device_view = QtWidgets.QComboBox()
@@ -305,8 +252,8 @@ class MainWindow(QtWidgets.QMainWindow):
         folder = QtWidgets.QPushButton('Recording folder…')
         folder.clicked.connect(self.choose_folder)
         actions.addWidget(folder)
-        splitter = QtWidgets.QSplitter(QtCore.Qt.Orientation.Vertical)
-        root.addWidget(splitter, 1)
+
+    def _build_spectrum_plots(self, splitter):
         plot_area = pg.GraphicsLayoutWidget()
         splitter.addWidget(plot_area)
         self.spectrum_plot = plot_area.addPlot(title='Spectrum')
@@ -331,6 +278,8 @@ class MainWindow(QtWidgets.QMainWindow):
             if hasattr(axis, 'setSIPrefixEnableRanges'):
                 axis.setSIPrefixEnableRanges(())
             axis.enableAutoSIPrefix(False)
+
+    def _build_activity_tabs(self, splitter):
         tabs = QtWidgets.QTabWidget()
         splitter.addWidget(tabs)
         self.event_table = QtWidgets.QTableWidget(0, 8)
@@ -393,10 +342,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.log.setReadOnly(True)
         self.log.setMaximumBlockCount(300)
         tabs.addTab(self.log, 'Session log')
-        splitter.setSizes([560, 220])
-        self.status_label = QtWidgets.QLabel('Idle. No hardware modified.')
-        self.status_label.setWordWrap(True)
-        root.addWidget(self.status_label)
 
     def refresh_ports(self):
         """Read-only enumeration; preserve manually entered multi-receiver assignments."""

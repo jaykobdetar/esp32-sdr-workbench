@@ -38,7 +38,7 @@ With Python 3.10, setuptools 81.0.0 and PySide6 6.11.3:
   `sdr_research` modules, the three packages, transmitter build/updater/controller
   modules and the RF/receiver/retention campaign modules from outside the source
   checkout (25 imports). This is not a blanket import-all claim: historical
-  command-line scripts such as `make_uf2` and `nrf_parameter_screen` parse command
+  command-line scripts such as `nrf_parameter_screen` parse command
   arguments at import time.
 - Installed firmware builder: normal invocation exits with the checkout guidance
   (status 2); `--dry-run` prints a plan successfully. Three regression tests cover

@@ -2,7 +2,7 @@
 
 import json
 
-from .lab_session import validate_receiver, validate_transmitter
+from .lab_config import validate_receiver, validate_transmitter
 
 FIELDS = {
     'schema_version': {'type': 'integer', 'enum': [1]},

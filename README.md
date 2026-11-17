@@ -39,7 +39,7 @@ The headline duty benchmarks below belong to the historical **optimized-v2** ref
 | `adaptive-q16-v7` | [Selectable background rule](docs/adaptive-detector.md#comparing-the-two-rules-on-one-image); idles instead of rebooting on NVS failure | 984-run exact-release campaign, 30-minute soak and same-image rule comparison ([v7 evaluation](docs/evidence/v7-evaluation/README.md)) |
 | [`adaptive-q16-v8`](https://github.com/jaykobdetar/esp32-sdr-workbench/tree/2c06109317d0ad13af5f0273f5ca12e5befc2e0d) (pre-stream source baseline) | Rejects the malformed selector text that v7 accepted on the board | **None.** Compiled in CI and host-tested only |
 
-The default `firmware/` build is **`esp32-dual-sparse-iq-experimental-v7`**, not adaptive v8. It includes experimental dual-timing, persistent detector telemetry and sparse-I/Q transfer work. Merging this PR would make that experimental source the default on `main`; no launcher flashes it automatically.
+The default `firmware/` build is **`esp32-dual-sparse-iq-experimental-v7`**, not adaptive v8. It includes experimental dual-timing, persistent detector telemetry and sparse-I/Q transfer work. This is the source default on `main`; no launcher flashes it automatically.
 
 The [baseline build instructions](docs/firmware-build.md#build-the-pre-stream-adaptive-v8-baseline-instead) keep adaptive v8 discoverable, while the [v7 validation record](docs/validation.md#streaming-v7-review-validation-13-november-2026) separates bounded current-image checks from historical v6 coverage and soak results.
 
@@ -48,6 +48,8 @@ Consult [`firmware/FIRMWARE_VARIANT`](firmware/FIRMWARE_VARIANT), the device’s
 Two cautions apply to every comparison between images: they were run in sequence, and the stored PHY calibration changed at an unknown point during the v3 evaluation. V7's rule selector removes both for the background rule: run on one image in one session, the old and new rules gave similar source-associated candidate rates, and neither retained more packets ([what the board showed](docs/adaptive-detector.md#comparing-the-two-rules-on-one-image)). The [remaining-validation guide](docs/remaining-validation-guide.md) covers the outstanding bench work, and the [calibration guide](docs/calibration-fingerprints.md) the boundary logging for future campaigns.
 
 ## What you get
+
+For contributors: [where to change code and which offline checks to run](docs/maintainer-map.md).
 
 - **Native desktop viewer:** spectrum, capture-index waterfall, frequency survey, heuristic occupancy, event inspection and SigMF replay.
 - **Standard and experimental acquisition:** raw snapshots, finite DET1/DETPIPE1, plus explicitly opt-in persistent telemetry with sparse I/Q on compatible firmware.

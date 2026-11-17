@@ -3,6 +3,7 @@
 # Add new public test/source/evidence resources here when they are introduced.
 include CHANGELOG.md
 include docs/README.md
+include docs/maintainer-map.md
 include docs/adaptive-detector.md
 include docs/calibration-fingerprints.md
 include docs/controlled-rf-analysis.md
@@ -620,6 +621,7 @@ include firmware/tests/test_detector_energy_v2.py
 include firmware/tests/test_pipeline_health.py
 include firmware/tests/test_release_variant.py
 include firmware/tests/test_version.py
+include firmware/tests/test_build_export.py
 include firmware/tools/build_firmware.py
 include firmware/tools/export_web_firmware.py
 include firmware/tools/generate_version.py
@@ -666,6 +668,7 @@ include scripts/compare_nrf_abab.py
 include scripts/count_sigmf_endpoints.py
 include scripts/evaluate_nrf_retention.py
 include scripts/launch.sh
+include scripts/launcher-common.sh
 include scripts/multi_receiver_capture.py
 include scripts/nrf_gain_analysis.py
 include scripts/nrf_gain_compare.py
@@ -709,6 +712,7 @@ include tests/test_detector.py
 include tests/test_detector_model.py
 include tests/test_evidence.py
 include tests/test_gui.py
+include tests/test_launchers.py
 include tests/test_multireceiver.py
 include tests/test_nrf_evidence.py
 include tests/test_nrf_gain_compare.py

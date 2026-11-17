@@ -15,8 +15,8 @@ from PySide6 import QtCore, QtGui
 from PySide6 import QtWidgets as W
 
 from .analysis import endpoint_counts, spectrum
+from .capture_inspection import InspectionWindow
 from .diversity import combine_spectra
-from .gui import InspectionWindow
 from .lab_devices import discover_devices
 from .lab_session import LabSession, ReceiverConfig, TransmitterConfig
 from .recording import load_capture

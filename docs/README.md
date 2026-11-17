@@ -2,6 +2,8 @@
 
 Current work: [19-item improvement checklist](improvement-checklist.md) · [Full remaining-validation guide](remaining-validation-guide.md).
 
+For contributors, use the [maintainer map](maintainer-map.md) to trace code paths and find the matching tests.
+
 ## Using the project
 
 | Document | Contents |
