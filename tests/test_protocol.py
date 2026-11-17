@@ -383,3 +383,15 @@ def test_spectrum_preserves_wire_gain_independent_of_requested_settings(make_rad
     radio, _ = make_radio(START + spectrum_frame(gain=gain) + END)
     radio.settings['gain'] = 12
     assert radio.spectrum_run()['frames'][0]['gain'] == gain
+
+
+def test_rejected_second_configuration_command_invalidates_cache(make_radio):
+    radio, transport = make_radio(b'OK\nERR bandwidth\n')
+    with pytest.raises(ProtocolError, match='bandwidth'):
+        radio.configure(2450, bandwidth_mhz=12)
+    assert transport.writes == [b'FREQ 2450\n', b'BANDWIDTH 12\n']
+    assert radio.settings == {}
+    assert_poisoned(radio, transport)
+    with pytest.raises(ProtocolError):
+        radio.capture(256)
+    assert not any(x.startswith(b'CAP') for x in transport.writes)

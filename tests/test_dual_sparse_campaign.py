@@ -128,8 +128,12 @@ def test_bounded_source_run_and_joint_stop(monkeypatch, tmp_path, source_on):
     monkeypatch.setattr(module, 'run_stream', stream)
     monkeypatch.setattr(module, 'clock_probe', lambda _: {'offset_us': 0})
     tx = Mock()
-    tx.status.return_value = {'running': False}
-    tx.start.return_value = {'ok': True}
+    tx.status.side_effect = [
+        {'running': False},
+        {'running': source_on, 'healthy': True, 'completed': 123},
+        {'running': False},
+    ]
+    tx.start.return_value = {'running': True}
     radios = [Mock(), Mock()]
     with ThreadPoolExecutor(2) as pool:
         campaign = module.SparseCampaign(radios, tx, pool, tmp_path)
@@ -137,12 +141,12 @@ def test_bounded_source_run_and_joint_stop(monkeypatch, tmp_path, source_on):
         campaign.report['anchors'] = [
             dict(a_us=i * 1000, b_us=i * 1000 + 50, pair=i) for i in range(3)
         ]
-        campaign.run_sparse(30000, 1875000, 1024, source_on, 0)
+        campaign.run_sparse(15000, 1875000, 1024, source_on, 0)
     assert len(calls) == 2
     assert calls[0]['stop'] is calls[1]['stop'] and calls[0]['stop'].is_set()
     assert tx.stop.call_count == 2
     if source_on:
-        tx.start.assert_called_once_with(count=0, duration_ms=32000)
+        tx.start.assert_called_once_with(count=0, duration_ms=17000)
     else:
         tx.start.assert_not_called()
 
@@ -162,6 +166,8 @@ def test_worker_error_stops_source_and_both_receivers(monkeypatch, tmp_path):
     monkeypatch.setattr(module, 'run_stream', stream)
     monkeypatch.setattr(module, 'clock_probe', lambda _: {'offset_us': 0})
     tx = Mock()
+    tx.status.return_value = {'running': False}
+    tx.start.return_value = {'running': True}
     with ThreadPoolExecutor(2) as pool:
         campaign = module.SparseCampaign([Mock(), Mock()], tx, pool, tmp_path)
         campaign.save = Mock()
@@ -173,3 +179,45 @@ def test_worker_error_stops_source_and_both_receivers(monkeypatch, tmp_path):
     assert stops and all(stop.is_set() for stop in stops)
     assert tx.stop.call_count == 2
     assert campaign.report['runs'][0]['status'] == 'failed'
+
+
+def test_reject_old_30_second_window_before_hardware(tmp_path):
+    from unittest.mock import Mock
+
+    from scripts.dual_sparse_campaign import SparseCampaign
+
+    tx = Mock()
+    with pytest.raises(ValueError, match='15 second'):
+        SparseCampaign([], tx, Mock(), tmp_path).run_sparse(30_000, 1875000, 1024, True, 0)
+    assert tx.mock_calls == []
+
+
+@pytest.mark.parametrize(
+    'end_status',
+    [
+        {'running': False, 'healthy': True, 'completed': 20000},
+        {'running': True, 'healthy': False, 'completed': 5},
+        {'running': True, 'healthy': True, 'completed': 0},
+    ],
+)
+def test_failed_source_condition_not_reported_as_captured(monkeypatch, tmp_path, end_status):
+    from concurrent.futures import ThreadPoolExecutor
+    from unittest.mock import Mock
+
+    import scripts.dual_sparse_campaign as module
+
+    monkeypatch.setattr(module, 'clock_probe', lambda _: {'offset_us': 0})
+    monkeypatch.setattr(module, 'run_stream', lambda *args, **kwargs: {})
+    tx = Mock()
+    tx.status.side_effect = [{'running': False}, end_status, {'running': False}]
+    tx.start.return_value = {'running': True}
+    with ThreadPoolExecutor(2) as pool:
+        campaign = module.SparseCampaign([Mock(), Mock()], tx, pool, tmp_path)
+        campaign.report['anchors'] = [
+            dict(a_us=i * 1000, b_us=i * 1000 + 50, pair=i) for i in range(3)
+        ]
+        with pytest.raises(RuntimeError, match='Source'):
+            campaign.run_sparse(1000, 1875000, 1024, True, 0)
+    assert campaign.report['runs'][0]['status'] == 'failed'
+    assert campaign.report['runs'][0]['tx_before_stop'] == end_status
+    assert tx.stop.call_count == 2

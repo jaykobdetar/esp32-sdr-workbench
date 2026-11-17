@@ -103,8 +103,16 @@ def row():
                 ),
             )
         )
+    starts = [round(r['records'][0]['trigger_us']) for r in receivers]
+    for r, start in zip(receivers, starts, strict=True):
+        r['begin'] = f'DSTREAM BEGIN 1 {start} 10 2000000 0 4000 2440 1'
     return dict(
-        scheduled_a_us=1_000_000, duration_ms=10, receivers=[seal_result(r) for r in receivers]
+        scheduled_a_us=starts[0],
+        scheduled_b_us=starts[1],
+        duration_ms=10,
+        periods_ns=[2000000, 2000000],
+        yield_phases=[0, 0],
+        receivers=[seal_result(r) for r in receivers],
     )
 
 
@@ -288,3 +296,32 @@ def test_assumption_based_sensitivity_and_evaluated_folds():
         assert eroded <= previous
         previous = eroded
     assert 'not confidence bounds' in result['sensitivity_note']
+
+
+@pytest.mark.parametrize(
+    'field', ['duration_ms', 'scheduled_a_us', 'scheduled_b_us', 'periods_ns', 'yield_phases']
+)
+def test_row_window_and_schedule_bound_to_firmware_echo(field):
+    data = row()
+    if isinstance(data[field], list):
+        data[field][1] += 1
+    else:
+        data[field] += 1
+    assert analyze_run(data, anchors())['status'] == 'unverified'
+
+
+@pytest.mark.parametrize('bad', [None, '', 'DSTREAM BEGIN 1', 'DSTREAM BEGIN 1 1 2 3 4 5 6 7'])
+def test_missing_or_unusable_begin_is_unverified(bad):
+    data = row()
+    data['receivers'][1]['begin'] = bad
+    assert analyze_run(data, anchors())['status'] == 'unverified'
+
+
+def test_sparse_phase_bound_to_original_sparse_begin():
+    data = row()
+    data.update(snapshot_every=1024, snapshot_phases=[0, 512])
+    for rec, phase in zip(data['receivers'], data['snapshot_phases'], strict=True):
+        rec['begin'] += f' 1024 {phase}'
+    assert analyze_run(data, anchors())['status'] == 'verified-telemetry'
+    data['snapshot_phases'].reverse()
+    assert analyze_run(data, anchors())['status'] == 'unverified'

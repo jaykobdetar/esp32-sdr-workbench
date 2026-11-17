@@ -331,3 +331,10 @@ def test_overflow_diagnostic_does_not_bypass_counter_validation():
     with pytest.raises(ProtocolError, match='counters do not agree: ERR queue_overflow'):
         run_stream(radio, start_us=START)
     assert_failed(radio)
+
+
+def test_unsolicited_stop_is_not_a_completed_chunk():
+    radio, _, _ = fake_radio(status=3)
+    with pytest.raises(ProtocolError, match='without a host STOP'):
+        run_stream(radio, start_us=START)
+    assert_failed(radio)

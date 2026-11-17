@@ -14,7 +14,7 @@ python -m nrf_campaigns.dual_sparse_campaign \
   --port /dev/serial/by-path/VERIFIED_RECEIVER_B \
   --tx-serial VERIFIED_TRANSMITTER_SERIAL \
   --output /path/to/new-private-results \
-  --seconds 30 --trials 1 --snapshot-every 1024
+  --seconds 15 --trials 1 --snapshot-every 1024
 ```
 
 From the repository root, `python -m scripts.dual_sparse_campaign` is also
@@ -34,10 +34,20 @@ and anchor recordings are private; do not add this directory to GitHub.
   Each condition is bracketed by independent known-source RF anchor recordings.
 * Source uses known 16-byte Nordic 2 Mbps payloads, 1000 us interval plus jitter,
   at -4 dBm initially (`--power-dbm` selects supported values up to 0 dBm).
-* Each stream lasts 1–55 seconds. Source ON uses `count=0` with a finite duration
-  of stream length plus 2 seconds, never more than 57 seconds. This covers the
-  scheduled startup and is stopped explicitly at stream completion. Anchors are
-  separate bounded transmitter runs, not part of the snapshot packet union.
+* Each new comparison uses 1–15 seconds (default 15). The transmitter's
+  `count=0` means **at most 20,000 attempts**, not unlimited. At the configured
+  interval and jitter that ceiling can end a longer source run before the
+  receivers finish. A finite duration of the requested interval plus two seconds
+  remains in force. The host confirms the source state before issuing receiver
+  commands and again after both streams finish, before STOP. A failed state or
+  health check fails the run; this is a bracket on transmitter state, not proof
+  of uninterrupted RF or of per-packet reception. Anchors are separate runs.
+
+**Historical 30-second ON/OFF recordings:** ON denotes the requested condition,
+not a verified source-active state for the full window. The source could reach
+its attempt cap after roughly 20 seconds. Do not compare entire historical
+windows as continuously ON versus OFF. This limitation does not invalidate the
+transport CRCs, actual decoded packets, or independently measured timing union.
 
 Callbacks only write one approximately 40 KB packed snapshot and its metadata;
 no payload decoding occurs in the acquisition callback. They retain no raw buffers
