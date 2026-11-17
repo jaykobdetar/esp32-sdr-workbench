@@ -1,0 +1,25 @@
+{
+  "schema": "combined-bank-manifest-v1",
+  "tested_source_commit": "9e8dd3801e1edb2b1651ee5097de438a138253df",
+  "publication_base": "d23ddddeaabee46d340caba60b038f39946cd534",
+  "source_tree": "1bf6372ec5fa6dc979c3197696b1aafee6d3179d",
+  "patch_sha256": "76810928fedb941bc9e67d7c8d969e6ace3266aeb3411262e975fdac903e515f",
+  "timing_files": [
+    {
+      "file": "control-first.json.gz",
+      "sha256": "3a9737f5564d7b1164f07c37579f95acf47d2edaded26a3dfb59aede9318ca52",
+      "runs": 30
+    },
+    {
+      "file": "combined.json.gz",
+      "sha256": "0b7081a5fc7ae4b335d00acef32907519c4528ca55c7584b32c03ea722d6c6e3",
+      "runs": 30
+    },
+    {
+      "file": "control-repeat.json.gz",
+      "sha256": "406af8ba6c7975ebfe3ac99e39588ac75743ec3ccb49ded0618ba969a28284bb",
+      "runs": 10
+    }
+  ],
+  "privacy": "No raw RF, private flash, NVS/calibration contents, USB locations, device identifiers or firmware binaries. Known test-packet bytes and CRCs are included."
+}

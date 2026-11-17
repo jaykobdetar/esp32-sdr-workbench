@@ -1,0 +1,398 @@
+{
+  "control-first": {
+    "status": "passed",
+    "architecture": "esp32-bank-unicore-control-v5",
+    "clock_model": {
+      "origin_a_us": 48515080.984375,
+      "offset_b_minus_a_us": -2085979.5234374998,
+      "relative_drift": -2.3335640129817635e-05,
+      "anchor_count": 16,
+      "span_us": 86470451.5,
+      "max_residual_us": 1.6386204324662685,
+      "rms_residual_us": 0.6066938853020876,
+      "heldout_max_error_us": 1.8315092027187347,
+      "independent_pairs": 16
+    },
+    "session_nominal_percent": 28.194127110069413,
+    "session_s": 87.631731253,
+    "periods": {
+      "0": {
+        "runs": 6,
+        "nominal_union_range": [
+          84.65014121578355,
+          88.31779590153585
+        ],
+        "full100_range": [
+          73.07123042556488,
+          77.42757225048035
+        ],
+        "eroded20_full100_range": [
+          67.99986280418551,
+          72.34701290990789
+        ],
+        "max_gap_us": 1115.2760256789625,
+        "host_command_nominal_range": [
+          42.62182806986863,
+          49.53010886215684
+        ],
+        "max_late_us": 0,
+        "max_work_us": 1077
+      },
+      "800000": {
+        "runs": 6,
+        "nominal_union_range": [
+          93.24349203083602,
+          98.44180668121544
+        ],
+        "full100_range": [
+          86.60715555172983,
+          95.32800654581146
+        ],
+        "eroded20_full100_range": [
+          81.09205760698283,
+          89.36087303174865
+        ],
+        "max_gap_us": 465.5085961073637,
+        "host_command_nominal_range": [
+          40.02892057317117,
+          48.352859751288186
+        ],
+        "max_late_us": 1721.878000000026,
+        "max_work_us": 930
+      },
+      "820000": {
+        "runs": 6,
+        "nominal_union_range": [
+          98.83073732413678,
+          99.41434017479546
+        ],
+        "full100_range": [
+          96.42095695999316,
+          97.8480258838321
+        ],
+        "eroded20_full100_range": [
+          88.14208352220507,
+          89.77686653888917
+        ],
+        "max_gap_us": 280.8272147849202,
+        "host_command_nominal_range": [
+          42.37800661791296,
+          48.69386296398947
+        ],
+        "max_late_us": 380.0,
+        "max_work_us": 1025
+      },
+      "850000": {
+        "runs": 6,
+        "nominal_union_range": [
+          99.60609616878997,
+          99.70798394197054
+        ],
+        "full100_range": [
+          95.81973449266633,
+          96.3069854482142
+        ],
+        "eroded20_full100_range": [
+          86.86569182375536,
+          87.30518062325503
+        ],
+        "max_gap_us": 117.4557208493352,
+        "host_command_nominal_range": [
+          42.88165005676575,
+          49.11939384797533
+        ],
+        "max_late_us": 280.20000000001164,
+        "max_work_us": 1025
+      },
+      "900000": {
+        "runs": 6,
+        "nominal_union_range": [
+          99.74859762800608,
+          99.80602237206323
+        ],
+        "full100_range": [
+          91.14134251453585,
+          91.23606823769782
+        ],
+        "eroded20_full100_range": [
+          82.44444847825471,
+          82.50373558637423
+        ],
+        "max_gap_us": 134.25791162252426,
+        "host_command_nominal_range": [
+          43.65918078392055,
+          49.91610268552573
+        ],
+        "max_late_us": 197.0,
+        "max_work_us": 930
+      }
+    },
+    "on_packets": 7,
+    "on_completed": 23310,
+    "off_packets": 0
+  },
+  "combined": {
+    "status": "passed",
+    "architecture": "esp32-bank-core1-combined-v5",
+    "clock_model": {
+      "origin_a_us": 52896257.484375,
+      "offset_b_minus_a_us": -2086902.1210937505,
+      "relative_drift": -2.3438041200782835e-05,
+      "anchor_count": 16,
+      "span_us": 89923349.1875,
+      "max_residual_us": 1.958471902878955,
+      "rms_residual_us": 1.0156221198736453,
+      "heldout_max_error_us": 2.179878205060959,
+      "independent_pairs": 16
+    },
+    "session_nominal_percent": 26.494713643172968,
+    "session_s": 91.854216352,
+    "periods": {
+      "0": {
+        "runs": 6,
+        "nominal_union_range": [
+          67.53845706118427,
+          80.14424306304198
+        ],
+        "full100_range": [
+          54.92167837230737,
+          67.53883164085657
+        ],
+        "eroded20_full100_range": [
+          49.87163611489959,
+          62.48949991116874
+        ],
+        "max_gap_us": 1117.2761867679656,
+        "host_command_nominal_range": [
+          33.60841545680885,
+          46.257504247338034
+        ],
+        "max_late_us": 0,
+        "max_work_us": 760
+      },
+      "800000": {
+        "runs": 6,
+        "nominal_union_range": [
+          100.0,
+          100.0
+        ],
+        "full100_range": [
+          99.92045493358447,
+          99.95154753927665
+        ],
+        "eroded20_full100_range": [
+          92.93958761602251,
+          92.94055009899908
+        ],
+        "max_gap_us": 0,
+        "host_command_nominal_range": [
+          42.624282573536036,
+          49.11349428005302
+        ],
+        "max_late_us": 30.0,
+        "max_work_us": 741
+      },
+      "820000": {
+        "runs": 6,
+        "nominal_union_range": [
+          100.0,
+          100.0
+        ],
+        "full100_range": [
+          98.74079766083364,
+          99.76566257822007
+        ],
+        "eroded20_full100_range": [
+          90.67368696935921,
+          90.67468933564646
+        ],
+        "max_gap_us": 0,
+        "host_command_nominal_range": [
+          42.48812850328996,
+          49.05027650541617
+        ],
+        "max_late_us": 16.0,
+        "max_work_us": 741
+      },
+      "850000": {
+        "runs": 6,
+        "nominal_union_range": [
+          100.0,
+          100.0
+        ],
+        "full100_range": [
+          96.8351357146322,
+          96.88583824589658
+        ],
+        "eroded20_full100_range": [
+          87.47486653668187,
+          87.47596107036009
+        ],
+        "max_gap_us": 0,
+        "host_command_nominal_range": [
+          43.00815398434231,
+          49.24612313214305
+        ],
+        "max_late_us": 4.0,
+        "max_work_us": 741
+      },
+      "900000": {
+        "runs": 6,
+        "nominal_union_range": [
+          100.0,
+          100.0
+        ],
+        "full100_range": [
+          91.50513504932286,
+          91.50613342924281
+        ],
+        "eroded20_full100_range": [
+          82.61745192398374,
+          82.61845030390369
+        ],
+        "max_gap_us": 0,
+        "host_command_nominal_range": [
+          44.04702946242563,
+          49.98128076625225
+        ],
+        "max_late_us": 3.9660000000003492,
+        "max_work_us": 741
+      }
+    },
+    "on_packets": 9,
+    "on_completed": 23307,
+    "off_packets": 0
+  },
+  "control-repeat": {
+    "status": "passed",
+    "architecture": "esp32-bank-unicore-control-v5",
+    "clock_model": {
+      "origin_a_us": 24777572.08203125,
+      "offset_b_minus_a_us": -2089467.0312499998,
+      "relative_drift": -2.3770800385945046e-05,
+      "anchor_count": 16,
+      "span_us": 38141236.0625,
+      "max_residual_us": 0.8761817531194538,
+      "rms_residual_us": 0.5261189120643032,
+      "heldout_max_error_us": 1.0325026949867606,
+      "independent_pairs": 16
+    },
+    "session_nominal_percent": 21.151258999547245,
+    "session_s": 39.080224817,
+    "periods": {
+      "0": {
+        "runs": 2,
+        "nominal_union_range": [
+          87.21046726599057,
+          88.66778931248108
+        ],
+        "full100_range": [
+          77.14221132005133,
+          77.56711176300715
+        ],
+        "eroded20_full100_range": [
+          72.04443599312356,
+          72.46636423608365
+        ],
+        "max_gap_us": 1130.2768675852567,
+        "host_command_nominal_range": [
+          50.970264241241786,
+          51.40623555258784
+        ],
+        "max_late_us": 0,
+        "max_work_us": 1076
+      },
+      "800000": {
+        "runs": 2,
+        "nominal_union_range": [
+          93.14059891741044,
+          99.54858516385502
+        ],
+        "full100_range": [
+          85.79311756794095,
+          98.26920055961862
+        ],
+        "eroded20_full100_range": [
+          80.11795265798789,
+          91.93029802903887
+        ],
+        "max_gap_us": 296.25704226642847,
+        "host_command_nominal_range": [
+          45.49532124116832,
+          48.93591626665002
+        ],
+        "max_late_us": 553.0,
+        "max_work_us": 934
+      },
+      "820000": {
+        "runs": 2,
+        "nominal_union_range": [
+          98.68770695856189,
+          98.77940843956955
+        ],
+        "full100_range": [
+          96.36333363346996,
+          96.66978673797084
+        ],
+        "eroded20_full100_range": [
+          88.1101700148465,
+          88.64454967930529
+        ],
+        "max_gap_us": 418.78317058831453,
+        "host_command_nominal_range": [
+          48.13342063134499,
+          48.40869424465811
+        ],
+        "max_late_us": 1231.0,
+        "max_work_us": 934
+      },
+      "850000": {
+        "runs": 2,
+        "nominal_union_range": [
+          99.61783298526109,
+          99.62617521379947
+        ],
+        "full100_range": [
+          95.78017249560526,
+          96.00487330839154
+        ],
+        "eroded20_full100_range": [
+          86.81342676451821,
+          87.08010647664692
+        ],
+        "max_gap_us": 101.4133480489254,
+        "host_command_nominal_range": [
+          48.837098897705864,
+          49.14957035144318
+        ],
+        "max_late_us": 185.0,
+        "max_work_us": 927
+      },
+      "900000": {
+        "runs": 2,
+        "nominal_union_range": [
+          99.7330720493507,
+          99.77178104879366
+        ],
+        "full100_range": [
+          91.1594389069601,
+          91.16316697275548
+        ],
+        "eroded20_full100_range": [
+          82.45642380397514,
+          82.47132671169463
+        ],
+        "max_gap_us": 131.67056200653315,
+        "host_command_nominal_range": [
+          49.630336663109226,
+          49.986131603954256
+        ],
+        "max_late_us": 221.06999999994878,
+        "max_work_us": 1028
+      }
+    },
+    "on_packets": 2,
+    "on_completed": 7768,
+    "off_packets": 0
+  }
+}
