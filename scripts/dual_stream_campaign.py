@@ -157,6 +157,34 @@ def full_burst_opportunity(windows, start, end, duration_us):
     )
 
 
+def _verify_begin(row, receiver, index):
+    """Bind the separately stored trial labels to both original firmware echoes."""
+    fields = receiver['begin'].split() if isinstance(receiver['begin'], str) else []
+    sparse = 'snapshot_every' in row or 'snapshot_phases' in row
+    if fields[:3] != ['DSTREAM', 'BEGIN', '1'] or len(fields) != (12 if sparse else 10):
+        raise ValueError('Missing or invalid DSTREAM BEGIN evidence')
+
+    def pair(key):
+        values = row[key]
+        if not isinstance(values, (list, tuple)) or len(values) != 2:
+            raise ValueError(f'Invalid {key} pair')
+        return values[index]
+
+    expected = [
+        row['scheduled_b_us' if index else 'scheduled_a_us'],
+        row['duration_ms'],
+        pair('periods_ns'),
+        pair('yield_phases'),
+        4000,
+        2440,
+        1,  # Fixed measurement configuration of both campaigns.
+    ]
+    if sparse:
+        expected.extend([row['snapshot_every'], pair('snapshot_phases')])
+    if any(type(v) is not int for v in expected) or list(map(int, fields[3:])) != expected:
+        raise ValueError('Saved firmware BEGIN disagrees with trial configuration')
+
+
 def analyze_run(row, anchors):
     try:
         start = row['scheduled_a_us']
@@ -165,7 +193,8 @@ def analyze_run(row, anchors):
             raise ValueError('Invalid requested observation window')
         if len(row['receivers']) != 2:
             raise ValueError('Exactly two receiver results required')
-        for result in row['receivers']:
+        for index, result in enumerate(row['receivers']):
+            _verify_begin(row, result, index)
             _validate_stream_result(result)
         ordered = sorted(anchors, key=lambda a: a['a_us'])
 
