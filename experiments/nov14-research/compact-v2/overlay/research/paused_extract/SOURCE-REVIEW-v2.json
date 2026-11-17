@@ -1,0 +1,17 @@
+{
+  "firmware/main/targets/esp32/paused_extract.h": "1986e8a7d17bd9eec540bbced7571be4163076859945aee9748929dd357c28cd",
+  "firmware/main/targets/esp32/receiver.c": "c1a4c33e7dc36b8b0ae595ccaf17e5fe091953de6618d409e0b3a05d63b46652",
+  "firmware/main/common/paused_calibration.h": "9f63d15cfde9ced392e67cac75a4adcfe18a5b67437dec7653418953544baf0a",
+  "firmware/main/common/rx_calibration_state.c": "0389a227cafd24759ab75243c5ed2960fb0b054d7a2438a1ac19fed96ec183c3",
+  "firmware/main/CMakeLists.txt": "91542a2ae309132d01ace49d0ce5fcba1f93ebcf7407cba1f4146fc196a08f60",
+  "firmware/tools/generate_version.py": "bd2cc8bbbdfc01eec841a079006c88c0f7eb3bcfea31755dffa1e3fec530f7c8",
+  "firmware/FIRMWARE_VARIANT": "3475e3b18a9ee613afdfc8837f2c2c340f47c73ce3d013490a82e394933e21dd",
+  "MANIFEST.in": "f424128629bdeb172bddbd4cb4f54f1aed848421b7c8e5112d6799ab8532b4e5",
+  "research/paused_extract/CONTRACT-v3.md": "f7ddb8e92ecd279e6155bca8c93de1fcf4061e9afd0573d81a616a76cd0e0678",
+  "research/paused_extract/LOCK-PREFLIGHT.md": "557ca080d59f4cba13899bee63389863d9c4ec7eb29b2b7b32c1bcf9ee5d6144",
+  "research/paused_extract/verify.py": "6bccb0eccf20951dce0ce995b7afc3503c8f2dad832550bbbff8c999db2bd84b",
+  "research/paused_extract/test_verify.py": "0643ec93fb12649149e36c2cf12c1a72bb54243ff9660750aa4ff54977b393c7",
+  "research/paused_extract/mock.c": "33c42c4347d977deb6320b280af378408ef8bf9b45b897dfd28b32a45713c4fa",
+  "research/paused_extract/lease-test.c": "cf9b4fba5e4d54536b5e77a86a84f0a71dc13e068344ed66b0c593d5e3890c46",
+  "firmware/tests/test_paused_extract_metadata.py": "b533ceb25a434722989275313140381cd77a444adf114f23374fb6e9039ba1a9"
+}

@@ -1,0 +1,13 @@
+{
+  "firmware/main/targets/esp32/receiver.c": "9893b2e23c933282880cf565728e5e821744c3af3da4808d5c7b05668025280f",
+  "firmware/main/common/rx_calibration_state.c": "b636eaf6b234c580c124c201b008ea3d276d423fe546786b34d400c6e30a8735",
+  "firmware/main/common/burst_serial.c": "a7b4fb47860669ca3ad13b56d7fbb7f27824d4214c94763ccbecf3e44da61958",
+  "firmware/main/common/burst_serial.h": "8aee86a646fa4414019f03d0e10ab1bea2c7cb25df952ee90feace76fcb7284f",
+  "firmware/main/CMakeLists.txt": "44e256c350dba9f5b5ee913b7da9bef6b16dabde293cb838f0f5bd666392b9da",
+  "base_archive": {
+    "path": "/home/jaykob/esp32-default-validation/v9-source-checkpoint/source.tar.gz",
+    "sha256": "dc1cc29803e24c20eaccc3e3885222f6930f9e9334e7ff8cc007ebf2a8526fae",
+    "base_commit": "d23ddddeaabee46d340caba60b038f39946cd534",
+    "qualification": "archived modified source, not clean commit; app8a8b9036a012d80017d05dd494acf8080d825f4b2149d587c70d7f778ee3b2b5"
+  }
+}

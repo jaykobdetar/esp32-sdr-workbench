@@ -1,0 +1,8 @@
+{
+  "components/esp_phy/src/phy_init.c": "8743914fc5303075f04a926f4fe64465c9fdb4d903800594d620e1536bde901d",
+  "components/esp_libc/src/locks.c": "f387412296c33db8d06d8b666aa4b61c7bdf10be1ff43f6bbb1d71b4937e1edd",
+  "components/esp_timer/src/esp_timer_impl_lac.c": "df2428bb952220a9d5b49b9f4146242f0b3d247b18df5f1f92270e6a5d63fcea",
+  "components/soc/esp32/include/soc/dport_access.h": "37d076e93b8c3854a882dadf8b98973f637fccfacd489fc222f21c6dc52203a5",
+  "components/freertos/FreeRTOS-Kernel/include/freertos/task.h": "34fa5db62cfcb5b0007d3a3b79eabd4217554f8f8201f7f43dac68592fe0fb04",
+  "commit": "25fe69f946311abdaf9ad56591f25fedbc20ac98"
+}

@@ -1,0 +1,15 @@
+{
+  "utc": "2026-11-14T18:21:20.941643+00:00",
+  "source": "/home/jaykob/esp32-pex-layered-timeout-v2",
+  "review_pins_sha256": "545644c6ccaacb10409bb24c5708e579de116f0ef599d1b0fcf23d2a3047e2d1",
+  "adapter_sha256": "fc9da9790e3b3698c0806c67b6761830bdff03f495c4243c6c5f706ae85c0356",
+  "collector_sha256": "4eb3232da0a302010e83fd1766934b38263cd307dbd3b68c62547e0fe2ca8e4d",
+  "dependency_files": 18,
+  "author_tiny_tests": 35,
+  "independent_tiny_tests": 35,
+  "final_source_controls": 3,
+  "final_controls_source": "/home/jaykob/esp32-default-validation/adapter-layered-timeout-v2-controls",
+  "final_controls_sha256": "e095fcf005c4674160ab18798907304e203467eaeee14e16d237b1a2227b8afe",
+  "freeze_tests_rerun": false,
+  "live_status": "HOLD: deterministic fix ready, physical/backend qualification pending"
+}

@@ -1,0 +1,8 @@
+{
+  "frozen_v6_source_archive_sha256": "2e3fc6be932279d74d46e485f58f34051046343ace4d656e33df5f7348334847",
+  "files": {
+    "firmware/main/targets/esp32/packet_decimated_dfa.c": "14475465975a5af24509dc836e21c68a43cab1b7e80f5924c3287759298cef61",
+    "firmware/main/targets/esp32/packet_decimated_dfa.h": "10182fa7203a2e55850a40a2eedbd4594016505fcff3ac24669b92155b566bd9",
+    "firmware/main/targets/esp32/prefix_dfa.h": "81d6478969690a8dfe59d1b26041d262432adea09c8c43020503c9024e1049fe"
+  }
+}

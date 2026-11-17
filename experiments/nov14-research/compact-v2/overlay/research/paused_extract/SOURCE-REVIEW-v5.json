@@ -1,0 +1,21 @@
+{
+  "firmware/main/targets/esp32/paused_extract.h": "2ca9f487101339952ee0c91c3df6beebfa98ee5eb80e6ab14f529ae82eb72fd5",
+  "firmware/main/targets/esp32/receiver.c": "c1a4c33e7dc36b8b0ae595ccaf17e5fe091953de6618d409e0b3a05d63b46652",
+  "firmware/main/common/paused_calibration.h": "9f63d15cfde9ced392e67cac75a4adcfe18a5b67437dec7653418953544baf0a",
+  "firmware/main/common/rx_calibration_state.c": "0389a227cafd24759ab75243c5ed2960fb0b054d7a2438a1ac19fed96ec183c3",
+  "firmware/main/CMakeLists.txt": "91542a2ae309132d01ace49d0ce5fcba1f93ebcf7407cba1f4146fc196a08f60",
+  "firmware/tools/generate_version.py": "bd2cc8bbbdfc01eec841a079006c88c0f7eb3bcfea31755dffa1e3fec530f7c8",
+  "firmware/FIRMWARE_VARIANT": "3475e3b18a9ee613afdfc8837f2c2c340f47c73ce3d013490a82e394933e21dd",
+  "MANIFEST.in": "f424128629bdeb172bddbd4cb4f54f1aed848421b7c8e5112d6799ab8532b4e5",
+  "research/paused_extract/LOCK-PREFLIGHT.md": "557ca080d59f4cba13899bee63389863d9c4ec7eb29b2b7b32c1bcf9ee5d6144",
+  "research/paused_extract/verify.py": "78b27f169a558ee1269805c48281de7c3e3d43aaa2ad0d4c19d30dd93046ef9f",
+  "research/paused_extract/test_verify.py": "fb9c311fb1d91c08f2f909652a83da83fef7bd1727835113086db7fbfee56113",
+  "research/paused_extract/mock.c": "eda644c1015c46230f152515a3d55c3b293f26ede54eb4f2de46e5f8ab9f2e06",
+  "research/paused_extract/lease-test.c": "cf9b4fba5e4d54536b5e77a86a84f0a71dc13e068344ed66b0c593d5e3890c46",
+  "firmware/tests/test_paused_extract_metadata.py": "b533ceb25a434722989275313140381cd77a444adf114f23374fb6e9039ba1a9",
+  "research/paused_extract/audit.py": "bd7c982bf735a5f96fc3978f4534c7b492dc47c275245bfd0ee88aa3f4618ed6",
+  "research/paused_extract/observed_bits.py": "962ca497dda0b640003633b9882e0042b0519b2c019f9f7e4369c5d785aefa11",
+  "research/paused_extract/mocks/packet_fixture.h": "62bd9d259d5012759d9026ca63339045f7c93296730a46a24d42810ec637c3c5",
+  "research/paused_extract/CONTRACT-v4.md": "25c78e309b33ce95a8fb2d4eee4507530ef609afdb185e650d413458202bebe0",
+  "research/paused_extract/README.md": "98248e3adc4ce7e2ce4dc1ea7d7e4013f0523c9703851070142ab308fe04021d"
+}

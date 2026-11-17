@@ -1,0 +1,9 @@
+{
+  "firmware/main/targets/esp32/paused_extract.h": "36f8463a76e3583ca988715d654071d92038354aaeb744102df27b67c83f427d",
+  "firmware/main/targets/esp32/receiver.c": "c1a4c33e7dc36b8b0ae595ccaf17e5fe091953de6618d409e0b3a05d63b46652",
+  "firmware/main/common/paused_calibration.h": "9f63d15cfde9ced392e67cac75a4adcfe18a5b67437dec7653418953544baf0a",
+  "firmware/main/common/rx_calibration_state.c": "0389a227cafd24759ab75243c5ed2960fb0b054d7a2438a1ac19fed96ec183c3",
+  "firmware/main/CMakeLists.txt": "37b2152a8ae19e348c0c66f5100ecc6a50389f7ed9066b6342dfd62e30dfdc47",
+  "research/paused_extract/CONTRACT-v2.md": "4bf19ecd48adb0206b0189f6496295e3a396626cc6d346b8c57eb7c453031855",
+  "research/paused_extract/LOCK-PREFLIGHT.md": "557ca080d59f4cba13899bee63389863d9c4ec7eb29b2b7b32c1bcf9ee5d6144"
+}

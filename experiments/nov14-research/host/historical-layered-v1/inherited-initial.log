@@ -1,0 +1,47 @@
+test_concurrent_latch_and_seal (test_adapter.Tests.test_concurrent_latch_and_seal) ... ok
+test_content_before_backend (test_adapter.Tests.test_content_before_backend) ... ok
+test_empty_budget_clock_frozen (test_adapter.Tests.test_empty_budget_clock_frozen) ... ok
+test_encoding_failure_after_read (test_adapter.Tests.test_encoding_failure_after_read) ... ok
+test_export_hashes_and_no_reuse (test_adapter.Tests.test_export_hashes_and_no_reuse) ... ok
+test_final_deadline_is_not_missing_clock (test_adapter.Tests.test_final_deadline_is_not_missing_clock) ... ERROR
+test_hostile_exception_status_and_returned_false (test_adapter.Tests.test_hostile_exception_status_and_returned_false) ... ok
+test_one_byte_and_crossing (test_adapter.Tests.test_one_byte_and_crossing) ... ok
+test_operations_and_repeated_reject (test_adapter.Tests.test_operations_and_repeated_reject) ... ok
+test_original_exception_attribute_mutation_fails (test_adapter.Tests.test_original_exception_attribute_mutation_fails) ... ok
+test_oversize_nonbytes_and_subclasses (test_adapter.Tests.test_oversize_nonbytes_and_subclasses) ... ok
+test_raw_survives_postread_clock (test_adapter.Tests.test_raw_survives_postread_clock) ... ok
+test_raw_survives_restore_failure_and_clock (test_adapter.Tests.test_raw_survives_restore_failure_and_clock) ... ok
+test_reentrant_token_getter_poison (test_adapter.Tests.test_reentrant_token_getter_poison) ... ok
+test_schema_maximum (test_adapter.Tests.test_schema_maximum) ... ok
+test_seal_linearization_and_export_contention (test_adapter.Tests.test_seal_linearization_and_export_contention) ... ok
+test_swallowed_poison_never_wrapper_success (test_adapter.Tests.test_swallowed_poison_never_wrapper_success) ... ok
+test_token_budget (test_adapter.Tests.test_token_budget) ... ok
+test_wrapper_exception_and_persistence (test_adapter.Tests.test_wrapper_exception_and_persistence) ... ok
+test_wrapper_normal_and_export_failure (test_adapter.Tests.test_wrapper_normal_and_export_failure) ... ok
+test_write_budgets_and_partial (test_adapter.Tests.test_write_budgets_and_partial) ... ok
+
+======================================================================
+ERROR: test_final_deadline_is_not_missing_clock (test_adapter.Tests.test_final_deadline_is_not_missing_clock)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jaykob/esp32-pex-layered-timeout-v1/test_adapter.py", line 293, in test_final_deadline_is_not_missing_clock
+    with self.assertRaises(a.AdapterError) as caught: t.read(1, 1)
+                                                      ~~~~~~^^^^^^
+  File "/home/jaykob/esp32-pex-layered-timeout-v1/adapter.py", line 194, in read
+    return self._operation(1, size, timeout_s)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/home/jaykob/esp32-pex-layered-timeout-v1/adapter.py", line 368, in _operation
+    raise secondary
+  File "/home/jaykob/esp32-pex-layered-timeout-v1/adapter.py", line 320, in observe_final
+    end = self._ns()
+  File "/home/jaykob/esp32-pex-layered-timeout-v1/adapter.py", line 182, in _ns
+    x = self._clock()
+  File "/home/jaykob/esp32-pex-layered-timeout-v1/test_adapter.py", line 292, in <lambda>
+    t._clock = lambda: next(values)
+                       ~~~~^^^^^^^^
+StopIteration
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.027s
+
+FAILED (errors=1)

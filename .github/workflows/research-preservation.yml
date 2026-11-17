@@ -1,0 +1,20 @@
+name: Research preservation
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  offline-snapshots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install numpy pytest pyserial
+      - run: python experiments/nov14-research/test-publication.py
+      - run: python experiments/nov14-research/run-offline-tests.py
+      - run: python experiments/nov14-research/materialize.py nrf-trace-exp2 /tmp/nrf-trace-preserved
+      - run: cd /tmp/nrf-trace-preserved/nrf52840-transmitter/firmware && python -m pytest -q ../tests test_trace_integration.py

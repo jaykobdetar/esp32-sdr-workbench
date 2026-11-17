@@ -1,0 +1,40 @@
+test_concurrent_latch_and_seal (test_adapter.Tests.test_concurrent_latch_and_seal) ... ok
+test_content_before_backend (test_adapter.Tests.test_content_before_backend) ... ok
+test_empty_budget_clock_frozen (test_adapter.Tests.test_empty_budget_clock_frozen) ... ok
+test_encoding_failure_after_read (test_adapter.Tests.test_encoding_failure_after_read) ... ok
+test_export_hashes_and_no_reuse (test_adapter.Tests.test_export_hashes_and_no_reuse) ... ok
+test_final_deadline_is_not_missing_clock (test_adapter.Tests.test_final_deadline_is_not_missing_clock) ... ok
+test_hostile_exception_status_and_returned_false (test_adapter.Tests.test_hostile_exception_status_and_returned_false) ... ok
+test_one_byte_and_crossing (test_adapter.Tests.test_one_byte_and_crossing) ... ok
+test_operations_and_repeated_reject (test_adapter.Tests.test_operations_and_repeated_reject) ... ok
+test_original_exception_attribute_mutation_fails (test_adapter.Tests.test_original_exception_attribute_mutation_fails) ... ok
+test_oversize_nonbytes_and_subclasses (test_adapter.Tests.test_oversize_nonbytes_and_subclasses) ... ok
+test_raw_survives_postread_clock (test_adapter.Tests.test_raw_survives_postread_clock) ... ok
+test_raw_survives_restore_failure_and_clock (test_adapter.Tests.test_raw_survives_restore_failure_and_clock) ... ok
+test_reentrant_token_getter_poison (test_adapter.Tests.test_reentrant_token_getter_poison) ... ok
+test_schema_maximum (test_adapter.Tests.test_schema_maximum) ... ok
+test_seal_linearization_and_export_contention (test_adapter.Tests.test_seal_linearization_and_export_contention) ... ok
+test_swallowed_poison_never_wrapper_success (test_adapter.Tests.test_swallowed_poison_never_wrapper_success) ... ok
+test_token_budget (test_adapter.Tests.test_token_budget) ... ok
+test_wrapper_exception_and_persistence (test_adapter.Tests.test_wrapper_exception_and_persistence) ... ok
+test_wrapper_normal_and_export_failure (test_adapter.Tests.test_wrapper_normal_and_export_failure) ... ok
+test_write_budgets_and_partial (test_adapter.Tests.test_write_budgets_and_partial) ... ok
+test_admission_encoding_before_getters (test_layered.Layered.test_admission_encoding_before_getters) ... ok
+test_final_headroom_boundary_and_negative_clock (test_layered.Layered.test_final_headroom_boundary_and_negative_clock) ... ok
+test_late_encoding_headroom (test_layered.Layered.test_late_encoding_headroom) ... ok
+test_outer_overrun_and_restore_overrun (test_layered.Layered.test_outer_overrun_and_restore_overrun) ... ok
+test_policy_integer_and_quiet (test_layered.Layered.test_policy_integer_and_quiet) ... ok
+test_quiet_nonblocking_and_unexpected (test_layered.Layered.test_quiet_nonblocking_and_unexpected) ... ok
+test_receipt_schema_three (test_layered.Layered.test_receipt_schema_three) ... ok
+test_setup_exact_and_late_no_io (test_layered.Layered.test_setup_exact_and_late_no_io) ... ok
+test_silence_not_reset_by_empty (test_layered.Layered.test_silence_not_reset_by_empty) ... ok
+test_writes_inner_partial_and_admission (test_layered.Layered.test_writes_inner_partial_and_admission) ... ok
+test_backward_return_then_recovery (test_layered.SequentialRegressions.test_backward_return_then_recovery) ... ok
+test_headroom_then_actual_overrun (test_layered.SequentialRegressions.test_headroom_then_actual_overrun) ... ok
+test_restore_error_retains_precedence_with_overrun (test_layered.SequentialRegressions.test_restore_error_retains_precedence_with_overrun) ... ok
+test_sequential_backward_above_start (test_layered.SequentialRegressions.test_sequential_backward_above_start) ... ok
+
+----------------------------------------------------------------------
+Ran 35 tests in 0.033s
+
+OK

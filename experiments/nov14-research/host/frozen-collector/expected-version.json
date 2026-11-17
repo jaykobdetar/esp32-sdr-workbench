@@ -1,0 +1,8 @@
+{
+  "revision": "unknown",
+  "build_date": "2026-11-14",
+  "build_timestamp": "2026-11-14T16:18:56Z",
+  "profile": "esp32",
+  "firmware_variant": "esp32-paused-extract-compact-research-v2",
+  "paused_packet_extract_protocol": 1
+}

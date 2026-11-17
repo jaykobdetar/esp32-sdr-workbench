@@ -1,0 +1,11 @@
+# Layered timeout source: initial review
+
+2026-11-14. Independently verified REVIEW-PINS.json SHA256 `969c7d147cfadca3a0dda10ffa6c58e75590c1a8895410f1abbb38c8d19f03ca` and every listed file. Independently ran 31 tiny tests (21 inherited plus 10 layered groups), all passing in 0.031 seconds. No corrected_cases.py rerun, full session/native replay, devices, sleeps or new IQ.
+
+**Two narrow corrections required before freeze.** Fixed policy arithmetic, inward assignment, pre-admission clock placement and late first-encoding observation otherwise follow the design. These findings concern observed clock validity and error classification, not physical timeout qualification.
+
+1. **Backend-return clock can run backward without rejection.** The post-read `r[6] = self._ns()` lacks an elapsed/backward check. With a make() fake and clock observations `[0, 0, 0, 0, -0.001, 0.012, 0.012]`, `read(1, .1)` returns empty success with recorded backend-return ns -1,000,000. Validate the observed return checkpoint before success; preserve already retained bytes and restore timeouts on failure. Compare relevant sequential observations as appropriate, not only a final recovered clock against start. Existing setup-backward test does not cover this gap.
+
+2. **A later actual outer overrun remains labeled only headroom exhaustion.** Tiny TimedFake has 1 ms setup, 88 ms read and 1 ms restore, reaching 90 ms and RETURN_HEADROOM at the first final observation. An encode_record hook advances the clock to 110 ms on its first operation-record encoding. The later observation stores elapsed 110,000,000 ns but raised exception and secondary code remain 19, not actual outer DEADLINE (10). Keep first_failure=19 as truthful chronological history, but ensure the operation's later timing outcome records the stronger observed outer violation and cannot present it only as a conservative subdeadline rejection. Do not overwrite a restoration error or its unknown-state flag; provide bounded secondary timing evidence if needed.
+
+Both reproduced with scalar clocks and one read each. No production code changed. Preserve this initial review; add tiny regressions and inspect the correction separately. Live host-client HOLD remains regardless of these deterministic fixes.

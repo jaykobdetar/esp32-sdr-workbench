@@ -1,0 +1,11 @@
+{
+  "adapter.py": "4bfdd677706ee93ff27d9757198b8db14fd0a29dc90714e5bc0300879062a621",
+  "test_adapter.py": "91afd141c11f95da7330579e0c97426391f377d177ac81463304e0659600b948",
+  "test_layered.py": "69d4f7f60466e38b8abcfc83f8af39e08d58cac22cef7b5ae702fc876f0979d5",
+  "corrected_cases.py": "5fdcef0f0c4dcb05c8fc35985ac3edb73e4abd10025929e6f7651e0a808a77fc",
+  "corrected-three.json": "8677825d260dcb6308a40fe35a37ea067b09f504e493c1d5ae557427351f6fb2",
+  "README.md": "d8a54a54cf70992d6fed0835fd14cefc8297d57010b4eaaec4fdc57d047482ea",
+  "DESIGN.md": "f0ad7fe86aa00212c8cc305654090cde2058bde4ed1f470f352386c139fe86a2",
+  "COLLECTOR-PINS.json": "73f00cfd4f9b2c5d068f55270cb48c2c26f8c9132c09032faa09da7a57ce74cb",
+  "tiny-initial.log": "6351cf02ec13bc084807226d0873795fdf5eb61139c0eaca706c7da265f8f164"
+}
