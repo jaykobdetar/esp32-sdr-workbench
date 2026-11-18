@@ -1,0 +1,414 @@
+diff --git a/firmware/FIRMWARE_VARIANT b/firmware/FIRMWARE_VARIANT
+index 8799ace..bf653e4 100644
+--- a/firmware/FIRMWARE_VARIANT
++++ b/firmware/FIRMWARE_VARIANT
+@@ -1 +1 @@
+-esp32-core1-banks-experimental-v9
++esp32-packet-only-stride-v4
+diff --git a/firmware/main/CMakeLists.txt b/firmware/main/CMakeLists.txt
+index 3099cf3..714bb76 100644
+--- a/firmware/main/CMakeLists.txt
++++ b/firmware/main/CMakeLists.txt
+@@ -68,6 +68,13 @@ if(IDF_TARGET STREQUAL "esp32c61" OR IDF_TARGET STREQUAL "esp32s31")
+     list(APPEND sources "common/burst_gain_table.c")
+ endif()
+ 
++option(PACKET_ONLY_PROBE "Build bounded packet-only research command" OFF)
++if(PACKET_ONLY_PROBE)
++    if(NOT IDF_TARGET STREQUAL "esp32")
++        message(FATAL_ERROR "Packet-only prototype requires original ESP32")
++    endif()
++    list(APPEND sources "${target_dir}/packet.c")
++endif()
+ idf_component_register(SRCS "${receiver}" ${sources}
+     LDFRAGMENTS ${fragments}
+     PRIV_INCLUDE_DIRS "common" ${target_includes} "diagnostics"
+@@ -123,3 +130,7 @@ option(DETPIPE_HEALTH "Build validation-only pipeline heap/stack telemetry" OFF)
+ if(DETPIPE_HEALTH)
+     target_compile_definitions(${COMPONENT_LIB} PRIVATE DETPIPE_HEALTH=1)
+ endif()
++
++if(PACKET_ONLY_PROBE)
++    target_compile_definitions(${COMPONENT_LIB} PRIVATE PACKET_ONLY_PROBE=1)
++endif()
+diff --git a/firmware/main/targets/esp32/packet.c b/firmware/main/targets/esp32/packet.c
+new file mode 100644
+index 0000000..c9e92f0
+--- /dev/null
++++ b/firmware/main/targets/esp32/packet.c
+@@ -0,0 +1,118 @@
++/* SPDX-License-Identifier: GPL-3.0-or-later */
++#include "packet.h"
++#include <string.h>
++#ifndef CFO_SCALE
++#define CFO_SCALE 101
++#endif
++#ifndef SKIP_FIRST
++#define SKIP_FIRST 0
++#endif
++static uint16_t crc_bit(uint16_t crc,unsigned bit){
++ unsigned fb=((unsigned)crc>>15)^bit;
++ crc=(uint16_t)((uint32_t)crc<<1);
++ if(fb&1u)crc^=0x1021u;
++ return crc;
++}
++static int32_t signed10(uint32_t x){return (int32_t)((x&1023u)^512u)-512;}
++/* Explicit floor division avoids implementation-defined right shift of a
++ * negative signed operand. All intermediates fit int32_t for10bit IQ. */
++static int32_t floor1024(int32_t x){return (int32_t)((uint32_t)(x+134217728)>>10)-131072;}
++static void complete(pkt_lane *l,pkt_result *r,unsigned phase,int polarity,unsigned cap){
++ uint32_t seq=(uint32_t)l->payload[4]|((uint32_t)l->payload[5]<<8)|((uint32_t)l->payload[6]<<16)|((uint32_t)l->payload[7]<<24);
++ for(unsigned k=8;k<16;k++)if(l->payload[k]!=(uint8_t)(seq+k)){r->payload_rejects++;return;}
++ if(l->received_crc!=l->crc){r->crc_rejects++;return;}
++ r->valid_hypotheses++;
++ for(unsigned k=0;k<r->count;k++){
++  const pkt_record *p=&r->records[k];uint32_t d=p->address_start_sample>l->start?p->address_start_sample-l->start:l->start-p->address_start_sample;
++  if(p->sequence==seq && d<=16){r->duplicates++;return;}
++ }
++ if(r->count>=cap){r->output_drops++;return;}
++ pkt_record *p=&r->records[r->count++];p->sequence=seq;p->address_start_sample=l->start;
++ memcpy(p->payload,l->payload,16);p->air_crc=l->crc;p->phase=(uint8_t)phase;p->polarity=(int8_t)polarity;
++}
++static const uint8_t prefix[10]={0xef,0xcd,0xab,0x89,0xc3,16,'R','F','T','X'};
++/* Each bit is one sample endpoint, not a bit of a received byte.  Taking
++ * refs at 32-sample offsets first lets the common screening pass intersect
++ * 32 independent endpoint hypotheses using aligned word operations. */
++static unsigned prefix_bit(unsigned lag) {
++ unsigned b = 79u - lag; return ((unsigned)prefix[b >> 3] >> (b & 7u)) & 1u;
++}
++static uint32_t hits(const uint32_t *v, unsigned block) {
++ uint32_t mask=~UINT32_C(0);
++ for(unsigned lag=0;lag<80;lag+=8) {
++  uint32_t b=v[block-lag/8];
++  mask &= prefix_bit(lag) ? b : ~b;
++  if(!mask) return 0;
++ }
++ for(unsigned residue=1;residue<8;residue++) for(unsigned lag=residue;lag<80;lag+=8){
++  unsigned shift=residue*4, k=block-lag/8;
++  uint32_t b=(v[k]<<shift)|(v[k-1]>>(32-shift));
++  mask &= prefix_bit(lag) ? b : ~b;
++  if(!mask) return 0;
++ }
++ return mask;
++}
++
++int pkt_decode(const uint32_t *words,size_t n,pkt_workspace *w,pkt_result *r,unsigned cap){
++ if(!r)return PKT_ARGUMENT;
++ memset(r,0,sizeof(*r));
++ if(!w || !words || n<8 || n>PKT_MAX_SAMPLES || cap>PKT_MAX_RESULTS){r->status=PKT_ARGUMENT;return PKT_ARGUMENT;}
++ size_t original_n=n;
++ for(size_t k=0;k<original_n;k++) if(words[k]==0xa55aa55au){r->status=PKT_SENTINEL;return PKT_SENTINEL;}
++ n=(original_n-SKIP_FIRST+1u)/2u;
++ unsigned blocks=((unsigned)n+31u)/32u;
++ memset(w->busy_until,0,sizeof(w->busy_until));
++ if(words[0]==0xa55aa55au){r->status=PKT_SENTINEL;return PKT_SENTINEL;}
++ int32_t pi=signed10(words[SKIP_FIRST]),pq=-signed10(words[SKIP_FIRST]>>10),sum=0,ring[4]={0};
++ /* All signed-bias math is exact: abs(dot*50) <= 26,214,400.
++ * Block assembly shifts by a constant. Padded tail bits are never tested.
++ * Process sample zero as an inert previous-to-self slot to keep the
++ * 32-sample blocks word-aligned without reading beyond the capture. */
++ for(unsigned block=0;block<blocks;block++){
++  uint32_t pos=0,neg=0;
++  unsigned from=block*32u, len=(unsigned)n-from;if(len>32u)len=32u;
++  for(unsigned k=0;k<len;k++){
++   unsigned j=from+k;uint32_t word=words[j*2u+SKIP_FIRST];
++   if(word==0xa55aa55au){r->status=PKT_SENTINEL;return PKT_SENTINEL;}
++   int32_t i=signed10(word),q=-signed10(word>>10);
++   int32_t d=q*pi-i*pq-floor1024((i*pi+q*pq)*CFO_SCALE);pi=i;pq=q;
++   if(j==0)d=0;
++   unsigned slot=k&3u;sum+=d-ring[slot];ring[slot]=d;
++   pos=(pos>>1)|((uint32_t)(sum>0)<<31);
++   neg=(neg>>1)|((uint32_t)(sum<0)<<31);
++  }
++  w->signs[0][block]=pos>>(32u-len);w->signs[1][block]=neg>>(32u-len);
++ }
++ r->samples_processed=(uint32_t)n-1;r->differential_products=5*r->samples_processed;
++ r->symbol_decisions=((uint32_t)n-4)*2;
++ uint16_t prefix_crc=0xffff;
++ for(unsigned j=0;j<10;j++)for(unsigned k=0;k<8;k++)prefix_crc=crc_bit(prefix_crc,(prefix[j]>>k)&1u);
++ for(unsigned block=10;block<blocks;block++){
++  uint32_t a=hits(w->signs[0],block),b=hits(w->signs[1],block);
++  while(a|b){
++   unsigned bit=(unsigned)__builtin_ctz(a|b),at=block*32+bit;
++   uint32_t flag=UINT32_C(1)<<bit;
++   if(at>=n)break;
++   for(unsigned pol=0;pol<2;pol++){
++    if(!((pol?b:a)&flag))continue;
++    r->sync_hits++;
++    unsigned phase=(at*2u+SKIP_FIRST)&7u,lane=phase*2+pol;
++    if(at<w->busy_until[lane]){r->busy_syncs++;continue;}
++    unsigned last=at+112u*4u;w->busy_until[lane]=last;
++    if(last>=n){r->incomplete++;continue;}
++    pkt_lane l={0};l.start=(at-320)*2u+SKIP_FIRST;l.crc=prefix_crc;memcpy(l.payload,"RFTX",4);
++    for(unsigned i=0;i<112;i++){
++     unsigned j=at+(i+1)*4u;
++     unsigned value=(w->signs[pol][j>>5]>>(j&31u))&1u;
++     if(i<96){l.payload[4+i/8]|=(uint8_t)(value<<(i&7u));l.crc=crc_bit(l.crc,value);}
++     else l.received_crc=(uint16_t)(((uint32_t)l.received_crc<<1)|value);
++    }
++    complete(&l,r,phase,pol?-1:1,cap);
++   }
++   a&=~flag;b&=~flag;
++  }
++ }
++ return PKT_OK;
++}
++size_t pkt_workspace_size(void){return sizeof(pkt_workspace);}
++size_t pkt_result_size(void){return sizeof(pkt_result);}
+diff --git a/firmware/main/targets/esp32/packet.h b/firmware/main/targets/esp32/packet.h
+new file mode 100644
+index 0000000..97c8db5
+--- /dev/null
++++ b/firmware/main/targets/esp32/packet.h
+@@ -0,0 +1,34 @@
++/* SPDX-License-Identifier: GPL-3.0-or-later */
++#ifndef PACKET_H
++#define PACKET_H
++#include <stdint.h>
++#include <stddef.h>
++#define PKT_MAX_SAMPLES 16380u
++#define PKT_MAX_RESULTS 64u
++/* Input: one 32-bit word/sample, signed10 I in bits0..9 and hardware Q in10..19.
++ * DSP convention is I-j*Q, matching protocol.decode_iq. No continuous-bank joins.
++ * Fixed16MS/s,2Mbps,16-byte RFTX known source, approximate125kHz correction. */
++typedef struct { uint32_t sequence, address_start_sample; uint8_t payload[16]; uint16_t air_crc; uint8_t phase; int8_t polarity; } pkt_record;
++typedef struct {
++ uint32_t shift[3], start; uint16_t crc, received_crc, collected; uint8_t payload[16], active;
++} pkt_lane;
++typedef struct {
++ /* Per-capture sign bitmaps. Strict positive and negative remain separate:
++  * an exactly-zero decision means a zero bit for BOTH polarity lanes. */
++ uint32_t signs[2][(PKT_MAX_SAMPLES + 31) / 32];
++ unsigned busy_until[16];
++} pkt_workspace;
++typedef struct {
++ uint32_t status, count, sync_hits, valid_hypotheses, duplicates, output_drops;
++ uint32_t payload_rejects, crc_rejects, incomplete, busy_syncs, samples_processed;
++ uint32_t differential_products, symbol_decisions;
++ pkt_record records[PKT_MAX_RESULTS];
++} pkt_result;
++enum { PKT_OK=0, PKT_ARGUMENT=1, PKT_SENTINEL=2 };
++/* Entire result fails closed on bad arguments/sentinel. Result overflow is
++ * counted, not silent; CPU work remains bounded independent of output count.
++ * Caller owns nonoverlapping workspace/result/input, no concurrent use. */
++int pkt_decode(const uint32_t *words, size_t n, pkt_workspace *w, pkt_result *r, unsigned output_cap);
++size_t pkt_workspace_size(void);
++size_t pkt_result_size(void);
++#endif
+diff --git a/firmware/main/targets/esp32/packet_only.h b/firmware/main/targets/esp32/packet_only.h
+new file mode 100644
+index 0000000..02e9987
+--- /dev/null
++++ b/firmware/main/targets/esp32/packet_only.h
+@@ -0,0 +1,118 @@
++#pragma once
++/* Bounded serial capture/decode/readout. Dump acquisition disabled and CPU ownership restored before decoder calls.
++ * No overlapping acquisition, no decoder state across capture gaps, no IQ wire.
++ * Fixed known source only; CRC-verification is not arbitrary-protocol support. */
++#include "packet.h"
++#include "slot_audit.h"
++#include "esp_cpu.h"
++#include "esp_private/esp_clk.h"
++static __attribute__((optimize("Os"), noinline)) bool packet_only_line(uint32_t *sequence,bool terminal,const char *fmt,...) {
++ char body[512],wire[544];
++ int prefix=snprintf(body,sizeof(body),"PONLY %" PRIu32 " ",*sequence);
++ if(prefix<0 || (size_t)prefix>=sizeof(body))return false;
++ va_list ap;va_start(ap,fmt);int n=vsnprintf(body+prefix,sizeof(body)-(size_t)prefix,fmt,ap);va_end(ap);
++ if(n<0 || (size_t)n>=sizeof(body)-(size_t)prefix)return false;
++ size_t size=(size_t)(prefix+n);uint32_t crc=esp_rom_crc32_le(0,(const uint8_t *)body,size);
++ int total=snprintf(wire,sizeof(wire),"%s *%08" PRIx32 "\n",body,crc);
++ if(total<0 || (size_t)total>=sizeof(wire))return false;
++ if(terminal) {
++  /* Preserve exact CRC-framed bytes; existing v9 finish drains and paces
++   * 32-byte UART bursts. Its input contract is at most256bytes per call.
++   * Three calls maximum here; acquisition has already stopped. */
++  for(size_t off=0;off<(size_t)total;) {
++   size_t chunk=(size_t)total-off;if(chunk>256)chunk=256;
++   if(!burst_serial_finish(wire+off,chunk))return false;
++   off+=chunk;
++  }
++ } else if(!burst_serial_send(wire,(size_t)total))return false;
++ (*sequence)++;return true;
++}
++/* No raw IQ crosses capture boundaries. Store just validated-window
++ * metadata and accepted fixed-source records in bounded INTERNAL memory.
++ * STOP remains polled during acquisition and deferred delivery. A buffer
++ * overflow invalidates the command instead of silently dropping records. */
++typedef struct {
++ uint64_t trigger, target;
++ uint32_t slot, capture_us, elapsed, cycles, start, count, drops, busy, incomplete;
++} pkt_window_row;
++#define PKT_BUFFERED_MAX 512u
++static __attribute__((optimize("Os"), noinline)) bool packet_only_command(const char *line) {
++ if(!strcmp(line,"PKTONLY?")) {
++  static const char info[]="PKTONLYINFO 1 samples=16380 rate=16000000 mode=known_rftx16 crc=air16+wire32 period_us=4000..100000 captures=1..256 max_span_us=12800000 no_overlap deferred_report\n";
++  _Static_assert(sizeof(info)-1<=256,"info finish bound");
++  (void)burst_serial_finish(info,sizeof(info)-1);return true;
++ }
++ if(strncmp(line,"PKTONLY",7))return false;
++ uint64_t a[3];
++ if(!bank_arguments(line+7,a,3) || a[0]<1 || a[0]>256 || a[1]<4000 || a[1]>100000 || a[0]*a[1]>12800000 || a[2]>16 || dual_armed || dual_next || (REG_READ(DUMP_CTRL)&BIT(31))) {
++  reply("ERR packet_only_args\n");return true;
++ }
++ /* Only work/result are allocated; immutable validated aperture is decoded
++  * directly after acquire_iq restores CPU ownership. Never copy live RF SRAM. */
++ pkt_workspace *w=heap_caps_calloc(1,sizeof(*w),MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT);
++ pkt_result *r=heap_caps_calloc(1,sizeof(*r),MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT);
++ size_t nr=(size_t)a[0];
++ size_t packet_max=nr*(size_t)a[2]; if(packet_max>PKT_BUFFERED_MAX)packet_max=PKT_BUFFERED_MAX;
++ pkt_window_row *rows=heap_caps_calloc(nr,sizeof(*rows),MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT);
++ pkt_record *stored=heap_caps_calloc(packet_max?packet_max:1,sizeof(*stored),MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT);
++ if(!bank_ptr_ok(w,sizeof(*w)) || !bank_ptr_ok(r,sizeof(*r)) || !bank_ptr_ok(rows,nr*sizeof(*rows))
++    || !bank_ptr_ok(stored,(packet_max?packet_max:1)*sizeof(*stored))) {
++  if(rows){heap_caps_free(rows);}if(stored){heap_caps_free(stored);}
++  if(w){heap_caps_free(w);}
++  if(r){heap_caps_free(r);}
++  reply("ERR packet_only_memory\n");return true;
++ }
++ bank_release_other_retention();bank_discard();
++ uint64_t session_start=esp_timer_get_time();uint32_t wire_sequence=0,status=0,packets=0,drops=0,busy=0,incomplete=0;
++ uint32_t decode_max=0,cycles_max=0,tx_failed=0,decoded=0,decode_errors=0,decoder_status=0;uint64_t decode_total=0,cycles_total=0;unsigned hz=esp_clk_cpu_freq(),core=xPortGetCoreID();
++ uint32_t nr_rows=0,nr_stored=0;
++ prepare_rx();
++ pkt_slot_audit audit={0};bool init=pkt_slot_init(&audit,((uint64_t)esp_timer_get_time()+20000)*1000,a[1]*1000,(uint32_t)a[0]);
++ bool sent=init && packet_only_line(&wire_sequence,false,"BEGIN 1 count=%u period_us=%u cap=%u hz=%u core=%u start_us=%" PRIu64,(unsigned)a[0],(unsigned)a[1],(unsigned)a[2],hz,core,audit.start_ns/1000);
++ if(!sent){status=4;tx_failed++;}
++ while(!status) {
++  if(burst_serial_stop_requested()){status=3;break;}
++  if((uint64_t)esp_timer_get_time()-session_start>15000000){status=5;break;}
++  uint32_t slot;uint64_t target;
++  int admit=pkt_slot_poll(&audit,(uint64_t)esp_timer_get_time()*1000,&slot,&target);
++  if(admit==PKTSLOT_DONE)break;
++  if(admit==PKTSLOT_WAIT){if(target/1000>(uint64_t)esp_timer_get_time()+2000)vTaskDelay(1);continue;}
++  if(admit!=PKTSLOT_READY){status=6;break;}
++  unsigned capture_us=0;
++  bool valid=acquire_iq(MAX_SAMPLES,0,0,&capture_us);
++  uint64_t trigger=capture_trigger_device_us;
++  if(!pkt_slot_complete(&audit,valid,trigger*1000) || !valid){status=1;break;}
++  if(esp_clk_cpu_freq()!=(int)hz || xPortGetCoreID()!=(int)core){status=7;break;}
++  uint64_t before=esp_timer_get_time();uint32_t c=esp_cpu_get_cycle_count();
++  int rc=pkt_decode(samples,MAX_SAMPLES,w,r,(unsigned)a[2]);
++  uint32_t cycles=esp_cpu_get_cycle_count()-c;uint64_t elapsed=esp_timer_get_time()-before;
++  if(elapsed>decode_max){decode_max=(uint32_t)elapsed;}
++  if(cycles>cycles_max){cycles_max=cycles;}
++  decode_total+=elapsed;cycles_total+=cycles;decoder_status=(uint32_t)rc;
++  if(rc || elapsed>=100000 || esp_clk_cpu_freq()!=(int)hz || xPortGetCoreID()!=(int)core){decode_errors++;status=2;break;}
++  decoded++;
++  packets+=r->count;drops+=r->output_drops;busy+=r->busy_syncs;incomplete+=r->incomplete;
++  if(nr_rows>=nr || nr_stored>packet_max || r->count>packet_max-nr_stored){
++   status=8;break; /* overflow fails the ENTIRE session; never silently truncate */
++  }
++  rows[nr_rows++]=(pkt_window_row){trigger,target/1000,slot,capture_us,(uint32_t)elapsed,cycles,
++                                nr_stored,r->count,r->output_drops,r->busy_syncs,r->incomplete};
++  for(unsigned k=0;k<r->count;k++)stored[nr_stored++]=r->records[k];
++  vTaskDelay(1); /* Idle/watchdogs remain enabled. Its delay counts as deadtime. */
++ }
++ if(!pkt_slot_close(&audit))status=6;
++ for(unsigned ix=0;ix<nr_rows;ix++) {
++  if(burst_serial_stop_requested()){status=3;break;}
++  pkt_window_row *row=&rows[ix];
++  sent=packet_only_line(&wire_sequence,false,"WINDOW slot=%u trigger_us=%" PRIu64 " scheduled_us=%" PRIu64 " capture_us=%u decode_us=%u cycles=%u packets=%u output_drops=%u busy=%u incomplete=%u",row->slot,row->trigger,row->target,row->capture_us,row->elapsed,row->cycles,row->count,row->drops,row->busy,row->incomplete);
++  for(unsigned k=0;sent && k<row->count;k++) {
++   pkt_record *p=&stored[row->start+k];char hex[33];const char *d="0123456789abcdef";
++   for(unsigned j=0;j<16;j++){hex[j*2]=d[p->payload[j]>>4];hex[j*2+1]=d[p->payload[j]&15];}hex[32]=0;
++   sent=packet_only_line(&wire_sequence,false,"PACKET slot=%u source_sequence=%u address_sample=%u phase=%u polarity=%d address=efcdab89c3 air_crc=%04x payload=%s",row->slot,p->sequence,p->address_start_sample,p->phase,p->polarity,p->air_crc,hex);
++  }
++  if(!sent){status=4;tx_failed++;break;}
++  if((ix&7u)==7u)vTaskDelay(1);
++ }
++ packet_only_line(&wire_sequence,true,"END status=%u completed=%u decoded=%u decode_errors=%u decoder_status=%u faults=%u skipped=%u cancelled=%u packets=%u output_drops=%u busy=%u incomplete=%u tx_failed=%u decode_max_us=%u cycles_max=%u decode_total_us=%" PRIu64 " cycles_total=%" PRIu64 " gap_ns=%" PRIu64 " max_gap_ns=%" PRIu64 " session_us=%" PRIu64,status,audit.completed,decoded,decode_errors,decoder_status,audit.capture_faults,audit.skipped,audit.cancelled,packets,drops,busy,incomplete,tx_failed,decode_max,cycles_max,decode_total,cycles_total,audit.gap_ns,audit.max_gap_ns,(uint64_t)esp_timer_get_time()-session_start);
++ heap_caps_free(stored);heap_caps_free(rows);heap_caps_free(r);heap_caps_free(w);return true;
++}
+diff --git a/firmware/main/targets/esp32/receiver.c b/firmware/main/targets/esp32/receiver.c
+index 2a5db88..7492944 100644
+--- a/firmware/main/targets/esp32/receiver.c
++++ b/firmware/main/targets/esp32/receiver.c
+@@ -196,6 +196,9 @@ static bool acquire_iq(unsigned n, unsigned source, unsigned clock, unsigned *ca
+ }
+ 
+ #include "bank_probe.h"
++#ifdef PACKET_ONLY_PROBE
++#include "packet_only.h"
++#endif
+ #include "profile_acquire.h"
+ 
+ static bool spectrum_acquire(unsigned n, unsigned rate, const uint32_t **data, unsigned *elapsed) {
+@@ -297,6 +300,9 @@ static void command(char *line) {
+ #endif
+     if (spectrum_command(line, frequency_mhz, spectrum_acquire)) return;
+     if (bank_probe_command(line)) return;
++#ifdef PACKET_ONLY_PROBE
++    if (packet_only_command(line)) return;
++#endif
+     if (!strcmp(line, "CORE?")) { reply("CORE %d %d\n", xPortGetCoreID(), portNUM_PROCESSORS); return; }
+     if (burst_common_command(line)) return;
+     unsigned n;
+diff --git a/firmware/main/targets/esp32/receiver_caps.h b/firmware/main/targets/esp32/receiver_caps.h
+index 5d43c46..f61221f 100644
+--- a/firmware/main/targets/esp32/receiver_caps.h
++++ b/firmware/main/targets/esp32/receiver_caps.h
+@@ -5,6 +5,9 @@
+ static const char receiver_caps[] =
+     "CAPS BANKDIAG COREINFO DSTREAMIDLEWAKE DSTREAMIDLE DSTREAMIQ DSTREAM DUALTIMING BGPOLICY CALHASH "
+     DETPIPE_HEALTH_CAPABILITY
++#ifdef PACKET_ONLY_PROBE
++    "PKTONLY "
++#endif
+     "PIPEKEEP PIPECOPY ACQOPT CLEAROPT PIPEKERNEL DET1 VERSION GPIO SPEC SPECN SPECCAPS SPECSTAT DCT "
+ #if !CONFIG_ESP_SDR_CP2102_VIEWER_COMPAT
+     "UARTBAUD "
+diff --git a/firmware/main/targets/esp32/slot_audit.h b/firmware/main/targets/esp32/slot_audit.h
+new file mode 100644
+index 0000000..b87d635
+--- /dev/null
++++ b/firmware/main/targets/esp32/slot_audit.h
+@@ -0,0 +1,49 @@
++/* Experimental packet-only admission/accounting; no hardware access.
++ * All times ns; actual triggers must be reported separately from planned slots.
++ * Not a continuous sampling guarantee. Caller must serialize capture/decode. */
++#ifndef SLOT_AUDIT_H
++#define SLOT_AUDIT_H
++#include <stdint.h>
++#include <stdbool.h>
++#define PKTSLOT_MAX 256u
++#define PKTSLOT_APERTURE_NS UINT64_C(1023750)
++typedef struct {
++ uint64_t start_ns, period_ns, last_trigger_ns, gap_ns, max_gap_ns;
++ uint32_t total, next, admitted, skipped, completed, cancelled, capture_faults;
++ bool active, have_trigger, closed;
++} pkt_slot_audit;
++enum { PKTSLOT_INVALID=-1, PKTSLOT_WAIT=0, PKTSLOT_READY=1, PKTSLOT_DONE=2 };
++static inline bool pkt_slot_init(pkt_slot_audit *s,uint64_t start,uint64_t period,uint32_t count) {
++ if(!s || !count || count>PKTSLOT_MAX || period<UINT64_C(4000000) || period>UINT64_C(100000000) || period*count>UINT64_C(12800000000) || start>UINT64_MAX-period*count)return false;
++ *s=(pkt_slot_audit){.start_ns=start,.period_ns=period,.total=count};return true;
++}
++/* No catch-up captures: reject overdue slots by >50us; count them explicitly.
++ * READY reserves exactly one slot until completion is reported. */
++static inline int pkt_slot_poll(pkt_slot_audit *s,uint64_t now,uint32_t *index,uint64_t *target) {
++ if(!s || !index || !target || s->active || s->closed)return PKTSLOT_INVALID;
++ while(s->next<s->total) {
++  uint64_t t=s->start_ns+(uint64_t)s->next*s->period_ns;
++  if(now<t){*target=t;return PKTSLOT_WAIT;}
++  if(now-t>UINT64_C(50000)){s->next++;s->skipped++;continue;}
++  *target=t;*index=s->next++;s->admitted++;s->active=true;return PKTSLOT_READY;
++ }
++ return PKTSLOT_DONE;
++}
++static inline bool pkt_slot_complete(pkt_slot_audit *s,bool valid,uint64_t actual_trigger) {
++ if(!s || !s->active || s->closed)return false;
++ if(valid && s->have_trigger && actual_trigger<s->last_trigger_ns)return false;
++ s->active=false;
++ if(!valid){s->capture_faults++;return true;}
++ if(s->have_trigger) {
++  uint64_t delta=actual_trigger-s->last_trigger_ns;
++  uint64_t gap=delta>PKTSLOT_APERTURE_NS?delta-PKTSLOT_APERTURE_NS:0;
++  s->gap_ns+=gap;if(gap>s->max_gap_ns)s->max_gap_ns=gap;
++ }
++ s->last_trigger_ns=actual_trigger;s->have_trigger=true;s->completed++;return true;
++}
++static inline bool pkt_slot_close(pkt_slot_audit *s) {
++ if(!s || s->active || s->closed)return false;
++ s->cancelled=s->total-s->next;s->closed=true;
++ return s->total==s->completed+s->capture_faults+s->skipped+s->cancelled;
++}
++#endif
